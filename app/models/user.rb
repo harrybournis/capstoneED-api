@@ -6,6 +6,8 @@ class User < ApplicationRecord
 
   include DeviseTokenAuth::Concerns::User
 
+  attr_accessor :confirm_success_url, :config_name
+
   def full_name
   	"#{self.fist_name} #{self.last_name}"
   end
