@@ -1,4 +1,4 @@
-Api root: api.localhost:3000/
+API root: api.localhost:3000/
 
 | Method | Endpoint | Usage  | Returns |
 |:-:|:-:|:-:|:-:|---|
