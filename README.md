@@ -1,6 +1,7 @@
 API root: api.localhost:3000/
 
 # Authentication Routes #
+https://github.com/lynndylanhurley/devise_token_auth
 
 | Method | Endpoint | Usage  | Returns |
 |:-:|:-:|:-:|:-:|---|
