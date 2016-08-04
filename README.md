@@ -1,4 +1,4 @@
-|   |   |   |   |   |
+| Method  | Endpoint  | Usage  | Returns  |   |
 |:-:|:-:|:-:|:-:|---|
 |   |   |   |   |   |
 |   |   |   |   |   |
