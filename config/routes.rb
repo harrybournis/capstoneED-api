@@ -7,7 +7,7 @@ Rails.application.routes.draw do
 			resources :users
 		end
 	end
-
+	get 'redirect', to: redirect('/redirectopoulos.html')
 	post 'auth/facebook', to: 'authentications#facebook'
 	post 'omniauth/facebook', to: 'authentications#facebook'
 
