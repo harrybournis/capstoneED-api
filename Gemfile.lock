@@ -59,6 +59,7 @@ GEM
     json (1.8.3)
     jsonapi (0.1.1.beta2)
       json (~> 1.8)
+    jwt (1.5.4)
     launchy (2.4.3)
       addressable (~> 2.3)
     letter_opener (1.4.1)
@@ -144,6 +145,7 @@ DEPENDENCIES
   active_model_serializers (~> 0.10.2)
   byebug
   faker (~> 1.6, >= 1.6.6)
+  jwt (~> 1.5, >= 1.5.4)
   letter_opener (~> 1.4, >= 1.4.1)
   listen (~> 3.0.5)
   pg (~> 0.18.4)

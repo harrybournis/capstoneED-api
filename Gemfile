@@ -23,6 +23,9 @@ gem 'puma', '~> 3.6'
 # json serialization
 gem 'active_model_serializers', '~> 0.10.2'
 
+# Authentication
+gem 'jwt', '~> 1.5', '>= 1.5.4'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
