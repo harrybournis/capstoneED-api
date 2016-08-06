@@ -1,9 +1,6 @@
 class V1::UsersController < ApplicationController
-
-	before_action :authenticate_v1_user!
 	#before_action :set_user, except: [:index]
 
-SKATA
 private
 
 	def set_user

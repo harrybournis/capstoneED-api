@@ -20,8 +20,7 @@ class DummyDataBuilder
 			user = User.new(
 				first_name: Faker::Name.first_name,
 				last_name: Faker::Name.last_name,
-				is_admin: is_admin,
-				nickname: Faker::Internet.user_name,
+				user_name: Faker::Internet.user_name,
 				email: Faker::Internet.free_email,
 				password: password,
 				password_confirmation: password)

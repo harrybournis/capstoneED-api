@@ -23,14 +23,6 @@ gem 'puma', '~> 3.6'
 # json serialization
 gem 'active_model_serializers', '~> 0.10.2'
 
-# authentication
-gem 'devise', '~> 4.2'
-
-gem 'devise_token_auth', '~> 0.1.38'
-
-gem 'omniauth', '~> 1.3', '>= 1.3.1'
-
-
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
