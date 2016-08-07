@@ -1,13 +1,12 @@
-=begin #######
-	Generates random resources using the Faker gem.
 
-	Usage:
-		DummyDataBuilder.<resourcename>(<optional: number of resources>)
-
-	Returns:
-		Object 	 if number of resources is 1
-		[] Array if number of resources is > 1
-=end   #######
+# Generates random resources using the Faker gem.
+#
+# Usage:
+# 	DummyDataBuilder.<resourcename>(<optional: number of resources>)
+#
+# Returns:
+# 	Object 	 if number of resources is 1
+# 	[] Array if number of resources is > 1
 
 class DummyDataBuilder
 

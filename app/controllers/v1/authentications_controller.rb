@@ -1,20 +1,33 @@
 class V1::AuthenticationsController < ApplicationController
 
+	skip_before_action :authenticate_user
+
+	include JWTAuthenticator
+
+
 	# validates the JWT access-token
+	# GET
 	def validate
-		# validate token
-		# if valid? -> 200 OK
-		# else 		-> 401 Unauthorized
+		render json: :none, status: JWTAuthenticator.authenticate(request, response) ? :ok : :unauthorized
 	end
 
 	# creates a new JWT access-token using the refresh-token
+	# POST
 	def refresh
+		render json: :none, status: JWTAuthenticator.refresh(request,response) ? :ok : :unauthorized
 	end
 
+	# POST
 	def email
+		# validate user's credentials
+		#
+		##
+		render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
 	end
 
+	# POST
 	def facebook
+		###### REFACTOR
 		client = OAuth2::Client.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'], site: 'https://graph.facebook.com/v2.7', token_url: "/oauth/access_token")
 
 		client.auth_code.authorize_url(:redirect_uri => 'http://localhost:3000/')
@@ -26,31 +39,15 @@ class V1::AuthenticationsController < ApplicationController
 
 		user_info.delete("id")
 
-
-		unless user_info.blank?
-
-			member = Member.where(uid: user_info["email"]).first
-
-			member = Member.from_omniauth(user_info) if member.blank?
-
-
-			if member.blank?
-
-				render json: :none, status: :unprocessable_entity
-
-			else
-				sign_in(:user, member, store: false, bypass: false)
-				new_auth_header = member.create_new_auth_token(user_info["clientId"])
-				response.headers.merge!(new_auth_header)
-
-				render json: member, serializer: MemberSerializer, status: :ok
-			end
-
-		else
-			render json: :none, status: :unprocessable_entity
-		end
+		# # save the user
+		#
+		# # #
+		render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
 	end
 
+	# POST
 	def google
+		# validate user's credentials with oauth2
+		render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
 	end
 end

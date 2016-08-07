@@ -1,9 +1,15 @@
 class ApplicationController < ActionController::API
-	before_action :authenticate_user!
+	include JWTAuthenticator
+
+	before_action :authenticate_user
+
 
 protected
-	def authenticate_user!
-		JWTAuthenticator.authenticate(request)
+
+	def authenticate_user
+		unless JWTAuthenticator.authenticate(request, response)
+			render json: :none, status: :unauthorized
+		end
 	end
 
 end
