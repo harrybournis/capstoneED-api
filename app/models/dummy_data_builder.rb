@@ -15,15 +15,12 @@ class DummyDataBuilder
 		results = []
 
 		number.times do
-			password = Faker::Internet.password(8)
-
 			user = User.new(
 				first_name: Faker::Name.first_name,
 				last_name: Faker::Name.last_name,
 				user_name: Faker::Internet.user_name,
 				email: Faker::Internet.free_email,
-				password: password,
-				password_confirmation: password)
+				uid: SecureRandom.base58(24))
 
 			if user.save
 				Rails.logger.info "\n Randomly Created User: #{user.inspect} \n"
