@@ -31,6 +31,9 @@ gem 'oauth2', '~> 1.2'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
+  gem 'rspec-rails', '~> 3.5', '>= 3.5.1'
+  gem 'spring-commands-rspec', '~> 1.0', '>= 1.0.4'
+  gem 'factory_girl_rails', '~> 4.7'
 end
 
 group :development do
@@ -44,6 +47,12 @@ group :development do
   gem 'faker', '~> 1.6', '>= 1.6.6' # generate dummy data
 
   gem 'letter_opener', '~> 1.4', '>= 1.4.1' # email opens in the browser
+end
+
+group :test do
+  gem 'shoulda-matchers', '~> 3.1', '>= 3.1.1'
+  gem 'vcr', '~> 3.0', '>= 3.0.3'
+  #gem 'airborne', '~> 0.2.6'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
