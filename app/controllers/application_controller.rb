@@ -7,7 +7,10 @@ class ApplicationController < ActionController::API
 protected
 
 	def authenticate_user
-		unless JWTAuthenticator.authenticate(request, response)
+		# unless JWTAuthenticator2.authenticate(request, response)
+		# 	render json: :none, status: :unauthorized
+		# end
+		unless JWTAuthenticator2.validate_request(request).maimou
 			render json: :none, status: :unauthorized
 		end
 	end

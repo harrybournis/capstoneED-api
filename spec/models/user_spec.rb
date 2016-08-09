@@ -24,6 +24,29 @@ RSpec.describe User, type: :model do
 			user = FactoryGirl.create(:user, first_name: 'first', last_name: 'last')
 			expect(user.full_name).to eq("first last")
 		end
+
+	end
+
+	describe 'revoke tokens' do
+
+		it "should create a new entry when it doesn't have one" do
+			user = FactoryGirl.create(:user)
+
+			user.revoke_all_tokens
+			expect(user.revoked_token).to be_truthy
+			expect(RevokedToken.last.jti).to eq(user.uid)
+		end
+
+		it 'should update the entry when it already has a revoked_token' do
+			user = FactoryGirl.create(:user, uid: "uid")
+			revoked_token = FactoryGirl.create(:revoked_token, user: user, jti: "uid")
+
+			user.revoke_all_tokens
+			expect(user.revoked_token.id).to eq(revoked_token.id)
+		end
+
+
+
 	end
 
 

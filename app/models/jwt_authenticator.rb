@@ -143,4 +143,8 @@ module JWTAuthenticator
 																	})
 	end
 
+	def self.refresh_exp
+		@@refresh_exp
+	end
+
 end
