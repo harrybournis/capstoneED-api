@@ -1,4 +1,4 @@
-module JWTAuthenticator
+module JWTAuth::JWTAuthenticator
 
 	# Class Variables
 	@@secret		= "secret" 			## TO be replaced with the application's secret key
@@ -10,23 +10,37 @@ module JWTAuthenticator
 	@@issuer		= @@domain			# typically the website url
 
 
-	def self.validate_access_request(request)
+	def self.authenticate (request)
+		validated_request = valid_access_request(request)
+
+		if validated_request
+			decoded_token = decode_token(validated_request.access_token)
+		else
+			return nil
+		end
+
+		validated_request.csrf_token == decoded_token.first["csrf_token"] ? decoded_token.first["jti"] : nil
+	rescue
+		nil
+	end
+
+	def self.valid_access_request(request)
 		if request.headers["X-XSRF-TOKEN"].nil?
 			false
 		elsif request.cookies["access-token"].nil?
 			false
 		else
-			true
+			JWTAuth::ValidatedRequest.new(request)
 		end
 	end
 
-	def self.validate_refresh_request(request)
+	def self.valid_refresh_request(request)
 		if request.headers["X-XSRF-TOKEN"].nil?
 			false
 		elsif request.cookies["access-token"].nil? && request.cookies["refresh-token"].nil?
 			false
 		else
-			true
+			JWTAuth::ValidatedRequest.new(request)
 		end
 	end
 
@@ -39,6 +53,8 @@ module JWTAuthenticator
 	end
 
 	def self.encode_token (user, time_now, csrf_token = nil)
+		return nil if time_now < Time.now - 10.seconds
+
 		if csrf_token
 
 			exp_time = time_now + @@exp
