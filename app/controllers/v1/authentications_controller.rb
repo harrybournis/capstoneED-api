@@ -1,20 +1,21 @@
 class V1::AuthenticationsController < ApplicationController
 
-	skip_before_action :authenticate_user
+	skip_before_action :authenticate_user, except: [:validate]
 
-	include JWTAuthenticator
+	include JWTAuth::JWTAuthenticator
 
 
 	# validates the JWT access-token
 	# GET
 	def validate
-		render json: :none, status: JWTAuthenticator.authenticate(request, response) ? :ok : :unauthorized
+		#render json: :none, status: JWTAuthenticator.authenticate(request) ? :ok : :unauthorized
+		render json: :none, status: :ok
 	end
 
 	# creates a new JWT access-token using the refresh-token
 	# POST
 	def refresh
-		render json: :none, status: JWTAuthenticator.refresh(request,response) ? :ok : :unauthorized
+		#render json: :none, status: JWTAuth::JWTAuthenticator.refresh(request,response) ? :ok : :unauthorized
 	end
 
 	# POST
@@ -22,7 +23,12 @@ class V1::AuthenticationsController < ApplicationController
 		# validate user's credentials
 		#
 		##
-		render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
+		@user = User.first
+		if JWTAuth::JWTAuthenticator.sign_in(@user, response, cookies)
+			render json: @user, status: :ok
+		else
+			render json: :none, status: :unprocessable_entity
+		end
 	end
 
 	# POST
@@ -42,12 +48,12 @@ class V1::AuthenticationsController < ApplicationController
 		# # save the user
 		#
 		# # #
-		render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
+		#render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
 	end
 
 	# POST
 	def google
 		# validate user's credentials with oauth2
-		render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
+		#render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
 	end
 end

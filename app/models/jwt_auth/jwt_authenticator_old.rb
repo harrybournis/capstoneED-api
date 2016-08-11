@@ -1,4 +1,4 @@
-module JWTAuthenticator
+module JWTAuthenticatorOld
 
 	# Class Variables
 	@@secret		= "secret" 			## TO be replaced with the application's secret key

@@ -7,7 +7,7 @@ Rails.application.routes.draw do
 			# Authentication Routes
 			post 'authentications_controller/google'
 			post 'authentications_controller/facebook'
-			post 'authentications_controller/email'
+			post 'auth/email', to: 'authentications#email'
 		end
 	end
 

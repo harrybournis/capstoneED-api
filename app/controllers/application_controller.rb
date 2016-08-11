@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
-	include JWTAuthenticator
+	include ActionController::Cookies
+	include JWTAuth::JWTAuthenticator
 
 	before_action :authenticate_user
 
@@ -7,12 +8,7 @@ class ApplicationController < ActionController::API
 protected
 
 	def authenticate_user
-		# unless JWTAuthenticator2.authenticate(request, response)
-		# 	render json: :none, status: :unauthorized
-		# end
-		unless JWTAuthenticator2.validate_request(request).maimou
-			render json: :none, status: :unauthorized
-		end
+		render json: :none, status: :unauthorized unless JWTAuth::JWTAuthenticator.authenticate(request)
 	end
 
 end
