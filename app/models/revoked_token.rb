@@ -2,8 +2,8 @@ class RevokedToken < ApplicationRecord
 
 	belongs_to :user
 
-	validates_presence_of :user, :jti, :exp
-	validates_uniqueness_of :jti, :user
+	validates_presence_of :user, :jti, :exp, :device
+	#validates_uniqueness_of :device
 	validate :jti_equal_to_users_uid, if: :user
 
 

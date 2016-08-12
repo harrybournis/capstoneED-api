@@ -32,7 +32,7 @@ module JWTAuth::JWTAuthenticator
 		refresh_exp_time	  = time_now + @@refresh_exp
 
 		access_token_payload  = { exp: exp_time.to_i, jti: user.uid, iss: @@issuer, csrf_token: csrf_token }
-		refresh_token_payload = { exp: refresh_exp_time.to_i, iss: @@issuer, jti: user.uid, device_id: SecureRandom.base64(32) }
+		refresh_token_payload = { exp: refresh_exp_time.to_i, iss: @@issuer, jti: user.uid, device: SecureRandom.base64(32) }
 
 		access_token  = JWT.encode(access_token_payload, @@secret, @@algorithm)
 		refresh_token = JWT.encode(refresh_token_payload, @@secret, @@algorithm)
