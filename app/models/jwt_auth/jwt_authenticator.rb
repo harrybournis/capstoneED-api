@@ -13,11 +13,7 @@ module JWTAuth::JWTAuthenticator
 	def self.authenticate (request)
 		validated_request = valid_access_request(request)
 
-		if validated_request
-			decoded_token = decode_token(validated_request.access_token)
-		else
-			return nil
-		end
+		decoded_token = decode_token(validated_request.access_token)
 
 		validated_request.csrf_token == decoded_token.first["csrf_token"] ? decoded_token.first["jti"] : nil
 	rescue
@@ -33,7 +29,7 @@ module JWTAuth::JWTAuthenticator
 		refresh_exp_time	  = time_now + @@refresh_exp
 
 		access_token_payload  = { exp: exp_time.to_i, jti: user.uid, iss: @@issuer, csrf_token: csrf_token }
-		refresh_token_payload = { exp: refresh_exp_time.to_i, iss: @@issuer, jti: user.uid, device: device }
+		refresh_token_payload = { exp: refresh_exp_time.to_i, iss: @@issuer, device: device }
 
 		access_token  = JWT.encode(access_token_payload, @@secret, @@algorithm)
 		refresh_token = JWT.encode(refresh_token_payload, @@secret, @@algorithm)
@@ -42,11 +38,22 @@ module JWTAuth::JWTAuthenticator
 			response.headers["csrf_token"] = csrf_token
 			cookies["access-token"] = { value: access_token, expires: exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
 			cookies["refresh-token"] = { value: refresh_token, expires: refresh_exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
-			user.active_tokens << ActiveToken.new(jti: user.uid, exp: refresh_exp_time, device: device)
+			user.active_tokens << ActiveToken.new(exp: refresh_exp_time, device: device)
 			return true
 		end
 
 		return false
+	end
+
+
+	def self.refresh (request, response, cookies)
+		validated_request = valid_refresh_request(request)
+
+		decoded_token = decode_token(validated_request.refresh_token)
+
+		ValidToken.select('exp').where('device = ? and ')
+	rescue
+		nil
 	end
 
 
@@ -63,7 +70,7 @@ module JWTAuth::JWTAuthenticator
 	def self.valid_refresh_request(request)
 		if request.headers["X-XSRF-TOKEN"].nil?
 			false
-		elsif request.cookies["access-token"].nil? && request.cookies["refresh-token"].nil?
+		elsif request.cookies["refresh-token"].nil?
 			false
 		else
 			JWTAuth::ValidatedRequest.new(request)
@@ -90,7 +97,7 @@ module JWTAuth::JWTAuthenticator
 
 		else
 			refresh_exp_time = time_now + @@refresh_exp
-			refresh_token_payload = { exp: refresh_exp_time.to_i, jti: user.uid, iss: @@issuer }
+			refresh_token_payload = { exp: refresh_exp_time.to_i, iss: @@issuer }
 
 			JWT.encode(refresh_token_payload, @@secret, @@algorithm)
 		end

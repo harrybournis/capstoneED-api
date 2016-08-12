@@ -42,19 +42,17 @@ module JWTAuth
 
 			describe 'refresh' do
 
-				context 'token is not revoked' do
-					it 'no revoked tokens exist for the user in the database'
-					it 'revoked token is for the current device of the user'
-					it "revoked token's expiration date is smaller than the refresh tokens'"
-					it 'response headers should contain two new cookies with tokens'
+				context 'refresh token is not revoked' do
+					it "active token's expiration date is smaller than the refresh tokens'"
+					it 'response should contain two new cookies with tokens'
 					it 'response headers should contain a new csrf token'
-					it 'returns response with two new cookies with tokens'
-					it 'returns response with a new csrf token in the headers'
+					it 'should update the active_token in the database with the new expiration date'
 				end
 
-				context 'token is revoked' do
+				context 'refresh token is revoked' do
 					it 'revoked token has the same device id'
 					it "revoked token's expiration date is bigger than the refresh tokens' "
+					it 'should not update the active_token in the database for this device'
 					it 'returns nil'
 				end
 			end
@@ -95,21 +93,23 @@ module JWTAuth
 			end
 
 			describe 'refresh' do
+				let(:response) { MockResponse.new }
+				let(:cookies) { {} }
 
-				# it 'should return nil if X-XSRF-TOKEN is missing' do
-				# 	request.headers.delete("X-XSRF-TOKEN")
-				# 	expect(JWTAuthenticator.refresh(request, response)).to be_nil
-				# end
+				it 'should return nil if X-XSRF-TOKEN is missing' do
+					request.headers.delete("X-XSRF-TOKEN")
+					expect(JWTAuthenticator.refresh(request, response, cookies)).to be_nil
+				end
 
-				# it 'should return nil if access-token is missing' do
-				# 	request.cookies.delete("access-token")
-				# 	expect(JWTAuthenticator.refresh(request, response)).to be_nil
-				# end
+				it 'should return nil if access-token is missing' do
+					request.cookies.delete("access-token")
+					expect(JWTAuthenticator.refresh(request, response, cookies)).to be_nil
+				end
 
-				# it 'should return nil if the refresh-token is missing' do
-				# 	request.cookies.delete("refresh-token")
-				# 	expect(JWTAuthenticator.refresh(request, response)).to be_nil
-				# end
+				it 'should return nil if the refresh-token is missing' do
+					request.cookies.delete("refresh-token")
+					expect(JWTAuthenticator.refresh(request, response, cookies)).to be_nil
+				end
 			end
 		end
 

@@ -45,8 +45,8 @@ RSpec.describe User, type: :model do
 				user = FactoryGirl.create(:user)
 				time_old1 = Time.now - 1.hour
 				time_old2 = Time.now - 10.minutes
-				token1 = FactoryGirl.create(:active_token, jti: user.uid, exp: time_old1, user: user, device: SecureRandom.base64(32))
-				token2 = FactoryGirl.create(:active_token, jti: user.uid, exp: time_old2, user: user, device: SecureRandom.base64(32))
+				token1 = FactoryGirl.create(:active_token, exp: time_old1, user: user, device: SecureRandom.base64(32))
+				token2 = FactoryGirl.create(:active_token, exp: time_old2, user: user, device: SecureRandom.base64(32))
 
 				expect(token1).to be_truthy
 				expect(token2).to be_truthy
@@ -61,21 +61,5 @@ RSpec.describe User, type: :model do
 				expect(user.active_tokens[0].exp).to eq(user.active_tokens[1].exp)
 			end
 		end
-
-		# it "should create a new entry when it doesn't have one" do
-		# 	user = FactoryGirl.create(:user)
-
-		# 	user.revoke_all_tokens
-		# 	expect(user.active_token).to be_truthy
-		# 	expect(ActiveToken.last.jti).to eq(user.uid)
-		#
-
-		# it 'should update the entry when it already has a active_token' do
-		# 	user = FactoryGirl.create(:user, uid: "uid")
-		# 	active_token = FactoryGirl.create(:active_token, user: user, jti: "uid")
-
-		# 	user.revoke_all_tokens
-		# 	expect(user.active_token.id).to eq(active_token.id)
-		#
 	end
 end
