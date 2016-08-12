@@ -30,14 +30,36 @@ RSpec.describe User, type: :model do
 	describe 'revoke tokens' do
 
 		context 'when no revoked token exist in the database' do
-			it 'should create a new entry with the current Time as expiration' do
+			it 'no new tokes should be created' do
 				user = FactoryGirl.create(:user)
+				expect(user.active_tokens.count).to eq(0)
 
 				user.revoke_all_tokens
-				expect(user.active_tokens.count).to eq(1)
-				expect(ActiveToken.last.jti).to eq(user.uid)
+				expect(user.active_tokens.count).to eq(0)
+				expect(ActiveToken.last.jti).to_not eq(user.uid) if ActiveToken.last
 			end
+		end
 
+		context 'when revoked token exist' do
+			it 'should update all of them to the new expiry date' do
+				user = FactoryGirl.create(:user)
+				time_old1 = Time.now - 1.hour
+				time_old2 = Time.now - 10.minutes
+				token1 = FactoryGirl.create(:active_token, jti: user.uid, exp: time_old1, user: user, device: SecureRandom.base64(32))
+				token2 = FactoryGirl.create(:active_token, jti: user.uid, exp: time_old2, user: user, device: SecureRandom.base64(32))
+
+				expect(token1).to be_truthy
+				expect(token2).to be_truthy
+				expect(user.active_tokens.count).to eq(2)
+
+				user.revoke_all_tokens
+
+				user.active_tokens.each do |t|
+					expect(t.exp).to be > time_old1
+					expect(t.exp).to be > time_old2
+				end
+				expect(user.active_tokens[0].exp).to eq(user.active_tokens[1].exp)
+			end
 		end
 
 		# it "should create a new entry when it doesn't have one" do

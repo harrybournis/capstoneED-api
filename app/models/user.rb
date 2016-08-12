@@ -13,15 +13,13 @@ class User < ApplicationRecord
 	# a revoked_token entry with with the current time + the expiration time
 	# for a refresh token.
 	def revoke_all_tokens
-		# token_expiration = DateTime.now + JWTAuth::JWTAuthenticator.refresh_exp
-		# token =
-		# 		if self.revoked_token
-		# 			self.revoked_token.exp = token_expiration
-		# 			self.revoked_token
-		# 		else
-		# 			 RevokedToken.new(jti: self.uid, exp: token_expiration, user: self)
-		# 		end
+		token_expiration = DateTime.now + JWTAuth::JWTAuthenticator.refresh_exp
+		active_tokens = self.active_tokens
 
-		# token.save
+		return if active_tokens.blank?
+
+		ActiveToken.transaction do
+			active_tokens.each { |token| token.update(exp: token_expiration) }
+		end
 	end
 end
