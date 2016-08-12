@@ -1,6 +1,6 @@
 class User < ApplicationRecord
 
-	has_one :revoked_token
+	has_many :active_tokens
 
 	validates_presence_of :first_name, :last_name, :user_name, :email, :uid
 	validates_uniqueness_of :user_name, :email, :uid
@@ -13,15 +13,15 @@ class User < ApplicationRecord
 	# a revoked_token entry with with the current time + the expiration time
 	# for a refresh token.
 	def revoke_all_tokens
-		token_expiration = DateTime.now + JWTAuth::JWTAuthenticator.refresh_exp
-		token =
-				if self.revoked_token
-					self.revoked_token.exp = token_expiration
-					self.revoked_token
-				else
-					 RevokedToken.new(jti: self.uid, exp: token_expiration, user: self)
-				end
+		# token_expiration = DateTime.now + JWTAuth::JWTAuthenticator.refresh_exp
+		# token =
+		# 		if self.revoked_token
+		# 			self.revoked_token.exp = token_expiration
+		# 			self.revoked_token
+		# 		else
+		# 			 RevokedToken.new(jti: self.uid, exp: token_expiration, user: self)
+		# 		end
 
-		token.save
+		# token.save
 	end
 end

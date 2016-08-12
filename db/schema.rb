@@ -10,19 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160812122742) do
+ActiveRecord::Schema.define(version: 20160812132229) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "revoked_tokens", force: :cascade do |t|
+  create_table "active_tokens", force: :cascade do |t|
     t.string   "jti"
     t.datetime "exp"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer  "user_id"
     t.string   "device"
-    t.index ["jti"], name: "index_revoked_tokens_on_jti", using: :btree
+    t.index ["jti"], name: "index_active_tokens_on_jti", using: :btree
   end
 
   create_table "users", force: :cascade do |t|

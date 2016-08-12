@@ -27,12 +27,13 @@ module JWTAuth::JWTAuthenticator
 
 	def self.sign_in (user, response, cookies)
 		csrf_token			  = SecureRandom.base64(32)
+		device				  = SecureRandom.base64(32)
 		time_now 			  = Time.now
 		exp_time 			  = time_now + @@exp
 		refresh_exp_time	  = time_now + @@refresh_exp
 
 		access_token_payload  = { exp: exp_time.to_i, jti: user.uid, iss: @@issuer, csrf_token: csrf_token }
-		refresh_token_payload = { exp: refresh_exp_time.to_i, iss: @@issuer, jti: user.uid, device: SecureRandom.base64(32) }
+		refresh_token_payload = { exp: refresh_exp_time.to_i, iss: @@issuer, jti: user.uid, device: device }
 
 		access_token  = JWT.encode(access_token_payload, @@secret, @@algorithm)
 		refresh_token = JWT.encode(refresh_token_payload, @@secret, @@algorithm)
@@ -41,6 +42,7 @@ module JWTAuth::JWTAuthenticator
 			response.headers["csrf_token"] = csrf_token
 			cookies["access-token"] = { value: access_token, expires: exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
 			cookies["refresh-token"] = { value: refresh_token, expires: refresh_exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
+			user.active_tokens << ActiveToken.new(jti: user.uid, exp: refresh_exp_time, device: device)
 			return true
 		end
 

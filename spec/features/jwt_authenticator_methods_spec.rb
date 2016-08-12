@@ -17,6 +17,15 @@ module JWTAuth
 				expect(cookies["refresh-token"]).to be_truthy
 			end
 
+			it 'creates a active_token database entry with the exp of the new refresh token' do
+				user = FactoryGirl.create(:user)
+				cookies = {}
+				original_active_tokens = user.active_tokens.count
+				expect(JWTAuthenticator.sign_in(user, response, cookies)).to be_truthy
+				expect(ActiveToken.last.user).to eq(user)
+				expect(user.active_tokens.count).to eq(original_active_tokens + 1)
+			end
+
 		end
 
 		context 'valid request' do

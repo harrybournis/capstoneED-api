@@ -84,7 +84,7 @@ module JWTAuth
 		end
 
 		it 'should not accept time older than now' do
-			user = FactoryGirl.create(:user)
+			user = FactoryGirl.build(:user)
 			time = Time.now - 10.minutes
 			token = JWTAuthenticator.encode_token(user, time)
 

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
 
-	it { should have_one(:revoked_token) }
+	it { should have_many(:active_tokens) }
 
 	describe 'validations' do
 		subject(:user) { FactoryGirl.build(:user) }
@@ -29,25 +29,31 @@ RSpec.describe User, type: :model do
 
 	describe 'revoke tokens' do
 
-		it "should create a new entry when it doesn't have one" do
-			user = FactoryGirl.create(:user)
+		context 'when no revoked token exist in the database' do
+			it 'should create a new entry with the current Time as expiration' do
+				user = FactoryGirl.create(:user)
 
-			user.revoke_all_tokens
-			expect(user.revoked_token).to be_truthy
-			expect(RevokedToken.last.jti).to eq(user.uid)
+				user.revoke_all_tokens
+				expect(user.active_tokens.count).to eq(1)
+				expect(ActiveToken.last.jti).to eq(user.uid)
+			end
+
 		end
 
-		it 'should update the entry when it already has a revoked_token' do
-			user = FactoryGirl.create(:user, uid: "uid")
-			revoked_token = FactoryGirl.create(:revoked_token, user: user, jti: "uid")
+		# it "should create a new entry when it doesn't have one" do
+		# 	user = FactoryGirl.create(:user)
 
-			user.revoke_all_tokens
-			expect(user.revoked_token.id).to eq(revoked_token.id)
-		end
+		# 	user.revoke_all_tokens
+		# 	expect(user.active_token).to be_truthy
+		# 	expect(ActiveToken.last.jti).to eq(user.uid)
+		#
 
+		# it 'should update the entry when it already has a active_token' do
+		# 	user = FactoryGirl.create(:user, uid: "uid")
+		# 	active_token = FactoryGirl.create(:active_token, user: user, jti: "uid")
 
-
+		# 	user.revoke_all_tokens
+		# 	expect(user.active_token.id).to eq(active_token.id)
+		#
 	end
-
-
 end
