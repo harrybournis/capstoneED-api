@@ -5,77 +5,111 @@ module JWTAuth::JWTAuthenticator
 	@@algorithm 	= "HS256"			# available algorithms: https://github.com/jwt/ruby-jwt
 	@@exp			= 10.minutes		# expiration time for access-token
 	@@refresh_exp	= 1.week			# expiration time for refresh-token
-	@@leeway		= 1.week			# In SECONDS. grace period after a token has expired.
-	@@domain  		= "ldocalhost:3000"	# To be added to the cookies
-	@@issuer		= @@domain			# typically the website url
+	@@leeway		= 1.week			# grace period after a token has expired.
+	@@domain  		= "localhost:3000"	# to be added to the cookies
+	@@issuer		= @@domain			# typically the website url. added to JWT tokens.
 
 
+	###
+	# Called before an authenticated endpoint in before_action in application_controller.
+	# validates the access-token in the cookies, and compares the csrf_token value
+	# in the access-token with the X-XSRF-TOKEN in the headers.
+	#
+	# returns boolean
+	#
 	def self.authenticate (request)
-		validated_request = valid_access_request(request)
+		return false unless validated_request = valid_access_request(request)
 
 		decoded_token = decode_token(validated_request.access_token)
 
 		validated_request.csrf_token == decoded_token.first["csrf_token"] ? decoded_token.first["jti"] : nil
 	rescue
-		nil
+		false
 	end
 
-
+	###
+	# Called after successful authentication either by email or oauth2.
+	# Creates new access-token cookie, and new refresh-token cookie.
+	# Also creates a csrf token which is added both to the payload of the
+	# access-token, and the headers of the response, for later comparison.
+	#
+	# returns boolean
+	#
 	def self.sign_in (user, response, cookies)
-		csrf_token			  = SecureRandom.base64(32)
-		device				  = SecureRandom.base64(32)
-		time_now 			  = Time.now
-		exp_time 			  = time_now + @@exp
-		refresh_exp_time	  = time_now + @@refresh_exp
+		new_device = SecureRandom.base64(32)
+		time_now   = Time.now
 
-		access_token_payload  = { exp: exp_time.to_i, jti: user.uid, iss: @@issuer, csrf_token: csrf_token }
-		refresh_token_payload = { exp: refresh_exp_time.to_i, iss: @@issuer, device: device }
-
-		access_token  = JWT.encode(access_token_payload, @@secret, @@algorithm)
-		refresh_token = JWT.encode(refresh_token_payload, @@secret, @@algorithm)
-
-		if access_token && refresh_token
-			response.headers["csrf_token"] = csrf_token
-			cookies["access-token"] = { value: access_token, expires: exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
-			cookies["refresh-token"] = { value: refresh_token, expires: refresh_exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
-			user.active_tokens << ActiveToken.new(exp: refresh_exp_time, device: device)
+		if create_new_tokens(user, response, cookies, new_device, time_now)
+			user.active_tokens << ActiveToken.new(exp: time_now + @@refresh_exp, device: new_device)
 			return true
 		end
 
-		return false
+		false
 	end
 
-
-	def self.refresh (request, response, cookies)
-		validated_request = valid_refresh_request(request)
+	###
+	# Called from the /refresh route. Receives a refresh-token in the cookies.
+	# creates a new access-token cookie, a new refresh token cookie, and a csrf token which
+	# is added both to the payload of the access-token, and the headers of
+	# the response, for later comparison.
+	#
+	# returns boolean
+	#
+	def self.refresh (request, response,  cookies)
+		return false unless validated_request = valid_refresh_request(request)
 
 		decoded_token = decode_token(validated_request.refresh_token)
 
-		ValidToken.select('exp').where('device = ? and ')
+		valid_token = ActiveToken.find_by_device(decoded_token.first['device'])
+
+		if valid_token && decoded_token.first['exp'] > valid_token.exp.to_i
+			device = valid_token.device
+			time_now = DateTime.now
+
+			if create_new_tokens(valid_token.user, response, cookies, device, time_now)
+				return true if valid_token.update(exp: time_now + @@refresh_exp)
+			end
+		end
+		false
 	rescue
-		nil
+		false
 	end
 
 
-	def self.valid_access_request(request)
-		if request.headers["X-XSRF-TOKEN"].nil?
-			false
-		elsif request.cookies["access-token"].nil?
-			false
+	#### PRIVATE METHODS
+	def self.create_new_tokens (user, response, cookies, device, time_now)
+		csrf_token			  = SecureRandom.base64(32)
+		exp_time 			  = time_now + @@exp
+		refresh_exp_time	  = time_now + @@refresh_exp
+
+		access_token 		  = encode_token(user, time_now, csrf_token)
+		refresh_token		  = encode_token(user, time_now, nil, device)
+
+		return false unless access_token && refresh_token
+
+		response.headers["csrf_token"] = csrf_token
+		cookies["access-token"] = { value: access_token, expires: exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
+		cookies["refresh-token"] = { value: refresh_token, expires: refresh_exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
+		true
+	end
+
+
+	def self.encode_token (user, time_now, csrf_token = nil, device_id = nil)
+		return "skata" if csrf_token.nil? && device_id.nil?
+		if csrf_token
+			exp_time = time_now + @@exp
+			access_token_payload = { exp: exp_time.to_i, jti: user.uid, iss: @@issuer, csrf_token: csrf_token }
+
+			JWT.encode(access_token_payload, @@secret, @@algorithm)
+
 		else
-			JWTAuth::ValidatedRequest.new(request)
+			refresh_exp_time = time_now + @@refresh_exp
+			refresh_token_payload = { exp: refresh_exp_time.to_i, iss: @@issuer, device: device_id }
+
+			JWT.encode(refresh_token_payload, @@secret, @@algorithm)
 		end
 	end
 
-	def self.valid_refresh_request(request)
-		if request.headers["X-XSRF-TOKEN"].nil?
-			false
-		elsif request.cookies["refresh-token"].nil?
-			false
-		else
-			JWTAuth::ValidatedRequest.new(request)
-		end
-	end
 
 	def self.decode_token (token)
 		JWT.decode(token, @@secret, true, { algorithm: @@algorithm,
@@ -85,26 +119,26 @@ module JWTAuth::JWTAuthenticator
 																	})
 	end
 
-	def self.encode_token (user, time_now, csrf_token = nil)
-		return nil if time_now < Time.now - 10.seconds
 
-		if csrf_token
-
-			exp_time = time_now + @@exp
-			access_token_payload = { exp: exp_time.to_i, jti: user.uid, iss: @@issuer, csrf_token: csrf_token }
-
-			JWT.encode(access_token_payload, @@secret, @@algorithm)
-
+	def self.valid_access_request(request)
+		if request.headers["X-XSRF-TOKEN"].nil?
+			false
+		elsif request.cookies["access-token"].nil?
+			false
 		else
-			refresh_exp_time = time_now + @@refresh_exp
-			refresh_token_payload = { exp: refresh_exp_time.to_i, iss: @@issuer }
-
-			JWT.encode(refresh_token_payload, @@secret, @@algorithm)
+			return JWTAuth::ValidatedRequest.new(request)
 		end
 	end
 
-	def self.refresh_exp
-		@@refresh_exp
+
+	def self.valid_refresh_request(request)
+		if request.cookies["refresh-token"].nil?
+			false
+		else
+			JWTAuth::ValidatedRequest.new(request)
+		end
 	end
 
+
+	def self.refresh_exp ; @@refresh_exp end
 end

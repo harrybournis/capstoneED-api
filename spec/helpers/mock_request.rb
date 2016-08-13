@@ -1,23 +1,34 @@
 class MockRequest
 
-	include JWTAuth::JWTAuthenticator
+	#include JWTAuth::JWTAuthenticator
 
 	attr_reader :headers, :cookies, :body
 
-	def initialize(valid, user = nil, args = nil)
-		valid ? valid_request(user, args) : invalid_request_hardcoded(args)
+	def initialize(valid, user = nil, device = nil)
+		headers = cookies = body = nil
+		valid ? valid_request(user, device) : invalid_request_hardcoded
 	end
 
 
 private
 
-	def valid_request(set_user = nil, headers=nil, cookies=nil, body=nil)
+	def valid_request(set_user = nil, set_device = nil)
 		csrf = "NIBzka/3Plj8yg30+uYnyEBGunKPMhvG8ThF7EJxrBs="
 		time = Time.now
-		user = set_user || FactoryGirl.build(:user)
+		if set_user
+			user = set_user
+		else
+			user = FactoryGirl.create(:user)
+		end
 
-		access_token  = JWTAuth::JWTAuthenticator.encode_token(user, time, csrf)
-		refresh_token = JWTAuth::JWTAuthenticator.encode_token(user, time)
+		if set_device
+			device = set_device
+		else
+			device = SecureRandom.base64(32)
+		end
+
+		access_token  = JWTAuth::JWTAuthenticator.encode_token(user, time, csrf, nil)
+		refresh_token = JWTAuth::JWTAuthenticator.encode_token(user, time, nil, device)
 
 		@headers = { "X-XSRF-TOKEN"  => csrf }
 		@cookies = { "access-token"  => access_token, #"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjMwNDg2MjA1MzYsImp0aSI6Imk3c3FlRVNFREpIVVNCWmQ0SEpONDJvMSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiY3NyZl90b2tlbiI6Ik5JQnprYS8zUGxqOHlnMzArdVlueUVCR3VuS1BNaHZHOFRoRjdFSnhyQnM9In0.HHs3KKfsxkxdcSzeafU1FiXXMfeiomJehdfK9vlKTHQ",
@@ -39,7 +50,7 @@ private
 		@body.merge!(body) 		 if body
 	end
 
-	def invalid_request_hardcoded(headers=nil, cookies=nil, body=nil)
+	def invalid_request_hardcoded
 		@headers = { "X-XSRF-TOKEN"  => "NIBzka/3Plj8yg30+uYnyEBGunKPMhvG8ThF7EJxrBs=" }
 		@cookies = { "access-token"  => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjMwNDg2MjA1MzYsImp0aSI6Imk3c3FlRVNFREpIVVNCWmQ0SEpONDJvMSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiY3NyZl90b2tlbiI6Ik5JQnprYS8zUGxqOHlnMzArdVlueUVCR3VuS1BNaHZHOFRoRjdFSnhkckJzPSJ9.P01mbi5sMnrRr17u79srYfEgkO66eYEK8iFc0n3vIrY",
 					 "refresh-token" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjMwODAxNTY4MTYsImp0aSI6Imk3c3FlRVNFREpIVVNCWmQ0SEpONDJvMSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.COOnUxFFyiWUl6DNbUloGNllh8GFeD8OKgNhQr7HCtA" }

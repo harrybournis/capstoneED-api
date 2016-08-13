@@ -74,44 +74,44 @@ module JWTAuthenticatorOld
 	#
 	# returns boolean
 	#
-	def self.refresh (request, response)
-		begin
-			if validate_access_token_csrf(request, response)
-				decoded_refresh_token = decode_token(request.cookies["refresh-token"])
-			else
-				return false
-			end
+	# def self.refresh (request, response)
+	# 	begin
+	# 		if validate_access_token_csrf(request, response)
+	# 			decoded_refresh_token = decode_token(request.cookies["refresh-token"])
+	# 		else
+	# 			return false
+	# 		end
 
-		rescue JWT::InvalidIssuerError => e
-			Rails.logger.info e.message
-			return false
-		rescue JWT::ExpiredSignature => e
-			Rails.logger.info e.message
-			# if the exception is Expired Signature keep executing
-		rescue => e
-			Rails.logger.info e.message
-			return false
-		end
+	# 	rescue JWT::InvalidIssuerError => e
+	# 		Rails.logger.info e.message
+	# 		return false
+	# 	rescue JWT::ExpiredSignature => e
+	# 		Rails.logger.info e.message
+	# 		# if the exception is Expired Signature keep executing
+	# 	rescue => e
+	# 		Rails.logger.info e.message
+	# 		return false
+	# 	end
 
-		# generate new access-token
-		csrf_token			  = SecureRandom.base64(32)
-		exp_time 			  = Time.now + @@exp
+	# 	# generate new access-token
+	# 	csrf_token			  = SecureRandom.base64(32)
+	# 	exp_time 			  = Time.now + @@exp
 
-		access_token_payload = { exp: exp_time,
-								 jti: decoded_refresh_token.first["jti"],
-								 iss: @@issuer,
-								 csrf_token: csrf_token }
+	# 	access_token_payload = { exp: exp_time,
+	# 							 jti: decoded_refresh_token.first["jti"],
+	# 							 iss: @@issuer,
+	# 							 csrf_token: csrf_token }
 
-		access_token  = JWT.encode(access_token_payload, @@secret, @@algorithm)
+	# 	access_token  = JWT.encode(access_token_payload, @@secret, @@algorithm)
 
-		if access_token
-			response.headers["csrf_token"] = csrf_token
-			response.headers["Set-Cookie"] = "access-token=#{access_token}; Domain=#{@@issuer}; Expires=#{exp_time.to_datetime}; Secure; HttpOnly; SameSite=Strict"
-			return true
-		end
+	# 	if access_token
+	# 		response.headers["csrf_token"] = csrf_token
+	# 		response.headers["Set-Cookie"] = "access-token=#{access_token}; Domain=#{@@issuer}; Expires=#{exp_time.to_datetime}; Secure; HttpOnly; SameSite=Strict"
+	# 		return true
+	# 	end
 
-		return false
-	end
+	# 	return false
+	# end
 
 
 # private methods
