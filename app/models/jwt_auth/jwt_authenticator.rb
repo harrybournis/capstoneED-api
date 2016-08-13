@@ -40,8 +40,14 @@ module JWTAuth::JWTAuthenticator
 		time_now   = Time.now
 
 		if create_new_tokens(user, response, cookies, new_device, time_now)
-			user.active_tokens << ActiveToken.new(exp: time_now + @@refresh_exp, device: new_device)
-			return true
+			new_token = ActiveToken.new(exp: time_now + @@refresh_exp, device: new_device)
+
+			if new_token.valid?
+				user.active_tokens << new_token
+				return true
+			else
+				return false
+			end
 		end
 
 		false
