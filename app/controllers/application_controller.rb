@@ -1,13 +1,14 @@
 class ApplicationController < ActionController::API
-	before_action :configure_permitted_parameters, if: :devise_controller?
+	include ActionController::Cookies
+	include JWTAuth::JWTAuthenticator
 
-	include DeviseTokenAuth::Concerns::SetUserByToken
+	before_action :authenticate_user
 
 
 protected
 
-	def configure_permitted_parameters
-		devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :is_admin, :confirm_success_url, :config_name, :registration])
-		devise_parameter_sanitizer.permit(:account_update, keys: [:first_name, :last_name, :is_admin])
+	def authenticate_user
+		render json: :none, status: :unauthorized unless JWTAuth::JWTAuthenticator.authenticate(request)
 	end
+
 end

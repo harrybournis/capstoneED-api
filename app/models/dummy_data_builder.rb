@@ -1,13 +1,12 @@
-=begin #######
-	Generates random resources using the Faker gem.
 
-	Usage:
-		DummyDataBuilder.<resourcename>(<optional: number of resources>)
-
-	Returns:
-		Object 	 if number of resources is 1
-		[] Array if number of resources is > 1
-=end   #######
+# Generates random resources using the Faker gem.
+#
+# Usage:
+# 	DummyDataBuilder.<resourcename>(<optional: number of resources>)
+#
+# Returns:
+# 	Object 	 if number of resources is 1
+# 	[] Array if number of resources is > 1
 
 class DummyDataBuilder
 
@@ -15,16 +14,12 @@ class DummyDataBuilder
 		results = []
 
 		number.times do
-			password = Faker::Internet.password(8)
-
 			user = User.new(
 				first_name: Faker::Name.first_name,
 				last_name: Faker::Name.last_name,
-				is_admin: is_admin,
-				nickname: Faker::Internet.user_name,
+				user_name: Faker::Internet.user_name,
 				email: Faker::Internet.free_email,
-				password: password,
-				password_confirmation: password)
+				uid: SecureRandom.base58(24))
 
 			if user.save
 				Rails.logger.info "\n Randomly Created User: #{user.inspect} \n"

@@ -2,13 +2,17 @@ Rails.application.routes.draw do
 
 	constraints subdomain: "api" do
 		namespace :v1 do
-			mount_devise_token_auth_for 'User', at: 'auth'
-
 			resources :users
+
+			# Authentication Routes
+			post 'authentications_controller/google'
+			post 'authentications_controller/facebook'
+			post 'auth/email', to: 'authentications#email'
 		end
 	end
-	get 'redirect', to: redirect('/redirectopoulos.html')
+
+	## To be removed
 	post 'auth/facebook', to: 'authentications#facebook'
 	post 'omniauth/facebook', to: 'authentications#facebook'
-
+	##
 end
