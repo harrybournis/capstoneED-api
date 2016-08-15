@@ -36,8 +36,13 @@ module JWTAuth::JWTAuthenticator
 	# returns boolean
 	#
 	def self.sign_in (user, response, cookies)
-		new_device = SecureRandom.base64(32)
-		time_now   = Time.now
+		new_device = nil
+		loop do
+			new_device = SecureRandom.base64(32)
+			break unless ActiveToken.where(device: new_device).any?
+		end
+
+		time_now = Time.now
 
 		if create_new_tokens(user, response, cookies, new_device, time_now)
 			new_token = ActiveToken.new(exp: time_now + @@refresh_exp, device: new_device, user: user)
