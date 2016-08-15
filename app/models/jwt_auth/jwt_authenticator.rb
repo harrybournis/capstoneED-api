@@ -101,7 +101,6 @@ module JWTAuth::JWTAuthenticator
 
 
 	def self.encode_token (user, time_now, csrf_token = nil, device_id = nil)
-		return "skata" if csrf_token.nil? && device_id.nil?
 		if csrf_token
 			exp_time = time_now + @@exp
 			access_token_payload = { exp: exp_time.to_i, jti: user.uid, iss: @@issuer, csrf_token: csrf_token }

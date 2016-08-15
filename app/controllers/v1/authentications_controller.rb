@@ -8,8 +8,7 @@ class V1::AuthenticationsController < ApplicationController
 	# validates the JWT access-token
 	# GET
 	def validate
-		#render json: :none, status: JWTAuthenticator.authenticate(request) ? :ok : :unauthorized
-		render json: :none, status: :ok
+		render json: request.headers['Include'].present? ? current_user! : :none, status: :ok
 	end
 
 	# creates a new JWT access-token using the refresh-token
