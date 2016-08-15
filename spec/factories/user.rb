@@ -12,5 +12,6 @@ FactoryGirl.define do
   	user_name 	{Faker::Internet.user_name}
   	email 		{Faker::Internet.free_email}
   	uid 		{SecureRandom.base64(32)}
+    provider { 'test' }
   end
 end

@@ -2,11 +2,11 @@ class ApplicationController < ActionController::API
 	include ActionController::Cookies
 	include JWTAuth::JWTAuthenticator
 
-	before_action :authenticate_user
+	before_action :authenticate_user_jwt
 
 protected
 
-	def authenticate_user
+	def authenticate_user_jwt
 		if user_uid = JWTAuth::JWTAuthenticator.authenticate(request)
 			@current = JWTAuth::CurrentUser.new(user_uid)
  		else

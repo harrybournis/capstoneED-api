@@ -1,6 +1,6 @@
 class V1::AuthenticationsController < ApplicationController
 
-	skip_before_action :authenticate_user, except: [:validate]
+	skip_before_action :authenticate_user_jwt, except: [:validate]
 
 	include JWTAuth::JWTAuthenticator
 
