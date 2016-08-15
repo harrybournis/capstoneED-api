@@ -40,7 +40,7 @@ module JWTAuth::JWTAuthenticator
 		time_now   = Time.now
 
 		if create_new_tokens(user, response, cookies, new_device, time_now)
-			new_token = ActiveToken.new(exp: time_now + @@refresh_exp, device: new_device)
+			new_token = ActiveToken.new(exp: time_now + @@refresh_exp, device: new_device, user: user)
 
 			if new_token.valid?
 				user.active_tokens << new_token
@@ -101,7 +101,6 @@ module JWTAuth::JWTAuthenticator
 
 
 	def self.encode_token (user, time_now, csrf_token = nil, device_id = nil)
-		return "skata" if csrf_token.nil? && device_id.nil?
 		if csrf_token
 			exp_time = time_now + @@exp
 			access_token_payload = { exp: exp_time.to_i, jti: user.uid, iss: @@issuer, csrf_token: csrf_token }

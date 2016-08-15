@@ -32,8 +32,10 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
   gem 'rspec-rails', '~> 3.5', '>= 3.5.1'
+  gem 'rails-controller-testing', '~> 1.0'
   gem 'spring-commands-rspec', '~> 1.0', '>= 1.0.4'
   gem 'factory_girl_rails', '~> 4.7'
+  gem 'benchmark-ips', '~> 2.7', '>= 2.7.1'
 end
 
 group :development do
@@ -52,6 +54,8 @@ end
 group :test do
   gem 'shoulda-matchers', '~> 3.1', '>= 3.1.1'
   gem 'vcr', '~> 3.0', '>= 3.0.3'
+  gem 'db-query-matchers', '~> 0.6.0'
+  gem 'pry-byebug', '~> 3.4'
   #gem 'airborne', '~> 0.2.6'
 end
 

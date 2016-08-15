@@ -1,13 +1,11 @@
 Rails.application.routes.draw do
 
 	constraints subdomain: "api" do
-		namespace :v1 do
+		namespace :v1, constraints: { format: 'json' } do
 			resources :users
 
 			# Authentication Routes
-			post 'authentications_controller/google'
-			post 'authentications_controller/facebook'
-			post 'auth/email', to: 'authentications#email'
+			get 'validate', to: 'authentications#validate'
 		end
 	end
 
