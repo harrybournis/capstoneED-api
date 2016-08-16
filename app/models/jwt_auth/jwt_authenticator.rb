@@ -1,12 +1,12 @@
 module JWTAuth::JWTAuthenticator
 
 	# Class Variables
-	@@secret		= "secret" 			## TO be replaced with the application's secret key
-	@@algorithm 	= "HS256"			# available algorithms: https://github.com/jwt/ruby-jwt
+	@@secret		= 'secret' 			## TO be replaced with the application's secret key
+	@@algorithm 	= 'HS256'			# available algorithms: https://github.com/jwt/ruby-jwt
 	@@exp			= 10.minutes		# expiration time for access-token
 	@@refresh_exp	= 1.week			# expiration time for refresh-token
 	@@leeway		= 1.week			# grace period after a token has expired.
-	@@domain  		= "localhost:3000"	# to be added to the cookies
+	@@domain  		= 'localhost:3000'	# to be added to the cookies
 	@@issuer		= @@domain			# typically the website url. added to JWT tokens.
 
 
@@ -22,7 +22,7 @@ module JWTAuth::JWTAuthenticator
 
 		decoded_token = decode_token(validated_request.access_token)
 
-		validated_request.csrf_token == decoded_token.first["csrf_token"] ? decoded_token.first["jti"] : nil
+		validated_request.csrf_token == decoded_token.first['csrf_token'] ? decoded_token.first['jti'] : nil
 	rescue
 		false
 	end
@@ -98,9 +98,9 @@ module JWTAuth::JWTAuthenticator
 
 		return false unless access_token && refresh_token
 
-		response.headers["csrf_token"] = csrf_token
-		cookies["access-token"] = { value: access_token, expires: exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
-		cookies["refresh-token"] = { value: refresh_token, expires: refresh_exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
+		response.headers['XSRF-TOKEN'] = csrf_token
+		cookies['access-token'] = { value: access_token, expires: exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
+		cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
 		true
 	end
 
@@ -131,9 +131,9 @@ module JWTAuth::JWTAuthenticator
 
 
 	def self.valid_access_request(request)
-		if request.headers["X-XSRF-TOKEN"].nil?
+		if request.headers['X-XSRF-TOKEN'].nil?
 			false
-		elsif request.cookies["access-token"].nil?
+		elsif request.cookies['access-token'].nil?
 			false
 		else
 			return JWTAuth::ValidatedRequest.new(request)
@@ -142,7 +142,7 @@ module JWTAuth::JWTAuthenticator
 
 
 	def self.valid_refresh_request(request)
-		if request.cookies["refresh-token"].nil?
+		if request.cookies['refresh-token'].nil?
 			false
 		else
 			JWTAuth::ValidatedRequest.new(request)

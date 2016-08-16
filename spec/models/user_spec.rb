@@ -28,7 +28,7 @@ RSpec.describe User, type: :model do
 			params.delete(:uid)
 			expect(params[:uid]).to be_falsy
 
-			user = User.new(params)
+			user = User.new(params).process_new_record
 			user.valid?
 			expect(user.errors['uid']).to be_empty
 		end

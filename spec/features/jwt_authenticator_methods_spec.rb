@@ -14,7 +14,7 @@ RSpec.describe "JWTAuthenticator method" do
 
 		it 'returns a response with an access token, a refresh token, and a csrf token in the headers' do
 			expect(JWTAuthenticator.sign_in(@user, @response, @cookies)).to be_truthy
-			expect(@response.headers).to include('csrf_token')
+			expect(@response.headers).to include('XSRF-TOKEN')
 			expect(@cookies["access-token"]).to be_truthy
 			expect(@cookies["refresh-token"]).to be_truthy
 		end
@@ -37,7 +37,7 @@ RSpec.describe "JWTAuthenticator method" do
 			new_device = SecureRandom.base64(32)
 			time_now   = Time.now
 			expect(JWTAuthenticator.create_new_tokens(user, response, cookies, new_device, time_now)).to be_truthy
-			expect(response.headers).to include('csrf_token')
+			expect(response.headers).to include('XSRF-TOKEN')
 			expect(cookies["access-token"]).to be_truthy
 			expect(cookies["refresh-token"]).to be_truthy
 		end
@@ -45,11 +45,11 @@ RSpec.describe "JWTAuthenticator method" do
 
 	context 'valid request' do
 
-		describe 'authenticated' do
+		describe 'authenticate' do
 			it "should return the user's uid (hardcoded)" do
 				user = FactoryGirl.create(:user)
 				request = MockRequest.new(valid = true, user)
-				expect(JWTAuthenticator.authenticate(request)).to eq(user.uid)#"i7sqeESEDJHUSBZd4HJN42o1")
+				expect(JWTAuthenticator.authenticate(request)).to eq(user.uid)
 			end
 		end
 
@@ -92,10 +92,10 @@ RSpec.describe "JWTAuthenticator method" do
 				end
 
 				it 'response headers should contain a new csrf token' do
-					old_csrf = @request.headers['csrf_token']
+					old_csrf = @request.headers['X-XSRF-TOKEN']
 					expect(JWTAuthenticator.refresh(@request, @response, @cookies)).to be_truthy
-					expect(@response.headers['csrf_token']).to be_truthy
-					expect(@response.headers['csrf_token']).to_not eq(old_csrf)
+					expect(@response.headers['XSRF-TOKEN']).to be_truthy
+					expect(@response.headers['XSRF-TOKEN']).to_not eq(old_csrf)
 				end
 
 				it 'should update the active_token in the database with the new expiration date' do

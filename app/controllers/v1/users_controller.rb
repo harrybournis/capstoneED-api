@@ -16,12 +16,11 @@ class V1::UsersController < ApplicationController
 			return
 		end
 
-		@user = User.new(user_params)
-		#binding.pry
+		@user = User.new(user_params).process_new_record
+
 		if @user.save
 			render json: :none, status: :created
 		else
-			puts @user.errors.inspect
 			render json: @user.errors, status: :unprocessable_entity
 		end
 	end
@@ -37,6 +36,6 @@ private
 	end
 
 	def user_params
-		params.permit(:first_name, :last_name, :email, :password, :password_confirmation)
+		params.permit(:first_name, :last_name, :email, :password, :password_confirmation, :provider)
 	end
 end

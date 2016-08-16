@@ -8,13 +8,10 @@ class User < ApplicationRecord
 	validates_presence_of :first_name, :last_name, :uid
 	validates_uniqueness_of :uid
 
-	after_initialize :generate_uid
 
 	# ***> Instance methods
 	#
 	def full_name ; "#{first_name} #{last_name}" end
-
-
 
 	# in case a token has been compromized, running this will update all ActiveTokens
 	# for the user with a new expiration date starting now, effectively invalidating
@@ -30,7 +27,20 @@ class User < ApplicationRecord
 		end
 	end
 
+	# Called on a new user object before save. It generates a unique uid and
+	# encrypts the password using devise's bcrypt method.
+	#
+	# returns self
+	def process_new_record
+		self.uid = generate_uid
+		self.provider = 'email'
+		password = self.password
+		return self
+	end
+
+
 protected
+
 	# overrides the default devise method in validatable.rb to require password
 	# only if user signed up via email
 	def password_required?
@@ -38,14 +48,13 @@ protected
 	end
 
 private
+
 	def generate_uid
-		unless self.uid
-			uid = nil
-			loop do
-				uid = SecureRandom.base64(32)
-				break unless User.find_by_uid(uid)
-			end
-			self.uid = uid
+		uid = nil
+		loop do
+			uid = SecureRandom.base64(32)
+			break unless User.find_by_uid(uid)
 		end
+		uid
 	end
 end
