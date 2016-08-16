@@ -34,10 +34,6 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
 				expect(user_in_token.uid).to eq(user_in_response.uid)
 			end
 
-			it 'should authenticate without hitting the database' do
-				expect { get :me }.to_not make_database_queries
-			end
-
 			it 'should not remain the same current_user for different requests' do
 				request.headers['Include'] = 'true'
 				expect { get :me }.to make_database_queries

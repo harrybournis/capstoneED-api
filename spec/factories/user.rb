@@ -8,11 +8,10 @@ FactoryGirl.define do
   	# sequence(:user_name) { |n| "jim_tzatzikoforos_#{n}" }
   	# sequence(:email) { |n| "Johntzatzikoforos#{n}@gmail.com" }
   	# sequence(:uid) { |n| "i7sqeESEDJHUSBZd4HJN42o#{n}" }
-  	first_name 	{Faker::Name.first_name}
-  	last_name 	{Faker::Name.last_name}
-  	user_name 	{Faker::Internet.user_name}
-  	email 		{Faker::Internet.free_email}
-  	uid 		{SecureRandom.base64(32)}
+  	first_name 	{ Faker::Name.first_name }
+  	last_name 	{ Faker::Name.last_name }
+  	email 		{ Faker::Internet.free_email }
+  	uid 		{ SecureRandom.base64(32) }
     provider { 'test' }
   end
 end

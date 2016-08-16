@@ -5,12 +5,15 @@ class User < ApplicationRecord
 	devise :database_authenticatable, :confirmable, :recoverable,
 	       :trackable, :validatable
 
-	validates_presence_of :first_name, :last_name, :user_name, :uid
-	validates_uniqueness_of :user_name,  :uid
+	validates_presence_of :first_name, :last_name, :uid
+	validates_uniqueness_of :uid
+
+	after_initialize :generate_uid
 
 	# ***> Instance methods
 	#
 	def full_name ; "#{first_name} #{last_name}" end
+
 
 
 	# in case a token has been compromized, running this will update all ActiveTokens
@@ -32,5 +35,17 @@ protected
 	# only if user signed up via email
 	def password_required?
 		provider == 'email' || !password.nil? || !password_confirmation.nil?
+	end
+
+private
+	def generate_uid
+		unless self.uid
+			uid = nil
+			loop do
+				uid = SecureRandom.base64(32)
+				break unless User.find_by_uid(uid)
+			end
+			self.uid = uid
+		end
 	end
 end

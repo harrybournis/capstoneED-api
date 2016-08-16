@@ -7,7 +7,8 @@ Rails.application.routes.draw do
 
 			# Authentication Routes
 			get 	'me', 		to: 'authentications#me'
-			post 	'register',	to: 'authentications#register'
+			post 	'register',	to: 'users#create'
+			post	'sign_in',	to: 'authentications#sign_in_email'
 		end
 	end
 
