@@ -1,6 +1,7 @@
-require 'Faker'
-
 FactoryGirl.define do
+
+  require 'Faker'
+
   factory :user do
   	# sequence(:first_name) { |n| "Jim#{n}" }
   	# sequence(:last_name) { |n| "Tzatzikoforos#{n}" }

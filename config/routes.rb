@@ -6,7 +6,8 @@ Rails.application.routes.draw do
 			devise_for :users, skip: [:sessions], skip_helpers: true
 
 			# Authentication Routes
-			get 'validate', to: 'authentications#validate'
+			get 	'me', 		to: 'authentications#me'
+			post 	'register',	to: 'authentications#register'
 		end
 	end
 

@@ -51,7 +51,7 @@ private
 
 	def invalid_request_hardcoded
 		@headers = { "X-XSRF-TOKEN"  => "NIBzka/3Plj8yg30+uYnyEBGunKPMhvG8ThF7EJxrBs=" }
-		@cookies = { "access-token"  => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjMwNDg2MjA1MzYsImp0aSI6Imk3c3FlRVNFREpIVVNCWmQ0SEpONDJvMSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiY3NyZl90b2tlbiI6Ik5JQnprYS8zUGxqOHlnMzArdVlueUVCR3VuS1BNaHZHOFRoRjdFSnhkckJzPSJ9.P01mbi5sMnrRr17u79srYfEgkO66eYEK8iFc0n3vIrY",
+		@cookies = { "access-token"  => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjMwNDg2MjA1MzYsImp0aSI6Imk3c3FlRVNFREpIVVNCWmQ0SEpONDJvMSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiY3NyZl90b2tlbiI6Ik5JQnprYS8zUGxqOHlnMzArdVlueUVCR3VuS1BNaHZHOFRoRjdFSnhkckJzPSJ9.TyB94ON7CwIQOYgsCcvzE747Rh49OMaqNaRm1jMX8dI",
 					 "refresh-token" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjMwODAxNTY4MTYsImp0aSI6Imk3c3FlRVNFREpIVVNCWmQ0SEpONDJvMSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.COOnUxFFyiWUl6DNbUloGNllh8GFeD8OKgNhQr7HCtA" }
 
 		@headers.merge!(headers) if headers

@@ -2,11 +2,15 @@ require 'rails_helper'
 require 'helpers/mock_request.rb'
 include JWTAuth::JWTAuthenticator
 
-RSpec.describe V1::AuthenticationsController, type: :controller do
+RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
+
+	before(:all) do
+		@controller = V1::AuthenticationsController.new
+	end
 
 	context 'valid request' do
 
-		describe 'GET validate' do
+		describe 'GET me' do
 
 			before(:each) do
 				new_en = FactoryGirl.create(:user)
@@ -17,18 +21,10 @@ RSpec.describe V1::AuthenticationsController, type: :controller do
 				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 			end
 
-			# it 'should return ok with no body' do
-			# 	get :validate
-			# 	expect(cookies['access-token']).to be_truthy
-			# 	expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-			# 	expect(response.body).to be_empty
-			# 	expect(response.status).to eq(200)
-			# end
-
 
 			it 'should return the user in the token in the response body' do
 				request.headers['Include'] = 'true'
-				expect { get :validate }.to make_database_queries
+				expect { get :me }.to make_database_queries
 				expect(response.status).to eq(200)
 				response_body = JSON.parse(response.body)
 				user_in_response = User.find_by_uid(response_body['user']['uid'])
@@ -39,12 +35,12 @@ RSpec.describe V1::AuthenticationsController, type: :controller do
 			end
 
 			it 'should authenticate without hitting the database' do
-				expect { get :validate }.to_not make_database_queries
+				expect { get :me }.to_not make_database_queries
 			end
 
 			it 'should not remain the same current_user for different requests' do
 				request.headers['Include'] = 'true'
-				expect { get :validate }.to make_database_queries
+				expect { get :me }.to make_database_queries
 				expect(response.status).to eq(200)
 				response_body = JSON.parse(response.body)
 				user_in_response = User.find_by_uid(response_body['user']['uid'])
@@ -60,7 +56,7 @@ RSpec.describe V1::AuthenticationsController, type: :controller do
 				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
 				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 				request.headers['Include'] = 'true'
-				expect { get :validate }.to make_database_queries
+				expect { get :me }.to make_database_queries
 				expect(response.status).to eq(200)
 				response_body = JSON.parse(response.body)
 				user_in_response2 = User.find_by_uid(response_body['user']['uid'])
@@ -77,11 +73,11 @@ RSpec.describe V1::AuthenticationsController, type: :controller do
 
 	context 'invalid request' do
 
-		describe 'GET validate' do
+		describe 'GET me' do
 
 			it 'should return 401 without access-token' do
 				expect(request.cookies['access-token']).to be_falsy
-				get :validate, params: nil, headers: { 'X-XSRF-TOKEN' => SecureRandom.base64(32) }
+				get :me, params: nil, headers: { 'X-XSRF-TOKEN' => SecureRandom.base64(32) }
 				expect(response.status).to eq(401)
 				expect(cookies['access-token']).to be_falsy
 			end
@@ -92,7 +88,17 @@ RSpec.describe V1::AuthenticationsController, type: :controller do
 				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
 
 				expect(request.cookies['access-token']).to be_truthy
-				get :validate, params: nil, headers: { }
+				get :me, params: nil, headers: { }
+				expect(response.status).to eq(401)
+			end
+
+			it 'should return 401 for invalid access-token' do
+				mock_request = MockRequest.new(valid = false)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+				expect { JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token']) }.to raise_exception(JWT::VerificationError, 'Signature verification raised')
+
+				get :me
 				expect(response.status).to eq(401)
 			end
 

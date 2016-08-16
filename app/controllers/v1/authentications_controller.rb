@@ -1,13 +1,13 @@
 class V1::AuthenticationsController < ApplicationController
 
-	skip_before_action :authenticate_user_jwt, except: [:validate]
+	skip_before_action :authenticate_user_jwt, except: [:me]
 
 	include JWTAuth::JWTAuthenticator
 
 
 	# validates the JWT access-token
 	# GET
-	def validate
+	def me
 		render json: request.headers['Include'].present? ? current_user! : :none, status: :ok
 	end
 
