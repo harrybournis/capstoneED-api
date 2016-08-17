@@ -44,7 +44,7 @@ protected
 	# overrides the default devise method in validatable.rb to require password
 	# only if user signed up via email
 	def password_required?
-		provider == 'email' || !password.nil? || !password_confirmation.nil?
+		(!persisted? && provider == 'email') || !password.nil? || !password_confirmation.nil?
 	end
 
 private

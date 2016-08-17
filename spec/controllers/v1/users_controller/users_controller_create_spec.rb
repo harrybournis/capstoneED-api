@@ -13,7 +13,7 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 		describe 'POST create' do
 			it 'creates a new user and save them in the database' do
 				user = FactoryGirl.build(:user)
-				expect { get :create, params: { 'email' => 'email@email.com', 'password' => '12345678',
+				expect { post :create, params: { 'email' => 'email@email.com', 'password' => '12345678',
 					'password_confirmation' => '12345678', 'first_name' => user.first_name,
 					'last_name' => user.last_name }
 				}. to change { User.count }
@@ -26,7 +26,7 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 
 			it 'encrypts the users password before saving' do
 				user = FactoryGirl.build(:user)
-				get :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => user.first_name, 'last_name' => user.last_name }
+				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => user.first_name, 'last_name' => user.last_name }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(response.status).to eq(201)
 				expect(User.find_by_uid(assigns[:user].uid).encrypted_password).to_not eq(request.params['password'])
@@ -35,14 +35,14 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 
 			it 'returns 201 created' do
 				user = FactoryGirl.build(:user)
-				get :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => user.first_name, 'last_name' => user.last_name }
+				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => user.first_name, 'last_name' => user.last_name }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(response.status).to eq(201)
 			end
 
 			it 'has email as a provider' do
 				user = FactoryGirl.build(:user)
-				get :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => user.first_name, 'last_name' => user.last_name }
+				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => user.first_name, 'last_name' => user.last_name }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(response.status).to eq(201)
 				expect(assigns[:user].provider).to eq('email')
@@ -55,12 +55,12 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 
 		describe 'POST create' do
 			it 'returns 400 bad request if the request is not formatted right' do
-				get :create, params: { 'user' => { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678' } }
+				post :create, params: { 'user' => { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678' } }
 				expect(response.status).to eq(400)
 			end
 
 			it 'returns 422 unprocessable_entity if email error' do
-				get :create, params: { 'email' => 'emailemail.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => 'Rixardos', 'last_name' => 'Arlekinos' }
+				post :create, params: { 'email' => 'emailemail.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => 'Rixardos', 'last_name' => 'Arlekinos' }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation')
 				expect(response.status).to eq(422)
 				errors_body = JSON.parse(response.body)
@@ -68,7 +68,7 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 			end
 
 			it 'returns 422 unprocessable_entity if passwords dont match' do
-				get :create, params: { 'email' => 'email@email.com', 'password' => 'asdfasdf', 'password_confirmation' => '12345678', 'first_name' => 'Rixardos', 'last_name' => 'Arlekinos' }
+				post :create, params: { 'email' => 'email@email.com', 'password' => 'asdfasdf', 'password_confirmation' => '12345678', 'first_name' => 'Rixardos', 'last_name' => 'Arlekinos' }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation')
 				expect(response.status).to eq(422)
 				errors_body = JSON.parse(response.body)
@@ -76,7 +76,7 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 			end
 
 			it 'returns 422 unprocessable_entity if password too short' do
-				get :create, params: { 'email' => 'email@email.com', 'password' => '1234', 'password_confirmation' => '1234', 'first_name' => 'Rixardos', 'last_name' => 'Arlekinos' }
+				post :create, params: { 'email' => 'email@email.com', 'password' => '1234', 'password_confirmation' => '1234', 'first_name' => 'Rixardos', 'last_name' => 'Arlekinos' }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation')
 				expect(response.status).to eq(422)
 				errors_body = JSON.parse(response.body)

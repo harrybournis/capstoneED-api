@@ -2,14 +2,17 @@ class V1::UsersController < ApplicationController
 
 	skip_before_action :authenticate_user_jwt, only: [:create]
 
-	before_action :set_user, except: [:index, :create]
+	before_action :authorize_user, except: [:index, :create]
 	before_action :wrap_params, except: [:index]
+
 
 	def index
 		@users = User.all
 		render json: @users
 	end
 
+
+	# POST create
 	def create
 		if !@params_wrapper.email || !@params_wrapper.password || !@params_wrapper.password_confirmation
 			render json: :none, status: :bad_request
@@ -25,17 +28,27 @@ class V1::UsersController < ApplicationController
 		end
 	end
 
+
+	# PUT update
+	def update
+		update_method = user_params[:current_password] ? 'update_with_password' : 'update_without_password'
+
+		if @user.method(update_method).call(user_params.except(:provider))
+			render json: @user, status: :ok
+		else
+			render json: @user.errors, status: :unprocessable_entity
+		end
+	end
+
+
 private
 
 	def wrap_params
 		@params_wrapper = UserParamsWrapper.new(user_params)
 	end
 
-	def set_user
-		@user = User.find(params[:id])
-	end
-
 	def user_params
-		params.permit(:first_name, :last_name, :email, :password, :password_confirmation, :provider)
+		params.permit(:id, :first_name, :last_name, :email, :password, :password_confirmation,
+			:current_password, :provider)
 	end
 end

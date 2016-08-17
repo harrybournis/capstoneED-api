@@ -19,4 +19,13 @@ protected
 		@current.load_user
 	end
 
+
+	def authorize_user
+		if current_user!.id.to_s == user_params[:id]
+			@user = current_user!
+		else
+			render json: :none, status: :forbidden
+		end
+	end
+
 end

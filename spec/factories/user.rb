@@ -13,5 +13,11 @@ FactoryGirl.define do
   	email 		{ Faker::Internet.free_email }
   	uid 		{ SecureRandom.base64(32) }
     provider { 'test' }
+
+    factory :user_with_password do
+      provider 'email'
+      password '12345678'
+      password_confirmation '12345678'
+    end
   end
 end

@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 	constraints subdomain: "api" do
 		namespace :v1, constraints: { format: 'json' } do
 			resources :users
+			put 'users/update_old/:id', to: 'users#update_old'
 			devise_for :users, skip: [:sessions], skip_helpers: true
 
 			# Authentication Routes
