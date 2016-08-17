@@ -1,6 +1,6 @@
 class User < ApplicationRecord
 
-	has_many :active_tokens
+	has_many :active_tokens, dependent: :destroy
 
 	devise :database_authenticatable, :confirmable, :recoverable,
 	       :trackable, :validatable

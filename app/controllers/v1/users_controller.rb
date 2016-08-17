@@ -3,7 +3,6 @@ class V1::UsersController < ApplicationController
 	skip_before_action :authenticate_user_jwt, only: [:create]
 
 	before_action :authorize_user, except: [:index, :create]
-	before_action :wrap_params, except: [:index]
 
 
 	def index
@@ -14,7 +13,7 @@ class V1::UsersController < ApplicationController
 
 	# POST create
 	def create
-		if !@params_wrapper.email || !@params_wrapper.password || !@params_wrapper.password_confirmation
+		if !user_params['email'] || !user_params['password'] || !user_params['password_confirmation']
 			render json: :none, status: :bad_request
 			return
 		end
@@ -41,11 +40,16 @@ class V1::UsersController < ApplicationController
 	end
 
 
-private
-
-	def wrap_params
-		@params_wrapper = UserParamsWrapper.new(user_params)
+	def destroy
+		if @user.destroy_with_password(user_params[:current_password])
+			render json: @user, status: :ok
+		else
+			render json: @user.errors, status: :unprocessable_entity
+		end
 	end
+
+
+private
 
 	def user_params
 		params.permit(:id, :first_name, :last_name, :email, :password, :password_confirmation,
