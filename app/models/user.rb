@@ -5,8 +5,7 @@ class User < ApplicationRecord
 	devise :database_authenticatable, :confirmable, :recoverable,
 	       :trackable, :validatable
 
-	validates_presence_of :first_name, :last_name, :uid
-	validates_uniqueness_of :uid
+	validates_presence_of :first_name, :last_name
 
 
 # ***> Instance methods
@@ -32,7 +31,6 @@ class User < ApplicationRecord
 	#
 	# returns self
 	def process_new_record
-		self.uid = generate_uid
 		self.provider = 'email'
 		password = self.password
 		return self
@@ -53,16 +51,5 @@ protected
 	# only if user signed up via email
 	def password_required?
 		(!persisted? && provider == 'email') || !password.nil? || !password_confirmation.nil?
-	end
-
-private
-
-	def generate_uid
-		uid = nil
-		loop do
-			uid = SecureRandom.base64(32)
-			break unless User.find_by_uid(uid)
-		end
-		uid
 	end
 end
