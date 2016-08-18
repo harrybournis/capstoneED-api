@@ -29,19 +29,16 @@ RSpec.describe 'V1::UsersController DELETE /destroy', type: :controller do
 				}.to change{ User.all.count }.by(-1)
 			end
 
-			it 'returns 200 ok with the deleted user' do
+			it 'returns 204 no content' do
 				delete :destroy, params: { id: @new_en.id, current_password: '12345678' }
-				expect(response.status).to eq(200)
-				res_body = JSON.parse(response.body)
-				expect(res_body).to include('user')
-				expect(res_body['user']['id']).to eq(@new_en.id)
+				expect(response.status).to eq(204)
 				expect(User.exists?(@new_en.id)).to be_falsy
 			end
 
 			it 'requires password to complete delete' do
 				expect(@new_en.valid_password?('12345678')).to be_truthy
 				delete :destroy, params: { id: @new_en.id, current_password: '12345678' }
-				expect(response.status).to eq(200)
+				expect(response.status).to eq(204)
 			end
 
 			it 'deletes all associated active tokens' do

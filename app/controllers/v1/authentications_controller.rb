@@ -1,6 +1,6 @@
 class V1::AuthenticationsController < ApplicationController
 
-	skip_before_action :authenticate_user_jwt, except: [:me]
+	skip_before_action :authenticate_user_jwt, except: [:me, :refresh]
 
 	include JWTAuth::JWTAuthenticator
 
@@ -18,16 +18,16 @@ class V1::AuthenticationsController < ApplicationController
 	end
 
 	# POST
-	def email
-		# validate user's credentials
-		#
-		##
-		@user = User.first
-		if JWTAuth::JWTAuthenticator.sign_in(@user, response, cookies)
-			render json: @user, status: :ok
-		else
-			render json: :none, status: :unprocessable_entity
+	def sign_in_email
+		@user = User.find_by_email(auth_params[:email])
+
+		if @user && @user.valid_password?(auth_params[:password])
+			if JWTAuth::JWTAuthenticator.sign_in(@user, response, cookies)
+				render json: @user, status: :ok
+				return
+			end
 		end
+		render json: "", status: :unauthorized
 	end
 
 	# POST
@@ -54,5 +54,10 @@ class V1::AuthenticationsController < ApplicationController
 	def google
 		# validate user's credentials with oauth2
 		#render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
+	end
+
+private
+	def auth_params
+		params.permit(:email, :password)
 	end
 end

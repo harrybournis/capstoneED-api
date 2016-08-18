@@ -1,13 +1,13 @@
 module JWTAuth::JWTAuthenticator
 
 	# Class Variables
-	@@secret		= 'secret' 			## TO be replaced with the application's secret key
-	@@algorithm 	= 'HS256'			# available algorithms: https://github.com/jwt/ruby-jwt
-	@@exp			= 10.minutes		# expiration time for access-token
-	@@refresh_exp	= 1.week			# expiration time for refresh-token
-	@@leeway		= 1.week			# grace period after a token has expired.
-	@@domain  		= 'localhost:3000'	# to be added to the cookies
-	@@issuer		= @@domain			# typically the website url. added to JWT tokens.
+	@@secret		= 'secret' 				## TO be replaced with the application's secret key
+	@@algorithm 	= 'HS256'				# available algorithms: https://github.com/jwt/ruby-jwt
+	@@exp			= 10.minutes			# expiration time for access-token
+	@@refresh_exp	= 1.week				# expiration time for refresh-token
+	@@leeway		= 1.week				# grace period after a token has expired.
+	@@domain  		= 'api.localhost:3000' 	# to be added to the cookies
+	@@issuer		= @@domain				# typically the website url. added to JWT tokens.
 
 
 	###
@@ -50,12 +50,10 @@ module JWTAuth::JWTAuthenticator
 			if new_token.valid?
 				user.active_tokens << new_token
 				return true
-			else
-				return false
 			end
 		end
 
-		false
+		return false
 	end
 
 	###
@@ -100,7 +98,7 @@ module JWTAuth::JWTAuthenticator
 
 		response.headers['XSRF-TOKEN'] = csrf_token
 		cookies['access-token'] = { value: access_token, expires: exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
-		cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
+		cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, domain: @@issuer, path: '/v1/refresh', secure: true, httponly: true, same_site: true }
 		true
 	end
 

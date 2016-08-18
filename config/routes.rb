@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 			get 	'me', 		to: 'authentications#me'
 			post 	'register',	to: 'users#create'
 			post	'sign_in',	to: 'authentications#sign_in_email'
+			get 'refresh', to: 'authentications#refresh'
 		end
 	end
 
