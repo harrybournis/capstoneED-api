@@ -32,10 +32,6 @@ private
 		@headers = { "X-XSRF-TOKEN"  => csrf }
 		@cookies = { "access-token"  => access_token, #"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjMwNDg2MjA1MzYsImp0aSI6Imk3c3FlRVNFREpIVVNCWmQ0SEpONDJvMSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiY3NyZl90b2tlbiI6Ik5JQnprYS8zUGxqOHlnMzArdVlueUVCR3VuS1BNaHZHOFRoRjdFSnhyQnM9In0.HHs3KKfsxkxdcSzeafU1FiXXMfeiomJehdfK9vlKTHQ",
 					 "refresh-token" => refresh_token } #"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjMwODAxNTY4MTYsImp0aSI6Imk3c3FlRVNFREpIVVNCWmQ0SEpONDJvMSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIn0.RFmIcEVA9-ANLgDSiCPfOYTnGFfnL-YcKVeJPqrE6L0" }
-
-		@headers.merge!(headers) if headers
-		@cookies.merge!(cookies) if cookies
-		@body.merge!(body) 		 if body
 	end
 
 	def valid_request_hardcoded(set_user = nil, headers=nil, cookies=nil, body=nil)
@@ -58,27 +54,4 @@ private
 		@cookies.merge!(cookies) if cookies
 		@body.merge!(body) 		 if body
 	end
-
-###
-# access token:
-# {
-#   "alg": "HS256",
-#   "typ": "JWT"
-# }
-# {
-#   "exp": 3048620536,
-#   "jti" : "i7sqeESEDJHUSBZd4HJN42o1",
-#   "iss": "localhost:3000",
-#   "csrf_token": "NIBzka/3Plj8yg30+uYnyEBGunKPMhvG8ThF7EJxrBs="
-# }
-###
-#
-###
-# refresh token:
-#{
-  # "exp": 3080156816,
-  # "jti": "i7sqeESEDJHUSBZd4HJN42o1",
-  # "iss": "localhost:3000"
-#}
-#
 end

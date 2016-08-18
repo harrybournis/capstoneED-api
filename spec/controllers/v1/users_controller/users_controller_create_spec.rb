@@ -29,7 +29,7 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => user.first_name, 'last_name' => user.last_name }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(response.status).to eq(201)
-				expect(User.find_by_uid(assigns[:user].uid).encrypted_password).to_not eq(request.params['password'])
+				expect(User.find(assigns[:user].id).encrypted_password).to_not eq(request.params['password'])
 				expect(assigns[:user].valid_password?(request.params['password'])).to be_truthy
 			end
 

@@ -49,7 +49,7 @@ RSpec.describe "JWTAuthenticator method" do
 			it "should return the user's uid (hardcoded)" do
 				user = FactoryGirl.create(:user)
 				request = MockRequest.new(valid = true, user)
-				expect(JWTAuthenticator.authenticate(request)).to eq(user.uid)
+				expect(JWTAuthenticator.authenticate(request)).to eq(user.id)
 			end
 		end
 

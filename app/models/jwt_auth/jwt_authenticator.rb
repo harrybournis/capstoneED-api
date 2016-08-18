@@ -22,7 +22,7 @@ module JWTAuth::JWTAuthenticator
 
 		decoded_token = decode_token(validated_request.access_token)
 
-		validated_request.csrf_token == decoded_token.first['csrf_token'] ? decoded_token.first['jti'] : nil
+		validated_request.csrf_token == decoded_token.first['csrf_token'] ? decoded_token.first['id'] : nil
 	rescue
 		false
 	end
@@ -106,7 +106,7 @@ module JWTAuth::JWTAuthenticator
 	def self.encode_token (user, time_now, csrf_token = nil, device_id = nil)
 		if csrf_token
 			exp_time = time_now + @@exp
-			access_token_payload = { exp: exp_time.to_i, jti: user.uid, iss: @@issuer, csrf_token: csrf_token }
+			access_token_payload = { exp: exp_time.to_i, id: user.id, type: user.type, iss: @@issuer, csrf_token: csrf_token }
 
 			JWT.encode(access_token_payload, @@secret, @@algorithm)
 
