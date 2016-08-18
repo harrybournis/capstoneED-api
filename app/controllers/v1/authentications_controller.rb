@@ -1,27 +1,25 @@
 class V1::AuthenticationsController < ApplicationController
 
-	skip_before_action :authenticate_user_jwt, except: [:me, :refresh]
+	skip_before_action :authenticate_user_jwt, only: [:sign_in_email]
 
 	include JWTAuth::JWTAuthenticator
 
-
-	# validates the JWT access-token
-	# GET
+	# GET /me
+	# validates the JWT access-token and returns the current user
 	def me
 		render json: current_user!, status: :ok
 	end
 
+	# POST /refresh
 	# creates a new JWT access-token using the refresh-token
-	# POST
 	def refresh
 		#render json: :none, status: JWTAuth::JWTAuthenticator.refresh(request,response) ? :ok : :unauthorized
 	end
 
-	# POST
-	def sign_in_email
-		@user = User.find_by_email(auth_params[:email])
 
-		if @user && @user.valid_password?(auth_params[:password])
+	# POST /sign_in
+	def sign_in_email
+		if @user = User.valid_sign_in?(auth_params)
 			if JWTAuth::JWTAuthenticator.sign_in(@user, response, cookies)
 				render json: @user, status: :ok
 				return
@@ -29,6 +27,16 @@ class V1::AuthenticationsController < ApplicationController
 		end
 		render json: "", status: :unauthorized
 	end
+
+
+	# POST /sign_out
+	def sign_out
+		#current_user!.current_device.destroy
+		cookies.delete('access-token', domain: JWTAuth::JWTAuthenticator.domain)
+		cookies['refresh-token'] = { value: nil, expires: Time.at(0), domain: JWTAuth::JWTAuthenticator.domain, path: '/v1/refresh', secure: true, httponly: true, same_site: true }
+		cookies.delete('refresh-token', domain: JWTAuth::JWTAuthenticator.domain, path: '/v1/refresh')
+	end
+
 
 	# POST
 	def facebook

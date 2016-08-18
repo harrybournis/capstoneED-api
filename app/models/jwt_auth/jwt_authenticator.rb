@@ -149,4 +149,5 @@ module JWTAuth::JWTAuthenticator
 
 
 	def self.refresh_exp ; @@refresh_exp end
+	def self.domain		 ; @@domain end
 end

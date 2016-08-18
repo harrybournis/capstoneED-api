@@ -9,8 +9,8 @@ class User < ApplicationRecord
 	validates_uniqueness_of :uid
 
 
-	# ***> Instance methods
-	#
+# ***> Instance methods
+#
 	def full_name ; "#{first_name} #{last_name}" end
 
 	# in case a token has been compromized, running this will update all ActiveTokens
@@ -36,6 +36,14 @@ class User < ApplicationRecord
 		self.provider = 'email'
 		password = self.password
 		return self
+	end
+
+
+# ***> Class Methods
+#
+	def self.valid_sign_in? (params)
+		user = User.find_by_email(params[:email])
+		user && user.valid_password?(params[:password]) ? user : nil
 	end
 
 
