@@ -26,7 +26,7 @@ private
 			device = SecureRandom.base64(32)
 		end
 
-		access_token  = JWTAuth::JWTAuthenticator.encode_token(user, time, csrf, nil)
+		access_token  = JWTAuth::JWTAuthenticator.encode_token(user, time, csrf, device)
 		refresh_token = JWTAuth::JWTAuthenticator.encode_token(user, time, nil, device)
 
 		@headers = { "X-XSRF-TOKEN"  => csrf }

@@ -15,17 +15,20 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_out', type: :controller
 			mock_request = MockRequest.new(valid = true, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])
+			expect(decoded_token).to be_truthy
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
+			@token = FactoryGirl.create(:active_token, device: decoded_token.first['device'], user: @user, exp: Time.now + 1.week)
+			expect(@token.valid?).to be_truthy
 		end
 
-		it 'should delete the active token for this device'
-		# 	expect {
-		# 		post :sign_out
-		# 	}.to change { ActiveToken.count }.by(-1)
-
-		# 	expect(response.status).to eq(204)
-		# end
+		it 'should delete the active token for this device' do
+			expect {
+				post :sign_out
+			}.to change { ActiveToken.count }.by(-1)
+			expect(ActiveToken.exists?(@token.id)).to be_falsy
+			expect(response.status).to eq(204)
+		end
 
 		it 'returns 204 no content' do
 			post :sign_out
@@ -53,7 +56,10 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_out', type: :controller
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 		end
 
-		it 'should NOT delete the active token'
+		it 'should NOT delete the active token' do
+			expect { post :sign_out }.to_not change { ActiveToken.count }
+			expect(response.status).to eq(401)
+		end
 
 		it 'response does not delete access-token and refresh-token cookies' do
 			post :sign_out

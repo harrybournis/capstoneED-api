@@ -2,46 +2,49 @@ require 'rails_helper'
 
 RSpec.describe JWTAuth::CurrentUser, type: :model do
 
+	before(:each) do
+		@user = FactoryGirl.create(:user)
+		@request = MockRequest.new(valid = true, @user)
+		decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
+		@token_id = decoded_token.first['id']
+		@device = decoded_token.first['device']
+		@current_user_obj = CurrentUser.new(@token_id, nil, @device)
+	end
+
 	it '.new a new object should be created without database queries' do
-		request = MockRequest.new(valid = true)
-		token_id = JWTAuthenticator.decode_token(request.cookies['access-token']).first['id']
-		expect { CurrentUser.new(token_id) }.to_not make_database_queries
+		expect { CurrentUser.new(@token_id, nil, @device) }.to_not make_database_queries
 	end
 
-	it '.load_user should return a user found from the jti' do
-		user = FactoryGirl.create(:user)
-		request = MockRequest.new(valid = true, user)
-		token_id = JWTAuthenticator.decode_token(request.cookies['access-token']).first['id']
-		expect { CurrentUser.new(token_id) }.to_not make_database_queries
-
-		current_user_obj = CurrentUser.new(token_id)
-
-		expect(current_user_obj.load_user).to eq(user)
+	it '.load should return a user found from the token id' do
+		expect(@current_user_obj.load).to eq(@user)
 	end
 
-	it '.load_user should not hit the database twice for subsequent calls' do
-		user = FactoryGirl.create(:user)
-		request = MockRequest.new(valid = true, user)
-		token_id = JWTAuthenticator.decode_token(request.cookies['access-token']).first['id']
-		expect { CurrentUser.new(token_id) }.to_not make_database_queries
-
-		current_user_obj = CurrentUser.new(token_id)
-
-		expect { current_user_obj.load_user }.to make_database_queries(count: 1)
-		expect { current_user_obj.load_user }.to_not make_database_queries
+	it '.load should not hit the database twice for subsequent calls' do
+		expect { @current_user_obj.load }.to make_database_queries(count: 1)
+		expect { @current_user_obj.load }.to_not make_database_queries
 	end
 
 	it "should respond to the user's methods" do
-		user = FactoryGirl.create(:user)
-		request = MockRequest.new(valid = true, user)
-		token_id = JWTAuthenticator.decode_token(request.cookies['access-token']).first['id']
-		current_user_obj = CurrentUser.new(token_id)
-
-		expect { current_user_obj.load_user }.to make_database_queries(count: 1)
-		expect { current_user_obj.load_user }.to_not make_database_queries
-		expect { current_user_obj.load_user.first_name }.to_not make_database_queries
-		expect { current_user_obj.load_user.full_name }.to_not make_database_queries
+		expect { @current_user_obj.load }.to make_database_queries(count: 1)
+		expect { @current_user_obj.load }.to_not make_database_queries
+		expect { @current_user_obj.load.first_name }.to_not make_database_queries
+		expect { @current_user_obj.load.full_name }.to_not make_database_queries
 	end
 
-end
+	it 'should return the id without hitting the database' do
+		expect { @current_user_obj.id }.to_not make_database_queries
+		expect(@current_user_obj.id).to eq(@user.id)
+	end
 
+	it 'should delegate other methods to the user object' do
+		expect { @current_user_obj.last_name }.to make_database_queries(count: 1)
+		expect { @current_user_obj.last_name }.to_not make_database_queries
+		expect(@current_user_obj.last_name).to eq(@user.last_name)
+	end
+
+	it '.current_device should equal the device in token' do
+		expect { @current_user_obj.current_device }.to_not make_database_queries
+		decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
+		expect(@current_user_obj.current_device).to eq(decoded_token.first['device'])
+	end
+end
