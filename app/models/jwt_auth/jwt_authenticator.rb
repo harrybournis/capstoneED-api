@@ -108,7 +108,6 @@ module JWTAuth::JWTAuthenticator
 		###### <----------------------> #####
 
 		######   FOR DEVELOPMENT ONLY   #####
-		#cookies['rabood'] = { value: 'tzilidd', expires: Time.now + 1.month, secure: true,httponly: true }
 		cookies['access-token'] = { value: access_token, expires: exp_time, httponly: true, same_site: true }
 		cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, path: '/v1/refresh', httponly: true, same_site: true }
 		###### <----------------------> #####
