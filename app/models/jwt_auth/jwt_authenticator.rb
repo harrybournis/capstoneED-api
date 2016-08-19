@@ -21,8 +21,13 @@ module JWTAuth::JWTAuthenticator
 		return false unless validated_request = valid_access_request(request)
 
 		decoded_token = decode_token(validated_request.access_token)
+		token_params = decoded_token.first
 
-		validated_request.csrf_token == decoded_token.first['csrf_token'] ? decoded_token.first['jti'] : nil
+		if validated_request.csrf_token == token_params['csrf_token']
+			JWTAuth::CurrentUser.new(token_params['id'], token_params['type'], token_params['device'])
+		else
+			nil
+		end
 	rescue
 		false
 	end
@@ -91,7 +96,7 @@ module JWTAuth::JWTAuthenticator
 		exp_time 			  = time_now + @@exp
 		refresh_exp_time	  = time_now + @@refresh_exp
 
-		access_token 		  = encode_token(user, time_now, csrf_token)
+		access_token 		  = encode_token(user, time_now, csrf_token, device)
 		refresh_token		  = encode_token(user, time_now, nil, device)
 
 		return false unless access_token && refresh_token
@@ -106,7 +111,7 @@ module JWTAuth::JWTAuthenticator
 	def self.encode_token (user, time_now, csrf_token = nil, device_id = nil)
 		if csrf_token
 			exp_time = time_now + @@exp
-			access_token_payload = { exp: exp_time.to_i, jti: user.uid, iss: @@issuer, csrf_token: csrf_token }
+			access_token_payload = { exp: exp_time.to_i, id: user.id, type: user.type, iss: @@issuer, device: device_id, csrf_token: csrf_token }
 
 			JWT.encode(access_token_payload, @@secret, @@algorithm)
 

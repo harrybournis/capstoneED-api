@@ -7,22 +7,20 @@ class ApplicationController < ActionController::API
 protected
 
 	def authenticate_user_jwt
-		if user_uid = JWTAuth::JWTAuthenticator.authenticate(request)
-			@current = JWTAuth::CurrentUser.new(user_uid)
- 		else
-			render json: :none, status: :unauthorized
+		unless @current = JWTAuth::JWTAuthenticator.authenticate(request)
+			render json: '', status: :unauthorized
 		end
 	end
 
 
 	def current_user!
-		@current.load_user
+		@current
 	end
 
 
 	def authorize_user
 		if current_user!.id.to_s == user_params[:id]
-			@user = current_user!
+			@user = current_user!.load
 		else
 			render json: :none, status: :forbidden
 		end

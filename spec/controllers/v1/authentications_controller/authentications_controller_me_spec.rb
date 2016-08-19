@@ -27,11 +27,11 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
 				expect { get :me }.to make_database_queries
 				expect(response.status).to eq(200)
 				response_body = JSON.parse(response.body)
-				user_in_response = User.find_by_uid(response_body['user']['uid'])
+				user_in_response = User.find(response_body['user']['id'])
 
-				user_in_token = User.find_by_uid(JWTAuth::JWTAuthenticator.decode_token(cookies['access-token']).first['jti'])
+				user_in_token = User.find(JWTAuth::JWTAuthenticator.decode_token(cookies['access-token']).first['id'])
 				expect(user_in_token).to be_truthy
-				expect(user_in_token.uid).to eq(user_in_response.uid)
+				expect(user_in_token.id).to eq(user_in_response.id)
 			end
 
 			it 'should not remain the same current_user for different requests' do
@@ -39,10 +39,10 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
 				expect { get :me }.to make_database_queries
 				expect(response.status).to eq(200)
 				response_body = JSON.parse(response.body)
-				user_in_response = User.find_by_uid(response_body['user']['uid'])
-				user_in_token = User.find_by_uid(JWTAuth::JWTAuthenticator.decode_token(cookies['access-token']).first['jti'])
+				user_in_response = User.find(response_body['user']['id'])
+				user_in_token = User.find(JWTAuth::JWTAuthenticator.decode_token(cookies['access-token']).first['id'])
 				expect(user_in_token).to be_truthy
-				expect(user_in_token.uid).to eq(user_in_response.uid)
+				expect(user_in_token.id).to eq(user_in_response.id)
 
 
 				new_en = FactoryGirl.create(:user, first_name: 'different', last_name: 'person')
@@ -55,10 +55,10 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
 				expect { get :me }.to make_database_queries
 				expect(response.status).to eq(200)
 				response_body = JSON.parse(response.body)
-				user_in_response2 = User.find_by_uid(response_body['user']['uid'])
-				user_in_token = User.find_by_uid(JWTAuth::JWTAuthenticator.decode_token(cookies['access-token']).first['jti'])
+				user_in_response2 = User.find(response_body['user']['id'])
+				user_in_token = User.find(JWTAuth::JWTAuthenticator.decode_token(cookies['access-token']).first['id'])
 				expect(user_in_token).to be_truthy
-				expect(user_in_token.uid).to eq(user_in_response2.uid)
+				expect(user_in_token.id).to eq(user_in_response2.id)
 
 				expect(user_in_response).to_not eq(user_in_response2)
 			end

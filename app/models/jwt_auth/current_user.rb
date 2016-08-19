@@ -1,11 +1,18 @@
 class JWTAuth::CurrentUser
 
-	def initialize (user_uid)
-		@uid = user_uid
+	attr_reader :id, :type, :current_device
+
+	def initialize (user_id, type, device)
+		@id   			= user_id
+		@type 			= type
+		@current_device = device
 	end
 
-	def load_user
-		@user ||= User.find_by_uid(@uid)
+	def load
+		@user ||= User.find(@id)
 	end
 
+	def method_missing (method_sym, *arguments, &block)
+		load.send(method_sym, *arguments, &block)
+	end
 end
