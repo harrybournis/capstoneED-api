@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-	constraints subdomain: "api" do
+	#constraints subdomain: "api" do
 		namespace :v1, constraints: { format: 'json' } do
 			resources :users
 			devise_for :users, skip: [:sessions], skip_helpers: true
@@ -10,9 +10,9 @@ Rails.application.routes.draw do
 			post 	'register',	to: 'users#create'
 			post	'sign_in',	to: 'authentications#sign_in_email'
 			post	'sign_out',	to: 'authentications#sign_out'
-			get 'refresh', to: 'authentications#refresh'
+			post	'refresh', 	to: 'authentications#refresh'
 		end
-	end
+	#end
 
 	## To be removed
 	post 'auth/facebook', to: 'authentications#facebook'

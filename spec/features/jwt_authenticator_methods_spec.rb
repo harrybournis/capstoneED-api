@@ -129,11 +129,12 @@ RSpec.describe "JWTAuthenticator method" do
 				end
 
 				it "revoked token's expiration date is bigger than the refresh tokens' " do
+					@valid_token.update(exp: Time.now + 1.month)
 					validated_request = JWTAuthenticator.valid_refresh_request(@request)
 					expect(validated_request).to be_truthy
 					decoded_token = JWTAuthenticator.decode_token(validated_request.refresh_token)
 					valid_token = ActiveToken.find_by_device(decoded_token.first['device'])
-					expect(decoded_token.first['exp'] > valid_token.exp.to_i).to be_falsy
+					expect(decoded_token.first['exp'] >= valid_token.exp.to_i).to be_falsy
 
 					expect(JWTAuthenticator.refresh(@request, @response, @cookies)).to be_falsy
 				end

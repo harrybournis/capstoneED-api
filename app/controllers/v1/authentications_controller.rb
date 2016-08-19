@@ -1,6 +1,6 @@
 class V1::AuthenticationsController < ApplicationController
 
-	skip_before_action :authenticate_user_jwt, only: [:sign_in_email]
+	skip_before_action :authenticate_user_jwt, only: [:sign_in_email, :refresh]
 
 	include JWTAuth::JWTAuthenticator
 
@@ -13,7 +13,7 @@ class V1::AuthenticationsController < ApplicationController
 	# POST /refresh
 	# creates a new JWT access-token using the refresh-token
 	def refresh
-		#render json: :none, status: JWTAuth::JWTAuthenticator.refresh(request,response) ? :ok : :unauthorized
+		render json: '', status: JWTAuth::JWTAuthenticator.refresh(request, response, cookies) ? :ok : :unauthorized
 	end
 
 

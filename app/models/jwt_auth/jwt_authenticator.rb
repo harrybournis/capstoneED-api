@@ -6,7 +6,7 @@ module JWTAuth::JWTAuthenticator
 	@@exp			= 10.minutes			# expiration time for access-token
 	@@refresh_exp	= 1.week				# expiration time for refresh-token
 	@@leeway		= 1.week				# grace period after a token has expired.
-	@@domain  		= 'api.localhost:3000' 	# to be added to the cookies
+	@@domain  		= "" 					# to be added to the cookies. left blank for developement in order to work with browsers.
 	@@issuer		= @@domain				# typically the website url. added to JWT tokens.
 
 
@@ -69,14 +69,14 @@ module JWTAuth::JWTAuthenticator
 	#
 	# returns boolean
 	#
-	def self.refresh (request, response,  cookies)
+	def self.refresh (request, response, cookies)
 		return false unless validated_request = valid_refresh_request(request)
 
 		decoded_token = decode_token(validated_request.refresh_token)
 
 		valid_token = ActiveToken.find_by_device(decoded_token.first['device'])
 
-		if valid_token && decoded_token.first['exp'] > valid_token.exp.to_i
+		if valid_token && decoded_token.first['exp'] >= valid_token.exp.to_i
 			device = valid_token.device
 			time_now = DateTime.now
 
@@ -102,8 +102,16 @@ module JWTAuth::JWTAuthenticator
 		return false unless access_token && refresh_token
 
 		response.headers['XSRF-TOKEN'] = csrf_token
-		cookies['access-token'] = { value: access_token, expires: exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
-		cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, domain: @@issuer, path: '/v1/refresh', secure: true, httponly: true, same_site: true }
+		###### UNCOMMENT FOR PRODUCTION #####
+		#cookies['access-token'] = { value: access_token, expires: exp_time, domain: @@issuer, secure: true, httponly: true, same_site: true }
+		#cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, domain: @@issuer, path: '/v1/refresh', secure: true, httponly: true, same_site: true }
+		###### <----------------------> #####
+
+		######   FOR DEVELOPMENT ONLY   #####
+		#cookies['rabood'] = { value: 'tzilidd', expires: Time.now + 1.month, secure: true,httponly: true }
+		cookies['access-token'] = { value: access_token, expires: exp_time, httponly: true, same_site: true }
+		cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, path: '/v1/refresh', httponly: true, same_site: true }
+		###### <----------------------> #####
 		true
 	end
 
@@ -125,11 +133,18 @@ module JWTAuth::JWTAuthenticator
 
 
 	def self.decode_token (token)
+		###### UNCOMMENT FOR PRODUCTION #####
+		# JWT.decode(token, @@secret, true, { algorithm: @@algorithm,
+		# 									leeway: @@leeway.to_i,
+		# 									iss: @@issuer,
+		# 									verify_iss: true
+		# 															})
+		###### <----------------------> #####
+
+		######   FOR DEVELOPMENT ONLY   #####
 		JWT.decode(token, @@secret, true, { algorithm: @@algorithm,
-											leeway: @@leeway.to_i,
-											iss: @@issuer,
-											verify_iss: true
-																	})
+											leeway: @@leeway.to_i})
+		###### <----------------------> #####
 	end
 
 
