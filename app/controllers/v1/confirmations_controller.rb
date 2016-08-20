@@ -1,5 +1,6 @@
-class User::ConfirmationsController < Devise::ConfirmationsController
-  skip_before_action :authenticate_user_jwt, only: [:new, :edit]
+class V1::ConfirmationsController < Devise::ConfirmationsController
+
+  skip_before_action  :authenticate_user_jwt
 
 
   # GET /resource/confirmation/new
@@ -8,35 +9,34 @@ class User::ConfirmationsController < Devise::ConfirmationsController
   end
 
   # POST /resource/confirmation
+  # resend confirmation. requires an email in params
   def create
-    # self.resource = resource_class.send_confirmation_instructions(resource_params)
-    # yield resource if block_given?
+    @unconfirmed_user = User.send_confirmation_instructions({ email: confirmation_params[:email] })
 
-    # if successfully_sent?(resource)
-    #   respond_with({}, location: after_resending_confirmation_instructions_path_for(resource_name))
-    # else
-    #   respond_with(resource)
-    # end
-    #
-    # Send confirmation instructions
+    if successfully_sent?(@unconfirmed_user)
+      render json: '', status: :ok
+    else
+      render json: '', status: :unprocessable_entity
+    end
   end
 
   # GET /resource/confirmation?confirmation_token=abcdef
+  # Accept confirmation. must have confirmation token in params
   def show
-    # self.resource = resource_class.confirm_by_token(params[:confirmation_token])
-    # yield resource if block_given?
+    @user = User.confirm_by_token(params[:confirmation_token])
 
-    # if resource.errors.empty?
-    #   set_flash_message!(:notice, :confirmed)
-    #   respond_with_navigational(resource){ redirect_to after_confirmation_path_for(resource_name, resource) }
-    # else
-    #   respond_with_navigational(resource.errors, status: :unprocessable_entity){ render :new }
-    # end
-    #
-    # Accept confirmation. must have confirmation token in params
+    if @user.errors.empty?
+      redirect_to "capstoned.com/account_confirmed"           # REPLACE WITH ACTUAL PAGE
+    else
+      redirect_to "capstoned.com/account_confirmation_failed" # REPLACE WITH ACTUAL PAGE
+    end
   end
 
-  # protected
+  protected
+
+  def confirmation_params
+    params.permit(:email)
+  end
 
   # The path used after resending confirmation instructions.
   # def after_resending_confirmation_instructions_path_for(resource_name)
@@ -47,4 +47,21 @@ class User::ConfirmationsController < Devise::ConfirmationsController
   # def after_confirmation_path_for(resource_name, resource)
   #   super(resource_name, resource)
   # end
+
+  # Helper for use after calling send_*_instructions methods on a resource.
+  # If we are in paranoid mode, we always act as if the resource was valid
+  # and instructions were sent.
+  #
+  # OVERRIDE: Removed updating the flash
+  def successfully_sent?(resource)
+    notice = if Devise.paranoid
+      resource.errors.clear
+      :send_paranoid_instructions
+    elsif resource.errors.empty?
+      :send_instructions
+    end
+
+    return true if notice
+  end
+
 end

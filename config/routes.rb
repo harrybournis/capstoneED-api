@@ -2,8 +2,11 @@ Rails.application.routes.draw do
 
 	#constraints subdomain: "api" do
 		namespace :v1, constraints: { format: 'json' } do
-			resources :users
-			devise_for :users, skip: [:sessions], skip_helpers: true
+			resources :users, only: [:create, :update, :destroy]
+
+			devise_for :users, skip: [:sessions], skip_helpers: true, controllers: {
+				confirmations: 'v1/confirmations'
+			}
 
 			# Authentication Routes
 			get 	'me', 		to: 'authentications#me'

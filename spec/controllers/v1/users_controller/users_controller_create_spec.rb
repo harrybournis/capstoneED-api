@@ -10,12 +10,15 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 
 	context 'valid request' do
 
+		before(:each) do
+			@user = FactoryGirl.build(:user)
+		end
+
 		describe 'POST create' do
 			it 'creates a new user and save them in the database' do
-				user = FactoryGirl.build(:user)
 				expect { post :create, params: { 'email' => 'email@email.com', 'password' => '12345678',
-					'password_confirmation' => '12345678', 'first_name' => user.first_name,
-					'last_name' => user.last_name }
+					'password_confirmation' => '12345678', 'first_name' => @user.first_name,
+					'last_name' => @user.last_name }
 				}. to change { User.count }
 
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
@@ -25,8 +28,7 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 			end
 
 			it 'encrypts the users password before saving' do
-				user = FactoryGirl.build(:user)
-				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => user.first_name, 'last_name' => user.last_name }
+				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @user.first_name, 'last_name' => @user.last_name }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(response.status).to eq(201)
 				expect(User.find(assigns[:user].id).encrypted_password).to_not eq(request.params['password'])
@@ -34,18 +36,22 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 			end
 
 			it 'returns 201 created' do
-				user = FactoryGirl.build(:user)
-				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => user.first_name, 'last_name' => user.last_name }
+				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @user.first_name, 'last_name' => @user.last_name }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(response.status).to eq(201)
 			end
 
 			it 'has email as a provider' do
-				user = FactoryGirl.build(:user)
-				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => user.first_name, 'last_name' => user.last_name }
+				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @user.first_name, 'last_name' => @user.last_name }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(response.status).to eq(201)
 				expect(assigns[:user].provider).to eq('email')
+			end
+
+			it 'sends confirmation email' do
+				post :create, params: { 'email' => @user.email, 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @user.first_name, 'last_name' => @user.last_name }
+				expect(response.status).to eq(201)
+				expect(ActionMailer::Base.deliveries.last.to.first).to eq(@user.email)
 			end
 		end
 

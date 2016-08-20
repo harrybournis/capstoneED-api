@@ -54,10 +54,13 @@ class V1::AuthenticationsController < ApplicationController
 
 		user_info.delete("id")
 
-		# # save the user
-		#
-		# # #
-		#render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
+		@user = User.new(user_info)
+		@user.provider = 'facebook'
+		if @user.save
+			render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
+		else
+			render json: @user.errors, status: :unprocessable_entity
+		end
 	end
 
 	# POST
