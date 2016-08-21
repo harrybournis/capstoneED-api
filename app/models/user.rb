@@ -12,6 +12,15 @@ class User < ApplicationRecord
 #
 	def full_name ; "#{first_name} #{last_name}" end
 
+	# Disallow assignment to the provider attribute
+	def provider=(value)
+		if self.persisted?
+			self.errors.add(:provider, "can't be modified for security reasons.")
+			return false
+		end
+		super
+	end
+
 	# in case a token has been compromized, running this will update all ActiveTokens
 	# for the user with a new expiration date starting now, effectively invalidating
 	# all previous refresh tokens.
@@ -44,6 +53,12 @@ class User < ApplicationRecord
 		user && user.valid_password?(params[:password]) ? user : nil
 	end
 
+	# Used in the reset password email sent by devise
+	def self.reset_password_url(token)
+		"https://capstoned.com?reset_password_token=#{token}"
+	end
+
+
 
 protected
 
@@ -52,4 +67,5 @@ protected
 	def password_required?
 		(!persisted? && provider == 'email') || !password.nil? || !password_confirmation.nil?
 	end
+
 end

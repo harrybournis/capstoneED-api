@@ -12,6 +12,14 @@ class V1::PasswordsController < Devise::PasswordsController
   # Create password reset token and send email instructions.
   # requires email in params
   def create
+    if @user = User.find_by_email(password_params[:email])
+      if @user.provider != 'email'
+        @user.errors[:provider] << "is #{@user.provider}. Did not authenticate with email/password."
+        render json: @user.errors, status: :forbidden
+        return
+      end
+    end
+
     @user = User.send_reset_password_instructions(password_params)
 
     if successfully_sent?(@user)

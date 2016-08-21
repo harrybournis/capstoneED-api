@@ -26,7 +26,13 @@ RSpec.describe 'PasswordsController /create', type: :controller do
 
   context 'invalid request' do
 
-    it 'responed with 422 unprocessable_entity if user did not sign up by email '
+    it 'responds with 403 unprocessable_entity if user did not sign up by email' do
+      @user  = FactoryGirl.create(:user)
+      expect(@user.provider).to_not eq('email')
+      expect(@user.reset_password_token).to be_falsy
+      post :create, params: { email: @user.email }
+      expect(response.status).to eq(403)
+    end
 
     it 'responds with 422 unprocessable_entity if email is not included' do
       expect(@user.reset_password_token).to be_falsy

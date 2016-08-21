@@ -26,4 +26,8 @@ protected
 		end
 	end
 
+
+	# def only_email_authenticatd_users
+	# end
+
 end

@@ -13,7 +13,6 @@ RSpec.describe 'ConfirmationsController /show', type: :controller do
     @user = User.send_reset_password_instructions({email: @user.email})
     expect(@user.reset_password_token).to be_truthy
     expect(ActionMailer::Base.deliveries.last.to.first).to eq(@user.email)
-    binding.pry
     message = ActionMailer::Base.deliveries.last.body.to_s
     rpt_index = message.index("reset_password_token")+"reset_password_token".length+1
     @token = message[rpt_index...message.index("\"", rpt_index)]

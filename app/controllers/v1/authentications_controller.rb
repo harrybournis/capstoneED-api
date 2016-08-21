@@ -18,6 +18,7 @@ class V1::AuthenticationsController < ApplicationController
 
 
 	# POST /sign_in
+	# Sign in by email and password. Required email and password.
 	def sign_in_email
 		if @user = User.valid_sign_in?(auth_params)
 			if JWTAuth::JWTAuthenticator.sign_in(@user, response, cookies)
@@ -25,7 +26,7 @@ class V1::AuthenticationsController < ApplicationController
 				return
 			end
 		end
-		render json: "", status: :unauthorized
+		render json: '', status: :unauthorized
 	end
 
 

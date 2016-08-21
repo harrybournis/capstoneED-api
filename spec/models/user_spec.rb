@@ -12,6 +12,13 @@ RSpec.describe User, type: :model do
 		it { should validate_presence_of(:email) }
 
 		it { should validate_uniqueness_of(:email).case_insensitive }
+
+		it 'does not allow provider to be updated' do
+			user = FactoryGirl.create(:user)
+			expect(user.update(provider: 'email')).to be_truthy
+			expect(user.errors).to be_empty
+			expect(user.provider).to eq('test')
+		end
 	end
 
 	describe 'instance methods' do
