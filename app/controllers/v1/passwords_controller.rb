@@ -1,8 +1,6 @@
-class User::PasswordsController < Devise::PasswordsController
-  # prepend_before_action :require_no_authentication
-  # # Render the #edit only if coming from a reset password email link
-  skip_before_action :authenticate_user_jwt, except: [:new, :edit, :update]
-  append_before_action :assert_reset_token_passed, only: :update
+class V1::PasswordsController < Devise::PasswordsController
+  # Render the #edit only if coming from a reset password email link
+  skip_before_action :authenticate_user_jwt
 
 
   # GET /resource/password/new
@@ -11,17 +9,16 @@ class User::PasswordsController < Devise::PasswordsController
   end
 
   # POST /resource/password
+  # Create password reset token and send email instructions.
+  # requires email in params
   def create
-    # self.resource = resource_class.send_reset_password_instructions(resource_params)
-    #   yield resource if block_given?
+    @user = User.send_reset_password_instructions(password_params)
 
-    #   if successfully_sent?(resource)
-    #     respond_with({}, location: after_sending_reset_password_instructions_path_for(resource_name))
-    #   else
-    #     respond_with(resource)
-    # end
-    #
-    # Create password reset token and send email instructions
+    if successfully_sent?(@user)
+      render json: '', status: :ok
+    else
+      render json: '', status: :unprocessable_entity
+    end
   end
 
   # GET /resource/password/edit?reset_password_token=abcdef
@@ -31,34 +28,42 @@ class User::PasswordsController < Devise::PasswordsController
   end
 
   # PUT /resource/password
+  #
+  # requires reset_password_token, password, password_confirmation in params
   def update
-      # self.resource = resource_class.reset_password_by_token(resource_params)
-      # yield resource if block_given?
+    if params[:reset_password_token].blank?
+      render json: 'No reset_password_token', status: :unprocessable_entity
+      return
+    end
 
-      # if resource.errors.empty?
-      # resource.unlock_access! if unlockable?(resource)
-      # if Devise.sign_in_after_reset_password
-      #   flash_message = resource.active_for_authentication? ? :updated : :updated_not_active
-      #   set_flash_message!(:notice, flash_message)
-      #   sign_in(resource_name, resource)
-      # else
-      #   set_flash_message!(:notice, :updated_not_active)
-      # end
-      # respond_with resource, location: after_resetting_password_path_for(resource)
-      # else
-      # set_minimum_password_length
-      # respond_with resource
-      # end
+    @user = User.reset_password_by_token(password_params)
+
+    if @user.errors.empty?
+      render json: '', status: :ok
+    else
+      render json: @user.errors, status: :unprocessable_entity
+    end
   end
 
-  # protected
+protected
 
-  # def after_resetting_password_path_for(resource)
-  #   super(resource)
-  # end
+  def password_params
+    params.permit(:email, :reset_password_token, :password, :password_confirmation)
+  end
 
-  # The path used after sending reset password instructions
-  # def after_sending_reset_password_instructions_path_for(resource_name)
-  #   super(resource_name)
-  # end
+  # Helper for use after calling send_*_instructions methods on a resource.
+  # If we are in paranoid mode, we always act as if the resource was valid
+  # and instructions were sent.
+  #
+  # OVERRIDE: Removed updating the flash
+  def successfully_sent?(resource)
+    notice = if Devise.paranoid
+      resource.errors.clear
+      :send_paranoid_instructions
+    elsif resource.errors.empty?
+      :send_instructions
+    end
+
+    return true if notice
+  end
 end
