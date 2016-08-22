@@ -2,6 +2,7 @@ class V1::PasswordsController < Devise::PasswordsController
   # Render the #edit only if coming from a reset password email link
   skip_before_action :authenticate_user_jwt
 
+  include ApiHelper
 
   # GET /resource/password/new
   def new
@@ -15,7 +16,7 @@ class V1::PasswordsController < Devise::PasswordsController
     if @user = User.find_by_email(password_params[:email])
       if @user.provider != 'email'
         @user.errors[:provider] << "is #{@user.provider}. Did not authenticate with email/password."
-        render json: { errors: @user.errors }, status: :forbidden
+        render json: format_errors(@user.errors), status: :forbidden
         return
       end
     end
@@ -49,7 +50,7 @@ class V1::PasswordsController < Devise::PasswordsController
     if @user.errors.empty?
       render json: '', status: :ok
     else
-      render json: { errors: @user.errors }, status: :unprocessable_entity
+      render json: format_errors(@user.errors), status: :unprocessable_entity
     end
   end
 

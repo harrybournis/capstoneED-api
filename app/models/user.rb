@@ -53,12 +53,6 @@ class User < ApplicationRecord
 		user && user.valid_password?(params[:password]) ? user : nil
 	end
 
-	# Used in the reset password email sent by devise
-	def self.reset_password_url(token)
-		"https://capstoned.com?reset_password_token=#{token}"
-	end
-
-
 
 protected
 

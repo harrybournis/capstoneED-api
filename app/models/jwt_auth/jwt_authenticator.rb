@@ -1,13 +1,13 @@
 module JWTAuth::JWTAuthenticator
 
 	# Class Variables
-	@@secret			= 'secret' 		## TO be replaced with the application's secret key
-	@@algorithm 	= 'HS256'			# available algorithms: https://github.com/jwt/ruby-jwt
-	@@exp					= 10.minutes	# expiration time for access-token
-	@@refresh_exp	= 1.week			# expiration time for refresh-token
-	@@leeway			= 1.week			# grace period after a token has expired.
-	@@domain  		= "" 					# to be added to the cookies. left blank for developement in order to work with browsers.
-	@@issuer			= @@domain		# typically the website url. added to JWT tokens.
+	@@secret			= 'secret' 			## TO be replaced with the application's secret key
+	@@algorithm 	= 'HS256'				# available algorithms: https://github.com/jwt/ruby-jwt
+	@@exp					= 10.minutes		# expiration time for access-token
+	@@refresh_exp	= 1.week				# expiration time for refresh-token
+	@@leeway			= 1.week				# grace period after a token has expired.
+	@@domain  		= api_host_url	# to be added to the cookies. left blank for developement in order to work with browsers. Change variable in helpers/url_helper.rb
+	@@issuer			= @@domain			# typically the website url. added to JWT tokens.
 
 
 	###

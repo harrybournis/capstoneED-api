@@ -4,6 +4,7 @@ class V1::UsersController < ApplicationController
 
 	before_action :authorize_user, except: [:index, :create]
 
+	include ApiHelper
 
 	# def index
 	# 	@users = User.all
@@ -24,7 +25,7 @@ class V1::UsersController < ApplicationController
 		if @user.save
 			render json: '', status: :created
 		else
-			render json: { errors: @user.errors }, status: :unprocessable_entity
+			render json: format_errors(@user.errors), status: :unprocessable_entity
 		end
 	end
 
@@ -37,7 +38,7 @@ class V1::UsersController < ApplicationController
 		if @user.method(update_method).call(user_params.except(:provider))
 			render json: @user, status: :ok
 		else
-			render json: { errors: @user.errors }, status: :unprocessable_entity
+			render json: format_errors(@user.errors), status: :unprocessable_entity
 		end
 	end
 
@@ -48,7 +49,7 @@ class V1::UsersController < ApplicationController
 		if @user.destroy_with_password(user_params[:current_password])
 			render json: '', status: :no_content
 		else
-			render json: { errors: @user.errors }, status: :unprocessable_entity
+			render json: format_errors(@user.errors), status: :unprocessable_entity
 		end
 	end
 

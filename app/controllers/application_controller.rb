@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::API
-	include ActionController::Cookies
-	include JWTAuth::JWTAuthenticator
+	include ActionController::Cookies, JWTAuth::JWTAuthenticator, UrlHelper
 
 	before_action :authenticate_user_jwt
 
@@ -27,7 +26,7 @@ protected
 	end
 
 
-	# def only_email_authenticatd_users
+	# def only_email_authenticated_users
 	# end
 
 end

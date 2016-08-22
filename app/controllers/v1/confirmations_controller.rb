@@ -26,9 +26,9 @@ class V1::ConfirmationsController < Devise::ConfirmationsController
     @user = User.confirm_by_token(params[:confirmation_token])
 
     if @user.errors.empty?
-      redirect_to "capstoned.com/account_confirmed"           # REPLACE WITH ACTUAL PAGE
+      api_confirmation_success_url # change @ url_helper.rb
     else
-      redirect_to "capstoned.com/account_confirmation_failed" # REPLACE WITH ACTUAL PAGE
+      api_confirmation_failure_url # change @ url_helper.rb
     end
   end
 
@@ -37,16 +37,6 @@ class V1::ConfirmationsController < Devise::ConfirmationsController
   def confirmation_params
     params.permit(:email)
   end
-
-  # The path used after resending confirmation instructions.
-  # def after_resending_confirmation_instructions_path_for(resource_name)
-  #   super(resource_name)
-  # end
-
-  # The path used after confirmation.
-  # def after_confirmation_path_for(resource_name, resource)
-  #   super(resource_name, resource)
-  # end
 
   # Helper for use after calling send_*_instructions methods on a resource.
   # If we are in paranoid mode, we always act as if the resource was valid
