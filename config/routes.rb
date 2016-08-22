@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  apipie
 	#constraints subdomain: "api" do
 		namespace :v1, constraints: { format: 'json' } do
 			resources :users, only: [:update, :destroy]

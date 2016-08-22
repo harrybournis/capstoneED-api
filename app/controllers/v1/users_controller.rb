@@ -14,6 +14,7 @@ class V1::UsersController < ApplicationController
 
 	# POST create /register
 	# required params: email, password, password_confirmation
+	api!
 	def create
 		if !user_params['email'] || !user_params['password'] || !user_params['password_confirmation']
 			render json: :none, status: :bad_request
