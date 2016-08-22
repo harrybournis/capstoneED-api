@@ -22,9 +22,9 @@ class V1::UsersController < ApplicationController
 		@user = User.new(user_params).process_new_record
 
 		if @user.save
-			render json: :none, status: :created
+			render json: '', status: :created
 		else
-			render json: @user.errors, status: :unprocessable_entity
+			render json: { errors: @user.errors }, status: :unprocessable_entity
 		end
 	end
 
@@ -37,7 +37,7 @@ class V1::UsersController < ApplicationController
 		if @user.method(update_method).call(user_params.except(:provider))
 			render json: @user, status: :ok
 		else
-			render json: @user.errors, status: :unprocessable_entity
+			render json: { errors: @user.errors }, status: :unprocessable_entity
 		end
 	end
 
@@ -46,9 +46,9 @@ class V1::UsersController < ApplicationController
 	# required params: id, current_password
 	def destroy
 		if @user.destroy_with_password(user_params[:current_password])
-			render json: :none, status: :no_content
+			render json: '', status: :no_content
 		else
-			render json: @user.errors, status: :unprocessable_entity
+			render json: { errors: @user.errors }, status: :unprocessable_entity
 		end
 	end
 

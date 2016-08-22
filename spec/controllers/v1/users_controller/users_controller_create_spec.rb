@@ -70,7 +70,7 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation')
 				expect(response.status).to eq(422)
 				errors_body = JSON.parse(response.body)
-				expect(errors_body['email'].first).to eq('is invalid')
+				expect(errors_body['errors']['email'].first).to eq('is invalid')
 			end
 
 			it 'returns 422 unprocessable_entity if passwords dont match' do
@@ -78,7 +78,7 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation')
 				expect(response.status).to eq(422)
 				errors_body = JSON.parse(response.body)
-				expect(errors_body['password_confirmation'].first).to eq("doesn't match Password")
+				expect(errors_body['errors']['password_confirmation'].first).to eq("doesn't match Password")
 			end
 
 			it 'returns 422 unprocessable_entity if password too short' do
@@ -86,7 +86,7 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation')
 				expect(response.status).to eq(422)
 				errors_body = JSON.parse(response.body)
-				expect(errors_body['password'].first).to eq("is too short (minimum is 6 characters)")
+				expect(errors_body['errors']['password'].first).to eq("is too short (minimum is 6 characters)")
 			end
 
 		end

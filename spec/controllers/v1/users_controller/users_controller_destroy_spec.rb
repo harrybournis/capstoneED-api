@@ -104,7 +104,7 @@ RSpec.describe 'V1::UsersController DELETE /destroy', type: :controller do
 				expect(@new_en.valid_password?('qwertyuiop')).to be_falsy
 				expect(@new_en.valid_password?('12345678')).to be_truthy
 				res_body = JSON.parse(response.body)
-				expect(res_body['current_password']).to include("is invalid")
+				expect(res_body['errors']['current_password']).to include("is invalid")
 			end
 		end
 	end

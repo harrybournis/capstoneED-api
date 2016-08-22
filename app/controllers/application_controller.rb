@@ -22,7 +22,7 @@ protected
 		if current_user!.id.to_s == user_params[:id]
 			@user = current_user!.load
 		else
-			render json: :none, status: :forbidden
+			render json: '', status: :forbidden
 		end
 	end
 

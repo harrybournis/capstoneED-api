@@ -5,7 +5,7 @@ class V1::ConfirmationsController < Devise::ConfirmationsController
 
   # GET /resource/confirmation/new
   def new
-    render json: :none, status: :not_found
+    render json: '', status: :not_found
   end
 
   # POST /resource/confirmation

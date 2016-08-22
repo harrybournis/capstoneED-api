@@ -109,7 +109,7 @@ RSpec.describe 'V1::UsersController PUT /update', type: :controller do
 				expect(@new_en.valid_password?('qwertyuiop')).to be_falsy
 				expect(@new_en.valid_password?('12345678')).to be_truthy
 				res_body = JSON.parse(response.body)
-				expect(res_body['password_confirmation']).to include("doesn't match Password")
+				expect(res_body['errors']['password_confirmation']).to include("doesn't match Password")
 			end
 
 			it 'returns 422 unprocessable_entity if old password is invalid' do
@@ -120,7 +120,7 @@ RSpec.describe 'V1::UsersController PUT /update', type: :controller do
 				expect(@new_en.valid_password?('qwertyuiop')).to be_falsy
 				expect(@new_en.valid_password?('wrong_password')).to be_falsy
 				res_body = JSON.parse(response.body)
-				expect(res_body['current_password']).to_not be_empty
+				expect(res_body['errors']['current_password']).to_not be_empty
 			end
 		end
 	end

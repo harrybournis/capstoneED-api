@@ -5,7 +5,7 @@ class V1::PasswordsController < Devise::PasswordsController
 
   # GET /resource/password/new
   def new
-    render json: :none, status: :not_found
+    render json: '', status: :not_found
   end
 
   # POST /resource/password
@@ -15,7 +15,7 @@ class V1::PasswordsController < Devise::PasswordsController
     if @user = User.find_by_email(password_params[:email])
       if @user.provider != 'email'
         @user.errors[:provider] << "is #{@user.provider}. Did not authenticate with email/password."
-        render json: @user.errors, status: :forbidden
+        render json: { errors: @user.errors }, status: :forbidden
         return
       end
     end
@@ -32,7 +32,7 @@ class V1::PasswordsController < Devise::PasswordsController
   # GET /resource/password/edit?reset_password_token=abcdef
   def edit
     # the update action will check for the reset token
-    render json: :none, status: :not_found
+    render json: '', status: :not_found
   end
 
   # PUT /resource/password
@@ -49,7 +49,7 @@ class V1::PasswordsController < Devise::PasswordsController
     if @user.errors.empty?
       render json: '', status: :ok
     else
-      render json: @user.errors, status: :unprocessable_entity
+      render json: { errors: @user.errors }, status: :unprocessable_entity
     end
   end
 
