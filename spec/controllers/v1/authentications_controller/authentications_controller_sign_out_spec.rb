@@ -4,8 +4,6 @@ include JWTAuth::JWTAuthenticator
 module V1
 RSpec.describe 'V1::AuthenticationsController POST /sign_out', type: :controller do
 
-
-
 	context 'valid request: ' do
 
 		before(:each) do

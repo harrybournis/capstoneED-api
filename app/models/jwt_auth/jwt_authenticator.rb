@@ -1,13 +1,13 @@
 module JWTAuth::JWTAuthenticator
 
 	# Class Variables
-	@@secret		= 'secret' 				## TO be replaced with the application's secret key
-	@@algorithm 	= 'HS256'				# available algorithms: https://github.com/jwt/ruby-jwt
-	@@exp			= 10.minutes			# expiration time for access-token
-	@@refresh_exp	= 1.week				# expiration time for refresh-token
-	@@leeway		= 1.week				# grace period after a token has expired.
+	@@secret			= 'secret' 		## TO be replaced with the application's secret key
+	@@algorithm 	= 'HS256'			# available algorithms: https://github.com/jwt/ruby-jwt
+	@@exp					= 10.minutes	# expiration time for access-token
+	@@refresh_exp	= 1.week			# expiration time for refresh-token
+	@@leeway			= 1.week			# grace period after a token has expired.
 	@@domain  		= "" 					# to be added to the cookies. left blank for developement in order to work with browsers.
-	@@issuer		= @@domain				# typically the website url. added to JWT tokens.
+	@@issuer			= @@domain		# typically the website url. added to JWT tokens.
 
 
 	###
@@ -21,7 +21,7 @@ module JWTAuth::JWTAuthenticator
 		return false unless validated_request = valid_access_request(request)
 
 		decoded_token = decode_token(validated_request.access_token)
-		token_params = decoded_token.first
+		token_params 	= decoded_token.first
 
 		if validated_request.csrf_token == token_params['csrf_token']
 			JWTAuth::CurrentUser.new(token_params['id'], token_params['type'], token_params['device'])
@@ -74,7 +74,7 @@ module JWTAuth::JWTAuthenticator
 
 		decoded_token = decode_token(validated_request.refresh_token)
 
-		valid_token = ActiveToken.find_by_device(decoded_token.first['device'])
+		valid_token 	= ActiveToken.find_by_device(decoded_token.first['device'])
 
 		if valid_token && decoded_token.first['exp'] >= valid_token.exp.to_i
 			device = valid_token.device
@@ -93,8 +93,8 @@ module JWTAuth::JWTAuthenticator
 	#### PRIVATE METHODS
 	def self.create_new_tokens (user, response, cookies, device, time_now)
 		csrf_token			  = SecureRandom.base64(32)
-		exp_time 			  = time_now + @@exp
-		refresh_exp_time	  = time_now + @@refresh_exp
+		exp_time 			  	= time_now + @@exp
+		refresh_exp_time	= time_now + @@refresh_exp
 
 		access_token 		  = encode_token(user, time_now, csrf_token, device)
 		refresh_token		  = encode_token(user, time_now, nil, device)
@@ -123,7 +123,7 @@ module JWTAuth::JWTAuthenticator
 			JWT.encode(access_token_payload, @@secret, @@algorithm)
 
 		else
-			refresh_exp_time = time_now + @@refresh_exp
+			refresh_exp_time 			= time_now + @@refresh_exp
 			refresh_token_payload = { exp: refresh_exp_time.to_i, iss: @@issuer, device: device_id }
 
 			JWT.encode(refresh_token_payload, @@secret, @@algorithm)

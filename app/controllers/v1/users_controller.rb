@@ -11,8 +11,8 @@ class V1::UsersController < ApplicationController
 	# end
 
 
-	# POST create
-	# needs params: email, password, password_confirmation
+	# POST create /register
+	# required params: email, password, password_confirmation
 	def create
 		if !user_params['email'] || !user_params['password'] || !user_params['password_confirmation']
 			render json: :none, status: :bad_request
@@ -30,7 +30,7 @@ class V1::UsersController < ApplicationController
 
 
 	# PUT update
-	# needs params: id, current_password
+	# required params: id, current_password (only if password is to be updated)
 	def update
 		update_method = user_params[:current_password] ? 'update_with_password' : 'update_without_password'
 
@@ -43,7 +43,7 @@ class V1::UsersController < ApplicationController
 
 
 	# DELETE destroy
-	# needs params: id, current_password
+	# required params: id, current_password
 	def destroy
 		if @user.destroy_with_password(user_params[:current_password])
 			render json: :none, status: :no_content

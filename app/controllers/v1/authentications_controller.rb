@@ -31,6 +31,8 @@ class V1::AuthenticationsController < ApplicationController
 
 
 	# POST /sign_out
+	# Signs out user by deleting the ActiveToken for their device, and deleting the access-token
+	# and refresh token cookies
 	def sign_out
 		if active_token = ActiveToken.find_by_device(current_user!.current_device)
 			active_token.destroy
@@ -38,37 +40,38 @@ class V1::AuthenticationsController < ApplicationController
 		cookies.delete('access-token', domain: JWTAuth::JWTAuthenticator.domain)
 		cookies['refresh-token'] = { value: nil, expires: Time.at(0), domain: JWTAuth::JWTAuthenticator.domain, path: '/v1/refresh', secure: true, httponly: true, same_site: true }
 		cookies.delete('refresh-token', domain: JWTAuth::JWTAuthenticator.domain, path: '/v1/refresh')
+		render json: '', status: :no_content
 	end
 
 
-	# POST
-	def facebook
-		###### REFACTOR
-		client = OAuth2::Client.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'], site: 'https://graph.facebook.com/v2.7', token_url: "/oauth/access_token")
+	# # POST
+	# def facebook
+	# 	###### REFACTOR
+	# 	client = OAuth2::Client.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'], site: 'https://graph.facebook.com/v2.7', token_url: "/oauth/access_token")
 
-		client.auth_code.authorize_url(:redirect_uri => 'http://localhost:3000/')
+	# 	client.auth_code.authorize_url(:redirect_uri => 'http://localhost:3000/')
 
-		token = client.auth_code.get_token(params[:authentication][:code], redirect_uri: "http://localhost:3000/", parse: :query)
-		facebook_response = token.get('/me', :params => { fields: 'id,first_name,last_name,email' })
+	# 	token = client.auth_code.get_token(params[:authentication][:code], redirect_uri: "http://localhost:3000/", parse: :query)
+	# 	facebook_response = token.get('/me', :params => { fields: 'id,first_name,last_name,email' })
 
-		user_info = JSON.parse(facebook_response.body)
+	# 	user_info = JSON.parse(facebook_response.body)
 
-		user_info.delete("id")
+	# 	user_info.delete("id")
 
-		@user = User.new(user_info)
-		@user.provider = 'facebook'
-		if @user.save
-			render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
-		else
-			render json: @user.errors, status: :unprocessable_entity
-		end
-	end
+	# 	@user = User.new(user_info)
+	# 	@user.provider = 'facebook'
+	# 	if @user.save
+	# 		render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
+	# 	else
+	# 		render json: @user.errors, status: :unprocessable_entity
+	# 	end
+	# end
 
-	# POST
-	def google
-		# validate user's credentials with oauth2
-		#render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
-	end
+	# # POST
+	# def google
+	# 	# validate user's credentials with oauth2
+	# 	#render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
+	# end
 
 private
 	def auth_params
