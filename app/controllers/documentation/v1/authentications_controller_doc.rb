@@ -1,11 +1,11 @@
-class Documentation::V1::UsersControllerDoc < ApplicationController
+class Documentation::V1::AuthenticationsControllerDoc < ApplicationController
 
 	include Documentation::Helpers::DocHelper
 	DocHelper = Documentation::Helpers::DocHelper
 
 	resource_description do
-	  short 'Superclass of Student and Lecturer'
-	  name 'User'
+	  short 'Sign In, Sign Out, register with OAuth'
+	  name 'Authentications'
 	  api_base_url '/v1/users'
 	  api_version 'v1'
 	  description 'The User model handles authentication.'

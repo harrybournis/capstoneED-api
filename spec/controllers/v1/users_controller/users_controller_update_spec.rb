@@ -76,7 +76,6 @@ RSpec.describe 'V1::UsersController PUT /update', type: :controller do
 				expect(response.status).to eq(401)
 				@new_en.reload
 				expect(@new_en.first_name).to_not eq('first')
-
 			end
 
 			it 'returns 403 forbidden if the user to be updated is not the current user' do
@@ -88,6 +87,7 @@ RSpec.describe 'V1::UsersController PUT /update', type: :controller do
 				different_user.reload
 				expect(different_user.first_name).to_not eq('change_their_name')
 				expect(different_user.first_name).to eq(old_name)
+				expect(JSON.parse(response.body)['errors']['user'].first).to include('not authorized to access this resourse.')
 			end
 
 			it 'returns 422 unprocessable_entity if email format wrong' do

@@ -52,6 +52,8 @@ group :development do
   gem 'faker', '~> 1.6', '>= 1.6.6' # generate dummy data
 
   gem 'letter_opener', '~> 1.4', '>= 1.4.1' # email opens in the browser
+
+  gem 'awesome_print', '~> 1.7'
 end
 
 group :test do

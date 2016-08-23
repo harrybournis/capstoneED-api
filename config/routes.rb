@@ -2,14 +2,15 @@ Rails.application.routes.draw do
 
 	#constraints subdomain: "api" do
 		namespace :v1, constraints: { format: 'json' } do
+
+			# User Routes
+			resources :users, only: [:update, :destroy]
+			post 	'/users/register',	to: 'users#create'
+
 			devise_for :users, skip: [:sessions], skip_helpers: true, controllers: {
 				confirmations: 'v1/confirmations',
 				passwords: 		 'v1/passwords'
 			}
-			resources :users, only: [:update, :destroy]
-			post 	'/users/register',	to: 'users#create'
-
-
 
 			# Authentication Routes
 			get 	'me', 		  to: 'authentications#me'
