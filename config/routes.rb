@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
 
-  apipie
 	#constraints subdomain: "api" do
 		namespace :v1, constraints: { format: 'json' } do
 			resources :users, only: [:update, :destroy]
@@ -23,4 +22,6 @@ Rails.application.routes.draw do
 	post 'auth/facebook', to: 'authentications#facebook'
 	post 'omniauth/facebook', to: 'authentications#facebook'
 	##
+
+	apipie
 end
