@@ -4,11 +4,9 @@ class V1::UsersController < ApplicationController
 
 	before_action :authorize_user, only: [:update, :destroy]
 
-	include ApiHelper
-
 
 	# POST '/register'
-	# 'Register a new user using email and password as authentication'
+	# Register a new user using email and password as authentication
 	def create
 		if !user_params['email'] || !user_params['password'] || !user_params['password_confirmation']
 			render json: '', status: :bad_request
@@ -26,7 +24,7 @@ class V1::UsersController < ApplicationController
 
 
 	# PUT '/users/:id'
-	# Needs current_password if password is to be updated
+	# Requires current_password if password is to be updated
 	def update
 		update_method = user_params[:current_password] ? 'update_with_password' : 'update_without_password'
 
@@ -39,7 +37,7 @@ class V1::UsersController < ApplicationController
 
 
 	# DELETE destroy
-	# required params: id, current_password
+	# Requires current_password
 	def destroy
 		if @user.destroy_with_password(user_params[:current_password])
 			render json: '', status: :no_content

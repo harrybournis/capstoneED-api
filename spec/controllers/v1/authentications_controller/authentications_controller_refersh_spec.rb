@@ -23,16 +23,17 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 
 		it 'response contains new access-token, new refresh-token cookies, and XSRF-TOKEN in headers' do
 			post :refresh
-			expect(response.status).to eq(200)
+			expect(response.status).to eq(204)
 			expect(response.headers).to include('Set-Cookie')
 			expect(response.headers['Set-Cookie']).to include('access-token')
 			expect(response.headers['Set-Cookie']).to include('refresh-token')
 			expect(response.headers).to include('XSRF-TOKEN')
+			binding.pry
 		end
 
 		it 'response returns 200 ok' do
 			post :refresh
-			expect(response.status).to eq(200)
+			expect(response.status).to eq(204)
 		end
 
 		it 'active token is updated with the new expiration date' do
@@ -46,7 +47,7 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 		it 'refresh token is not revoked' do
 			expect(@decoded_token.first['exp'] >= @token.exp.to_i).to be_truthy
 			post :refresh
-			expect(response.status).to eq(200)
+			expect(response.status).to eq(204)
 		end
 	end
 

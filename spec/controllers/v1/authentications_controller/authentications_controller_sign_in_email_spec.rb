@@ -41,9 +41,10 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 	end
 
 	context 'invalid request' do
-		it 'returns 401 unauthorized' do
+		it 'returns 400 bad request' do
 			post :sign_in_email
-			expect(response.status).to eq(401)
+			expect(response.status).to eq(400)
+			expect(JSON.parse(response.body)['errors']['user']).to eq("Missing Parameters. Request should contain 'email' and 'password'.")
 		end
 
 		it 'email does not exist' do

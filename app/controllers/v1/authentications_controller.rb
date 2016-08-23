@@ -13,13 +13,18 @@ class V1::AuthenticationsController < ApplicationController
 	# POST /refresh
 	# creates a new JWT access-token using the refresh-token
 	def refresh
-		render json: '', status: JWTAuth::JWTAuthenticator.refresh(request, response, cookies) ? :ok : :unauthorized
+		render json: '', status: JWTAuth::JWTAuthenticator.refresh(request, response, cookies) ? :no_content : :unauthorized
 	end
 
 
 	# POST /sign_in
 	# Sign in by email and password. Required email and password.
 	def sign_in_email
+		if !auth_params['email'] || !auth_params['password']
+			render json: format_errors({ user: "Missing Parameters. Request should contain 'email' and 'password'." }), status: :bad_request
+			return
+		end
+
 		if @user = User.valid_sign_in?(auth_params)
 			if JWTAuth::JWTAuthenticator.sign_in(@user, response, cookies)
 				render json: @user, status: :ok
@@ -30,7 +35,7 @@ class V1::AuthenticationsController < ApplicationController
 	end
 
 
-	# POST /sign_out
+	# DELETE /sign_out
 	# Signs out user by deleting the ActiveToken for their device, and deleting the access-token
 	# and refresh token cookies
 	def sign_out
