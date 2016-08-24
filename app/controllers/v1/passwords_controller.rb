@@ -19,14 +19,17 @@ class V1::PasswordsController < Devise::PasswordsController
         render json: format_errors(@user.errors), status: :forbidden
         return
       end
-    end
 
-    @user = User.send_reset_password_instructions(password_params)
 
-    if successfully_sent?(@user)
-      render json: '', status: :ok
+      @user = User.send_reset_password_instructions(password_params)
+
+      if successfully_sent?(@user)
+        render json: '', status: :no_content
+      else
+        render json: format_errors(@user.errors), status: :unprocessable_entity
+      end
     else
-      render json: '', status: :unprocessable_entity
+      render json: format_errors({ email: ['is invalid'] }), status: :unprocessable_entity
     end
   end
 
@@ -41,14 +44,14 @@ class V1::PasswordsController < Devise::PasswordsController
   # requires reset_password_token, password, password_confirmation in params
   def update
     if params[:reset_password_token].blank?
-      render json: 'No reset_password_token', status: :unprocessable_entity
+      render json: format_errors({ reset_password_token: ["can't be blank"] }), status: :bad_request
       return
     end
 
     @user = User.reset_password_by_token(password_params)
 
     if @user.errors.empty?
-      render json: '', status: :ok
+      render json: '', status: :no_content
     else
       render json: format_errors(@user.errors), status: :unprocessable_entity
     end

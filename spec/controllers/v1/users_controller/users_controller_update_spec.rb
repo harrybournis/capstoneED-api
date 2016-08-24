@@ -50,6 +50,19 @@ RSpec.describe 'V1::UsersController PUT /update', type: :controller do
 				expect(@new_en.valid_password?('qwertyuiop')).to be_truthy
 				expect(@new_en.valid_password?('12345678')).to be_falsy
 			end
+
+			it 'updating email sends a new confirmation email' do
+				@new_en.confirm
+				expect(@new_en.confirmed?).to be_truthy
+				old_conf_token = @new_en.confirmation_token
+				put :update, params: { id: @new_en.id, email: 'new_email@email.com'  }
+				@new_en.reload
+				expect(@new_en.confirmation_token).to_not eq(old_conf_token)
+				expect(ActionMailer::Base.deliveries.last.to.first).to eq('new_email@email.com')
+				@new_en.reload
+				expect(@new_en.email).to_not eq('new_email@email.com')
+				expect(@new_en.unconfirmed_email).to eq('new_email@email.com')
+			end
 		end
 	end
 

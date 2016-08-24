@@ -16,7 +16,7 @@ RSpec.describe 'PasswordsController /create', type: :controller do
     it 'sends an email with password reset instructions' do
       expect(@user.reset_password_token).to be_falsy
       post :create, params: { email: @user.email }
-      expect(response.status).to eq(200)
+      expect(response.status).to eq(204)
       expect(ActionMailer::Base.deliveries.last.to.first).to eq(@user.email)
       @user.reload
       expect(@user.reset_password_token).to be_truthy
@@ -26,7 +26,7 @@ RSpec.describe 'PasswordsController /create', type: :controller do
 
   context 'invalid request' do
 
-    it 'responds with 403 unprocessable_entity if user did not sign up by email' do
+    it 'responds with 403 forbidden if user did not sign up by email' do
       @user  = FactoryGirl.create(:user)
       expect(@user.provider).to_not eq('email')
       expect(@user.reset_password_token).to be_falsy
@@ -48,6 +48,7 @@ RSpec.describe 'PasswordsController /create', type: :controller do
       expect(response.status).to eq(422)
       @user.reload
       expect(@user.reset_password_token).to be_falsy
+      expect(JSON.parse(response.body)['errors']['email'].first).to eq('is invalid')
     end
   end
 end
