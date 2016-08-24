@@ -18,6 +18,7 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 		end
 
 		it 'response contains the user' do
+			@user.confirm
 			post :sign_in_email, params: { email: @user.email, password: '12345678' }
 			res_body = JSON.parse(response.body)
 			expect(res_body).to include('user')
@@ -25,15 +26,18 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 		end
 
 		it 'returns 200 ok' do
+			@user.confirm
 			post :sign_in_email, params: { email: @user.email, password: '12345678' }
 			expect(response.status).to eq(200)
 		end
 
 		it 'response contains XSRF-TOKEN headers' do
+			@user.confirm
 			post :sign_in_email, params: { email: @user.email, password: '12345678' }
 			expect(response.headers['XSRF-TOKEN']).to be_truthy
 		end
 		it 'response contains access-token, refresh-token in cookies' do
+			@user.confirm
 			post :sign_in_email, params: { email: @user.email, password: '12345678' }
 			expect(cookies['access-token']).to be_truthy
 			expect(cookies['refresh-token']).to be_truthy
@@ -44,18 +48,22 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 		it 'returns 400 bad request' do
 			post :sign_in_email
 			expect(response.status).to eq(400)
-			expect(JSON.parse(response.body)['errors']['user']).to eq("Missing Parameters. Request should contain 'email' and 'password'.")
+			errors = JSON.parse(response.body)['errors']
+			expect(errors['email'].first).to eq("can't be blank")
+			expect(errors['password'].first).to eq("can't be blank")
 		end
 
-		it 'email does not exist' do
+		it 'email does not exist in database' do
 			post :sign_in_email, params: { email: 'wrong@emaildoesnotexist.com', password: '12345678' }
 			expect(response.status).to eq(401)
-			expect(User.find_by_email('wrong@email.com')).to be_falsy
+			expect(JSON.parse(response.body)['errors']['password'].first).to eq('is invalid')
+			expect(User.find_by_email('wrong@emaildoesnotexist.com')).to be_falsy
 		end
 
 		it 'email exists, password does not match with email' do
 			post :sign_in_email, params: { email: @user.email, password: 'wrongpassword' }
 			expect(response.status).to eq(401)
+			expect(JSON.parse(response.body)['errors']['password'].first).to eq('is invalid')
 			expect(User.find_by_email(@user.email).valid_password?('wrongpassword')).to be_falsy
 		end
 
@@ -72,10 +80,10 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 			expect(cookies['refresh-token']).to be_falsy
 		end
 
-		it 'response does NOT contain user' do
-			post :sign_in_email, params: { email: 'wronguser', password: 'wrongpassword' }
+		it 'returns 401 if valid request but user is unconfirmed' do
+			post :sign_in_email, params: { email: @user.email, password: '12345678' }
 			expect(response.status).to eq(401)
-			expect(response.body).to be_empty
+			expect(JSON.parse(response.body)['errors']['email'].first).to eq('is unconfirmed')
 		end
 	end
 end

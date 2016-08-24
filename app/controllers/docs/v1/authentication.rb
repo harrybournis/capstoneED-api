@@ -62,12 +62,12 @@ class Docs::V1::Authentication < ApplicationController
 	example DocHelper.format_example(status = 200, headers = "{\n  \"X-Frame-Options\": \"SAMEORIGIN\",\n  \"X-XSS-Protection\": \"1; mode=block\",\n  \"X-Content-Type-Options\": \"nosniff\",\n  \"XSRF-TOKEN\": \"T8s44Z44kQR0BbidKGhlvSC7mQoDoTf4lKWnuT1Z5LA=\",\n  \"Content-Type\": \"application/json; charset=utf-8\",\n  \"Set-Cookie\": \"access-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzE5OTU1MDIsImlkIjozMzYzOSwidHlwZSI6bnVsbCwiaXNzIjoiIiwiZGV2aWNlIjoiTGN2RjZDQnZTVzJ6bGtGbnp4SmJVTmpaWTl5SzJhazlmMnl1b3NEWkZFdz0iLCJjc3JmX3Rva2VuIjoiVDhzNDRaNDRrUVIwQmJpZEtHaGx2U0M3bVFvRG9UZjRsS1dudVQxWjVMQT0ifQ.YbqfKaDyjZXXPXkuzhvhfcLQhcRz-OxkKveg7AeHMLg; path=/; expires=Tue, 23 Aug 2016 23:38:22 -0000; HttpOnly; SameSite=Strict\\nrefresh-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzI1OTk3MDIsImlzcyI6IiIsImRldmljZSI6IkxjdkY2Q0J2U1cyemxrRm56eEpiVU5qWlk5eUsyYWs5ZjJ5dW9zRFpGRXc9In0.BrkCthYzKmwJn2JMYhsEeOqr8-o2-5W_L97lnOJFIl4; path=/v1/refresh; expires=Tue, 30 Aug 2016 23:28:22 -0000; HttpOnly; SameSite=Strict\"\n}", body = "{\n  \"user\": {\n    \"id\": 33639,\n    \"first_name\": \"Mireille\",\n    \"last_name\": \"Buckridge\",\n    \"email\": \"estelle@hotmail.com\"\n  }\n}")
 	example DocHelper.format_example(status = 400, nil, body = "{\n  \"errors\": {\n    \"user\": \"Missing Parameters. Request should contain 'email' and 'password'.\"\n  }\n}")
 	description <<-EOS
-		Sign In using Email and Password. On successful authentication, the user is returned. The
+		Sign In using Email and Password. The user must have confirmed their account through the
+		confirmation email sent after /register. On successful authentication, the user is returned. The
 		XSRF-TOKEN header is added to the response, which should be saved on the client, to be added in
 		subsequent requests under the header X-XSRF-TOKEN. The response also sets two cookies, one with the
 		access-token, and one with the refresh-token, which are secure and http-only, thus they are not
 		accessible via javascript, and require no further action for the client in order to use them.
-		<p>
 		The access-token cookie will automatically be sent to all subsequent requests, while the
 		refresh-token cookie will only be sent to the /refresh path.
 	EOS

@@ -21,17 +21,19 @@ class V1::AuthenticationsController < ApplicationController
 	# Sign in by email and password. Required email and password.
 	def sign_in_email
 		if !auth_params['email'] || !auth_params['password']
-			render json: format_errors({ user: "Missing Parameters. Request should contain 'email' and 'password'." }), status: :bad_request
+			render json: format_errors({ email: ["can't be blank"], password: ["can't be blank"] }), status: :bad_request
 			return
 		end
 
-		if @user = User.valid_sign_in?(auth_params)
+		@user = User.validate_for_sign_in(auth_params)
+
+		if @user.errors.empty?
 			if JWTAuth::JWTAuthenticator.sign_in(@user, response, cookies)
 				render json: @user, status: :ok
 				return
 			end
 		end
-		render json: '', status: :unauthorized
+		render json: format_errors(@user.errors), status: :unauthorized
 	end
 
 
@@ -79,7 +81,9 @@ class V1::AuthenticationsController < ApplicationController
 	# end
 
 private
+
 	def auth_params
 		params.permit(:email, :password)
 	end
+
 end

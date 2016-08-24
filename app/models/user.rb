@@ -41,16 +41,21 @@ class User < ApplicationRecord
 	# returns self
 	def process_new_record
 		self.provider = 'email'
-		password = self.password
+		password = self.password # encrypts password
 		return self
 	end
 
 
 # ***> Class Methods
 #
-	def self.valid_sign_in? (params)
+	def self.validate_for_sign_in (params)
 		user = User.find_by_email(params[:email])
-		user && user.valid_password?(params[:password]) ? user : nil
+
+		user ||= User.new
+		user.errors.add(:email, 'is invalid') 		unless user
+		user.errors.add(:password, 'is invalid') 	unless user.valid_password?(params[:password])
+		user.errors.add(:email, 'is unconfirmed') if !user.confirmed? || user.pending_reconfirmation?
+		user
 	end
 
 
