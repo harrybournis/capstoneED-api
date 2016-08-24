@@ -1,7 +1,7 @@
-class Documentation::V1::AuthenticationsControllerDoc < ApplicationController
+class Docs::V1::Authentication < ApplicationController
 
-	include Documentation::Helpers::DocHelper
-	DocHelper = Documentation::Helpers::DocHelper
+	include Docs::Helpers::DocHelper
+	DocHelper = Docs::Helpers::DocHelper
 
 	resource_description do
 	  short 'Sign In, Sign Out, register with OAuth'
@@ -28,6 +28,7 @@ class Documentation::V1::AuthenticationsControllerDoc < ApplicationController
 
 
 	api :GET, '/me', 'Returns the current_user'
+	meta :authentication? => true
 	error code: 401, desc: 'User Authentication failed. Either the X-XSRF-TOKEN is missing from the headers, or the access-token is missing, invalid or expired'
 	example DocHelper.format_example(status = 200)
 	example DocHelper.format_example(status = 401)
@@ -74,6 +75,7 @@ class Documentation::V1::AuthenticationsControllerDoc < ApplicationController
 	end
 
 	api :DELETE, '/sign_out', 'Sign Out'
+	meta :authentication? => true
 	error code: 401, desc: 'User Authentication Failed'
 	example DocHelper.format_example(status = 204, headers = "{\n  \"X-Frame-Options\": \"SAMEORIGIN\",\n  \"X-XSS-Protection\": \"1; mode=block\",\n  \"X-Content-Type-Options\": \"nosniff\",\n  \"Set-Cookie\": \"access-token=; domain=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 -0000\\nrefresh-token=; domain=; path=/v1/refresh; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 -0000\"\n}")
 	example DocHelper.format_example(status = 401)

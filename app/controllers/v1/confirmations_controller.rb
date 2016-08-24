@@ -14,9 +14,9 @@ class V1::ConfirmationsController < Devise::ConfirmationsController
     @unconfirmed_user = User.send_confirmation_instructions({ email: confirmation_params[:email] })
 
     if successfully_sent?(@unconfirmed_user)
-      render json: '', status: :ok
+      render json: '', status: :no_content
     else
-      render json: '', status: :unprocessable_entity
+      render json: format_errors(@unconfirmed_user.errors), status: :unprocessable_entity
     end
   end
 

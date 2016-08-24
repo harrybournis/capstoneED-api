@@ -1,4 +1,4 @@
-module Documentation::Helpers::DocHelper
+module Docs::Helpers::DocHelper
 
 	def self.format_example(status, headers = nil, body = nil)
 		status_hash = {

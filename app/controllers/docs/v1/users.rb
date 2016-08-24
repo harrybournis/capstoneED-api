@@ -1,7 +1,7 @@
-class Documentation::V1::UsersControllerDoc < ApplicationController
+class Docs::V1::Users < ApplicationController
 
-	include Documentation::Helpers::DocHelper
-	DocHelper = Documentation::Helpers::DocHelper
+	include Docs::Helpers::DocHelper
+	DocHelper = Docs::Helpers::DocHelper
 
 	resource_description do
 	  short 'Superclass of Student and Lecturer'
@@ -30,6 +30,7 @@ class Documentation::V1::UsersControllerDoc < ApplicationController
 	end
 
 	api :PATCH, '/:id', 'Update user resource'
+	meta :authentication? => true
 	param :id, String,	'The users ID in the database. Used to find the user.', required: true
 	param :email, String,	'A unique email'
 	param :current_password, String, "Only required if password and password_confirmation are sent in the params"
@@ -51,6 +52,7 @@ class Documentation::V1::UsersControllerDoc < ApplicationController
 	end
 
 	api :DELETE, '/:id', 'Delete a user resource'
+	meta :authentication? => true
 	param :id, String, 'The users ID in the database. Used to find the user.', required: true
 	param :current_password, String, "A user has to enter their password to delete their account."
 	error code: 401, desc: 'User Authentication failed'
@@ -64,5 +66,32 @@ class Documentation::V1::UsersControllerDoc < ApplicationController
 		be included in the body as <b>current_password </b>
 	EOS
 	def destroy
+	end
+
+		api :GET, '/confirmation', 'Confirm your account'
+	param :confirmation_token, String, 'The confirmation token is contained as a parameter in the link that is sent to the user to confirm their account.'
+	example DocHelper.format_example(status = 302, headers = "{\n  \"X-Frame-Options\": \"SAMEORIGIN\",\n  \"X-XSS-Protection\": \"1; mode=block\",\n  \"X-Content-Type-Options\": \"nosniff\",\n  \"Location\": \"http://test.hostcapstoned.com/account_confirmation_success\",\n  \"Content-Type\": \"text/html; charset=utf-8\"\n}", body = "{\n<html><body>You are being <a href=\"http://test.hostcapstoned.com/account_confirmation_success\">redirected</a>.</body></html> \n}")
+	example DocHelper.format_example(status = 302, headers = "{\n  \"X-Frame-Options\": \"SAMEORIGIN\",\n  \"X-XSS-Protection\": \"1; mode=block\",\n  \"X-Content-Type-Options\": \"nosniff\",\n  \"Location\": \"http://test.hostcapstoned.com/account_confirmation_failure\",\n  \"Content-Type\": \"text/html; charset=utf-8\"\n}", body = "{\n<html><body>You are being <a href=\"http://test.hostcapstoned.com/account_confirmation_failure\">redirected</a>.</body></html> \n}")
+	description <<-EOS
+		Accept Confirmation. The link contained in the email sent to the user points to this route.
+		It redirects to a 'success' or 'failure' page to inform the user. Evaluates the confirmation token
+		contained within the params and confirms or rejects the user.
+		If this fails, assure that the link sent to the user contains the confirmation token in the url,
+		and offer the user the option to resend the confirmation email through the POST /confirmation endpoint.
+	EOS
+	def confirm
+	end
+
+	api :POST, '/confirmation', 'Resend confirmation email'
+	param :email, String, "User's Email"
+	error code: 401, desc: 'User Authentication failed'
+	example DocHelper.format_example(status = 204)
+	example DocHelper.format_example(status = 422, nil, body = "{\n  \"errors\": {\n    \"email\": [\n      \"was already confirmed, please try signing in\"\n    ]\n  }\n}")
+	example DocHelper.format_example(status = 422, nil, body = "{\n  \"errors\": {\n    \"email\": [\n      \"can't be blank\"\n    ]\n  }\n}")
+	description <<-EOS
+		Resends a confirmation email to the email provided in the params. The email must be a valid email
+		in the system.
+	EOS
+	def resend
 	end
 end

@@ -28,7 +28,6 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 			expect(response.headers['Set-Cookie']).to include('access-token')
 			expect(response.headers['Set-Cookie']).to include('refresh-token')
 			expect(response.headers).to include('XSRF-TOKEN')
-			binding.pry
 		end
 
 		it 'response returns 200 ok' do
