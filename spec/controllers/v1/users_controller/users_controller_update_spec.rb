@@ -60,6 +60,7 @@ RSpec.describe 'V1::UsersController PUT /update', type: :controller do
 				expect(@new_en.confirmation_token).to_not eq(old_conf_token)
 				expect(ActionMailer::Base.deliveries.last.to.first).to eq('new_email@email.com')
 				@new_en.reload
+				expect(@new_en.pending_reconfirmation?).to be_truthy
 				expect(@new_en.email).to_not eq('new_email@email.com')
 				expect(@new_en.unconfirmed_email).to eq('new_email@email.com')
 			end
