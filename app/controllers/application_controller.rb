@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-	include ActionController::Cookies, JWTAuth::JWTAuthenticator, UrlHelper
+	include ActionController::Cookies, JWTAuth::JWTAuthenticator, UrlHelper, ApiHelper
 
 	before_action :authenticate_user_jwt
 
@@ -21,7 +21,8 @@ protected
 		if current_user!.id.to_s == user_params[:id]
 			@user = current_user!.load
 		else
-			render json: '', status: :forbidden
+			render json: format_errors({ user: ["User with id #{user_params[:id]} is not authorized to access this resourse." ]}),
+				status: :forbidden
 		end
 	end
 

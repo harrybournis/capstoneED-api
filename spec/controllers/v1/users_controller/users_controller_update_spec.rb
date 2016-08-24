@@ -50,6 +50,20 @@ RSpec.describe 'V1::UsersController PUT /update', type: :controller do
 				expect(@new_en.valid_password?('qwertyuiop')).to be_truthy
 				expect(@new_en.valid_password?('12345678')).to be_falsy
 			end
+
+			it 'updating email sends a new confirmation email' do
+				@new_en.confirm
+				expect(@new_en.confirmed?).to be_truthy
+				old_conf_token = @new_en.confirmation_token
+				put :update, params: { id: @new_en.id, email: 'new_email@email.com'  }
+				@new_en.reload
+				expect(@new_en.confirmation_token).to_not eq(old_conf_token)
+				expect(ActionMailer::Base.deliveries.last.to.first).to eq('new_email@email.com')
+				@new_en.reload
+				expect(@new_en.pending_reconfirmation?).to be_truthy
+				expect(@new_en.email).to_not eq('new_email@email.com')
+				expect(@new_en.unconfirmed_email).to eq('new_email@email.com')
+			end
 		end
 	end
 
@@ -76,7 +90,6 @@ RSpec.describe 'V1::UsersController PUT /update', type: :controller do
 				expect(response.status).to eq(401)
 				@new_en.reload
 				expect(@new_en.first_name).to_not eq('first')
-
 			end
 
 			it 'returns 403 forbidden if the user to be updated is not the current user' do
@@ -88,6 +101,7 @@ RSpec.describe 'V1::UsersController PUT /update', type: :controller do
 				different_user.reload
 				expect(different_user.first_name).to_not eq('change_their_name')
 				expect(different_user.first_name).to eq(old_name)
+				expect(JSON.parse(response.body)['errors']['user'].first).to include('not authorized to access this resourse.')
 			end
 
 			it 'returns 422 unprocessable_entity if email format wrong' do

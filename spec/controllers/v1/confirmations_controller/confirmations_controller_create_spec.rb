@@ -16,7 +16,7 @@ RSpec.describe 'ConfirmationsController /create', type: :controller do
     it 'sends an email with confirmation instructions' do
       expect(@user.confirmed?).to be_falsy
       post :create, params: { email: @user.email }
-      expect(response.status).to eq(200)
+      expect(response.status).to eq(204)
       expect(ActionMailer::Base.deliveries.last.to.first).to eq(@user.email)
     end
 
@@ -28,6 +28,7 @@ RSpec.describe 'ConfirmationsController /create', type: :controller do
       expect(@user.confirmed?).to be_truthy
       post :create, params: { email: @user.email }
       expect(response.status).to eq(422)
+      expect(JSON.parse(response.body)['errors']['email'].first).to eq("was already confirmed, please try signing in")
     end
 
     it 'responds with 422 unprocessable_entity if email is not included' do
@@ -37,6 +38,7 @@ RSpec.describe 'ConfirmationsController /create', type: :controller do
       expect(response.status).to eq(422)
       @user.reload
       expect(@user.confirmation_token).to eq(old_conf_token)
+      expect(JSON.parse(response.body)['errors']['email'].first).to eq("can't be blank")
     end
 
     it 'responds with 422 unprocessable_entity if email does not exist in database' do
@@ -46,6 +48,7 @@ RSpec.describe 'ConfirmationsController /create', type: :controller do
       expect(response.status).to eq(422)
       @user.reload
       expect(@user.confirmation_token).to eq(old_conf_token)
+      expect(JSON.parse(response.body)['errors']['email'].first).to eq("not found")
     end
   end
 end

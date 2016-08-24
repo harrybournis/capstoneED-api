@@ -28,6 +28,9 @@ gem 'jwt', '~> 1.5', '>= 1.5.4'
 gem 'devise', '~> 4.2'
 gem 'oauth2', '~> 1.2'
 
+# Documentation
+gem 'apipie-rails', '~> 0.3.6'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
@@ -49,6 +52,8 @@ group :development do
   gem 'faker', '~> 1.6', '>= 1.6.6' # generate dummy data
 
   gem 'letter_opener', '~> 1.4', '>= 1.4.1' # email opens in the browser
+
+  gem 'awesome_print', '~> 1.7'
 end
 
 group :test do

@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'helpers/mock_request.rb'
 include JWTAuth::JWTAuthenticator
 module V1
-RSpec.describe 'V1::AuthenticationsController POST /sign_out', type: :controller do
+RSpec.describe 'V1::AuthenticationsController DELETE /sign_out', type: :controller do
 
 	context 'valid request: ' do
 
@@ -22,19 +22,19 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_out', type: :controller
 
 		it 'should delete the active token for this device' do
 			expect {
-				post :sign_out
+				delete :sign_out
 			}.to change { ActiveToken.count }.by(-1)
 			expect(ActiveToken.exists?(@token.id)).to be_falsy
 			expect(response.status).to eq(204)
 		end
 
 		it 'returns 204 no content' do
-			post :sign_out
+			delete :sign_out
 			expect(response.status).to eq(204)
 		end
 
 		it 'deletes the access-token and the refresh-token' do
-			post :sign_out
+			delete :sign_out
 			expect(response.status).to eq(204)
 			expect(response.cookies.include?('access-token')).to be_truthy
 			expect(response.cookies.include?('refresh-token')).to be_truthy
@@ -55,19 +55,19 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_out', type: :controller
 		end
 
 		it 'should NOT delete the active token' do
-			expect { post :sign_out }.to_not change { ActiveToken.count }
+			expect { delete :sign_out }.to_not change { ActiveToken.count }
 			expect(response.status).to eq(401)
 		end
 
 		it 'response does not delete access-token and refresh-token cookies' do
-			post :sign_out
+			delete :sign_out
 			expect(response.status).to eq(401)
 			expect(response.cookies.include?('access-token')).to be_falsy
 			expect(response.cookies.include?('refresh-token')).to be_falsy
 		end
 
 		it 'should return 401 unauthorized' do
-			post :sign_out
+			delete :sign_out
 			expect(response.status).to eq(401)
 		end
 	end

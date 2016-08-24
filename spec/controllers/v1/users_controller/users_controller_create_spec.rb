@@ -82,13 +82,12 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 			end
 
 			it 'returns 422 unprocessable_entity if password too short' do
-				post :create, params: { 'email' => 'email@email.com', 'password' => '1234', 'password_confirmation' => '1234', 'first_name' => 'Rixardos', 'last_name' => 'Arlekinos' }
+				post :create, params: { 'email' => 'emailmail.com', 'password' => '1234', 'password_confirmation' => '1234',  'last_name' => 'Arlekinos' }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation')
 				expect(response.status).to eq(422)
 				errors_body = JSON.parse(response.body)
-				expect(errors_body['errors']['password'].first).to eq("is too short (minimum is 6 characters)")
+				expect(errors_body['errors']['password'].first).to eq("is too short (minimum is 8 characters)")
 			end
-
 		end
 	end
 
