@@ -1,15 +1,19 @@
 class User < ApplicationRecord
 
+	# Associations
 	has_many :active_tokens, dependent: :destroy
 
+	# Includes
+	include User::EmailAuthenticatable
 	devise :database_authenticatable, :confirmable, :recoverable,
 	       :trackable, :validatable
 
+	# Validations
 	validates_presence_of :first_name, :last_name
 
-
-# ***> Instance methods
-#
+å
+	### Instance Methods
+	#
 	def full_name ; "#{first_name} #{last_name}" end
 
 	# Disallow assignment to the provider attribute
@@ -35,36 +39,13 @@ class User < ApplicationRecord
 		end
 	end
 
-	# Called on a new user object before save. It generates a unique uid and
-	# encrypts the password using devise's bcrypt method.
-	#
-	# returns self
-	def process_new_record
-		self.provider = 'email'
-		password = self.password # encrypts password
-		return self
-	end
-
-
-# ***> Class Methods
-#
-	def self.validate_for_sign_in (params)
-		user = User.find_by_email(params[:email])
-
-		user ||= User.new
-		user.errors.add(:email, 'is invalid') 		unless user
-		user.errors.add(:password, 'is invalid') 	unless user.valid_password?(params[:password])
-		user.errors.add(:email, 'is unconfirmed') if !user.confirmed?
-		user
-	end
-
 
 protected
+
 
 	# overrides the default devise method in validatable.rb to require password
 	# only if user signed up via email
 	def password_required?
 		(!persisted? && provider == 'email') || !password.nil? || !password_confirmation.nil?
 	end
-
 end
