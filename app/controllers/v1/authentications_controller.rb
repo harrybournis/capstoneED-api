@@ -7,7 +7,7 @@ class V1::AuthenticationsController < ApplicationController
 	# GET /me
 	# validates the JWT access-token and returns the current user
 	def me
-		render json: current_user!.load, status: :ok
+		render json: current_user.load, status: :ok
 	end
 
 	# POST /refresh
@@ -41,7 +41,7 @@ class V1::AuthenticationsController < ApplicationController
 	# Signs out user by deleting the ActiveToken for their device, and deleting the access-token
 	# and refresh token cookies
 	def sign_out
-		if active_token = ActiveToken.find_by_device(current_user!.current_device)
+		if active_token = ActiveToken.find_by_device(current_user.current_device)
 			active_token.destroy
 		end
 		cookies.delete('access-token', domain: JWTAuth::JWTAuthenticator.domain)
