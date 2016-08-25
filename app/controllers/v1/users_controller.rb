@@ -2,7 +2,7 @@ class V1::UsersController < ApplicationController
 
 	skip_before_action :authenticate_user_jwt, only: [:create]
 
-	before_action :authorize_user, only: [:update, :destroy]
+	before_action :allow_if_self, only: [:update, :destroy]
 
 
 	# POST '/register'
@@ -48,6 +48,15 @@ class V1::UsersController < ApplicationController
 
 
 private
+
+	def allow_if_self
+		if current_user.id.to_s == user_params[:id]
+			@user = current_user.load
+		else
+			render json: format_errors({ user: ["User with id #{user_params[:id]} is not authorized to access this resourse." ]}),
+				status: :forbidden
+		end
+	end
 
 	def user_params
 		params.permit(:id, :first_name, :last_name, :email, :password, :password_confirmation,
