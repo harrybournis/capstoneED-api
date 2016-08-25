@@ -13,6 +13,8 @@ RSpec.describe User, type: :model do
 
 		it { should validate_uniqueness_of(:email).case_insensitive }
 
+		it 'should validate type is not nil'
+
 		it 'does not allow provider to be updated' do
 			user = FactoryGirl.create(:user)
 			expect(user.update(provider: 'email')).to be_truthy

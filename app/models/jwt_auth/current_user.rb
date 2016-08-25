@@ -12,6 +12,8 @@ class JWTAuth::CurrentUser
 		@user ||= User.find(@id)
 	end
 
+private
+
 	def method_missing (method_sym, *arguments, &block)
 		load.send(method_sym, *arguments, &block)
 	end
