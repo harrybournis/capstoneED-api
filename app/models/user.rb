@@ -54,7 +54,7 @@ class User < ApplicationRecord
 		user ||= User.new
 		user.errors.add(:email, 'is invalid') 		unless user
 		user.errors.add(:password, 'is invalid') 	unless user.valid_password?(params[:password])
-		user.errors.add(:email, 'is unconfirmed') if !user.confirmed? || user.pending_reconfirmation?
+		user.errors.add(:email, 'is unconfirmed') if !user.confirmed?
 		user
 	end
 
