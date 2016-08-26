@@ -7,7 +7,7 @@ RSpec.describe 'ConfirmationsController /show', type: :controller do
   before(:each) do
     @controller = V1::ConfirmationsController.new
     request.env['devise.mapping'] = Devise.mappings[:v1_user]
-    @user = FactoryGirl.create(:user)
+    @user = FactoryGirl.create(:lecturer)
     expect(@user.confirmed?).to be_falsy
   end
 

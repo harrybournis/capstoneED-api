@@ -1,50 +1,101 @@
-<ul class='breadcrumb'>
-  <li class='active'><a href='<%= @doc[:doc_url] %><%= @doc[:link_extension] %>'><%= @doc[:name] %> <%= @doc[:resources].values.first && @doc[:resources].values.first[:version] %></a></li>
-  <%= render(:partial => "languages", :locals => {:doc_url => @doc[:doc_url]}) %>
-  <% if @versions && @versions.size > 1 %>
-  <li class='pull-right'>
-    <%= @versions.collect { |v| link_to v, Apipie.full_url(v+@doc[:link_extension]) }.join(' / ').html_safe %>
-  </li>
-  <% end %>
-</ul>
-
-<div><%= raw @doc[:info] %></div>
-
-<h1 class='page-header'><%= t('apipie.resources') %></h1>
-
-<% @doc[:resources].sort_by(&:first).each do |key, api| %>
-  <h2>
-    <a href='<%= api[:doc_url] %><%= @doc[:link_extension] %>'>
-      <%= api[:name] %>
-    </a><br>
-    <small><%= api[:short_description] %></small>
-  </h2>
-  <table class='table'>
-    <thead>
-      <tr>
-        <th><%= t('apipie.resource') %></th>
-        <th><%= t('apipie.description') %></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% api[:methods].each do |m| %>
-        <% if !m[:show] %>
-          <% next %>
-        <% end %>
-        <% m[:apis].each do |a| %>
-          <tr>
-            <td>
-              <a href='<%= m[:doc_url] %><%= @doc[:link_extension] %>'><%= a[:http_method] %> <%= a[:api_url] %></a>
-              <% if a[:deprecated] %>
-                <code>DEPRECATED</code>
-              <% end %>
-            </td>
-            <td width='60%'><%= a[:short_description] %></td>
-          </tr>
-        <% end %>
+<% @doc[:resources].sort_by(&:first).each do |key, resource| %>
+  <h4><a href='#<%= key %>'><%= resource[:name] %></a></h4>
+  <ul>
+    <% resource[:methods].each do |method| %>
+      <% if !method[:show] %>
+        <% next %>
       <% end %>
-    </tbody>
-  </table>
+      <li><a href='#<%= key %>-<%= method[:name] %>'><%= method[:name] %></a></li>
+    <% end %>
+  </ul>
+<% end %>
+
+
+
+<div><%= @doc[:info].html_safe %></div>
+
+<hr>
+
+<% @doc[:resources].sort_by(&:first).each do |key, resource| %>
+
+  <ul class='breadcrumb'  id='<%= key %>'>
+    <li><a href='#'><%= @doc[:name] %></a><span class='divider'>/</span></li>
+    <li class='active'><%= resource[:name] %></li>
+  </ul>
+
+  <div class='page-header'>
+    <h1>
+      <a href='#<%= key %>'><%= resource[:name] %></a><br>
+      <small><%= raw resource[:short_description] %></small>
+    </h1>
+  </div>
+
+  <% unless resource[:full_description].blank? %>
+    <div><%= raw resource[:full_description] %></div>
+  <% end %>
+
+  <div class='accordion' id='accordion'>
+
+    <% resource[:methods].each do |method| %>
+      <% if !method[:show] %>
+        <% next %>
+      <% end %>
+      <hr>
+
+      <ul class='breadcrumb' id='<%= key %>-<%= method[:name] %>'>
+        <li>
+          <a href='#'><%= @doc[:name] %></a>
+          <span class='divider'>/</span>
+        </li>
+        <li>
+          <a href='#<%= key %>'><%= resource[:name] %></a>
+          <span class='divider'>/</span>
+        </li>
+        <li class='active'><%= method[:name] %></li>
+      </ul>
+
+      <div>
+        <% method[:apis].each do |api| %>
+          <h3>
+            <a href='#<%= key %>-<%= method[:name] %>'>
+              <%= api[:http_method] %> <%= api[:api_url] %>
+            </a><br>
+            <small><%= raw api[:short_description] %></small>
+          </h3>
+        <% end %>
+      </div>
+
+      <div>
+        <%= raw method[:full_description] %>
+        <% unless method[:examples].blank? %>
+          <h2><%= t('apipie.examples') %></h2>
+          <% method[:examples].each do |example| %>
+            <pre><%= example %></pre>
+          <% end %>
+        <% end %>
+
+        <% unless method[:errors].blank? %>
+          <h2><%= t('apipie.errors') %></h2>
+          <%= render(:partial => "errors", :locals => {:errors => method[:errors]}) %>
+        <% end %>
+
+        <% unless method[:params].blank? %>
+          <h2><%= t('apipie.params') %></h2>
+          <table class='table'>
+            <thead>
+              <tr>
+                <th><%= t('apipie.param_name') %></th>
+                <th><%= t('apipie.description') %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= render(:partial => "params", :locals => {:params => method[:params]}) %>
+            </tbody>
+          </table>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 <% end %>
 
 <% unless content_for(:apipie_footer) == @doc[:copyright] %>
