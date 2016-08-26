@@ -17,17 +17,24 @@ protected
 	end
 
 
-	def authorize_user
-		if current_user.id.to_s == user_params[:id]
-			@user = current_user.load
-		else
-			render json: format_errors({ user: ["User with id #{user_params[:id]} is not authorized to access this resourse." ]}),
-				status: :forbidden
-		end
-	end
+	# def allow_if_lecturer
+	# 	unless @current.type == 'Lecturer'
+	# 		render json: format_errors({ type: ['must be Lecturer'] }), status: :forbidden
+	# 	end
+	# end
 
 
-	# def only_email_authenticated_users
+	# def allow_if_student
+	# 	unless @current.type == 'Student'
+	# 		render json: format_errors({ type: ['must be Student'] }), status: :forbidden
+	# 	end
+	# end
+
+
+	# def allow_if_authenticated_by_email
+	# 	unless @current.provider == 'email'
+	# 		render json: format_errors({ provider: ['must be email'] })
+	# 	end
 	# end
 
 end

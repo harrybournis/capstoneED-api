@@ -63,6 +63,19 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
 				expect(user_in_response).to_not eq(user_in_response2)
 			end
 
+			it 'expect current_user to be same class as their type' do
+				new_en = FactoryGirl.create(:student)
+				mock_request = MockRequest.new(valid = true, new_en)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
+				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
+
+				get :me
+				expect(response.status).to eq(200)
+				expect(JSON.parse(response.body)['student']['type']).to eq('Student')
+			end
+
 		end
 
 	end
