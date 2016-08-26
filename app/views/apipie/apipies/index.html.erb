@@ -1,3 +1,10 @@
+<div id="top-of-website"></div>
+<div id="back-to-top" style="position: fixed; bottom: 10px; right: 10px; background: #c1dcc3; padding: 17px; border-radius: 50%; padding-top: 20px; padding-bottom: 4px;">
+  <a href="#top-of-website" style="font-size: 35px;">
+    <span>^</span>
+  </a>
+</div>
+
 <% @doc[:resources].sort_by(&:first).each do |key, resource| %>
   <h4><a href='#<%= key %>'><%= resource[:name] %></a></h4>
   <ul>
