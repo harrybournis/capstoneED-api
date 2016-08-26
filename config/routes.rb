@@ -10,10 +10,11 @@ Rails.application.routes.draw do
 			post		'refresh', 	to: 'authentications#refresh'
 
 			# User Routes
-			resources :users, only: [:update, :destroy]
-			post 	'/users/register',	to: 'users#create'
+			resources :students, only: [:update, :destroy]
+			post 	'/students/register',	to: 'students#create'
 
-			resources :students
+			resources :lecturers, only: [:update, :destroy]
+			post 	'/lecturers/register',	to: 'lecturers#create'
 
 			devise_for :users, skip: [:sessions], skip_helpers: true, controllers: {
 				confirmations: 'v1/confirmations',

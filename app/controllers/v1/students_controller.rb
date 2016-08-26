@@ -1,4 +1,4 @@
-class StudentsController < ApplicationController
+class V1::StudentsController < ApplicationController
 
 	skip_before_action :authenticate_user_jwt, only: [:create]
 
@@ -13,7 +13,7 @@ class StudentsController < ApplicationController
 			return
 		end
 
-		@student = User.new(student_params).process_new_record
+		@student = Student.new(student_params).process_new_record
 
 		if @student.save
 			render json: '', status: :created
@@ -53,7 +53,7 @@ private
 		if current_user.id.to_s == student_params[:id]
 			@student = current_user.load
 		else
-			render json: format_errors({ user: ["Student with id #{student_params[:id]} is not authorized to access this resourse." ]}),
+			render json: format_errors({ student: ["Student with id #{student_params[:id]} is not authorized to access this resourse." ]}),
 				status: :forbidden
 		end
 	end

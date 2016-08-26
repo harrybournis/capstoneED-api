@@ -1,4 +1,4 @@
-class LecturersController < ApplicationController
+class V1::LecturersController < ApplicationController
 
 	skip_before_action :authenticate_user_jwt, only: [:create]
 
@@ -13,7 +13,7 @@ class LecturersController < ApplicationController
 			return
 		end
 
-		@lecturer = User.new(lecturer_params).process_new_record
+		@lecturer = Lecturer.new(lecturer_params).process_new_record
 
 		if @lecturer.save
 			render json: '', status: :created
@@ -53,14 +53,14 @@ private
 		if current_user.id.to_s == lecturer_params[:id]
 			@lecturer = current_user.load
 		else
-			render json: format_errors({ user: ["Lecturer with id #{lecturer_params[:id]} is not authorized to access this resourse." ]}),
+			render json: format_errors({ lecturer: ["Lecturer with id #{lecturer_params[:id]} is not authorized to access this resourse." ]}),
 				status: :forbidden
 		end
 	end
 
 	def lecturer_params
-		params.permit(:id, :first_name, :last_name, :email, :password, :password_confirmation,
-			:current_password)
+		params.permit(:id, :email, :password, :password_confirmation, :current_password,
+			:first_name, :last_name, :university, :position )
 	end
 
 end

@@ -2,56 +2,54 @@ require 'rails_helper'
 require 'helpers/mock_request.rb'
 include JWTAuth::JWTAuthenticator
 
-RSpec.describe 'V1::UsersController POST /create', type: :controller do
+RSpec.describe 'V1::LecturersController POST /create', type: :controller do
 
 	before(:all) do
-		@controller = V1::UsersController.new
+		@controller = V1::LecturersController.new
 	end
 
 	context 'valid request' do
 
 		before(:each) do
-			@user = FactoryGirl.build(:user)
+			@lecturer = FactoryGirl.build(:lecturer)
 		end
 
 		describe 'POST create' do
 			it 'creates a new user and save them in the database' do
-				expect { post :create, params: { 'email' => 'email@email.com', 'password' => '12345678',
-					'password_confirmation' => '12345678', 'first_name' => @user.first_name,
-					'last_name' => @user.last_name }
-				}. to change { User.count }
+				expect { post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
+				}. to change { Lecturer.count }
 
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(response.status).to eq(201)
-				expect(assigns[:user].valid?).to be_truthy
-				expect(assigns[:user].persisted?).to be_truthy
+				expect(assigns[:lecturer].valid?).to be_truthy
+				expect(assigns[:lecturer].persisted?).to be_truthy
 			end
 
 			it 'encrypts the users password before saving' do
-				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @user.first_name, 'last_name' => @user.last_name }
+				post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(response.status).to eq(201)
-				expect(User.find(assigns[:user].id).encrypted_password).to_not eq(request.params['password'])
-				expect(assigns[:user].valid_password?(request.params['password'])).to be_truthy
+				expect(Lecturer.find(assigns[:lecturer].id).encrypted_password).to_not eq(request.params['password'])
+				expect(assigns[:lecturer].valid_password?(request.params['password'])).to be_truthy
 			end
 
 			it 'returns 201 created' do
-				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @user.first_name, 'last_name' => @user.last_name }
+				post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(response.status).to eq(201)
 			end
 
 			it 'has email as a provider' do
-				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @user.first_name, 'last_name' => @user.last_name }
+				post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(response.status).to eq(201)
-				expect(assigns[:user].provider).to eq('email')
+				expect(assigns[:lecturer].provider).to eq('email')
 			end
 
 			it 'sends confirmation email' do
-				post :create, params: { 'email' => @user.email, 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @user.first_name, 'last_name' => @user.last_name }
+				post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
 				expect(response.status).to eq(201)
-				expect(ActionMailer::Base.deliveries.last.to.first).to eq(@user.email)
+				expect(ActionMailer::Base.deliveries.last.to.first).to eq(request.params['email'])
 			end
 		end
 
@@ -90,7 +88,4 @@ RSpec.describe 'V1::UsersController POST /create', type: :controller do
 			end
 		end
 	end
-
-
-
 end
