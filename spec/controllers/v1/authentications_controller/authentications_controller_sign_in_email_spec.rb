@@ -36,6 +36,7 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 			post :sign_in_email, params: { email: @user.email, password: '12345678' }
 			expect(response.headers['XSRF-TOKEN']).to be_truthy
 		end
+
 		it 'response contains access-token, refresh-token in cookies' do
 			@user.confirm
 			post :sign_in_email, params: { email: @user.email, password: '12345678' }
