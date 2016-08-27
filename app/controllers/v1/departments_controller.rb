@@ -4,6 +4,7 @@ class V1::DepartmentsController < ApplicationController
 	before_action :allow_if_lecturer
 	before_action :set_department, except: [:create]
 
+
 	def create
 		@department = Department.new(department_params)
 
