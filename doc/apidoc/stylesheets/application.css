@@ -5,14 +5,3 @@ body {
 .sidebar-nav {
   padding: 9px 0;
 }
-
-#top-of-website {
-	font-size: 35px;
-}
-
-#back-to-top {
-	background: #c1dcc3;
-    padding: 18px;
-    border-radius: 50%;
-    padding-top: 22px;
-}
