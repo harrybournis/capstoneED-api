@@ -12,7 +12,7 @@ class Docs::V1::Lecturers < ApplicationController
 	end
 
 
-	api :POST, '/register', 'Register a new user using email and password as authentication'
+	api :POST, '/register', 'Register a new Lecturer using email and password as authentication'
 	param :email, String,									'A unique email', 								required: true
 	param :password, String,							'Minimum 8 characters', 					required: true
 	param :password_confirmation, String, 'Must equal the password param', 	required: true
@@ -29,7 +29,7 @@ class Docs::V1::Lecturers < ApplicationController
 	def register
 	end
 
-	api :PATCH, '/:id', 'Update user resource'
+	api :PATCH, '/:id', 'Update Lecturer resource'
 	meta :authentication? => true
 	param :id, String,	'The users ID in the database. Used to find the user.', required: true
 	param :email, String,	'A unique email'
@@ -40,8 +40,10 @@ class Docs::V1::Lecturers < ApplicationController
 	param :last_name, String, "User's last name"
 	error code: 401, desc: 'User Authentication failed'
 	error code: 403, desc: 'The User to be updated is not the authenticated user. One can only update themselves.'
+	error code: 403, desc: 'The User logged in is not of type Lecturer'
 	error code: 422, desc: "Failed to save User. Params are invalid. See errors in response body."
 	example DocHelper.format_example(status = 200, nil, body = "{\n  \"user\": {\n    \"id\": 30876,\n    \"first_name\": \"different\",\n    \"last_name\": \"Metz\",\n    \"email\": \"quentin.senger@gmail.com\"\n  }\n}")
+	example DocHelper.format_example(status = 403, nil, body = "{\n  \"errors\": {\n    \"type\": [\n      \"must be Lecturer\"\n    ]\n  }\n}")
 	example DocHelper.format_example(status = 422, nil, body = "{\n  \"errors\": {\n    \"password_confirmation\": [\n      \"doesn't match Password\"\n    ]\n  }\n}")
 	description <<-EOS
 		Update an existing Lecturer. If the request aims to update the user's password,
@@ -51,15 +53,17 @@ class Docs::V1::Lecturers < ApplicationController
 	def update
 	end
 
-	api :DELETE, '/:id', 'Delete a user resource'
+	api :DELETE, '/:id', 'Delete a Lecturer resource'
 	meta :authentication? => true
 	param :id, String, 'The users ID in the database. Used to find the user.', required: true
 	param :current_password, String, "A user has to enter their password to delete their account.", required: true
 	error code: 401, desc: 'User Authentication failed'
 	error code: 403, desc: 'The User to be deleted is not the authenticated user. One can only delete themselves.'
+	error code: 403, desc: 'The User logged in is not of type Lecturer'
 	error code: 422, desc: 'Failed to delete user. Either the id or the current_password are invalid.'
 	example DocHelper.format_example(status = 204)
 	example DocHelper.format_example(status = 403, nil, body = "{\n  \"errors\": {\n    \"user\": [\n      \"User with id 32113 is not authorized to access this resourse.\"\n    ]\n  }\n}")
+	example DocHelper.format_example(status = 403, nil, body = "{\n  \"errors\": {\n    \"type\": [\n      \"must be Lecturer\"\n    ]\n  }\n}")
 	example DocHelper.format_example(status = 422, nil, body = "{\n  \"errors\": {\n    \"current_password\": [\n      \"is invalid\"\n    ]\n  }\n}")
 	description <<-EOS
 		Delete a Lecturer. the user's id must be provided as part of the url, and their valid password must

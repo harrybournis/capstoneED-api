@@ -70,6 +70,22 @@ RSpec.describe 'V1::LecturersController PUT /update', type: :controller do
 	context 'invalid request' do
 
 		describe 'PUT update' do
+
+			it 'is returns 403 forbidden if user is not a lecturer' do
+				student = FactoryGirl.build(:student_with_password).process_new_record
+				student.save
+				mock_request = MockRequest.new(valid = true, student)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
+				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
+
+				put :update, params: { id: student.id, first_name: 'different' }
+				expect(response.status).to eq(403)
+				binding.pry
+				expect(JSON.parse(response.body)['errors']['type'].first).to eq('must be Lecturer')
+			end
+
 			it 'ignores updates to the provider field' do
 				put :update, params: { id: @lecturer.id, provider: 'facebook', last_name: 'new_last_name' }
 				expect(response.status).to eq(200)

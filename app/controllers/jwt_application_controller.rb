@@ -33,16 +33,15 @@ protected
 		end
 	end
 
-	# def allow_if_lecturer
-	# 	unless @current.type == 'Lecturer'
-	# 		render json: format_errors({ type: ['must be Lecturer'] }), status: :forbidden
-	# 	end
-	# end
+	def allow_if_lecturer
+		unless @current.load.instance_of? Lecturer
+			render json: format_errors({ type: ['must be Lecturer'] }), status: :forbidden
+		end
+	end
 
-
-	# def allow_if_student
-	# 	unless @current.type == 'Student'
-	# 		render json: format_errors({ type: ['must be Student'] }), status: :forbidden
-	# 	end
-	# end
+	def allow_if_student
+		unless @current.load.instance_of? Student
+			render json: format_errors({ type: ['must be Student'] }), status: :forbidden
+		end
+	end
 end
