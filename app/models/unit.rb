@@ -11,4 +11,6 @@ class Unit < ApplicationRecord
 	validates_presence_of :year
 	validates_presence_of :lecturer_id
 	validates_numericality_of :year
+
+	accepts_nested_attributes_for :department
 end

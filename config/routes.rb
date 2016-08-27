@@ -9,17 +9,25 @@ Rails.application.routes.draw do
 			delete	'sign_out',	to: 'authentications#sign_out'
 			post		'refresh', 	to: 'authentications#refresh'
 
-			# User Routes
-			resources :students, only: [:update, :destroy]
-			post 	'/students/register',	to: 'students#create'
-
-			resources :lecturers, only: [:update, :destroy]
-			post 	'/lecturers/register',	to: 'lecturers#create'
-
+			# User
 			devise_for :users, skip: [:sessions], skip_helpers: true, controllers: {
 				confirmations: 'v1/confirmations',
 				passwords: 		 'v1/passwords'
 			}
+
+			# Students
+			post '/students/register', 	to: 'students#create'
+			resources :students, 	only:	[:update, :destroy]
+
+
+			# Lecturers
+			post '/lecturers/register', to: 'lecturers#create'
+			resources :lecturers, only:	[:update, :destroy] do
+				resources :units, shallow: true # only :index and :create is scoped
+			end
+
+
+
 
 
 			# Departments

@@ -1,6 +1,5 @@
 class V1::DepartmentsController < ApplicationController
 
-	before_action :authenticate_user_jwt
 	before_action :allow_if_lecturer
 	before_action :set_department, except: [:create, :index]
 

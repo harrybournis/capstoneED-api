@@ -27,5 +27,13 @@ module CapstonedApi
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
     config.middleware.use ActionDispatch::Cookies
+
+    config.generators do |g|
+      g.template_engine nil #to skip views
+      g.test_framework  nil #to skip test framework
+      g.assets  false
+      g.helper false
+      g.stylesheets false
+    end
   end
 end

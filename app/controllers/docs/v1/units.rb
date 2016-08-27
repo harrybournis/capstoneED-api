@@ -1,16 +1,16 @@
-class Docs::V1::Departments < ApplicationController
+class Docs::V1::Units < ApplicationController
 
 	include Docs::Helpers::DocHelper
 	DocHelper = Docs::Helpers::DocHelper
 
 	resource_description do
-	  short 'A Department has many Units'
+	  short 'Units are created by Lecturers'
 	  name 'Departments'
 	  api_base_url '/v1'
 	  api_version 'v1'
 	  description <<-EOS
-			A Department has a name and a university attribute. Each name is unique(?) for each university.
-			A Unit belongs to a Department.
+			A Unit is created by a Lecturer and can have many Projects. A Unit also belongs to a Department.
+			Archived at?
 	  EOS
 	end
 
