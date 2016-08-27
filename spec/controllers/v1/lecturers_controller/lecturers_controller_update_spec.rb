@@ -82,7 +82,6 @@ RSpec.describe 'V1::LecturersController PUT /update', type: :controller do
 
 				put :update, params: { id: student.id, first_name: 'different' }
 				expect(response.status).to eq(403)
-				binding.pry
 				expect(JSON.parse(response.body)['errors']['type'].first).to eq('must be Lecturer')
 			end
 

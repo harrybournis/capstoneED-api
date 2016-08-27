@@ -20,6 +20,10 @@ Rails.application.routes.draw do
 				confirmations: 'v1/confirmations',
 				passwords: 		 'v1/passwords'
 			}
+
+
+			# Departments
+			resources :departments, only: [:create, :update, :destroy]
 		end
 	#end
 
