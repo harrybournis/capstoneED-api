@@ -2,8 +2,13 @@ class V1::DepartmentsController < ApplicationController
 
 	before_action :authenticate_user_jwt
 	before_action :allow_if_lecturer
-	before_action :set_department, except: [:create]
+	before_action :set_department, except: [:create, :index]
 
+
+	def index
+		@departments = Department.all
+		render json: @departments, status: :ok
+	end
 
 	def create
 		@department = Department.new(department_params)
