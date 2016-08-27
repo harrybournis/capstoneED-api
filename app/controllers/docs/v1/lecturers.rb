@@ -18,6 +18,8 @@ class Docs::V1::Lecturers < ApplicationController
 	param :password_confirmation, String, 'Must equal the password param', 	required: true
 	param :first_name, String,						"User's first name", 							required: true
 	param :last_name, String,							"User's last name", 							required: true
+	param :university, String,						"Lecturer's University",					required: true
+	param :position, String, 							"Academic Position",							required: true
 	error code: 400, desc: 'Params missing. Did not receive either email, password or password_confirmation in params. See errors in response body.'
 	error code: 422, desc: "Failed to save User. Params are invalid. See errors in response body."
 	example DocHelper.format_example(status = 200)
@@ -38,6 +40,8 @@ class Docs::V1::Lecturers < ApplicationController
 	param :password_confirmation, String, 'Must equal the password param. Requires current_password to be present in the params'
 	param :first_name, String, "User's first name"
 	param :last_name, String, "User's last name"
+	param :university, String,						"Lecturer's University"
+	param :position, String, 							"Academic Position"
 	error code: 401, desc: 'User Authentication failed'
 	error code: 403, desc: 'The User to be updated is not the authenticated user. One can only update themselves.'
 	error code: 403, desc: 'The User logged in is not of type Lecturer'
