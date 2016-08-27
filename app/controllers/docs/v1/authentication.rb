@@ -27,33 +27,6 @@ class Docs::V1::Authentication < ApplicationController
 	end
 
 
-	api :GET, '/me', 'Returns the current_user'
-	meta :authentication? => true
-	error code: 401, desc: 'User Authentication failed. Either the X-XSRF-TOKEN is missing from the headers, or the access-token is missing, invalid or expired'
-	example DocHelper.format_example(status = 200)
-	example DocHelper.format_example(status = 401)
-	description <<-EOS
-		Authenticate with the server after exiting the application. Returns the current_user in the
-		response body. Due to the short expiration time of the access-token, requests to this endpoint
-		will most likely be successful for a short period of time. If the request is not successful,
-		the application should send a request to the <a href='#'> /refresh </a> route, in order to receive
-		a new access-token.
-	EOS
-	def me
-	end
-
-	api :POST, '/refresh', 'Refresh the access-token using the refresh-token'
-	error code: 401, desc: 'User Authentication failed'
-	example DocHelper.format_example(status = 204, headers = "{\n  \"X-Frame-Options\": \"SAMEORIGIN\",\n  \"X-XSS-Protection\": \"1; mode=block\",\n  \"X-Content-Type-Options\": \"nosniff\",\n  \"XSRF-TOKEN\": \"CwZiQ5KHhiGNQ7uDTLzSIXToF/fKbkOHTVKbSiMP6as=\",\n  \"Set-Cookie\": \"access-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzE5OTY3OTYsImlkIjozNDAwNSwidHlwZSI6bnVsbCwiaXNzIjoiIiwiZGV2aWNlIjoiTTczODFKU3o5YzhSLzJicFhMbit0Y1Jrclp6ajFLQ2ZuMUNuYXk4cnhnMD0iLCJjc3JmX3Rva2VuIjoiQ3daaVE1S0hoaUdOUTd1RFRMelNJWFRvRi9mS2JrT0hUVktiU2lNUDZhcz0ifQ.uiIvs1KxjD_M7GpDhEcITaLwH2RvXD0oH8h_Vkcur9E; path=/; expires=Tue, 23 Aug 2016 23:59:56 -0000; HttpOnly; SameSite=Strict\\nrefresh-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzI2MDA5OTYsImlzcyI6IiIsImRldmljZSI6Ik03MzgxSlN6OWM4Ui8yYnBYTG4rdGNSa3JaemoxS0NmbjFDbmF5OHJ4ZzA9In0.QjyzPbjxLsjTwXOoSzgGeF-VcSZ08pwnR37FOQ-jJ-A; path=/v1/refresh; expires=Tue, 30 Aug 2016 23:49:56 -0000; HttpOnly; SameSite=Strict\"\n}")
-	example DocHelper.format_example(status = 401)
-	description <<-EOS
-		Refresh the access-token of the user. Requires a refresh-token stored in a cookie. On successful
-		validation of the refresh-token, the response sets two new access-token and refresh-token cookies,
-		and contains a new XSRF-TOKEN header, to be saved by the client.
-	EOS
-	def refresh
-	end
-
 	api :POST, '/sign_in', 'Sign In using Email and Password'
 	param :email, 		String, "User's Email", 		required: true
 	param :password, 	String, "User's Password",	required: true
@@ -86,5 +59,32 @@ class Docs::V1::Authentication < ApplicationController
 		cookies.
 	EOS
 	def sign_out
+	end
+
+	api :POST, '/refresh', 'Refresh the access-token using the refresh-token'
+	error code: 401, desc: 'User Authentication failed'
+	example DocHelper.format_example(status = 204, headers = "{\n  \"X-Frame-Options\": \"SAMEORIGIN\",\n  \"X-XSS-Protection\": \"1; mode=block\",\n  \"X-Content-Type-Options\": \"nosniff\",\n  \"XSRF-TOKEN\": \"CwZiQ5KHhiGNQ7uDTLzSIXToF/fKbkOHTVKbSiMP6as=\",\n  \"Set-Cookie\": \"access-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzE5OTY3OTYsImlkIjozNDAwNSwidHlwZSI6bnVsbCwiaXNzIjoiIiwiZGV2aWNlIjoiTTczODFKU3o5YzhSLzJicFhMbit0Y1Jrclp6ajFLQ2ZuMUNuYXk4cnhnMD0iLCJjc3JmX3Rva2VuIjoiQ3daaVE1S0hoaUdOUTd1RFRMelNJWFRvRi9mS2JrT0hUVktiU2lNUDZhcz0ifQ.uiIvs1KxjD_M7GpDhEcITaLwH2RvXD0oH8h_Vkcur9E; path=/; expires=Tue, 23 Aug 2016 23:59:56 -0000; HttpOnly; SameSite=Strict\\nrefresh-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzI2MDA5OTYsImlzcyI6IiIsImRldmljZSI6Ik03MzgxSlN6OWM4Ui8yYnBYTG4rdGNSa3JaemoxS0NmbjFDbmF5OHJ4ZzA9In0.QjyzPbjxLsjTwXOoSzgGeF-VcSZ08pwnR37FOQ-jJ-A; path=/v1/refresh; expires=Tue, 30 Aug 2016 23:49:56 -0000; HttpOnly; SameSite=Strict\"\n}")
+	example DocHelper.format_example(status = 401)
+	description <<-EOS
+		Refresh the access-token of the user. Requires a refresh-token stored in a cookie. On successful
+		validation of the refresh-token, the response sets two new access-token and refresh-token cookies,
+		and contains a new XSRF-TOKEN header, to be saved by the client.
+	EOS
+	def refresh
+	end
+
+	api :GET, '/me', 'Returns the current_user'
+	meta :authentication? => true
+	error code: 401, desc: 'User Authentication failed. Either the X-XSRF-TOKEN is missing from the headers, or the access-token is missing, invalid or expired'
+	example DocHelper.format_example(status = 200)
+	example DocHelper.format_example(status = 401)
+	description <<-EOS
+		Authenticate with the server after exiting the application. Returns the current_user in the
+		response body. Due to the short expiration time of the access-token, requests to this endpoint
+		will most likely be successful for a short period of time. If the request is not successful,
+		the application should send a request to the <a href='#'> /refresh </a> route, in order to receive
+		a new access-token.
+	EOS
+	def me
 	end
 end

@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "Confirmation Controller - Reconfirmation" do
 
 	it 'user can sign in while with the old password while waiting for reconfirmation' do
-		user = FactoryGirl.build(:user_with_password).process_new_record
+		user = FactoryGirl.build(:student_with_password).process_new_record
 		user.save
 		user.confirm
 
@@ -14,7 +14,7 @@ RSpec.describe "Confirmation Controller - Reconfirmation" do
 		old_email = user.email
 		csrf = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
 
-		patch "/v1/users/#{user.id}", params: { id: user.id, email: 'different@email.com' }, headers: { 'X-XSRF-TOKEN' => csrf }
+		patch "/v1/students/#{user.id}", params: { id: user.id, email: 'different@email.com' }, headers: { 'X-XSRF-TOKEN' => csrf }
 
 		expect(response.status).to eq(200)
 

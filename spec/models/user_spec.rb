@@ -4,25 +4,6 @@ RSpec.describe User, type: :model do
 
 	it { should have_many(:active_tokens) }
 
-	describe 'validations' do
-		subject(:user) { FactoryGirl.build(:user) }
-
-		it { should validate_presence_of(:first_name) }
-		it { should validate_presence_of(:last_name) }
-		it { should validate_presence_of(:email) }
-
-		it { should validate_uniqueness_of(:email).case_insensitive }
-
-		it 'should validate type is not nil'
-
-		it 'does not allow provider to be updated' do
-			user = FactoryGirl.create(:user)
-			expect(user.update(provider: 'email')).to be_truthy
-			expect(user.errors).to be_empty
-			expect(user.provider).to eq('test')
-		end
-	end
-
 	describe 'instance methods' do
 
 		it 'full_name is concatenation of first_name and last_name' do
