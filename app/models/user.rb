@@ -11,7 +11,6 @@ class User < ApplicationRecord
 	# Validations
 	validates_presence_of :first_name, :last_name
 
-
 	### Instance Methods
 	#
 	def full_name ; "#{first_name} #{last_name}" end

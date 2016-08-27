@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160826173416) do
+ActiveRecord::Schema.define(version: 20160827145850) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,13 @@ ActiveRecord::Schema.define(version: 20160826173416) do
     t.integer  "user_id"
     t.string   "device"
     t.index ["user_id"], name: "index_active_tokens_on_user_id", using: :btree
+  end
+
+  create_table "departments", force: :cascade do |t|
+    t.string   "name"
+    t.string   "university"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|

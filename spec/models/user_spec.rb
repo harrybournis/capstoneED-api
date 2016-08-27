@@ -7,18 +7,8 @@ RSpec.describe User, type: :model do
 	describe 'instance methods' do
 
 		it 'full_name is concatenation of first_name and last_name' do
-			user = FactoryGirl.create(:user, first_name: 'first', last_name: 'last')
+			user = FactoryGirl.create(:student, first_name: 'first', last_name: 'last')
 			expect(user.full_name).to eq("first last")
-		end
-
-		it 'after initialize should generate and provide a uid token' do
-			params = FactoryGirl.attributes_for :user
-			params.delete(:uid)
-			expect(params[:uid]).to be_falsy
-
-			user = User.new(params).process_new_record
-			user.valid?
-			expect(user.errors['uid']).to be_empty
 		end
 
 	end
