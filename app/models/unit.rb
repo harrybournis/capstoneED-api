@@ -11,5 +11,4 @@ class Unit < ApplicationRecord
 	validates_numericality_of :year
 	validates_uniqueness_of :id
 
-
 end

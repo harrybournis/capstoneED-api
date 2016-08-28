@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe V1::DepartmentsController, type: :request do
 
-	describe 'DELETE delete' do
+	describe 'PATCH update' do
 
 		context 'valid' do
 			before(:each) do
@@ -16,16 +16,17 @@ RSpec.describe V1::DepartmentsController, type: :request do
 			end
 
 			it 'responds with 200 ok' do
-				delete "/v1/departments/#{@department.id}", params: { id: @department.id }, headers: { 'X-XSRF-TOKEN' => @csrf_token }
-				expect(response.status).to eq(204)
-				expect(Department.exists?(@department.id)).to be_falsy
+				patch "/v1/departments/#{@department.id}", params: { id: @department.id, university: 'different' }, headers: { 'X-XSRF-TOKEN' => @csrf_token }
+				expect(response.status).to eq(200)
+				@department.reload
+				expect(@department.university).to eq('different')
 			end
 		end
 
 		context 'invalid' do
 
 			it 'responds with 401 unauthorized if authentication failed' do
-				delete '/v1/departments/:id', nil, headers: { 'X-XSRF-TOKEN' => 'iewn8943buyirleah' }
+				patch '/v1/departments/:id', params: { id: 3 }, headers: { 'X-XSRF-TOKEN' => 'iewn8943buyirleah' }
 				expect(response.status).to eq(401)
 			end
 
@@ -38,7 +39,7 @@ RSpec.describe V1::DepartmentsController, type: :request do
 				@csrf_token = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
 				@department = FactoryGirl.create(:department)
 
-				delete '/v1/departments/:id', params: { id: @department.id }, headers: { 'X-XSRF-TOKEN' => @csrf_token }
+				patch '/v1/departments/:id', params: { id: @department.id, university: 'different' }, headers: { 'X-XSRF-TOKEN' => @csrf_token }
 				expect(response.status).to eq(403)
 				expect(JSON.parse(response.body)['errors']['type'].first).to eq('must be Lecturer')
 			end

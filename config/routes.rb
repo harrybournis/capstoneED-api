@@ -16,30 +16,23 @@ Rails.application.routes.draw do
 			}
 
 			# Students
-			post '/students/register', 	to: 'students#create'
-			resources :students, 	only:	[:update, :destroy]
+			resources :students, 	only:	[:create, :update, :destroy]
 
 
 			# Lecturers
-			post '/lecturers/register', to: 'lecturers#create'
-			resources :lecturers, only:	[:update, :destroy] do
-							resources :units
-			end
+			resources :lecturers, only:	[:create, :update, :destroy]
 
-
-
-
-
-
+			# Units
+			resources :units, 		only: [:index, :show, :create, :update, :delete]
 
 			# Departments
-			resources :departments, only: [:create, :update, :destroy]
+			#resources :departments, only: [:index, :show, :create, :update, :destroy]
 		end
 	#end
 
 	## To be removed
-	post 'auth/facebook', to: 'authentications#facebook'
-	post 'omniauth/facebook', to: 'authentications#facebook'
+	#post 'auth/facebook', to: 'authentications#facebook'
+	#post 'omniauth/facebook', to: 'authentications#facebook'
 	##
 
 	apipie

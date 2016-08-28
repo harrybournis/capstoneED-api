@@ -1,7 +1,7 @@
 class V1::UnitsController < ApplicationController
 
   before_action :allow_if_lecturer, only: [:create]
-  before_action :set_unit, only: [:show, :update, :destroy]
+  #before_action :set_unit_if_owner, only: [:show, :update, :destroy]
 
 
   def index
@@ -14,9 +14,11 @@ class V1::UnitsController < ApplicationController
   end
 
   def create
+    params.delete(:department_attributes) if unit_params[:department_id]
+
     @unit = Unit.new(unit_params)
 
-    if @unit.save
+    if current_user.units << @unit
       render json: @unit, status: :created
     else
       render json: format_errors(@unit.errors), status: :unprocessable_entity
@@ -42,15 +44,14 @@ class V1::UnitsController < ApplicationController
 
 private
 
-    def allow_if_owner
-    end
-
-    def set_unit
-      @unit = Unit.find(unit_params[:id])
+    def set_unit_if_owner
+      unless @unit = current_user.load.units.find(unit_params[:id])
+        render json: format_errors({ base: "This Unit can not be found in the current user's Units" }), status: :forbidden
+      end
     end
 
     def unit_params
-      params.permit(:id, :name, :code, :semester, :year, :archived_at, :lecturer_id, :department_id,
+      params.permit(:id, :name, :code, :semester, :year, :archived_at, :department_id,
         department_attributes: [:name, :university])
     end
 end

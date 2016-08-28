@@ -5,7 +5,7 @@ FactoryGirl.define do
     semester { ['Spring', 'Autumn'].sample }
     year { Faker::Date.forward.year }
     archived_at nil
-    association  :department, factory: :department
-    association :lecturer, factory: :lecturer
+    association  	:department, factory: :department
+    association 	:lecturer, factory: :lecturer
   end
 end
