@@ -12,5 +12,9 @@ FactoryGirl.define do
       password '12345678'
       password_confirmation '12345678'
     end
+
+    factory :lecturer_with_units do
+      units { [FactoryGirl.create(:unit), FactoryGirl.create(:unit)] }
+    end
   end
 end

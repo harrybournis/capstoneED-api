@@ -43,7 +43,7 @@ RSpec.describe V1::DepartmentsController, type: :request do
 
 				post '/v1/departments', params: FactoryGirl.attributes_for(:department), headers: { 'X-XSRF-TOKEN' => @csrf_token }
 				expect(response.status).to eq(403)
-				expect(JSON.parse(response.body)['errors']['type'].first).to eq('must be Lecturer')
+				expect(parse_body['errors']['type'].first).to eq('must be Lecturer')
 			end
 
 			it 'responds with 422 unprocessable entity if validation fail' do
@@ -56,7 +56,24 @@ RSpec.describe V1::DepartmentsController, type: :request do
 
 				post '/v1/departments', params: { department: 'dkdkdk'}, headers: { 'X-XSRF-TOKEN' => @csrf_token }
 				expect(response.status).to eq(422)
-				expect(JSON.parse(response.body)['errors']['name'].first).to eq("can't be blank")
+				expect(parse_body['errors']['name'].first).to eq("can't be blank")
+			end
+
+			it 'create with id 5 times' do
+				@user = FactoryGirl.build(:lecturer_with_password).process_new_record
+				@user.save
+				@user.confirm
+				post '/v1/sign_in', params: { email: @user.email, password: '12345678' }
+				expect(response.status).to eq(200)
+				@csrf_token = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+
+				post '/v1/departments', params: { id: 5, name: 'Department of Potatoes', university: 'Idaho' }, headers: { 'X-XSRF-TOKEN' => @csrf_token }
+				expect(response.status).to eq(201) #1
+				expect(Department.last.id).to eq(5)
+
+				post '/v1/departments', params: { id: 5, name: 'Department of Potatoes', university: 'Idaho' }, headers: { 'X-XSRF-TOKEN' => @csrf_token }
+				expect(response.status).to eq(422)# 2
+				expect(parse_body['errors']['id'].first).to eq('has already been taken')
 			end
 		end
 	end

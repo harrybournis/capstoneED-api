@@ -13,5 +13,6 @@ RSpec.describe Unit, type: :model do
   it { should validate_presence_of(:year) }
   it { should validate_presence_of(:lecturer_id) }
 
+  it { should validate_uniqueness_of(:id) }
   it { should validate_numericality_of(:year) }
 end

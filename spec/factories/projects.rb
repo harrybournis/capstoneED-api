@@ -3,7 +3,7 @@ FactoryGirl.define do
     start_date  { Date.today }
     end_date 	  { Faker::Date.forward }
   	description { Faker::Lorem.paragraph }
-    association :lecturer, factory: :lecturer
-    association :unit,     factory: :unit
+    lecturer 		{ FactoryGirl.create(:lecturer_with_units) }
+    unit 				{ lecturer.units.first }
   end
 end

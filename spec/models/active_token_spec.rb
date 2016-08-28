@@ -4,6 +4,8 @@ RSpec.describe ActiveToken, type: :model do
 
 	describe 'validations' do
 
+		it { should validate_uniqueness_of(:id) }
+
 		it 'validate presence of exp' do
 			token = ActiveToken.new(exp: '')
 

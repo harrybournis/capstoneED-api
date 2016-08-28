@@ -22,9 +22,11 @@ Rails.application.routes.draw do
 
 			# Lecturers
 			post '/lecturers/register', to: 'lecturers#create'
-			resources :lecturers, only:	[:update, :destroy]
+			resources :lecturers, only:	[:update, :destroy] do
+							resources :units
+			end
 
-			resources :units
+
 
 
 

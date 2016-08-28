@@ -33,6 +33,16 @@ RSpec.describe V1::UnitsController, type: :request do
 				expect(response.status).to eq(201)
 				expect(Unit.last.department).to eq(department)
 			end
+
+			it 'what if both?' do
+				department = FactoryGirl.create(:department)
+				parameters = FactoryGirl.attributes_for(:unit, department_id: department.id).merge(department_attributes: { name: 'departmentname', university: 'university' })
+				expect {
+					post "/v1/lecturers/#{@user.id}/units", params: parameters, headers: { 'X-XSRF-TOKEN' => @csrf_token }
+				}.to change { Department.all.count }.by(1)
+				expect(response.status).to eq(201)
+				expect(Department.last.name).to eq('departmentname')
+			end
 		end
 
 		context 'invalid request' do
@@ -49,7 +59,7 @@ RSpec.describe V1::UnitsController, type: :request do
 				random_lecturer = FactoryGirl.create(:lecturer)
 				post "/v1/lecturers/#{random_lecturer.id}/units", params: FactoryGirl.attributes_for(:unit, department_id: department.id), headers: { 'X-XSRF-TOKEN' => @csrf_token }
 				expect(response.status).to eq(403)
-				expect(JSON.parse(response.body)['errors']['type'].first).to eq('must be Lecturer')
+				expect(parse_body['errors']['type'].first).to eq('must be Lecturer')
 			end
 		end
 	end
