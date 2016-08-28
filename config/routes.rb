@@ -22,9 +22,9 @@ Rails.application.routes.draw do
 
 			# Lecturers
 			post '/lecturers/register', to: 'lecturers#create'
-			resources :lecturers, only:	[:update, :destroy] do
-				resources :units, shallow: true # only :index and :create is scoped
-			end
+			resources :lecturers, only:	[:update, :destroy]
+
+			resources :units
 
 
 
