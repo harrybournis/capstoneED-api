@@ -1,8 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe Department, type: :model do
+
+	it { should have_many(:units) }
+
 	it { should validate_presence_of(:university) }
 	it { should validate_presence_of(:name) }
+
+	it { should validate_uniqueness_of(:id) }
+	it { should validate_uniqueness_of(:name).scoped_to(:university).with_message('this department already exists for this University').case_insensitive }
 
 	it 'should validate iniqueness of name for each university' do
 		uni 	= 'Harvard'

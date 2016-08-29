@@ -4,7 +4,7 @@ class Docs::V1::Departments < ApplicationController
 	DocHelper = Docs::Helpers::DocHelper
 
 	resource_description do
-	  short 'Units belong to Departments'
+	  short 'A Department has many Units'
 	  name 'Departments'
 	  api_base_url '/v1'
 	  api_version 'v1'

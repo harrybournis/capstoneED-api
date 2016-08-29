@@ -11,6 +11,8 @@ class User < ApplicationRecord
 	# Validations
 	validates_presence_of :first_name, :last_name
 
+	validates_uniqueness_of :id
+
 	### Instance Methods
 	#
 	def full_name ; "#{first_name} #{last_name}" end
@@ -40,7 +42,6 @@ class User < ApplicationRecord
 
 
 protected
-
 
 	# overrides the default devise method in validatable.rb to require password
 	# only if user signed up via email
