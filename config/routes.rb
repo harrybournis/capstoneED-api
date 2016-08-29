@@ -16,17 +16,19 @@ Rails.application.routes.draw do
 			}
 
 			# Students
-			resources :students, 	only:	[:create, :update, :destroy]
-
+			resources :students, 		only:	[:create, :update, :destroy]
 
 			# Lecturers
-			resources :lecturers, only:	[:create, :update, :destroy]
+			resources :lecturers, 	only:	[:create, :update, :destroy]
 
 			# Units
-			resources :units, 		only: [:index, :show, :create, :update, :destroy]
+			resources :units, 			only: [:index, :show, :create, :update, :destroy]
 
 			# Departments
 			resources :departments, only: [:index, :show, :create, :update, :destroy]
+
+			# Projects
+			resources :projects,		only: [:index, :show, :create, :update, :destroy]
 		end
 	#end
 

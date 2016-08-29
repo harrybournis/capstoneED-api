@@ -68,7 +68,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 				random_lecturer = FactoryGirl.create(:lecturer)
 				post :create, params: FactoryGirl.attributes_for(:unit, department_id: department.id)
 				expect(response.status).to eq(403)
-				expect(parse_body['errors']['type'].first).to eq('must be Lecturer')
+				expect(parse_body['errors']['base'].first).to eq('You must be Lecturer to access this resource')
 			end
 
 			it 'errors in nested attributes' do

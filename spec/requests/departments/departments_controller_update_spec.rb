@@ -41,7 +41,7 @@ RSpec.describe V1::DepartmentsController, type: :request do
 
 				patch '/v1/departments/:id', params: { id: @department.id, university: 'different' }, headers: { 'X-XSRF-TOKEN' => @csrf_token }
 				expect(response.status).to eq(403)
-				expect(JSON.parse(response.body)['errors']['type'].first).to eq('must be Lecturer')
+				expect(JSON.parse(response.body)['errors']['base'].first).to eq('You must be Lecturer to access this resource')
 			end
 		end
 	end

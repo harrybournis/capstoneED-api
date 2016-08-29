@@ -6,6 +6,7 @@ RSpec.describe Unit, type: :model do
 
   it { should belong_to(:lecturer) }
   it { should belong_to(:department) }
+  it { should have_many(:projects) }
 
   it { should validate_presence_of(:name) }
 	it { should validate_presence_of(:code) }

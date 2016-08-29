@@ -5,5 +5,7 @@ FactoryGirl.define do
   	description { Faker::Lorem.paragraph }
     lecturer 		{ FactoryGirl.create(:lecturer_with_units) }
     unit 				{ lecturer.units.first }
+    lecturer_id { lecturer.id }
+    unit_id			{ unit.id }
   end
 end

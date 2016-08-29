@@ -19,7 +19,7 @@ class V1::UnitsController < ApplicationController
 
     @unit = Unit.new(unit_params)
 
-    if current_user.units << @unit
+    if current_user.load.units << @unit
       render json: @unit, status: :created
     else
       render json: format_errors(@unit.errors), status: :unprocessable_entity
@@ -47,7 +47,7 @@ class V1::UnitsController < ApplicationController
   end
 
 
-private
+  private
 
     def set_unit_if_owner
       @unit = Unit.find_by(id: unit_params[:id])
