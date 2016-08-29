@@ -14,6 +14,9 @@ FactoryGirl.define do
     end
 
     factory :lecturer_with_units do
+      provider 'email'
+      password '12345678'
+      password_confirmation '12345678'
       units { [FactoryGirl.create(:unit), FactoryGirl.create(:unit)] }
     end
   end

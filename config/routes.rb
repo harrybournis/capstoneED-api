@@ -23,10 +23,10 @@ Rails.application.routes.draw do
 			resources :lecturers, only:	[:create, :update, :destroy]
 
 			# Units
-			resources :units, 		only: [:index, :show, :create, :update, :delete]
+			resources :units, 		only: [:index, :show, :create, :update, :destroy]
 
 			# Departments
-			#resources :departments, only: [:index, :show, :create, :update, :destroy]
+			resources :departments, only: [:index, :show, :create, :update, :destroy]
 		end
 	#end
 

@@ -53,7 +53,6 @@ RSpec.describe JWTAuth::CurrentUser, type: :model do
 			decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
 			expect(@current_user_obj.current_device).to eq(decoded_token.first['device'])
 		end
-
 	end
 
 	context 'testing with Student class' do

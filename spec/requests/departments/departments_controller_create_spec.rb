@@ -59,7 +59,7 @@ RSpec.describe V1::DepartmentsController, type: :request do
 				expect(parse_body['errors']['name'].first).to eq("can't be blank")
 			end
 
-			it 'create with id 5 times' do
+			it 'create with id 5' do
 				@user = FactoryGirl.build(:lecturer_with_password).process_new_record
 				@user.save
 				@user.confirm
@@ -69,7 +69,7 @@ RSpec.describe V1::DepartmentsController, type: :request do
 
 				post '/v1/departments', params: { id: 5, name: 'Department of Potatoes', university: 'Idaho' }, headers: { 'X-XSRF-TOKEN' => @csrf_token }
 				expect(response.status).to eq(201) #1
-				expect(Department.last.id).to eq(5)
+				expect(Department.find(5).id).to eq(5)
 
 				post '/v1/departments', params: { id: 5, name: 'Department of Potatoes', university: 'Idaho' }, headers: { 'X-XSRF-TOKEN' => @csrf_token }
 				expect(response.status).to eq(422)# 2

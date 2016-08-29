@@ -1,17 +1,18 @@
 class V1::UnitsController < ApplicationController
 
-  before_action :allow_if_lecturer, only: [:create]
-  #before_action :set_unit_if_owner, only: [:show, :update, :destroy]
+  before_action :allow_if_lecturer, only: [:index ,:create]
+  before_action :set_unit_if_owner, only: [:show, :update, :destroy]
 
 
   def index
-    @units = Unit.all
-    render json: @units, status: :ok
+    render json: current_user.load.units, status: :ok
   end
 
+
   def show
-    render json: @unit
+    render json: @unit, status: :ok
   end
+
 
   def create
     params.delete(:department_attributes) if unit_params[:department_id]
@@ -25,13 +26,17 @@ class V1::UnitsController < ApplicationController
     end
   end
 
+
   def update
+    params.delete(:department_attributes) if unit_params[:department_id]
+
     if @unit.update(unit_params)
       render json: @unit, status: :ok
     else
       render json: format_errors(@unit.errors), status: :unprocessable_entity
     end
   end
+
 
   def destroy
     if @unit.destroy
@@ -45,8 +50,9 @@ class V1::UnitsController < ApplicationController
 private
 
     def set_unit_if_owner
-      unless @unit = current_user.load.units.find(unit_params[:id])
-        render json: format_errors({ base: "This Unit can not be found in the current user's Units" }), status: :forbidden
+      @unit = Unit.find_by(id: unit_params[:id])
+      unless current_user.load.units.include? @unit
+        render json: format_errors({ base: ["This Unit can not be found in the current user's Units"] }), status: :forbidden
       end
     end
 
