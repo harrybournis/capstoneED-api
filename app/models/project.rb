@@ -9,6 +9,7 @@ class Project < ApplicationRecord
   validate :unit_is_owned_by_lecturer, unless: 'lecturer_id.nil?'
 
   validates_uniqueness_of :id
+
 private
 
 	def unit_is_owned_by_lecturer

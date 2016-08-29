@@ -43,7 +43,7 @@ RSpec.describe V1::DepartmentsController, type: :request do
 
 				post '/v1/departments', params: FactoryGirl.attributes_for(:department), headers: { 'X-XSRF-TOKEN' => @csrf_token }
 				expect(response.status).to eq(403)
-				expect(parse_body['errors']['type'].first).to eq('must be Lecturer')
+				expect(parse_body['errors']['base'].first).to eq('You must be Lecturer to access this resource')
 			end
 
 			it 'responds with 422 unprocessable entity if validation fail' do

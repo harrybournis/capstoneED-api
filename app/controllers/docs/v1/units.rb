@@ -65,7 +65,7 @@ class Docs::V1::Units < ApplicationController
 	def create
 	end
 
-	api :PATCH, '/units:id', 'Update a Unit resource'
+	api :PATCH, '/units/:id', 'Update a Unit resource'
 	meta :authentication? => true
 	param :id, Integer, "The id of the Unit", required: true
 	param :name, String, 'Name of the Unit'

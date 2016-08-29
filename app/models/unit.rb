@@ -3,6 +3,7 @@ class Unit < ApplicationRecord
 	# Associations
 	belongs_to :lecturer
 	belongs_to :department
+	has_many :projects
 
 	accepts_nested_attributes_for :department
 

@@ -37,19 +37,19 @@ protected
 
 	def allow_if_authenticated_by_email
 		unless @current.provider == 'email'
-			render json: format_errors({ provider: "is #{@current.provider}. Did not authenticate with email/password." }), status: :forbidden
+			render json: format_errors({ base: "Provider is #{@current.provider}. Did not authenticate with email/password." }), status: :forbidden
 		end
 	end
 
 	def allow_if_lecturer
 		unless @current.load.instance_of? Lecturer
-			render json: format_errors({ type: ['must be Lecturer'] }), status: :forbidden
+			render json: format_errors({ base: ['You must be Lecturer to access this resource'] }), status: :forbidden
 		end
 	end
 
 	def allow_if_student
 		unless @current.load.instance_of? Student
-			render json: format_errors({ type: ['must be Student'] }), status: :forbidden
+			render json: format_errors({ base: ['You must be Student to access this resource'] }), status: :forbidden
 		end
 	end
 end
