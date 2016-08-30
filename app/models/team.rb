@@ -6,6 +6,6 @@ class Team < ApplicationRecord
   has_many :students, through: :students_teams
 
   # Validations
-  validates_presence_of :name, :enrollment_key, :project_id
+  validates_presence_of 	:name, :enrollment_key, :project_id
   validates_uniqueness_of :id, :enrollment_key
 end

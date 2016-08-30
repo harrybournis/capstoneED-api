@@ -7,6 +7,7 @@ RSpec.describe Lecturer, type: :model do
 
 		it { should have_many(:units) }
 		it { should have_many(:projects) }
+		it { should have_many(:teams).through(:projects) }
 
 		it { should validate_presence_of(:first_name) }
 		it { should validate_presence_of(:last_name) }

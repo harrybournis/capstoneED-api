@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :department do
-    name 				{ Faker::Commerce.department }
-    university 	{ Faker::Educator.university }
+    name				{ "Computer Science#{rand(1000).to_s}" }
+    university 	{ "University of #{rand(1000).to_s}" }
   end
 end

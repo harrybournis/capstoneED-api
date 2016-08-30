@@ -29,6 +29,9 @@ Rails.application.routes.draw do
 
 			# Projects
 			resources :projects,		only: [:index, :show, :create, :update, :destroy]
+
+			# Teams
+			resources :teams,				only: [:index, :show, :create, :update, :destroy]
 		end
 	#end
 

@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :team do
-    sequence(:name) { |n| "Team#{n}" }
+    sequence(:name) { |n| "Team #{n}" }
     logo nil
     enrollment_key { SecureRandom.hex }
     association :project, factory: :project

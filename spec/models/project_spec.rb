@@ -5,6 +5,8 @@ RSpec.describe Project, type: :model do
 		describe 'validations' do
 			subject(:project) { FactoryGirl.build(:project) }
 
+			it { should have_many(:teams) }
+
 			it { should validate_presence_of(:start_date) }
 			it { should validate_presence_of(:end_date) }
 			it { should validate_presence_of(:unit_id) }
