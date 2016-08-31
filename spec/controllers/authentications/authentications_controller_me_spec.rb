@@ -34,35 +34,6 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
 				expect(user_in_token.id).to eq(user_in_response.id)
 			end
 
-			it 'should not remain the same current_user for different requests' do
-				request.headers['Include'] = 'true'
-				expect { get :me }.to make_database_queries
-				expect(response.status).to eq(200)
-				response_body = JSON.parse(response.body)
-				user_in_response = User.find(response_body['user']['id'])
-				user_in_token = User.find(JWTAuth::JWTAuthenticator.decode_token(cookies['access-token']).first['id'])
-				expect(user_in_token).to be_truthy
-				expect(user_in_token.id).to eq(user_in_response.id)
-
-
-				new_en = FactoryGirl.create(:user, first_name: 'different', last_name: 'person')
-				mock_request = MockRequest.new(valid = true, new_en)
-				request.cookies['access-token'] = mock_request.cookies['access-token']
-				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-				request.headers['Include'] = 'true'
-				expect { get :me }.to make_database_queries
-				expect(response.status).to eq(200)
-				response_body = JSON.parse(response.body)
-				user_in_response2 = User.find(response_body['user']['id'])
-				user_in_token = User.find(JWTAuth::JWTAuthenticator.decode_token(cookies['access-token']).first['id'])
-				expect(user_in_token).to be_truthy
-				expect(user_in_token.id).to eq(user_in_response2.id)
-
-				expect(user_in_response).to_not eq(user_in_response2)
-			end
-
 			it 'expect current_user to be same class as their type' do
 				new_en = FactoryGirl.create(:student)
 				mock_request = MockRequest.new(valid = true, new_en)

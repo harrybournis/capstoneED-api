@@ -16,7 +16,7 @@ class V1::StudentsController < ApplicationController
 		@student = Student.new(student_params).process_new_record
 
 		if @student.save
-			render json: '', status: :created
+			render json: @student, status: :created
 		else
 			render json: format_errors(@student.errors), status: :unprocessable_entity
 		end

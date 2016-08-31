@@ -18,7 +18,7 @@ protected
 	# actual Student or Lecturer object is assigned as current_user
 	def authenticate_user_jwt
 		unless @current = JWTAuth::JWTAuthenticator.authenticate(request)
-			render json: '', status: :unauthorized
+			render json: format_errors({ base: 'Authentication Failed' }), status: :unauthorized
 		end
 	end
 
@@ -44,12 +44,14 @@ protected
 	def allow_if_lecturer
 		unless @current.load.instance_of? Lecturer
 			render json: format_errors({ base: ['You must be Lecturer to access this resource'] }), status: :forbidden
+			false
 		end
 	end
 
 	def allow_if_student
 		unless @current.load.instance_of? Student
 			render json: format_errors({ base: ['You must be Student to access this resource'] }), status: :forbidden
+			false
 		end
 	end
 end

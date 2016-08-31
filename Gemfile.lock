@@ -54,6 +54,7 @@ GEM
     byebug (9.0.5)
     coderay (1.1.1)
     concurrent-ruby (1.0.2)
+    database_cleaner (1.5.3)
     db-query-matchers (0.6.0)
     devise (4.2.0)
       bcrypt (~> 3.0)
@@ -211,6 +212,7 @@ DEPENDENCIES
   awesome_print (~> 1.7)
   benchmark-ips (~> 2.7, >= 2.7.1)
   byebug
+  database_cleaner (~> 1.5, >= 1.5.3)
   db-query-matchers (~> 0.6.0)
   devise (~> 4.2)
   factory_girl_rails (~> 4.7)

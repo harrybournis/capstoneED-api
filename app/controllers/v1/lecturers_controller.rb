@@ -17,7 +17,7 @@ class V1::LecturersController < ApplicationController
 		@lecturer = Lecturer.new(lecturer_params).process_new_record
 
 		if @lecturer.save
-			render json: '', status: :created
+			render json: @lecturer, status: :created
 		else
 			render json: format_errors(@lecturer.errors), status: :unprocessable_entity
 		end

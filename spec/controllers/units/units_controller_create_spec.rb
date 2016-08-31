@@ -8,15 +8,16 @@ RSpec.describe V1::UnitsController, type: :controller do
 
 		context 'valid request' do
 
-			before(:each) do
-				@controller = V1::UnitsController.new
+			before(:all) do
 				@user = FactoryGirl.build(:lecturer_with_password).process_new_record
 				@user.save
+			end
+
+			before(:each) do
+				@controller = V1::UnitsController.new
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 			end
 
 			it 'creates a department with nested attributes' do
@@ -61,8 +62,6 @@ RSpec.describe V1::UnitsController, type: :controller do
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 
 				department = FactoryGirl.create(:department)
 				random_lecturer = FactoryGirl.create(:lecturer)
@@ -78,8 +77,6 @@ RSpec.describe V1::UnitsController, type: :controller do
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 
 				parameters = FactoryGirl.attributes_for(:unit).merge(department_attributes: { name: 1 })
 				expect {

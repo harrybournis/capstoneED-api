@@ -61,7 +61,7 @@ group :test do
   gem 'vcr', '~> 3.0', '>= 3.0.3'
   gem 'db-query-matchers', '~> 0.6.0'
   gem 'pry-byebug', '~> 3.4'
-  #gem 'airborne', '~> 0.2.6'
+  gem 'database_cleaner', '~> 1.5', '>= 1.5.3'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
