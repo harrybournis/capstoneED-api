@@ -54,13 +54,13 @@ RSpec.describe V1::UnitsController, type: :controller do
 			new_unit = FactoryGirl.create(:unit)
 			get :show, params: { id: new_unit.id }
 			expect(response.status).to eq(403)
-			expect(parse_body['errors']['base'].first).to eq("This Unit can not be found in the current user's Units")
+			expect(parse_body['errors']['base'].first).to eq("This Unit is not associated with the current user")
 		end
 
 		it 'responds with 403 if record is not found at all' do
 			get :show, params: { id: '3333df' }
 			expect(response.status).to eq(403)
-			expect(parse_body['errors']['base'].first).to eq("This Unit can not be found in the current user's Units")
+			expect(parse_body['errors']['base'].first).to eq("This Unit is not associated with the current user")
 		end
 	end
 

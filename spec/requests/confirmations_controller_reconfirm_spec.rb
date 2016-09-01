@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "Confirmation Controller - Reconfirmation" do
 
+	before(:each) { host! 'api.example.com' }
+
 	it 'user can sign in while with the old password while waiting for reconfirmation' do
 		user = FactoryGirl.build(:student_with_password).process_new_record
 		user.save

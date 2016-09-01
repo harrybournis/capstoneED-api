@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-	#constraints subdomain: "api" do
+	constraints subdomain: "api" do
 		namespace :v1, constraints: { format: 'json' } do
 
 			# Authentication Routes
@@ -29,8 +29,12 @@ Rails.application.routes.draw do
 
 			# Projects
 			resources :projects,		only: [:index, :show, :create, :update, :destroy]
+
+			# Teams
+			resources :teams,				only: [:index, :show, :create, :update, :destroy]
+			post '/teams/enrol', 		to: 'teams#enrol'
 		end
-	#end
+	end
 
 	## To be removed
 	#post 'auth/facebook', to: 'authentications#facebook'

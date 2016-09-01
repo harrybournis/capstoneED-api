@@ -6,19 +6,20 @@ RSpec.describe V1::ProjectsController, type: :controller do
 
 		context 'lecturers' do
 
-			before(:each) do
+			before(:all) do
 				@controller = V1::ProjectsController.new
 				@user = FactoryGirl.build(:lecturer_with_units).process_new_record
 				@user.save
-				mock_request = MockRequest.new(valid = true, @user)
-				request.cookies['access-token'] = mock_request.cookies['access-token']
-				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 				project1 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
 				project2 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
 				project3 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.last)
 				project_irrelevant = FactoryGirl.create(:project)
+			end
+
+			before(:each) do
+				mock_request = MockRequest.new(valid = true, @user)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 			end
 
 			it 'returns all the projects for the current user if no unit_id is provided' do
@@ -40,48 +41,26 @@ RSpec.describe V1::ProjectsController, type: :controller do
 			end
 		end
 
-		# context 'students' do
-
-		# 	before(:each) do
-		# 		@controller = V1::ProjectsController.new
-		# 		@user = FactoryGirl.build(:student).process_new_record
-		# 		@user.save
-		# 		mock_request = MockRequest.new(valid = true, @user)
-		# 		request.cookies['access-token'] = mock_request.cookies['access-token']
-		# 		request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-		# 		expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-		# 		expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-		# 		project1 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
-		# 		project2 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
-		# 		project3 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.last)
-		# 		project_irrelevant = FactoryGirl.create(:project)
-		# 	end
-
-		# 	it 'should work for both students and lecturers' do
-		# 		get :index
-		# 		expect(response.status).to eq(200)
-		# 		expect(parse_body['projects'].length).to eq(3)
-		# 	end
-		# end
 	end
 
 	describe 'GET show' do
 
 		context 'lecturer' do
 
-			before(:each) do
+			before(:all) do
 				@controller = V1::ProjectsController.new
 				@user = FactoryGirl.build(:lecturer_with_units).process_new_record
 				@user.save
-				mock_request = MockRequest.new(valid = true, @user)
-				request.cookies['access-token'] = mock_request.cookies['access-token']
-				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 				@project1 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
 				@project2 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
 				@project3 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.last)
 				@project_irrelevant = FactoryGirl.create(:project)
+			end
+
+			before(:each) do
+				mock_request = MockRequest.new(valid = true, @user)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 			end
 
 			it 'returns project if it belongs to current_user' do
@@ -93,7 +72,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 			it 'responds with 403 forbidden if th unit_id does not belong to current user' do
 				get :show, params: { id: @project_irrelevant }
 				expect(response.status).to eq(403)
-				expect(parse_body['errors']['base'].first).to eq("This Project can not be found in the current user's Projects")
+				expect(parse_body['errors']['base'].first).to eq("This Project is not associated with the current user")
 			end
 		end
 	end
@@ -102,19 +81,22 @@ RSpec.describe V1::ProjectsController, type: :controller do
 
 		context 'lecturer' do
 
-			before(:each) do
+			before(:all) do
 				@controller = V1::ProjectsController.new
 				@user = FactoryGirl.build(:lecturer_with_units).process_new_record
 				@user.save
+				@project1 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
+				@project2 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
+				@project3 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.last)
+				@project_irrelevant = FactoryGirl.create(:project)
+			end
+
+			before(:each) do
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
 				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-				@project1 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
-				@project2 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
-				@project3 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.last)
-				@project_irrelevant = FactoryGirl.create(:project)
 			end
 
 			it 'returns project if it belongs to current_user' do
@@ -129,7 +111,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 					delete :destroy, params: { id: @project_irrelevant }
 				}.to_not change { Project.all.length }
 				expect(response.status).to eq(403)
-				expect(parse_body['errors']['base'].first).to eq("This Project can not be found in the current user's Projects")
+				expect(parse_body['errors']['base'].first).to eq("This Project is not associated with the current user")
 			end
 		end
 

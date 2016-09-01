@@ -13,8 +13,6 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 				project1 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
 				project2 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
 				project3 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.last)
@@ -58,7 +56,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 			it 'responds with 403 forbidden if th unit_id does not belong to current user' do
 				patch :update, params: { id: @project_irrelevant }
 				expect(response.status).to eq(403)
-				expect(parse_body['errors']['base'].first).to eq("This Project can not be found in the current user's Projects")
+				expect(parse_body['errors']['base'].first).to eq("This Project is not associated with the current user")
 			end
 	end
 end

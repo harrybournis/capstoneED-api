@@ -7,5 +7,9 @@ FactoryGirl.define do
     unit 				{ lecturer.units.first }
     lecturer_id { lecturer.id }
     unit_id			{ unit.id }
+
+    factory :project_with_teams do
+    	teams { Array.new(2){ |i| FactoryGirl.create(:team) } }
+    end
   end
 end

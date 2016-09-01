@@ -31,7 +31,7 @@ class Docs::V1::Projects < ApplicationController
 
 	api :GET, 'projects/:id', 'Show a Project'
   meta :authentication? => true
-  param :id, String, 'The id of the Project to be returned', required: true
+  param :id, Integer, 'The id of the Project to be returned', required: true
   error code: 401, desc: 'Authentication failed'
 	error code: 403, desc: 'This User is not the owner of this resource'
   example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 376,\n    \"start_date\": \"2016-08-29\",\n    \"end_date\": \"2016-10-03\",\n    \"description\": \"Quia dolore labore. Aut molestiae necessitatibus et hic vel ullam et. Nam doloribus eum qui recusandae. Atque eos ullam. Odit est consequatur.\",\n    \"unit\": {\n      \"id\": 1774,\n      \"name\": \"Cloned asymmetric Graphical User Interface\",\n      \"code\": \"B0000DHCZT\",\n      \"semester\": \"Spring\",\n      \"year\": 2017,\n      \"archived_at\": null\n    }\n  }\n}")

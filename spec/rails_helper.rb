@@ -20,9 +20,12 @@ require 'rspec/rails'
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
+
+# Require the support folder, and the mock request and response for every test
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 require 'helpers/mock_request.rb'
 require 'helpers/mock_response.rb'
+
 # Checks for pending migration and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
 #
@@ -56,12 +59,23 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
-  #
+
   # Devise test helpers
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include Devise::Test::IntegrationHelpers, type: :feature
 
+  # Custom helpers in /spec/support
   config.include TestHelpers
+
+  # Config for Database Cleaner to clean after(:all) blocks
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.after(:all) do
+    DatabaseCleaner.clean_with(:truncation)
+  end
 end
 
 Shoulda::Matchers.configure do |config|
