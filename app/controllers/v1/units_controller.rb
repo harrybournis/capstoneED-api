@@ -2,6 +2,7 @@ class V1::UnitsController < ApplicationController
 
   before_action :allow_if_lecturer, only: [:index ,:create]
   before_action :set_unit_if_owner, only: [:show, :update, :destroy]
+  #before_action -> { set_if_owner(Unit, params[:id]) },    only: [:show, :update, :destroy]
 
 
   def index

@@ -4,6 +4,8 @@ class V1::TeamsController < ApplicationController
 	before_action :allow_if_student,			only: [:enrol]
 	before_action :set_project_if_owner,	only: [:create]
 	before_action :set_team_if_owner, 		only: [:show, :update, :destroy]
+	#before_action -> { set_if_owner(Project, params[:project_id]) },    only: [:create]
+	#before_action -> { set_if_owner(Team, params[:id]) },    only: [:show, :update, :destroy]
 
 	def index
 		if current_user.load.instance_of? Lecturer

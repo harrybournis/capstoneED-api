@@ -3,6 +3,8 @@ class V1::ProjectsController < ApplicationController
   before_action :allow_if_lecturer,     only: [:create, :update, :destroy]
   before_action :set_unit_if_owner,     only: [:index], if: 'project_params[:unit_id]'
   before_action :set_project_if_owner,  only: [:show, :update, :destroy]
+  #before_action -> { set_if_owner(Unit, params[:unit_id]) },  only: [:index], if: 'params[:unit_id]'
+  #before_action -> { set_if_owner(Project, params[:id]) },    only: [:show, :update, :destroy]
 
   # GET /projects
   def index
