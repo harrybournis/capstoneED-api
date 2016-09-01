@@ -14,5 +14,6 @@ RSpec.describe Team, type: :model do
 
 			it { should validate_uniqueness_of(:id) }
 			it { should validate_uniqueness_of(:enrollment_key) }
+			it { should validate_uniqueness_of(:name).scoped_to(:project_id).case_insensitive }
 	end
 end

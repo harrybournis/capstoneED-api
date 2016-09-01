@@ -8,4 +8,5 @@ class Team < ApplicationRecord
   # Validations
   validates_presence_of 	:name, :enrollment_key, :project_id
   validates_uniqueness_of :id, :enrollment_key
+  validates_uniqueness_of :name, scope: :project_id, case_sensitive: false
 end

@@ -32,6 +32,7 @@ Rails.application.routes.draw do
 
 			# Teams
 			resources :teams,				only: [:index, :show, :create, :update, :destroy]
+			post '/teams/enrol', 		to: 'teams#enrol'
 		end
 	#end
 
