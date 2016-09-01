@@ -23,7 +23,6 @@ class V1::LecturersController < ApplicationController
 		end
 	end
 
-
 	# PUT '/users/:id'
 	# Requires current_password if password is to be updated
 	def update
@@ -36,7 +35,6 @@ class V1::LecturersController < ApplicationController
 		end
 	end
 
-
 	# DELETE destroy
 	# Requires current_password
 	def destroy
@@ -48,20 +46,20 @@ class V1::LecturersController < ApplicationController
 	end
 
 
-private
+	private
 
-	def allow_if_self
-		if current_user.id.to_s == lecturer_params[:id]
-			@lecturer = current_user.load
-		else
-			render json: format_errors({ lecturer: ["Lecturer with id #{lecturer_params[:id]} is not authorized to access this resourse." ]}),
-				status: :forbidden
+		def allow_if_self
+			if current_user.id.to_s == lecturer_params[:id]
+				@lecturer = current_user.load
+			else
+				render json: format_errors({ lecturer: ["Lecturer with id #{lecturer_params[:id]} is not authorized to access this resourse." ]}),
+					status: :forbidden
+			end
 		end
-	end
 
-	def lecturer_params
-		params.permit(:id, :email, :password, :password_confirmation, :current_password,
-			:first_name, :last_name, :university, :position )
-	end
+		def lecturer_params
+			params.permit(:id, :email, :password, :password_confirmation, :current_password,
+				:first_name, :last_name, :university, :position )
+		end
 
 end

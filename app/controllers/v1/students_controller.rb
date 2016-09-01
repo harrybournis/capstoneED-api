@@ -5,6 +5,7 @@ class V1::StudentsController < ApplicationController
 	before_action :allow_if_self, only: [:update, :destroy]
 	before_action :allow_if_student, only: [:update, :destroy]
 
+
 	# POST '/register'
 	# Register a new user using email and password as authentication
 	def create
@@ -22,7 +23,6 @@ class V1::StudentsController < ApplicationController
 		end
 	end
 
-
 	# PUT '/users/:id'
 	# Requires current_password if password is to be updated
 	def update
@@ -35,7 +35,6 @@ class V1::StudentsController < ApplicationController
 		end
 	end
 
-
 	# DELETE destroy
 	# Requires current_password
 	def destroy
@@ -47,20 +46,20 @@ class V1::StudentsController < ApplicationController
 	end
 
 
-private
+	private
 
-	def allow_if_self
-		if current_user.id.to_s == student_params[:id]
-			@student = current_user.load
-		else
-			render json: format_errors({ student: ["Student with id #{student_params[:id]} is not authorized to access this resourse." ]}),
-				status: :forbidden
+		def allow_if_self
+			if current_user.id.to_s == student_params[:id]
+				@student = current_user.load
+			else
+				render json: format_errors({ student: ["Student with id #{student_params[:id]} is not authorized to access this resourse." ]}),
+					status: :forbidden
+			end
 		end
-	end
 
-	def student_params
-		params.permit(:id, :first_name, :last_name, :email, :password, :password_confirmation,
-			:current_password)
-	end
+		def student_params
+			params.permit(:id, :first_name, :last_name, :email, :password, :password_confirmation,
+				:current_password)
+		end
 
 end

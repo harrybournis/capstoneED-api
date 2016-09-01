@@ -6,17 +6,18 @@ class V1::ProjectsController < ApplicationController
   before_action -> {
    set_if_owner(Project, params[:id], '@project') }, only: [:show, :update, :destroy]
 
-
+  # GET /projects
   def index
     render json: @unit ? @unit.projects : current_user.load.projects, status: :ok
   end
 
-
+  # GET /projects/:id
   def show
     render json: @project, status: :ok
   end
 
-
+  # POST /projects
+  # Only Lecturers
   def create
     @project = Project.new(project_params)
     @project.lecturer_id = current_user.id
@@ -28,7 +29,8 @@ class V1::ProjectsController < ApplicationController
     end
   end
 
-
+  # PATCH /projects/:id
+  # Only Lecturers
   def update
     if @project.update(project_params)
       render json: @project
@@ -37,7 +39,8 @@ class V1::ProjectsController < ApplicationController
     end
   end
 
-
+  # DELETE /projects/:id
+  # Only Lecturers
   def destroy
     if @project.destroy
       render json: '', status: :no_content

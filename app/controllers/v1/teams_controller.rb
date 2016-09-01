@@ -7,6 +7,9 @@ class V1::TeamsController < ApplicationController
 	before_action -> {
 		set_if_owner(Team, params[:id], '@team') }, 							only: [:show, :update, :destroy]
 
+	# GET /teams
+	# Lecturer: Must provide project_id, teams for that Project
+	# Student: 	All their teams
 	def index
 		if current_user.load.instance_of? Lecturer
 			if team_params[:project_id]
@@ -19,12 +22,12 @@ class V1::TeamsController < ApplicationController
 		end
 	end
 
-
+	# GET /teams/:id
 	def show
 		render json: @team, status: :ok
 	end
 
-
+	# POST /teams
 	def create
 		team = Team.new(team_params)
 
@@ -35,7 +38,8 @@ class V1::TeamsController < ApplicationController
 		end
 	end
 
-
+	# POST /teams/enrol
+	# Needs enrollemnt_key in params
 	def enrol
 		if @team = Team.find_by(enrollment_key: params[:enrollment_key])
 			if @team.enrol(current_user.load)
@@ -48,7 +52,7 @@ class V1::TeamsController < ApplicationController
 		end
 	end
 
-
+	# PATCH /teams/:id
 	def update
 		params.delete(:enrollment_key) if current_user.load.instance_of? Student
 
@@ -59,7 +63,7 @@ class V1::TeamsController < ApplicationController
 		end
 	end
 
-
+	# DELETE /teams/:id
 	def destroy
 		if @team.destroy
 			render json: '', status: :no_content
