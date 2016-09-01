@@ -14,8 +14,7 @@ class User < ApplicationRecord
 	validates_uniqueness_of :id
 	validates_uniqueness_of :email, case_sensitive: false
 
-	### Instance Methods
-	#
+	# Instance Methods
 	def full_name ; "#{first_name} #{last_name}" end
 
 	# Disallow assignment to the provider attribute
@@ -42,11 +41,11 @@ class User < ApplicationRecord
 	end
 
 
-protected
+	protected
 
-	# overrides the default devise method in validatable.rb to require password
-	# only if user signed up via email
-	def password_required?
-		(!persisted? && provider == 'email') || !password.nil? || !password_confirmation.nil?
-	end
+		# overrides the default devise method in validatable.rb to require password
+		# only if user signed up via email
+		def password_required?
+			(!persisted? && provider == 'email') || !password.nil? || !password_confirmation.nil?
+		end
 end

@@ -1,5 +1,11 @@
 class ApplicationController < JWTApplicationController
 
+	# Handle any unexpected exceptions. Instead of rendering the deault 404.html or 500.html
+	# Respond with json. In case the environment is not production, send the exception as well.
+	rescue_from StandardError do |e|
+  	render json: format_errors({ base: [Rails.env.production? ? 'Operation Failed' : e.message] }), status: 500
+  end
+
 	protected
 
 		###
