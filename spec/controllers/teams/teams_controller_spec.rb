@@ -156,7 +156,7 @@ RSpec.describe V1::TeamsController, type: :controller do
 				project = FactoryGirl.create(:project)
 				get :index, params: { project_id: project.id }
 				expect(response.status).to eq(403)
-				expect(parse_body['errors']['base'].first).to eq("This Project can not be found in the current user's Projects")
+				expect(parse_body['errors']['base'].first).to eq("This Project is not associated with the current user")
 			end
 		end
 
@@ -186,7 +186,7 @@ RSpec.describe V1::TeamsController, type: :controller do
 					post :create, params: FactoryGirl.attributes_for(:team, project_id: different_project.id)
 				}.to_not change { Team.all.count }
 				expect(response.status).to eq(403)
-				expect(parse_body['errors']['base'].first).to eq("This Project can not be found in the current user's Projects")
+				expect(parse_body['errors']['base'].first).to eq("This Project is not associated with the current user")
 			end
 		end
 

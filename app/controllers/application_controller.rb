@@ -1,16 +1,24 @@
 class ApplicationController < JWTApplicationController
 
 	protected
-		def set_if_owner(resource, id)
+
+		###
+		# Checks if the 'id' of the 'resource' provided is assotiated with
+		# the current_user. If it is, a variable is created with the value
+		# passed in the 'variable' parameter.
+		#
+		# param resource, Class, 		'The class of the resource'
+		# param id 			, Integer,	'The id of the resource'
+		# param variable, String,		'The variable name that the resource will be available under'
+		def set_if_owner(resource, id, variable)
 			temp = resource.find_by(id: id)
-    	resource_str = resource.to_s
 
     	unless current_user.load.method(resource.table_name).call.include? temp
-    		render json: format_errors({ base: ["This #{resource_str} can not be found in the current user's #{resource_str.pluralize}"] }), status: :forbidden
+    		render json: format_errors({ base: ["This #{resource} is not associated with the current user"] }), status: :forbidden
+    		return false
     	end
 
-    	resource_str[0] = resource_str[0].downcase
-    	instance_variable_set "@#{resource_str}", temp
+    	instance_variable_set "#{variable}", temp
     	true
 		end
 end

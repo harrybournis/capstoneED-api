@@ -56,7 +56,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 			it 'responds with 403 forbidden if th unit_id does not belong to current user' do
 				patch :update, params: { id: @project_irrelevant }
 				expect(response.status).to eq(403)
-				expect(parse_body['errors']['base'].first).to eq("This Project can not be found in the current user's Projects")
+				expect(parse_body['errors']['base'].first).to eq("This Project is not associated with the current user")
 			end
 	end
 end
