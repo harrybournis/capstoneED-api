@@ -82,17 +82,39 @@ RSpec.describe V1::TeamsController, type: :controller do
 
 		describe 'POST enrol' do
 			it 'creates a new StudentsTeam instance' do
+				team = FactoryGirl.create(:team)
 				expect {
-					post :enrol, params: { enrollment_key: Team.second.enrollment_key }
+					post :enrol, params: { enrollment_key: team.enrollment_key }
 				}.to change { StudentsTeam.all.count }.by(1)
-				expect(@student.teams.includes? Team.second).to be_truthy
+				expect(response.status).to eq(201)
+				@student.reload
+				expect(@student.teams.include? team).to be_truthy
 			end
 
-			it 'responds with 422 unprocessable_entity if wrong enrollment key'
+			it 'responds with 422 unprocessable_entity if wrong enrollment key' do
+				expect {
+					post :enrol, params: { enrollment_key: 'invalidkey' }
+				}.to_not change { StudentsTeam.all.count }
+				expect(parse_body['errors']['enrollment_key'].first).to eq('is invalid')
+			end
 
-			it 'responds with 403 forbidden if they try to enrol on the same team twice'
+			it 'responds with 403 forbidden if they try to enrol on the same team twice' do
+				expect {
+					post :enrol, params: { enrollment_key: @student.teams.first.enrollment_key }
+				}.to_not change { StudentsTeam.all.count }
+				expect(response.status).to eq(403)
+				expect(parse_body['errors']['base'].first).to eq('Student can not exist in the same Team twice')
+			end
 
-			it 'responds with 403 forbidden if they try to enrol on two teams for the sam project'
+			it 'responds with 403 forbidden if they try to enrol on two teams for the same project' do
+				team = @student.teams.first.project.teams.last
+				expect(@student.teams.include? team).to be_falsy
+				expect {
+					post :enrol, params: { enrollment_key: team.enrollment_key }
+				}.to_not change { StudentsTeam.all.count }
+				expect(response.status).to eq(403)
+				expect(parse_body['errors']['base'].first).to eq('Student has already enroled in a different team for this Project')
+			end
 		end
 
 		describe 'DELETE destroy' do
@@ -211,68 +233,4 @@ RSpec.describe V1::TeamsController, type: :controller do
 			end
 		end
 	end
-
-	# describe 'PATCH update' do
-
-	# 	before(:each) do
-	# 		@controller = V1::UnitsController.new
-	# 		@lecturer = FactoryGirl.build(:lecturer_with_units).process_new_record
-	# 		@lecturer.save
-	# 		mock_request = MockRequest.new(valid = true, @lecturer)
-	# 		request.cookies['access-token'] = mock_request.cookies['access-token']
-	# 		request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-	# 		expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-	# 		expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-	# 	end
-
-	# 	it 'updates successfully if user is Lecturer and the owner' do
-	# 		patch :update, params: { id: @lecturer.units.first.id, name: 'different', code: 'different' }
-	# 		expect(response.status).to eq(200)
-	# 		expect(parse_body['unit']['name']).to eq('different')
-	# 	end
-
-	# 	it 'assigns different department if department_id in params' do
-	# 		department = FactoryGirl.create(:department)
-	# 		patch :update, params: { id: @lecturer.units.first.id, department_id: department.id }
-	# 		expect(response.status).to eq(200)
-	# 		@lecturer.reload
-	# 		expect(@lecturer.units.first.department_id).to eq(department.id)
-	# 	end
-
-	# 	it 'creates a new department if department_attributes in params' do
-	# 		expect {
-	# 			patch :update, params: { id: @lecturer.units.first.id, department_attributes: { name: 'departmentname', university: 'university' } }
-	# 		}.to change { Department.all.count }.by(1)
-	# 		expect(response.status).to eq(200)
-	# 		@lecturer.reload
-	# 		expect(@lecturer.units.first.department.name).to eq('departmentname')
-	# 	end
-
-	# 	it 'assigns the department_id if both department_id and department_attributes' do
-	# 		department = FactoryGirl.create(:department)
-	# 		expect {
-	# 			patch :update, params: { id: @lecturer.units.first.id, department_id: department.id, department_attributes: { name: 'departmentname', university: 'university' } }
-	# 		}.to_not change { Department.all.count }
-	# 		expect(response.status).to eq(200)
-	# 		@lecturer.reload
-	# 		expect(@lecturer.units.first.department.name).to eq(department.name)
-	# 	end
-	# end
-
-	# describe 'DELETE destroy' do
-
-	# 	it 'delete the unit if user is lecturer and owner' do
-	# 		@controller = V1::UnitsController.new
-	# 		@lecturer = FactoryGirl.build(:lecturer_with_units).process_new_record
-	# 		@lecturer.save
-	# 		mock_request = MockRequest.new(valid = true, @lecturer)
-	# 		request.cookies['access-token'] = mock_request.cookies['access-token']
-	# 		request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-	# 		expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-	# 		expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-
-	# 		delete :destroy, params: { id: @lecturer.units.first.id }
-	# 		expect(response.status).to eq(204)
-	# 	end
-	# end
 end

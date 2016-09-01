@@ -1,14 +1,21 @@
 class V1::TeamsController < ApplicationController
 
 	before_action :allow_if_lecturer, 		only: [:create, :destroy]
+	before_action :allow_if_student,			only: [:enrol]
 	before_action :set_project_if_owner,	only: [:create]
 	before_action :set_team_if_owner, 		only: [:show, :update, :destroy]
 
 	def index
 		if current_user.load.instance_of? Lecturer
-			index_for_lecturer
+
+			if team_params[:project_id]
+				render json: @project.teams, status: :ok if set_project_if_owner
+			else
+				render json: format_errors({ project_id: ["can't be blank"] }), status: 400
+			end
+
 		else
-			index_for_student
+			render json: current_user.load.teams, status: :ok
 		end
 	end
 
@@ -29,6 +36,21 @@ class V1::TeamsController < ApplicationController
 	end
 
 
+	def enrol
+		if @team = Team.find_by(enrollment_key: params[:enrollment_key])
+
+			if @team.enrol(current_user.load)
+				render json: @team, status: :created
+			else
+				render json: format_errors(@team.errors), status: :forbidden
+			end
+
+		else
+			render json: format_errors({ enrollment_key: ['is invalid'] })
+		end
+	end
+
+
 	def update
 		params.delete(:enrollment_key) if current_user.load.instance_of? Student
 
@@ -40,11 +62,6 @@ class V1::TeamsController < ApplicationController
 	end
 
 
-	def enrol
-
-	end
-
-
 	def destroy
 		if @team.destroy
 			render json: '', status: :no_content
@@ -53,21 +70,8 @@ class V1::TeamsController < ApplicationController
 		end
 	end
 
+
 	private
-
-		# Will be called in the Index Action if the current_user is a Lecturer
-		def index_for_lecturer
-			if team_params[:project_id]
-				render json: @project.teams, status: :ok if set_project_if_owner
-			else
-				render json: format_errors({ project_id: ["can't be blank"] }), status: 400
-			end
-		end
-
-		# Will be called in the Index Action if the current_user is a Student
-		def index_for_student
-			render json: current_user.load.teams, status: :ok
-		end
 
 		# REFACTOR
     def set_project_if_owner

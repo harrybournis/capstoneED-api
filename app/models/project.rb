@@ -4,6 +4,7 @@ class Project < ApplicationRecord
   belongs_to 	:lecturer
   belongs_to 	:unit
   has_many 		:teams
+  has_many		:students, through: :teams
 
   # Validations
   validates_presence_of :start_date, :end_date, :description, :unit_id, :lecturer_id

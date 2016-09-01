@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe V1::DepartmentsController, type: :request do
 
+	before(:each) { host! 'api.example.com' }
+
 	describe 'PATCH update' do
 
 		context 'valid' do

@@ -12,7 +12,7 @@ class Docs::V1::Students < ApplicationController
 	end
 
 
-	api :POST, '/register', 'Register a new Student using email and password as authentication'
+	api :POST, '/create', 'Register a new Student using email and password as authentication'
 	param :email, String,									'A unique email', 								required: true
 	param :password, String,							'Minimum 8 characters', 					required: true
 	param :password_confirmation, String, 'Must equal the password param', 	required: true

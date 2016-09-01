@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe V1::DepartmentsController, type: :request do
 
+	before(:each) { host! 'api.example.com' }
+
 	describe 'POST create' do
 
 		context 'valid' do

@@ -51,12 +51,29 @@ class Docs::V1::Teams < ApplicationController
 	error code: 403, desc: 'Current User is not a Lecturer'
 	error code: 403, desc: 'This User is not the owner of this resource'
 	error code: 422, desc: 'Invalid Params'
-	example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 1133,\n    \"start_date\": \"2016-08-29\",\n    \"end_date\": \"2016-10-16\",\n    \"description\": \"Excepturi quis non minus dolor qui officia. Aperiam ex dolorum libero atque perferendis molestiae quos. Et est quidem. Veniam deleniti provident sit.\",\n    \"unit\": {\n      \"id\": 2839,\n      \"name\": \"Streamlined object-oriented encoding\",\n      \"code\": \"B000FQ9CTY\",\n      \"semester\": \"Autumn\",\n      \"year\": 2016,\n      \"archived_at\": null\n    }\n  }\n}")
+	example DocHelper.format_example(status = 201, nil, body = "{\n  \"project\": {\n    \"id\": 1133,\n    \"start_date\": \"2016-08-29\",\n    \"end_date\": \"2016-10-16\",\n    \"description\": \"Excepturi quis non minus dolor qui officia. Aperiam ex dolorum libero atque perferendis molestiae quos. Et est quidem. Veniam deleniti provident sit.\",\n    \"unit\": {\n      \"id\": 2839,\n      \"name\": \"Streamlined object-oriented encoding\",\n      \"code\": \"B000FQ9CTY\",\n      \"semester\": \"Autumn\",\n      \"year\": 2016,\n      \"archived_at\": null\n    }\n  }\n}")
 	description <<-EOS
 		Create a new Team for belonging to a specific Project. A Team can only be created by the Lecturer
 		that owns the Project.
 	EOS
 	def create
+	end
+
+	api :POST, '/teams/enrol', 'Students joins Team with enrolment_key'
+	meta :authentication? => true
+	param :enrollment_key, String, 'The enrollment key of the Team.', required: true
+	error code: 401, desc: 'Authentication failed'
+	error code: 403, desc: 'Current User is not a Student'
+	error code: 403, desc: 'Student tried to join same Team twice'
+	error code: 403, desc: 'Student tried to join two Teams in the same Project'
+	error code: 422, desc: 'Wrong enrollment key'
+	example DocHelper.format_example(status = 201, nil, body = "{\n  \"team\": {\n    \"id\": 2,\n    \"name\": \"Team 2\",\n    \"logo\": null,\n    \"enrollment_key\": \"e549c159189fbc1916843ca1becace65\"\n  }\n}")
+	example DocHelper.format_example(status = 403, nil, body = "{\n  \"errors\": {\n    \"base\": [\n      \"Student can not exist in the same Team twice\"\n    ]\n  }\n}")
+	description <<-EOS
+		Add a Student in a Team. Needs the enrollment key of the Team. A Student can not belong to
+		two Teams in the same project.
+	EOS
+	def enrol
 	end
 
 	api :PATCH, '/teams/:id', 'Update a Team resource'
