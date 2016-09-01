@@ -3,7 +3,7 @@ class Project < ApplicationRecord
 	# Associations
   belongs_to 	:lecturer
   belongs_to 	:unit
-  has_many 		:teams
+  has_many 		:teams, dependent: :destroy
   has_many		:students, through: :teams
 
   # Validations
