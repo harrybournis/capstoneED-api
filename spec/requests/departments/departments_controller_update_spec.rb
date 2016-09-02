@@ -1,24 +1,23 @@
 require 'rails_helper'
 
-RSpec.describe V1::DepartmentsController, type: :request do
-
-	before(:each) { host! 'api.example.com' }
+RSpec.describe V1::DepartmentsController, type: :controller do
 
 	describe 'PATCH update' do
 
 		context 'valid' do
 			before(:each) do
+				@controller = V1::DepartmentsController.new
 				@user = FactoryGirl.build(:lecturer_with_password).process_new_record
 				@user.save
 				@user.confirm
-				post '/v1/sign_in', params: { email: @user.email, password: '12345678' }
-				expect(response.status).to eq(200)
-				@csrf_token = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+				mock_request = MockRequest.new(valid = true, @user)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 				@department = FactoryGirl.create(:department)
 			end
 
 			it 'responds with 200 ok' do
-				patch "/v1/departments/#{@department.id}", params: { id: @department.id, university: 'different' }, headers: { 'X-XSRF-TOKEN' => @csrf_token }
+				patch :update, params: { id: @department.id, university: 'different' }
 				expect(response.status).to eq(200)
 				@department.reload
 				expect(@department.university).to eq('different')
@@ -28,20 +27,21 @@ RSpec.describe V1::DepartmentsController, type: :request do
 		context 'invalid' do
 
 			it 'responds with 401 unauthorized if authentication failed' do
-				patch '/v1/departments/:id', params: { id: 3 }, headers: { 'X-XSRF-TOKEN' => 'iewn8943buyirleah' }
+				patch :update, params: { id: 3 }
 				expect(response.status).to eq(401)
 			end
 
 			it 'responds with 403 forbidden if user is not lecturer' do
+				@controller = V1::DepartmentsController.new
 				@user = FactoryGirl.build(:student_with_password).process_new_record
 				@user.save
 				@user.confirm
-				post '/v1/sign_in', params: { email: @user.email, password: '12345678' }
-				expect(response.status).to eq(200)
-				@csrf_token = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+				mock_request = MockRequest.new(valid = true, @user)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 				@department = FactoryGirl.create(:department)
 
-				patch '/v1/departments/:id', params: { id: @department.id, university: 'different' }, headers: { 'X-XSRF-TOKEN' => @csrf_token }
+				patch :update, params: { id: @department.id, university: 'different' }
 				expect(response.status).to eq(403)
 				expect(JSON.parse(response.body)['errors']['base'].first).to eq('You must be Lecturer to access this resource')
 			end

@@ -15,8 +15,6 @@ RSpec.describe V1::UnitsController, type: :controller do
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 			end
 
 			it "returns only the current user's units" do
@@ -40,8 +38,6 @@ RSpec.describe V1::UnitsController, type: :controller do
 			mock_request = MockRequest.new(valid = true, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 		end
 
 		it "returns the unit if if is is one of the lectuer's units" do
@@ -73,8 +69,6 @@ RSpec.describe V1::UnitsController, type: :controller do
 			mock_request = MockRequest.new(valid = true, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 		end
 
 		it 'updates successfully if user is Lecturer and the owner' do
@@ -120,8 +114,6 @@ RSpec.describe V1::UnitsController, type: :controller do
 			mock_request = MockRequest.new(valid = true, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 
 			delete :destroy, params: { id: @user.units.first.id }
 			expect(response.status).to eq(204)
