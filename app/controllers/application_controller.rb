@@ -6,6 +6,8 @@ class ApplicationController < JWTApplicationController
   	render json: format_errors({ base: [Rails.env.production? ? 'Operation Failed' : e.message] }), status: 500
   end
 
+  serialization_scope :params
+
 	protected
 
 		###
