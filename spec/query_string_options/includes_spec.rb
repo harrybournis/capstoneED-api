@@ -25,14 +25,15 @@ RSpec.describe 'Iincludes', type: :controller do
 				expect(project.teams.size).to eq(2)
 
 				get :show, params: { id: project.id }
+				puts parse_body
 				expect(response.status).to eq(200)
 				puts parse_body
 				expect(parse_body['project']['teams']).to be_falsy
 
-				get :show, params: { id: project.id, includes: 'teams' }
-				expect(response.status).to eq(200)
+				get :show, params: { id: project.id, includes: 'teams,unit' }
 				puts ""
 				puts parse_body
+				expect(response.status).to eq(200)
 				expect(parse_body['project']['teams']).to be_truthy
 			end
 		end
