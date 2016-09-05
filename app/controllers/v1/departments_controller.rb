@@ -7,7 +7,7 @@ class V1::DepartmentsController < ApplicationController
 	# GET /departments
 	def index
 		@departments = Department.all
-		render json: @departments, status: :ok
+		serialize_collection_params @departments, :ok
 	end
 
 	# POST /departments

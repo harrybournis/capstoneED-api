@@ -6,12 +6,14 @@ class V1::UnitsController < ApplicationController
   # GET /units
   # Only for Lecturers
   def index
-    render json: current_user.load.units, status: :ok
+    #render json: current_user.load.units, status: :ok
+    serialize_collection_params current_user.load.units, :ok
   end
 
   # GET /units/:id
   def show
-    render json: @unit, status: :ok
+    #render json: @unit, status: :ok
+    serialize_params @unit, :ok
   end
 
   # POST /units

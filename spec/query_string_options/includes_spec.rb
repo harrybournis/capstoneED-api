@@ -105,7 +105,6 @@ RSpec.describe 'Includes', type: :controller do
 				expect(parse_body['project']['unit']).to be_falsy
 				expect(parse_body['project']['teams']).to be_falsy
 			end
-
 		end
 	end
 
