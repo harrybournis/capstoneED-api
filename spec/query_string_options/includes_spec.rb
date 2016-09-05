@@ -29,25 +29,25 @@ RSpec.describe 'Includes', type: :controller do
 			it 'returns only the specified resource in includes' do
 				get :show, params: { id: @project.id }
 				body_project = parse_body['project']
-				expect(response.status).to eq(200)
+				expect(response.status).to eq(200) #1
 				expect(body_project).to include('description', 'start_date')
 				expect(body_project['teams']).to be_falsy
 				expect(body_project['teams']).to be_falsy
 
 				get :show, params: { id: @project.id, includes: 'teams'}
 				body_project = parse_body['project']
-				expect(response.status).to eq(200)
+				expect(response.status).to eq(200) #2
 				expect(body_project['teams']).to be_truthy
 				expect(body_project['unit']).to be_falsy
 
 				get :show, params: { id: @project.id, includes: 'teams,unit'}
 				body_project = parse_body['project']
-				expect(response.status).to eq(200)
+				expect(response.status).to eq(200) #3
 				expect(body_project['teams']).to be_truthy
 				expect(body_project['unit']).to be_truthy
 			end
 
-			it 'returns the resource full but only the associations ids if ?ids_only=true' do
+			it 'returns the resource full but only the associations ids if ?compact=true' do
 				get :show, params: { id: @project.id }
 				body_project = parse_body['project']
 				expect(response.status).to eq(200)
@@ -55,7 +55,7 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body_project['teams']).to be_falsy
 				expect(body_project['unit']).to be_falsy
 
-				get :show, params: { id: @project.id, includes: 'teams', ids_only: true}
+				get :show, params: { id: @project.id, includes: 'teams', compact: true}
 				body_project = parse_body['project']
 				expect(response.status).to eq(200)
 				expect(body_project['teams']).to be_truthy

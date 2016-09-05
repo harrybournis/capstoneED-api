@@ -38,9 +38,13 @@ class ApplicationController < JWTApplicationController
 		# param, String, resource, The resource(s) that is to be rendered in json
 		def serialize_params(resource, status)
 			if params[:includes]
-				render  json: resource, include: parse_includes, serializer: "Includes::#{resource.class.to_s}IncludesSerializer".constantize, status: status
+				if params[:compact]
+					render 	json: resource, include: parse_includes, serializer: "IncludesCompact::#{resource.class.to_s}Serializer".constantize, status: status
+				else
+					render  json: resource, include: parse_includes, serializer: "Includes::#{resource.class.to_s}Serializer".constantize,  status: status
+				end
 			else
-				render  json: resource, serializer: "#{resource.class.to_s}Serializer".constantize, status: status
+				render json: resource, serializer: "#{resource.class.to_s}Serializer".constantize, status: status
 			end
 		end
 
@@ -53,7 +57,11 @@ class ApplicationController < JWTApplicationController
 		def serialize_collection_params(resource, status)
 			return [] unless resource.any?
 			if params[:includes]
-				render json: resource, include: parse_includes, each_serializer: "Includes::#{resource[0].class.to_s}IncludesSerializer".constantize, status: status
+				if params[:compact]
+					render 	json: resource, include: parse_includes, each_serializer: "IncludesCompact::#{resource[0].class.to_s}Serializer".constantize, status: status
+				else
+					render  json: resource, include: parse_includes, each_serializer: "Includes::#{resource[0].class.to_s}Serializer".constantize,  status: status
+				end
 			else
 				render json: resource, each_serializer: "#{resource[0].class.to_s}Serializer".constantize, status: status
 			end
