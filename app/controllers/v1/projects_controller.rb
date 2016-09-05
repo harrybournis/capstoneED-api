@@ -13,7 +13,7 @@ class V1::ProjectsController < ApplicationController
 
   # GET /projects/:id
   def show
-    render json: @project, status: :ok
+    render serialize_with_options(@project), status: :ok
   end
 
   # POST /projects

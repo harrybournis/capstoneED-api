@@ -1,3 +1,0 @@
-class StudentSerializer < UserSerializer
-
-end

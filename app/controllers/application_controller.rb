@@ -29,4 +29,25 @@ class ApplicationController < JWTApplicationController
     	instance_variable_set "#{variable}", temp
     	true
 		end
+
+		###
+		# Is passed to the render method in the controllers. It provides an abstraction in the controller,
+		# while initializing the correct Serializer depending on the received parameters.
+		#
+		# param, String, resource, The resource(s) that is to be rendered in json
+		def serialize_with_options(resource)
+			if params[:includes]
+				{ json: resource, include: parse_includes, serializer: "#{resource.class}::#{resource.class}IncludesSerializer".constantize }
+			else
+				{ json: resource, serializer: "#{resource.class}::#{resource.class}Serializer".constantize }
+			end
+		end
+
+		###
+		# Removes the '*' symbol from the inlcudes, to protect from users abusing the ?includes parameter
+		# in the requests. If not escaped, the serializer would render all of the resource's associations
+		# if passed ?includes=* or ?includes=**
+		def parse_includes
+			params[:includes].tr('*','')
+		end
 end
