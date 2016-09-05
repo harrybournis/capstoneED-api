@@ -84,6 +84,13 @@ RSpec.describe 'Includes', type: :controller do
 				expect(parse_body['project']['lecturer']).to be_falsy
 				expect(parse_body['project']['banana']).to be_falsy
 			end
+
+			it 'works for index' do
+				get :index, params: { includes: 'unit' }
+				expect(response.status).to eq(200)
+				expect(parse_body['projects'].first['unit']).to be_truthy
+			end
+
 		end
 	end
 

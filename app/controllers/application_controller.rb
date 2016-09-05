@@ -33,13 +33,31 @@ class ApplicationController < JWTApplicationController
 		###
 		# Is passed to the render method in the controllers. It provides an abstraction in the controller,
 		# while initializing the correct Serializer depending on the received parameters.
+		# Serializes a single object. Used in: :show, :create, :update
 		#
 		# param, String, resource, The resource(s) that is to be rendered in json
-		def serialize_with_options(resource)
+		def serialize_params(resource)
+			resource_object = resource.class.to_s
 			if params[:includes]
-				{ json: resource, include: parse_includes, serializer: "#{resource.class}::#{resource.class}IncludesSerializer".constantize }
+				{ json: resource, include: parse_includes, serializer: "#{resource_object}::#{resource_object}IncludesSerializer".constantize }
 			else
-				{ json: resource, serializer: "#{resource.class}::#{resource.class}Serializer".constantize }
+				{ json: resource, serializer: "#{resource_object}::#{resource_object}Serializer".constantize }
+			end
+		end
+
+		###
+		# Is passed to the render method in the controllers. It provides an abstraction in the controller,
+		# while initializing the correct Serializer depending on the received parameters.
+		# Serializes an Array. Used in: :index
+		#
+		# param, String, resource, The resource(s) that is to be rendered in json
+		def serialize_collection_params(resource)
+			return [] unless resource.any?
+			resource_object = resource[0].class.to_s
+			if params[:includes]
+				{ json: resource, include: parse_includes, each_serializer: "#{resource_object}::#{resource_object}IncludesSerializer".constantize }
+			else
+				{ json: resource, each_serializer: "#{resource_object}::#{resource_object}Serializer".constantize }
 			end
 		end
 

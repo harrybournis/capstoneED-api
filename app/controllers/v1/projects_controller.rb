@@ -8,12 +8,14 @@ class V1::ProjectsController < ApplicationController
 
   # GET /projects
   def index
-    render json: @unit ? @unit.projects : current_user.load.projects, status: :ok
+    #render json: @unit ? @unit.projects : current_user.load.projects, status: :ok
+    render serialize_collection_params(@unit ? @unit.projects : current_user.load.projects), status: :ok
+    #render json: current_user.load.projects, each_serializer: Project::ProjectSerializer, status: :ok
   end
 
   # GET /projects/:id
   def show
-    render serialize_with_options(@project), status: :ok
+    render serialize_params(@project), status: :ok
   end
 
   # POST /projects
