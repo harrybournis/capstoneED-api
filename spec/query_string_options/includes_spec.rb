@@ -106,6 +106,28 @@ RSpec.describe 'Includes', type: :controller do
 				expect(parse_body['project']['teams']).to be_falsy
 			end
 		end
+
+		describe 'Units' do
+			before(:each) do
+				@controller = V1::UnitsController.new
+				@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
+				@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @lecturer)
+				expect(@project.teams.size).to eq(2)
+			end
+
+			it 'GET show contains projects' do
+				get :show, params: { id: @unit.id }
+				expect(parse_body['unit']['projects']).to be_falsy
+
+				get :show, params: { id: @unit.id, includes: 'projects' }
+				expect(parse_body['unit']['projects']).to be_truthy
+			end
+
+			it 'GET index contains the projects compact' do
+				get :index, params: { includes: 'projects', compact: true }
+				expect(parse_body['units'].first['projects'].first).to_not include('description')
+			end
+		end
 	end
 
 
