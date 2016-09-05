@@ -23,7 +23,7 @@ class V1::ProjectsController < ApplicationController
     @project.lecturer_id = current_user.id
 
     if @project.save
-      serialize_params @project, :created
+      render json: @project, status: :created
     else
       render json: format_errors(@project.errors), status: :unprocessable_entity
     end
@@ -33,7 +33,7 @@ class V1::ProjectsController < ApplicationController
   # Only Lecturers
   def update
     if @project.update(project_params)
-      serialize_params @project, :ok
+      render json: @project, status: :ok
     else
       render json: @project.errors, status: :unprocessable_entity
     end

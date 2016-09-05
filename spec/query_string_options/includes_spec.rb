@@ -21,8 +21,8 @@ RSpec.describe 'Includes', type: :controller do
 
 			before(:each) do
 				@controller = V1::ProjectsController.new
-				unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-				@project = FactoryGirl.create(:project_with_teams, unit: unit, lecturer: @lecturer)
+				@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
+				@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @lecturer)
 				expect(@project.teams.size).to eq(2)
 			end
 
@@ -90,6 +90,20 @@ RSpec.describe 'Includes', type: :controller do
 				expect(response.status).to eq(200)
 				expect(parse_body['projects'].first['unit']).to be_truthy
 				expect(parse_body['projects'].first['teams']).to be_falsy
+			end
+
+			it 'renders empty array if no collection is empty' do
+				@unit.projects.destroy_all
+				expect(@unit.projects.empty?).to be_truthy
+				get :index, params: { unit_id: @unit.id, includes: 'teams' }
+				expect(response.status).to eq(204)
+				expect(response.body.empty?).to be_truthy
+			end
+
+			it 'renders no associations if includes emtpy string?' do
+				get :show, params: { id: @project.id, includes: "" }
+				expect(parse_body['project']['unit']).to be_falsy
+				expect(parse_body['project']['teams']).to be_falsy
 			end
 
 		end
