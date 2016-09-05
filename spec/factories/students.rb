@@ -1,8 +1,8 @@
 FactoryGirl.define do
   factory :student do
-    first_name 	      { Faker::Name.first_name }
-  	last_name 	      { Faker::Name.last_name }
-    email             { "#{first_name}_#{last_name}#{rand(1000).to_s}@gmail.com" }
+    first_name 	      { "Jonathan#{rand(1000).to_s}" }
+  	last_name 	      { "Burgerhuman#{rand(1000).to_s}" }
+    email             { "jonathan#{rand(1000).to_s}burgerhuman#{rand(1000).to_s}@gmail.com" }
     provider          { 'test' }
 
     factory :student_with_password do

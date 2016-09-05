@@ -1,11 +1,11 @@
 FactoryGirl.define do
   factory :lecturer do
-    first_name 	    { Faker::Name.first_name }
-  	last_name 	    { Faker::Name.last_name }
-  	email           { "#{first_name}_#{last_name}#{rand(1000).to_s}@gmail.com" }
+    first_name 	    { "Alfredo#{rand(1000).to_s}" }
+  	last_name 	    { "Jumpveryhigh#{rand(1000).to_s}" }
+  	email           { "alfredo#{rand(1000).to_s}_jump#{rand(1000).to_s}@gmail.com" }
     provider 		    { 'test' }
-    university 	    { Faker::University.name }
-    position	      { Faker::Name.title }
+    university 	    { "University of Important Potato" }
+    position	      { "Master of Parking" }
 
     factory :lecturer_with_password do
       provider 'email'
