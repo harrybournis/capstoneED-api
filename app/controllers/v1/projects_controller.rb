@@ -8,14 +8,12 @@ class V1::ProjectsController < ApplicationController
 
   # GET /projects
   def index
-    #render json: @unit ? @unit.projects : current_user.load.projects, status: :ok
-    render serialize_collection_params(@unit ? @unit.projects : current_user.load.projects), status: :ok
-    #render json: current_user.load.projects, each_serializer: Project::ProjectSerializer, status: :ok
+    serialize_collection_params @unit ? @unit.projects : current_user.load.projects, :ok
   end
 
   # GET /projects/:id
   def show
-    render serialize_params(@project), status: :ok
+    serialize_params @project, :ok
   end
 
   # POST /projects
@@ -25,7 +23,7 @@ class V1::ProjectsController < ApplicationController
     @project.lecturer_id = current_user.id
 
     if @project.save
-      render json: @project, status: :created
+      serialize_params @project, :created
     else
       render json: format_errors(@project.errors), status: :unprocessable_entity
     end
@@ -35,7 +33,7 @@ class V1::ProjectsController < ApplicationController
   # Only Lecturers
   def update
     if @project.update(project_params)
-      render json: @project
+      serialize_params @project, :ok
     else
       render json: @project.errors, status: :unprocessable_entity
     end
