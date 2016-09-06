@@ -9,11 +9,6 @@ class V1::LecturersController < ApplicationController
 	# POST '/register'
 	# Register a new user using email and password as authentication
 	def create
-		if !lecturer_params['email'] || !lecturer_params['password'] || !lecturer_params['password_confirmation']
-			render json: '', status: :bad_request
-			return
-		end
-
 		@lecturer = Lecturer.new(lecturer_params).process_new_record
 
 		if @lecturer.save

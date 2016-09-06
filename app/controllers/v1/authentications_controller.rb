@@ -20,11 +20,6 @@ class V1::AuthenticationsController < ApplicationController
 	# POST /sign_in
 	# Sign in by email and password. Required email and password.
 	def sign_in_email
-		if !auth_params['email'] || !auth_params['password']
-			render json: format_errors({ email: ["can't be blank"], password: ["can't be blank"] }), status: :bad_request
-			return
-		end
-
 		@user = User.validate_for_sign_in(auth_params)
 
 		if @user.errors.empty?

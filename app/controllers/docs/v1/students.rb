@@ -6,19 +6,18 @@ class Docs::V1::Students < ApplicationController
 	resource_description do
 	  short 'Do peer assessment'
 	  name 'Student'
-	  api_base_url '/v1/students'
+	  api_base_url '/v1'
 	  api_version 'v1'
 	  description 'The users do peer assessment things.'
 	end
 
 
-	api :POST, '/create', 'Register a new Student using email and password as authentication'
+	api :POST, '/students', 'Register a new Student using email and password as authentication'
 	param :email, String,									'A unique email', 								required: true
 	param :password, String,							'Minimum 8 characters', 					required: true
 	param :password_confirmation, String, 'Must equal the password param', 	required: true
 	param :first_name, String,						"User's first name", 							required: true
 	param :last_name, String,							"User's last name", 							required: true
-	error code: 400, desc: 'Params missing. Did not receive either email, password or password_confirmation in params. See errors in response body.'
 	error code: 422, desc: "Failed to save User. Params are invalid. See errors in response body."
 	example DocHelper.format_example(status = 200)
 	example DocHelper.format_example(status = 422, nil, body = "{\n  \"errors\": {\n    \"email\": [\n      \"is invalid\"\n    ],\n    \"password\": [\n      \"is too short (minimum is 8 characters)\"\n    ],\n    \"first_name\": [\n      \"can't be blank\"\n    ]\n  }\n}")
@@ -29,7 +28,7 @@ class Docs::V1::Students < ApplicationController
 	def register
 	end
 
-	api :PATCH, '/:id', 'Update Student resource'
+	api :PATCH, '/students/:id', 'Update Student resource'
 	meta :authentication? => true
 	param :id, String,	'The users ID in the database. Used to find the user.', required: true
 	param :email, String,	'A unique email'
@@ -53,7 +52,7 @@ class Docs::V1::Students < ApplicationController
 	def update
 	end
 
-	api :DELETE, '/:id', 'Delete a Student resource'
+	api :DELETE, '/students/:id', 'Delete a Student resource'
 	meta :authentication? => true
 	param :id, String, 'The users ID in the database. Used to find the user.', required: true
 	param :current_password, String, "A user has to enter their password to delete their account.", required: true

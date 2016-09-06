@@ -15,6 +15,8 @@ RSpec.describe Student, type: :model do
 		it { should validate_uniqueness_of(:id) }
 		it { should validate_uniqueness_of(:email).case_insensitive }
 
+		it { should validate_confirmation_of(:password) }
+
 		it 'does not allow provider to be updated' do
 			student = FactoryGirl.create(:student)
 			expect(student.update(provider: 'email')).to be_truthy
