@@ -33,13 +33,37 @@ class ApplicationController < JWTApplicationController
 		###
 		# Is passed to the render method in the controllers. It provides an abstraction in the controller,
 		# while initializing the correct Serializer depending on the received parameters.
+		# Serializes a single object. Used in: :show, :create, :update
 		#
 		# param, String, resource, The resource(s) that is to be rendered in json
-		def serialize_with_options(resource)
+		def serialize_params(resource, status)
 			if params[:includes]
-				{ json: resource, include: parse_includes, serializer: "#{resource.class}::#{resource.class}IncludesSerializer".constantize }
+				if params[:compact]
+					render 	json: resource, include: parse_includes, serializer: "IncludesCompact::#{resource.class.to_s}Serializer".constantize, status: status
+				else
+					render  json: resource, include: parse_includes, serializer: "Includes::#{resource.class.to_s}Serializer".constantize,  status: status
+				end
 			else
-				{ json: resource, serializer: "#{resource.class}::#{resource.class}Serializer".constantize }
+				render json: resource, serializer: "#{resource.class.to_s}Serializer".constantize, status: status
+			end
+		end
+
+		###
+		# Is passed to the render method in the controllers. It provides an abstraction in the controller,
+		# while initializing the correct Serializer depending on the received parameters.
+		# Serializes an Array. Used in: :index
+		#
+		# param, String, resource, The resource(s) that is to be rendered in json
+		def serialize_collection_params(resource, status)
+			return [] unless resource.any?
+			if params[:includes]
+				if params[:compact]
+					render 	json: resource, include: parse_includes, each_serializer: "IncludesCompact::#{resource[0].class.to_s}Serializer".constantize, status: status
+				else
+					render  json: resource, include: parse_includes, each_serializer: "Includes::#{resource[0].class.to_s}Serializer".constantize,  status: status
+				end
+			else
+				render json: resource, each_serializer: "#{resource[0].class.to_s}Serializer".constantize, status: status
 			end
 		end
 

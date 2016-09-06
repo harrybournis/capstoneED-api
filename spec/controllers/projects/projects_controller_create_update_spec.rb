@@ -23,7 +23,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				parameters = FactoryGirl.attributes_for(:project, unit_id: @user.units.first.id)
 				post :create, params: parameters
 				expect(response.status).to eq(201)
-				expect(parse_body['project']['unit']['id']).to eq(parameters[:unit_id])
+				expect(Project.find(parse_body['project']['id']).unit_id).to eq(parameters[:unit_id])
 			end
 		end
 

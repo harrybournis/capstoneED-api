@@ -8,12 +8,12 @@ class V1::ProjectsController < ApplicationController
 
   # GET /projects
   def index
-    render json: @unit ? @unit.projects : current_user.load.projects, status: :ok
+    serialize_collection_params @unit ? @unit.projects : current_user.load.projects, :ok
   end
 
   # GET /projects/:id
   def show
-    render serialize_with_options(@project), status: :ok
+    serialize_params @project, :ok
   end
 
   # POST /projects
@@ -33,7 +33,7 @@ class V1::ProjectsController < ApplicationController
   # Only Lecturers
   def update
     if @project.update(project_params)
-      render json: @project
+      render json: @project, status: :ok
     else
       render json: @project.errors, status: :unprocessable_entity
     end
