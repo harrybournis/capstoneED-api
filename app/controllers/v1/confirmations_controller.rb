@@ -32,6 +32,7 @@ class V1::ConfirmationsController < Devise::ConfirmationsController
     end
   end
 
+
   protected
 
   def confirmation_params

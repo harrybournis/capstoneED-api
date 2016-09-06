@@ -26,7 +26,7 @@ RSpec.describe 'ConfirmationsController /show', type: :controller do
     it 'redirects to after_confirmation_path_for' do
       get :show, params: { confirmation_token: @user.confirmation_token }
       expect(response.status).to eq(302)
-      expect(response).to redirect_to('capstoned.com/account_confirmation_success')
+      expect(response).to redirect_to('/user_confirmation_success.html')
     end
   end
 
@@ -38,7 +38,7 @@ RSpec.describe 'ConfirmationsController /show', type: :controller do
       @user.reload
       expect(@user.confirmed?).to eq(false)
       expect(response.status).to eq(302)
-      expect(response).to redirect_to("capstoned.com/account_confirmation_failure")
+      expect(response).to redirect_to("/user_confirmation_failure.html")
     end
 
     it 'redirects to confirmation_failed if no confirmation token in params' do
@@ -46,7 +46,7 @@ RSpec.describe 'ConfirmationsController /show', type: :controller do
       expect(@controller.params).to_not include('confirmation_token')
       expect(@user.confirmed?).to eq(false)
       expect(response.status).to eq(302)
-      expect(response).to redirect_to("capstoned.com/account_confirmation_failure")
+      expect(response).to redirect_to("/user_confirmation_failure.html")
     end
 
     it 'redirects to confirmation_failed if user already confirmed' do
@@ -55,7 +55,7 @@ RSpec.describe 'ConfirmationsController /show', type: :controller do
       get :show, params: { confirmation_token: @user.confirmation_token }
       expect(@controller.params).to include('confirmation_token')
       expect(response.status).to eq(302)
-      expect(response).to redirect_to("capstoned.com/account_confirmation_failure")
+      expect(response).to redirect_to("/user_confirmation_failure.html")
     end
   end
 end
