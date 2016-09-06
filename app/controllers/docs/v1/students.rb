@@ -8,6 +8,7 @@ class Docs::V1::Students < ApplicationController
 	  name 'Student'
 	  api_base_url '/v1/students'
 	  api_version 'v1'
+	  meta attributes: { first_name: 'String', last_name: 'String', email: 'String', type: 'String', provider: 'String'}
 	  description 'The users do peer assessment things.'
 	end
 

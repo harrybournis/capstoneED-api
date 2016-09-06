@@ -8,6 +8,7 @@ class Docs::V1::Teams < ApplicationController
 	  name 'Teams'
 	  api_base_url '/v1'
 	  api_version 'v1'
+	  meta attributes: { name: 'String', logo: 'Image', enrollment_key: 'String' }
 	  description <<-EOS
 			Teams contain many Students that participate in a Project. A Team has an enrollment key,
 			which Student will use to become members of the Team, and by extension, participate in a
@@ -30,7 +31,7 @@ class Docs::V1::Teams < ApplicationController
 
 	api :GET, 'teams/:id', 'Show a Team'
   meta :authentication? => true
-  param :id, Integer, 'The id of the Project to be returned', required: true
+  param :id, Integer, 'The id of the Team to be returned', required: true
   error code: 401, desc: 'Authentication failed'
 	error code: 403, desc: 'This User is not the owner of this resource'
   example DocHelper.format_example(status = 200, nil, body = "{\n  \"team\": {\n    \"id\": 1,\n    \"name\": \"Team 1\",\n    \"logo\": null,\n    \"enrollment_key\": \"b3dcbaebc4b594f3dc145cd6e23b59ce\"\n  }\n}")

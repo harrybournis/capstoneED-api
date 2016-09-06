@@ -5,10 +5,10 @@ class V1::DepartmentsController < ApplicationController
 
 
 	# GET /departments
-	def index
-		@departments = Department.all
-		serialize_collection_params @departments, :ok
-	end
+	# def index
+	# 	@departments = Department.all
+	# 	serialize_collection_params @departments, :ok
+	# end
 
 	# POST /departments
 	def create

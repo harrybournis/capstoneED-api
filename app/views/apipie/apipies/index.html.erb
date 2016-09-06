@@ -41,6 +41,18 @@
     <div><%= raw resource[:full_description] %></div>
   <% end %>
 
+  <!-- Resource Attributes-->
+  <% if resource.dig(:metadata, :attributes) %>
+    <h3>Attributes</h3>
+    <ul id="resource-attributes-list">
+      <% resource[:metadata][:attributes].each do |attribute,desc| %>
+        <li>
+          <%= attribute %> (<%= desc %>)
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
   <div class='accordion' id='accordion'>
 
     <% resource[:methods].each do |method| %>
@@ -74,6 +86,7 @@
 
       <div>
 
+        <!-- Authentication Metadata-->
         <% if method.dig(:metadata, :authentication?) %>
           <div class="alert alert-warning" role="warning">
             <img src='/locked-padlock.svg' style="width: 23px; height: 23px; padding-bottom: 2px">

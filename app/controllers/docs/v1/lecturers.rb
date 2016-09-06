@@ -8,6 +8,7 @@ class Docs::V1::Lecturers < ApplicationController
 	  name 'Lecturer'
 	  api_base_url '/v1/lecturers'
 	  api_version 'v1'
+	  meta attributes: { first_name: 'String', last_name: 'String', email: 'String', type: 'String', provider: 'String', position: 'String', university: 'String' }
 	  description 'The lecturers create projects with iterations and form which are completed by the students'
 	end
 

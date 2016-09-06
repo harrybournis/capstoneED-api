@@ -8,6 +8,7 @@ class Docs::V1::Projects < ApplicationController
 	  name 'Projects'
 	  api_base_url '/v1'
 	  api_version 'v1'
+	  meta attributes: { start_date: 'Date', end_date: 'Date', description: 'String' }
 	  description <<-EOS
 			Projects belong to Units and have many teams of Students. A Lecturer creates a Project,
 			and Students undertake a projects by spliting themselves into teams. A Projects can have many
