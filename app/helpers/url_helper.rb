@@ -16,13 +16,13 @@ module UrlHelper
 	# Used @ controllers/v1/confirmations_controller.rb
 	# The page to show after a users successfully confirms their account
 	def api_confirmation_success_url
-		redirect_to  "capstoned.com/account_confirmation_success"
+		redirect_to '/user_confirmation_success.html'
 	end
 
 	# Used @ controllers/v1/confirmations_controller.rb
 	# The page to show after a users fails to confirm their account
 	def api_confirmation_failure_url
-		redirect_to  "capstoned.com/account_confirmation_failure"
+		redirect_to  '/user_confirmation_failure.html'
 	end
 
 end
