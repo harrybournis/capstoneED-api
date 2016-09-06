@@ -6,6 +6,8 @@ class ApplicationController < JWTApplicationController
   	render json: format_errors({ base: [Rails.env.production? ? 'Operation Failed' : e.message] }), status: 500
   end
 
+  serialization_scope :params
+
 	protected
 
 		###
@@ -26,5 +28,50 @@ class ApplicationController < JWTApplicationController
 
     	instance_variable_set "#{variable}", temp
     	true
+		end
+
+		###
+		# Is passed to the render method in the controllers. It provides an abstraction in the controller,
+		# while initializing the correct Serializer depending on the received parameters.
+		# Serializes a single object. Used in: :show, :create, :update
+		#
+		# param, String, resource, The resource(s) that is to be rendered in json
+		def serialize_params(resource, status)
+			if params[:includes]
+				if params[:compact]
+					render 	json: resource, include: parse_includes, serializer: "IncludesCompact::#{resource.class.to_s}Serializer".constantize, status: status
+				else
+					render  json: resource, include: parse_includes, serializer: "Includes::#{resource.class.to_s}Serializer".constantize,  status: status
+				end
+			else
+				render json: resource, serializer: "#{resource.class.to_s}Serializer".constantize, status: status
+			end
+		end
+
+		###
+		# Is passed to the render method in the controllers. It provides an abstraction in the controller,
+		# while initializing the correct Serializer depending on the received parameters.
+		# Serializes an Array. Used in: :index
+		#
+		# param, String, resource, The resource(s) that is to be rendered in json
+		def serialize_collection_params(resource, status)
+			return [] unless resource.any?
+			if params[:includes]
+				if params[:compact]
+					render 	json: resource, include: parse_includes, each_serializer: "IncludesCompact::#{resource[0].class.to_s}Serializer".constantize, status: status
+				else
+					render  json: resource, include: parse_includes, each_serializer: "Includes::#{resource[0].class.to_s}Serializer".constantize,  status: status
+				end
+			else
+				render json: resource, each_serializer: "#{resource[0].class.to_s}Serializer".constantize, status: status
+			end
+		end
+
+		###
+		# Removes the '*' symbol from the inlcudes, to protect from users abusing the ?includes parameter
+		# in the requests. If not escaped, the serializer would render all of the resource's associations
+		# if passed ?includes=* or ?includes=**
+		def parse_includes
+			params[:includes].tr('*','')
 		end
 end

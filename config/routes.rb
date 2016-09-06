@@ -25,7 +25,7 @@ Rails.application.routes.draw do
 			resources :units, 			only: [:index, :show, :create, :update, :destroy]
 
 			# Departments
-			resources :departments, only: [:index, :show, :create, :update, :destroy]
+			resources :departments, only: [:create, :update, :destroy]
 
 			# Projects
 			resources :projects,		only: [:index, :show, :create, :update, :destroy]

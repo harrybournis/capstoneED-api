@@ -8,6 +8,7 @@ class Docs::V1::Departments < ApplicationController
 	  name 'Departments'
 	  api_base_url '/v1'
 	  api_version 'v1'
+	  meta attributes: { name: 'String', university: 'String' }
 	  description <<-EOS
 			A Department has a name and a university attribute. Each name is unique(?) for each university.
 			A Unit belongs to a Department.

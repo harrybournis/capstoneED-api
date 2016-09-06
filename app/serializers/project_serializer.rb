@@ -1,5 +1,7 @@
-class ProjectSerializer < ActiveModel::Serializer
-  attributes :id, :start_date, :end_date, :description
+class ProjectSerializer < Base::BaseSerializer
+  attributes :start_date, :end_date, :description
 
-  has_one :unit
+  attribute :href do
+  	"/projects/#{object.id}"
+  end
 end

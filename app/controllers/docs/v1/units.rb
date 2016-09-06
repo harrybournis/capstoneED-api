@@ -8,6 +8,7 @@ class Docs::V1::Units < ApplicationController
 	  name 'Units'
 	  api_base_url '/v1'
 	  api_version 'v1'
+	  meta attributes: { name: 'String', code: 'String', semester: 'String', year: 'Integer', archived_at: 'Date' }
 	  description <<-EOS
 			A Unit is created by a Lecturer and can have many Projects. A Unit also belongs to a Department.
 			Archived at?
