@@ -13,6 +13,8 @@ class User < ApplicationRecord
 
 	validates_uniqueness_of :id
 	validates_uniqueness_of :email, case_sensitive: false
+	validates_presence_of :password_confirmation, if: :password_required?
+	validates_confirmation_of :password
 
 	# Instance Methods
 	def full_name ; "#{first_name} #{last_name}" end

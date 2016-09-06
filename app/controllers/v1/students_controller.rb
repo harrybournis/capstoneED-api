@@ -6,14 +6,9 @@ class V1::StudentsController < ApplicationController
 	before_action :allow_if_student, only: [:update, :destroy]
 
 
-	# POST '/register'
+	# POST '/students'
 	# Register a new user using email and password as authentication
 	def create
-		if !student_params['email'] || !student_params['password'] || !student_params['password_confirmation']
-			render json: '', status: :bad_request
-			return
-		end
-
 		@student = Student.new(student_params).process_new_record
 
 		if @student.save
@@ -23,7 +18,7 @@ class V1::StudentsController < ApplicationController
 		end
 	end
 
-	# PUT '/users/:id'
+	# PUT '/students/:id'
 	# Requires current_password if password is to be updated
 	def update
 		update_method = student_params[:current_password] ? 'update_with_password' : 'update_without_password'
@@ -35,7 +30,7 @@ class V1::StudentsController < ApplicationController
 		end
 	end
 
-	# DELETE destroy
+	# DELETE /students/:id
 	# Requires current_password
 	def destroy
 		if @student.destroy_with_password(student_params[:current_password])

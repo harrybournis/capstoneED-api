@@ -18,9 +18,10 @@ module User::EmailAuthenticatable
 			user = User.find_by_email(params[:email])
 
 			user ||= User.new
-			user.errors.add(:email, 'is invalid') 		unless user
-			user.errors.add(:password, 'is invalid') 	unless user.valid_password?(params[:password])
-			user.errors.add(:email, 'is unconfirmed') if !user.confirmed?
+			unless user && user.valid_password?(params[:password])
+				user.errors[:base] << 'Invalid Login Credentials'
+			end
+			user.errors.add(:email, 'is unconfirmed') if user.persisted? && !user.confirmed?
 			user
 		end
 	end

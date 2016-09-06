@@ -62,7 +62,10 @@ RSpec.describe 'V1::StudentsController POST /create', type: :controller do
 		describe 'POST create' do
 			it 'returns 400 bad request if the request is not formatted right' do
 				post :create, params: { 'user' => { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678' } }
-				expect(response.status).to eq(400)
+				expect(response.status).to eq(422)
+				expect(parse_body['errors']['email'].first).to eq("can't be blank")
+				expect(parse_body['errors']['password'].first).to eq("can't be blank")
+				expect(parse_body['errors']['password_confirmation'].first).to eq("can't be blank")
 			end
 
 			it 'returns 422 unprocessable_entity if email error' do

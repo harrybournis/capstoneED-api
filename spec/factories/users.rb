@@ -1,16 +1,9 @@
 FactoryGirl.define do
 
-  require 'Faker'
-
   factory :user do
-  	# sequence(:first_name) { |n| "Jim#{n}" }
-  	# sequence(:last_name) { |n| "Tzatzikoforos#{n}" }
-  	# sequence(:user_name) { |n| "jim_tzatzikoforos_#{n}" }
-  	# sequence(:email) { |n| "Johntzatzikoforos#{n}@gmail.com" }
-  	# sequence(:uid) { |n| "i7sqeESEDJHUSBZd4HJN42o#{n}" }
-  	first_name 	{ Faker::Name.first_name }
-  	last_name 	{ Faker::Name.last_name }
-  	email 		{ Faker::Internet.free_email }
+  	first_name 	{ "Alive#{rand(1000).to_s}" }
+  	last_name 	{ "Person#{rand(1000).to_s}" }
+  	email 		{ "alive#{rand(1000).to_s}person#{rand(1000).to_s}@gmail.com" }
     provider { 'test' }
 
     factory :user_with_password do
