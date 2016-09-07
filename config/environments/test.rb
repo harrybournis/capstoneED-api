@@ -43,5 +43,5 @@ Rails.application.configure do
   #
   config.action_mailer.default_url_options = { host: 'api.localhost:3000' }
 
-  config.log_level = :warn
+  config.log_level = :debug
 end
