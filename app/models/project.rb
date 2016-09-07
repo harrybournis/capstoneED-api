@@ -11,6 +11,8 @@ class Project < ApplicationRecord
   validate :unit_is_owned_by_lecturer, unless: 'lecturer_id.nil?'
   validates_uniqueness_of :id
 
+  # Class Methods
+
   # Returns an array of all the associated resources of the Project.
   # Used in the controller to validate if the ?includes param is valid
   #
@@ -19,9 +21,12 @@ class Project < ApplicationRecord
     ['lecturer', 'unit', 'teams', 'students']
   end
 
-  # Methods
-  def self.set_if_owner(project_id, user_id, includes = nil)
-    Project.where(id: project_id, lecturer_id: user_id).eager_load(includes)[0]
+  # The database query that associates the Project with the current user
+  # Eager loads associated resources if 'includes' is set.
+  #
+  # !Every resource must implenent this method!
+  def self.set_if_owner(project_id, current_user, includes = nil)
+    Project.where(id: project_id, lecturer_id: current_user.id).eager_load(includes)[0]
   end
 
 	private

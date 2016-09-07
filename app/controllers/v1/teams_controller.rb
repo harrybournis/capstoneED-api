@@ -13,20 +13,17 @@ class V1::TeamsController < ApplicationController
 	def index
 		if current_user.load.instance_of? Lecturer
 			if team_params[:project_id]
-				#render json: @project.teams, status: :ok if set_if_owner(Project, params[:project_id], '@project')
-				serialize_collection_params @project.teams, :ok if set_if_owner(Project, params[:project_id], '@project')
+				serialize_collection_params @project.teams, :ok if set_if_owner(Project, params[:project_id], '@project', 'teams')
 			else
 				render json: format_errors({ project_id: ["can't be blank"] }), status: 400
 			end
 		else
-			#render json: current_user.load.teams, status: :ok
 			serialize_collection_params current_user.load.teams, :ok
 		end
 	end
 
 	# GET /teams/:id
 	def show
-		#render json: @team, status: :ok
 		serialize_params @team, :ok
 	end
 

@@ -17,19 +17,13 @@ class ApplicationController < JWTApplicationController
 		# @param [Class] 		resource 	The class of the resource
 		# @param [Integer]	id 				The id of the resource'
 		# @param [String]		variable	The variable name that the resource will be available under
-		def set_if_owner(resource, resource_id, variable)
-			if params[:includes]
-				includes_array = params[:includes].split(',')
+		def set_if_owner(resource, resource_id, variable, includes = params[:includes])
+			if includes
+				return false unless includes_array = validate_includes_for_model(resource, includes)
 
-				if validate_array_inclusion(resource.associations, includes_array)
-					temp = resource.set_if_owner(resource_id, current_user.id, includes_array)
-				else
-					render json: format_errors({ base: ["Invalid 'includes' parameter. #{resource} resource accepts only: #{Project.associations.join(', ')}. Received: #{params[:includes]}."] }), status: :bad_request
-					return false
-				end
-
+				temp = resource.set_if_owner(resource_id, current_user, includes_array)
 			else
-				temp = resource.set_if_owner(resource_id, current_user.id)
+				temp = resource.set_if_owner(resource_id, current_user)
 			end
 
 			if temp
@@ -37,37 +31,21 @@ class ApplicationController < JWTApplicationController
 				return true
 			else
 				render json: format_errors({ base: ["This #{resource} is not associated with the current user"] }), status: :forbidden
+				return false
 			end
+		end
+
+		# validates
+		def validate_includes_for_model(resource, includes)
+			includes_array = includes.split(',')
+
+			unless resource.associations.length < includes_array.length
+				valid = true
+				includes_array.each { |e| valid = false unless resource.associations.include? e }
+				return includes_array if valid
+			end
+			render json: format_errors({ base: ["Invalid 'includes' parameter. #{resource} resource accepts only: #{Project.associations.join(', ')}. Received: #{params[:includes]}."] }), status: :bad_request
 			return false
-		end
-
-		def validate_includes
-			if params[:includes]
-				includes_array = params[:includes].split(',')
-
-				if array_includes_array?(resource.associations, includes_array)
-					temp = resource.set_if_owner(resource_id, current_user.id, includes_array)
-				else
-					render json: format_errors({ base: ["Invalid 'includes' parameter. #{resource} resource accepts only: #{Project.associations.join(', ')}. Received: #{params[:includes]}."] }), status: :bad_request
-					return false
-				end
-
-			else
-				temp = resource.set_if_owner(resource_id, current_user.id)
-			end
-		end
-
-		# Returns true if all the elements in 'array_to_validate' are contained in
-		# the 'original_array'.
-		#
-		# @param [Array] original_array the array that the array_to_validate will be validated against
-		# @param [Array] array_to_validate the array is checked if it is contained in original_array
-		def array_includes_array?(original_array, array_to_validate)
-			return false if original_array.length < array_to_validate.length
-
-			res = true
-			array_to_validate.each { |e| res = false unless original_array.include? e }
-			res
 		end
 
 		# Is passed to the render method in the controllers. It provides an abstraction in the controller,
@@ -78,9 +56,9 @@ class ApplicationController < JWTApplicationController
 		def serialize_params(resource, status)
 			if params[:includes]
 				if params[:compact]
-					render 	json: resource, include: parse_includes, serializer: "IncludesCompact::#{resource.class.to_s}Serializer".constantize, status: status
+					render 	json: resource, include: sanitize_includes, serializer: "IncludesCompact::#{resource.class.to_s}Serializer".constantize, status: status
 				else
-					render  json: resource, include: parse_includes, serializer: "Includes::#{resource.class.to_s}Serializer".constantize,  status: status
+					render  json: resource, include: sanitize_includes, serializer: "Includes::#{resource.class.to_s}Serializer".constantize,  status: status
 				end
 			else
 				render json: resource, serializer: "#{resource.class.to_s}Serializer".constantize, status: status
@@ -97,9 +75,9 @@ class ApplicationController < JWTApplicationController
 			return [] unless resource.any?
 			if params[:includes]
 				if params[:compact]
-					render 	json: resource, include: parse_includes, each_serializer: "IncludesCompact::#{resource[0].class.to_s}Serializer".constantize, status: status
+					render 	json: resource, include: sanitize_includes, each_serializer: "IncludesCompact::#{resource[0].class.to_s}Serializer".constantize, status: status
 				else
-					render  json: resource, include: parse_includes, each_serializer: "Includes::#{resource[0].class.to_s}Serializer".constantize,  status: status
+					render  json: resource, include: sanitize_includes, each_serializer: "Includes::#{resource[0].class.to_s}Serializer".constantize,  status: status
 				end
 			else
 				render json: resource, each_serializer: "#{resource[0].class.to_s}Serializer".constantize, status: status
@@ -109,7 +87,7 @@ class ApplicationController < JWTApplicationController
 		# Removes the '*' symbol from the inlcudes, to protect from users abusing the ?includes parameter
 		# in the requests. If not escaped, the serializer would render all of the resource's associations
 		# if passed ?includes=* or ?includes=**
-		def parse_includes
+		def sanitize_includes
 			params[:includes].tr('*','')
 		end
 end
