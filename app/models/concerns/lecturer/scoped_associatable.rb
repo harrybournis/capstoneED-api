@@ -10,14 +10,14 @@ module Lecturer::ScopedAssociatable
 	# Returns the projects of the current user
 	def projects(options={})
 		if options[:includes]
-			return nil unless includes_array = validate_includes(project_associations, options[:includes])
+			return nil unless includes_array = validate_includes(project_associations, options[:includes], 'Projects')
 		end
 		Project.where(lecturer_id: @id).eager_load(includes_array)
 	end
 
 	private
 
-		def validate_includes(associations, includes)
+		def validate_includes(associations, includes, resource)
 			includes_array = includes.split(',')
 
 			unless associations.length < includes_array.length

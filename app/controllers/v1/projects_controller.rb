@@ -9,7 +9,7 @@ class V1::ProjectsController < ApplicationController
   end
 
   # GET /projects?unit_id=4
-  # ONLY FOR LECTUERS
+  # Only Lecturers
   # Get the projects of the specified unit_id. Unit must belong to Lecturer.
   def index_with_unit
     if (@projects = current_user.projects(includes: params[:includes]).where(unit_id: params[:unit_id])).empty?

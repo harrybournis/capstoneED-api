@@ -8,28 +8,6 @@ RSpec.describe JWTAuth::CurrentUser, type: :model do
 
 	describe 'Scoped Associations' do
 
-		before(:each) do
-			@user = FactoryGirl.create(:lecturer)
-			@request = MockRequest.new(valid = true, @user)
-			decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
-			@token_id = decoded_token.first['id']
-			@device = decoded_token.first['device']
-			@current_user = CurrentUser.new(@token_id, 'Lecturer', @device)
-		end
-
-		it 'correct scoped assosciation is loaded' do
-			expect(@current_user.scoped_association).to eq('Lecturer')
-
-			@user = FactoryGirl.create(:student)
-			@request = MockRequest.new(valid = true, @user)
-			decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
-			@token_id = decoded_token.first['id']
-			@device = decoded_token.first['device']
-			@current_user = CurrentUser.new(@token_id, 'Student', @device)
-
-			expect(@current_user.scoped_association).to eq('Student')
-		end
-
 		describe 'Lecturer' do
 
 			describe 'Projects' do
@@ -45,6 +23,19 @@ RSpec.describe JWTAuth::CurrentUser, type: :model do
 					@unit = FactoryGirl.create(:unit, lecturer: @user)
 					@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @user)
 					3.times { @project.teams.first.students << FactoryGirl.build(:student) }
+				end
+
+				it 'correct scoped assosciation is loaded' do
+					expect(@current_user.scoped_association).to eq('Lecturer')
+
+					@user = FactoryGirl.create(:student)
+					@request = MockRequest.new(valid = true, @user)
+					decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
+					@token_id = decoded_token.first['id']
+					@device = decoded_token.first['device']
+					@current_user = CurrentUser.new(@token_id, 'Student', @device)
+
+					expect(@current_user.scoped_association).to eq('Student')
 				end
 
 				it 'loads the correct projects' do
