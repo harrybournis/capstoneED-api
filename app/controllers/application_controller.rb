@@ -17,7 +17,7 @@ class ApplicationController < JWTApplicationController
 		# @param [Class] 		resource 	The class of the resource
 		# @param [Integer]	id 				The id of the resource'
 		# @param [String]		variable	The variable name that the resource will be available under
-		def set_if_owner(resource, resource_id, variable, includes = params[:includes])
+		def set_for_current_user(resource, variable, resource_id = nil, includes = params[:includes])
 			if includes
 				return false unless includes_array = validate_includes_for_model(resource, includes)
 

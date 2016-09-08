@@ -1,14 +1,23 @@
 class V1::ProjectsController < ApplicationController
 
   before_action :allow_if_lecturer,     only: [:create, :update, :destroy]
+
   before_action -> {
-    set_if_owner(Unit, params[:unit_id], '@unit') }, only: [:index], if: 'params[:unit_id]'
+    set_for_current_user Unit, '@unit', params[:unit_id]
+  }, only: [:index], if: 'params[:unit_id]'
+
   before_action -> {
-   set_if_owner(Project, params[:id], '@project') }, only: [:show, :update, :destroy]
+    set_for_current_user Project, '@project', params[:id]
+  }, only: [:show, :update, :destroy]
 
   # GET /projects
   def index
-    serialize_collection_params @unit ? @unit.projects : current_user.load.projects, :ok
+    unless @unit
+      return unless includes_array = validate_includes_for_model(Project, params[:includes])
+      Project.joins(:teams, :students_teams).where()
+      end
+    end
+    serialize_collection_params @unit ? @unit.projects : @projects, :ok
   end
 
   # GET /projects/:id

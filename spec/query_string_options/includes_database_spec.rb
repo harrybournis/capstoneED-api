@@ -45,10 +45,15 @@ RSpec.describe 'Includes', type: :controller do
 						get :show, params: { id: @project.id, includes: 'teams', compact: true }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200)
+
+					expect {
+						get :index, params: { includes: 'teams,unit' }
+					}.to make_database_queries(count: 1)
+					expect(status).to eq(200)
 				end
 			end
 
-			context 'invalid' do
+			context 'Invalid' do
 				it 'should render errors for invalid includes params' do
 					expect {
 						get :show, params: { id: @project.id, includes: 'teams,unit,lecturer,banana' }
@@ -69,56 +74,6 @@ RSpec.describe 'Includes', type: :controller do
 					expect(body['errors']['base'].first).to eq("Invalid 'includes' parameter. Project resource accepts only: lecturer, unit, teams, students. Received: *,**.")
 				end
 			end
-
-			# it 'benchmark' do
-			# 	ass_sym = [:lecturer, :unit, :teams, :students]
-			# 	ass_sym_set = [:lecturer, :unit, :teams, :students].to_set
-			# 	ass_str = ['lecturer', 'unit', 'teams', 'students']
-			# 	ass_str_set = ['lecturer', 'unit', 'teams', 'students'].to_set
-			# 	incl_sym = [:teams, :unit]
-			# 	incl_sym_set = [:teams, :unit].to_set
-			# 	incl_str = ['teams', 'unit']
-			# 	incl_str_set = ['teams', 'unit'].to_set
-
-			# 	input = "teams,unit,banana,enemy"
-			# 	Benchmark.ips do |x|
-			# 		x.iterations = 15
-			# 		x.report('symbol array')	do
-			# 			array = input.split(',')
-			# 			unless array.length > ass_str_set.length
-			# 				incl_sym_set = Set.new(array.map { |s| s.to_sym })
-			# 				if incl_sym_set.subset? ass_sym_set
-			# 					project = Project.where(id: 1, lecturer_id: 32).eager_load(array)[0]
-			# 				else
-			# 					false
-			# 				end
-			# 			end
-			# 		end
-			# 		x.report('string array') do
-			# 			array = input.split(',')
-			# 			unless array.length > ass_str_set.length
-			# 				incl_str_set = Set.new(array)
-			# 				if incl_str_set.subset? ass_str_set
-			# 					project = Project.where(id: 1, lecturer_id: 32).eager_load(array)[0]
-			# 				else
-			# 					false
-			# 				end
-			# 			end
-			# 		x.report('string array no set') do
-			# 			array = input.split(',')
-			# 			unless array.length > ass_str_set.length
-			# 				res = true
-			# 				array.each { |e| res = false unless ass_str.include? e }
-			# 				if res
-			# 					project = Project.where(id: 1, lecturer_id: 32).eager_load(array)[0]
-			# 				else
-			# 					false
-			# 				end
-			# 			end
-			# 		end
-			# 		x.compare!
-			# 	end
-			# end
 		end
 
 		describe 'Units' do
