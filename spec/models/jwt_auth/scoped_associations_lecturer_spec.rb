@@ -25,19 +25,6 @@ RSpec.describe JWTAuth::CurrentUser, type: :model do
 					3.times { @project.teams.first.students << FactoryGirl.build(:student) }
 				end
 
-				it 'correct scoped assosciation is loaded' do
-					expect(@current_user.scoped_association).to eq('Lecturer')
-
-					@user = FactoryGirl.create(:student)
-					@request = MockRequest.new(valid = true, @user)
-					decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
-					@token_id = decoded_token.first['id']
-					@device = decoded_token.first['device']
-					@current_user = CurrentUser.new(@token_id, 'Student', @device)
-
-					expect(@current_user.scoped_association).to eq('Student')
-				end
-
 				it 'loads the correct projects' do
 					expect {
 						(@projects = @current_user.projects).length
