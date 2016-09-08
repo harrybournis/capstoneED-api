@@ -1,27 +1,22 @@
 class V1::ProjectsController < ApplicationController
 
-  before_action :allow_if_lecturer,     only: [:create, :update, :destroy]
-
-  before_action -> {
-    set_for_current_user Unit, '@unit', params[:unit_id]
-  }, only: [:index], if: 'params[:unit_id]'
-
-  before_action -> {
-    set_for_current_user Project, '@project', params[:id]
-  }, only: [:show, :update, :destroy]
+  before_action :allow_if_lecturer,     only: [:index_with_unit, :create, :update, :destroy]
+  before_action :set_project_if_associated, only: [:show, :update, :destroy]
 
   # GET /projects
   def index
-    # unless @unit
-    #   return unless includes_array = validate_includes_for_model(Project, params[:includes])
-    #   Project.joins(:teams, :students_teams).where()
-    #   end
-    # end
-    # serialize_collection_params @unit ? @unit.projects : @projects, :ok
-
+    serialize_collection_params current_user.projects(includes: params[:includes]), :ok
   end
 
-  def index_for_unit
+  # GET /projects?unit_id=4
+  # ONLY FOR LECTUERS
+  # Get the projects of the specified unit_id. Unit must belong to Lecturer.
+  def index_with_unit
+    if (@projects = current_user.projects(includes: params[:includes]).where(unit_id: params[:unit_id])).empty?
+      render_not_associated_with_current_user('Unit')
+      return false
+    end
+    serialize_collection_params @projects, :ok
   end
 
   # GET /projects/:id
@@ -64,6 +59,13 @@ class V1::ProjectsController < ApplicationController
 
 
   private
+
+    def set_project_if_associated
+      unless @project = current_user.projects(includes: params[:includes]).where(id: params[:id])[0]
+        render_not_associated_with_current_user('Project')
+        return false
+      end
+    end
 
     def project_params
       params.permit(:id, :start_date, :end_date, :description, :unit_id)

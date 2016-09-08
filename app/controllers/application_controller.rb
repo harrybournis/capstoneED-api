@@ -3,8 +3,11 @@ class ApplicationController < JWTApplicationController
 	# Handle any unexpected exceptions. Instead of rendering the deault 404.html or 500.html
 	# Respond with json. In case the environment is not production, send the exception as well.
 	rescue_from StandardError do |e|
-	  logger.error e.message
-  	logger.error e.backtrace.join("\n")
+		if Rails.env.test?
+			logger = Logger.new(STDOUT)
+			p ""
+	  	logger.error e.message
+	  end
   	render json: format_errors({ base: [Rails.env.production? ? 'Operation Failed' : e.message] }), status: 500
   end
 
@@ -19,34 +22,40 @@ class ApplicationController < JWTApplicationController
 		# @param [Class] 		resource 	The class of the resource
 		# @param [Integer]	id 				The id of the resource'
 		# @param [String]		variable	The variable name that the resource will be available under
-		def set_for_current_user(resource, variable, resource_id = nil, includes = params[:includes])
-			if includes
-				return false unless includes_array = validate_includes_for_model(resource, includes)
+		# def set_for_current_user(resource, variable, resource_id = nil, includes = params[:includes])
+		# 	if includes
+		# 		return false unless includes_array = validate_includes_for_model(resource, includes)
 
-				temp = resource.set_if_owner(resource_id, current_user, includes_array)
-			else
-				temp = resource.set_if_owner(resource_id, current_user)
-			end
+		# 		temp = resource.set_if_owner(resource_id, current_user, includes_array)
+		# 	else
+		# 		temp = resource.set_if_owner(resource_id, current_user)
+		# 	end
 
-			if temp
-				instance_variable_set "#{variable}", temp
-				return true
-			else
-				render json: format_errors({ base: ["This #{resource} is not associated with the current user"] }), status: :forbidden
-				return false
-			end
-		end
+		# 	if temp
+		# 		instance_variable_set "#{variable}", temp
+		# 		return true
+		# 	else
+		# 		render json: format_errors({ base: ["This #{resource} is not associated with the current user"] }), status: :forbidden
+		# 		return false
+		# 	end
+		# end
 
-		# validates
-		def validate_includes_for_model(resource, includes)
-			includes_array = includes.split(',')
+		# # validates
+		# def validate_includes_for_model(resource, includes)
+		# 	includes_array = includes.split(',')
 
-			unless resource.associations.length < includes_array.length
-				valid = true
-				includes_array.each { |e| valid = false unless resource.associations.include? e }
-				return includes_array if valid
-			end
-			render json: format_errors({ base: ["Invalid 'includes' parameter. #{resource} resource accepts only: #{Project.associations.join(', ')}. Received: #{params[:includes]}."] }), status: :bad_request
+		# 	unless resource.associations.length < includes_array.length
+		# 		valid = true
+		# 		includes_array.each { |e| valid = false unless resource.associations.include? e }
+		# 		return includes_array if valid
+		# 	end
+		# 	render json: format_errors({ base: ["Invalid 'includes' parameter. #{resource} resource accepts only: #{Project.associations.join(', ')}. Received: #{params[:includes]}."] }), status: :bad_request
+		# 	return false
+		# end
+
+
+		def render_not_associated_with_current_user(resource)
+			render json: format_errors({ base: ["This #{resource} is not associated with the current user"] }), status: :forbidden
 			return false
 		end
 

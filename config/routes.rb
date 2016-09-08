@@ -28,6 +28,7 @@ Rails.application.routes.draw do
 			resources :departments, only: [:create, :update, :destroy]
 
 			# Projects
+			get 'projects',					to: 'projects#index_with_unit', constraints: lambda { |request| !request.params[:unit_id].nil? }
 			resources :projects,		only: [:index, :show, :create, :update, :destroy]
 
 			# Teams

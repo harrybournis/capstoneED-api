@@ -4,41 +4,51 @@ RSpec.describe V1::ProjectsController, type: :controller do
 
 	describe 'GET index' do
 
-		context 'lecturers' do
+		before(:all) do
+			@controller = V1::ProjectsController.new
+			@user = FactoryGirl.build(:lecturer_with_units).process_new_record
+			@user.save
+			project1 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
+			project2 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
+			project3 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.last)
+			project_irrelevant = FactoryGirl.create(:project)
+		end
 
-			before(:all) do
-				@controller = V1::ProjectsController.new
-				@user = FactoryGirl.build(:lecturer_with_units).process_new_record
-				@user.save
-				project1 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
-				project2 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
-				project3 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.last)
-				project_irrelevant = FactoryGirl.create(:project)
-			end
+		before(:each) do
+			mock_request = MockRequest.new(valid = true, @user)
+			request.cookies['access-token'] = mock_request.cookies['access-token']
+			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+		end
 
-			before(:each) do
-				mock_request = MockRequest.new(valid = true, @user)
-				request.cookies['access-token'] = mock_request.cookies['access-token']
-				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			end
+		it 'returns all the projects for the current user if no unit_id is provided' do
+			get :index
+			expect(response.status).to eq(200)
+			expect(parse_body['projects'].length).to eq(3)
+		end
 
-			it 'returns all the projects for the current user if no unit_id is provided' do
-				get :index
-				expect(response.status).to eq(200)
-				expect(parse_body['projects'].length).to eq(3)
-			end
+		it 'returns all the projects for the current unit if unit_id is provided and belongs to current user' do
+			get :index_with_unit, params: { unit_id: @user.units.first.id }
+			expect(response.status).to eq(200)
+			expect(parse_body['projects'].length).to eq(2)
+		end
 
-			it 'returns all the projects for the current unit if unit_id is provided and belongs to current user' do
-				get :index, params: { unit_id: @user.units.first.id }
-				expect(response.status).to eq(200)
-				expect(parse_body['projects'].length).to eq(2)
-			end
+		it 'responds with 403 forbidden if unit is does not belong to current user' do
+			unit = FactoryGirl.create(:unit)
+			get :index_with_unit, params: { unit_id: unit.id }
+			expect(response.status).to eq(403)
+		end
 
-			it 'responds with 403 forbidden if unit is does not belong to current user' do
-				unit = FactoryGirl.create(:unit)
-				get :index, params: { unit_id: unit.id }
-				expect(response.status).to eq(403)
-			end
+		it 'responds with 403 forbidden if the user is a student and unit_id is present in the params' do
+			@user = FactoryGirl.build(:student_with_password).process_new_record
+			@user.save
+			unit = FactoryGirl.create(:unit)
+			mock_request = MockRequest.new(valid = true, @user)
+			request.cookies['access-token'] = mock_request.cookies['access-token']
+			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+			get :index_with_unit, params: { unit_id: unit.id }
+			expect(status).to eq(403)
+			expect(body['errors']['base'][0]).to eq('You must be Lecturer to access this resource')
 		end
 
 	end
