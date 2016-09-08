@@ -29,5 +29,8 @@ RSpec.describe JWTAuth::CurrentUser, type: :model do
 
 			expect(@current_user.scoped_association).to eq('Student')
 		end
+
+		describe 'Lecturer' do
+		end
 	end
 end

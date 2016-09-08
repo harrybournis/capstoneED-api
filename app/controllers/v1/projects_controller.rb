@@ -12,12 +12,16 @@ class V1::ProjectsController < ApplicationController
 
   # GET /projects
   def index
-    unless @unit
-      return unless includes_array = validate_includes_for_model(Project, params[:includes])
-      Project.joins(:teams, :students_teams).where()
-      end
-    end
-    serialize_collection_params @unit ? @unit.projects : @projects, :ok
+    # unless @unit
+    #   return unless includes_array = validate_includes_for_model(Project, params[:includes])
+    #   Project.joins(:teams, :students_teams).where()
+    #   end
+    # end
+    # serialize_collection_params @unit ? @unit.projects : @projects, :ok
+
+  end
+
+  def index_for_unit
   end
 
   # GET /projects/:id
