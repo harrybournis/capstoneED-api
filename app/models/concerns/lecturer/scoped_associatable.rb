@@ -1,14 +1,15 @@
 module Lecturer::ScopedAssociatable
-
 	extend ActiveSupport::Concern
 
 	# Returns the projects of the current user
+	# @param [String] includes Optional. The resources to be included in the query, in the form of a single stirng, separated by commas.
 	def projects(options={})
 		if options[:includes]
 			return nil unless includes_array = validate_includes(project_associations, options[:includes], 'Projects')
 		end
 		Project.where(lecturer_id: @id).eager_load(includes_array)
 	end
+
 
 	private
 
