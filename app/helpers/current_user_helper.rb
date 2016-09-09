@@ -13,22 +13,25 @@ module CurrentUserHelper
 		!@current.nil?
 	end
 
-	def allow_if_authenticated_by_email
+	def allow_if_authenticated_by_email(extra_suggestion = nil)
 		unless @current.provider == 'email'
-			render json: format_errors({ base: "Provider is #{@current.provider}. Did not authenticate with email/password." }), status: :forbidden
+			message = ["Provider is #{@current.provider}. Did not authenticate with email/password. #{extra_suggestion if extra_suggestion}"]
+			render json: format_errors({ base: message }), status: :forbidden
 		end
 	end
 
-	def allow_if_lecturer
+	def allow_if_lecturer(extra_suggestion = nil)
 		unless @current.load.instance_of? Lecturer
-			render json: format_errors({ base: ['You must be Lecturer to access this resource'] }), status: :forbidden
+			message = ["You must be Lecturer to access this resource. #{extra_suggestion if extra_suggestion}"]
+			render json: format_errors({ base: message }), status: :forbidden
 			false
 		end
 	end
 
-	def allow_if_student
+	def allow_if_student(extra_suggestion = nil)
 		unless @current.load.instance_of? Student
-			render json: format_errors({ base: ['You must be Student to access this resource'] }), status: :forbidden
+			message = ["You must be Student to access this resource. #{extra_suggestion if extra_suggestion}"]
+			render json: format_errors({ base: message }), status: :forbidden
 			false
 		end
 	end

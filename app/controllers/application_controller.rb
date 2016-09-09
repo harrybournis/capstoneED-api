@@ -7,8 +7,15 @@ class ApplicationController < JWTApplicationController
 			logger = Logger.new(STDOUT)
 			p ""
 	  	logger.error e.message
+	  	logger.error e.backtrace.join("\n\t")
 	  end
   	render json: format_errors({ base: [Rails.env.production? ? 'Operation Failed' : e.message] }), status: 500
+  end
+
+
+  def self.render_errors(errors_hash, status)
+  	binding.pry
+  	render json: format_errors(errors_hash), status: status
   end
 
   serialization_scope :params
@@ -54,9 +61,38 @@ class ApplicationController < JWTApplicationController
 		# end
 
 
+	  # Returns an array or resources to be included in the query if the items
+	  # in the includes param are contained within the <resource>_associations array
+	  # for the current_user.
+	  #
+	  # @param [Array] 	associations 	The <resource>_associations method that conrresponds to the current resource. Example: project_associations
+	  # @param [String] includes 			The param[:includes] usually. Resources separated by comma. Example: 'teams,students,units'
+	  # @param [String] resource 			A String representing the name of the resource. Only used to display errors to the user.
+	  # @return [String] If valid, the 'includes' parameter in array form. Else nil.
+ 		def validate_includes(associations, includes_array, resource)
+			unless associations.length < includes_array.length
+				valid = true
+				includes_array.each { |e| valid = false unless associations.include? e }
+				return true if valid
+			end
+			#@errors << { message: "Invalid 'includes' parameter. #{resource} resource accepts only: #{associations.join(', ')}. Received: #{includes}.", status: :bad_request }
+			render json: format_errors({ base: ["Invalid 'includes' parameter. #{resource} resource accepts only: #{associations.join(', ')}. Received: #{params[:includes]}."] }), status: :bad_request
+			return false
+		end
+
+
+		def includes_array
+			return nil unless params[:includes]
+			@includes_array ||= params[:includes].split(',')
+		end
+
+
 		def render_not_associated_with_current_user(resource)
 			render json: format_errors({ base: ["This #{resource} is not associated with the current user"] }), status: :forbidden
-			return false
+		end
+
+		def delete_includes_from_params
+			params.delete(:includes)
 		end
 
 		# Is passed to the render method in the controllers. It provides an abstraction in the controller,
@@ -82,16 +118,16 @@ class ApplicationController < JWTApplicationController
 		#
 		# @param [String] 				resource 	The resource(s) that is to be rendered in json
 		# @param [Symbol|Integer] status 		The status of the response that will be rendered
-		def serialize_collection_params(resource, status)
-			return [] unless resource.any?
+		def serialize_collection_params(resources, status)
+			return [] unless resources.length > 0
 			if params[:includes]
 				if params[:compact]
-					render 	json: resource, include: sanitize_includes, each_serializer: "IncludesCompact::#{resource[0].class.to_s}Serializer".constantize, status: status
+					render 	json: resources, include: sanitize_includes, each_serializer: "IncludesCompact::#{resources[0].class.to_s}Serializer".constantize, status: status
 				else
-					render  json: resource, include: sanitize_includes, each_serializer: "Includes::#{resource[0].class.to_s}Serializer".constantize,  status: status
+					render  json: resources, include: sanitize_includes, each_serializer: "Includes::#{resources[0].class.to_s}Serializer".constantize,  status: status
 				end
 			else
-				render json: resource, each_serializer: "#{resource[0].class.to_s}Serializer".constantize, status: status
+				render json: resources, each_serializer: "#{resources[0].class.to_s}Serializer".constantize, status: status
 			end
 		end
 

@@ -134,20 +134,18 @@ RSpec.describe V1::TeamsController, type: :controller do
 			mock_request = MockRequest.new(valid = true, @lecturer)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 		end
 
 		describe 'GET index' do
-			it "responds with 400 bad request if the params don't indlude project_id" do
+			it "responds with 403 forbidden if the params don't indlude project_id" do
 				get :index
-				expect(response.status).to eq(400)
-				expect(parse_body['errors']['project_id'].first).to eq("can't be blank")
+				expect(response.status).to eq(403)
+				expect(parse_body['errors']['base'].first).to include("Lecturers must provide a 'project_id' in the parameters for this route")
 			end
 
 			it 'returns the teams for the provided project_id if the project belongs to the current user' do
 				project = @lecturer.projects.first
-				get :index, params: { project_id: project.id }
+				get :index_with_project, params: { project_id: project.id }
 				expect(response.status).to eq(200)
 				expect(parse_body['teams'].length).to eq(project.teams.length)
 			end
@@ -156,7 +154,7 @@ RSpec.describe V1::TeamsController, type: :controller do
 				project = FactoryGirl.create(:project)
 				get :index, params: { project_id: project.id }
 				expect(response.status).to eq(403)
-				expect(parse_body['errors']['base'].first).to eq("This Project is not associated with the current user")
+				expect(parse_body['errors']['base'].first).to include("Lecturers must provide a 'project_id' in the parameters for this route.")
 			end
 		end
 

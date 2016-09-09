@@ -40,7 +40,7 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			}.to_not make_database_queries
 
 			expect {
-				(@projects = @current_user.projects(includes: 'unit,teams')).length
+				(@projects = @current_user.projects(includes: ['unit','teams'])).length
 			}.to make_database_queries(count: 1)
 			expect {
 				teams = @projects[0].teams
@@ -50,7 +50,7 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			}.to_not make_database_queries
 
 			expect {
-				(@projects = @current_user.projects(includes: 'lecturer,teams,students')).length
+				(@projects = @current_user.projects(includes: ['lecturer','teams','students'])).length
 			}.to make_database_queries(count: 1)
 			expect {
 				teams = @projects[0].lecturer
@@ -62,7 +62,7 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 
 		it 'can chain queries' do
 			expect {
-				@project_find[0].unit if (@project_find = @current_user.projects(includes: 'unit').where(unit_id: @unit)).length > 0
+				@project_find[0].unit if (@project_find = @current_user.projects(includes: ['unit']).where(unit_id: @unit)).length > 0
 			}.to make_database_queries(count: 1)
 			expect(@project_find[0].unit).to eq(@unit)
 		end
@@ -89,13 +89,13 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 		it 'loads the correct units' do
 			@units = @current_user.units
 			res = true
-			@units.each { |u| res = false unless @user.units.include? u }
+			@units.each { |u| res = false unless @current_user.units.include? u }
 			expect(res).to be_truthy
 		end
 
 		it 'returns the units with includes without additional database queries' do
 			expect {
-				(@units = @current_user.units(includes: 'lecturer,department')).length
+				(@units = @current_user.units(includes: ['lecturer','department'])).length
 			}.to make_database_queries(count: 1)
 			expect {
 				@units[0].lecturer
@@ -105,7 +105,7 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			}.to_not make_database_queries
 
 			expect {
-				(@units = @current_user.units(includes: 'projects')).length
+				(@units = @current_user.units(includes: ['projects'])).length
 			}.to make_database_queries(count: 1)
 			expect {
 				@units[0].projects[0].start_date

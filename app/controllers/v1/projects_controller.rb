@@ -1,11 +1,16 @@
 class V1::ProjectsController < ApplicationController
 
   before_action :allow_if_lecturer,     only: [:index_with_unit, :create, :update, :destroy]
+
+  before_action -> {
+    validate_includes(current_user.project_associations, includes_array, 'Project')
+  }, only: [:index, :index_with_unit, :show], if: 'params[:includes]'
+
   before_action :set_project_if_associated, only: [:show, :update, :destroy]
 
   # GET /projects
   def index
-    serialize_collection_params current_user.projects(includes: params[:includes]), :ok
+    serialize_collection_params current_user.projects(includes: includes_array), :ok
   end
 
   # GET /projects?unit_id=4
@@ -61,10 +66,14 @@ class V1::ProjectsController < ApplicationController
   private
 
     def set_project_if_associated
-      unless @project = current_user.projects(includes: params[:includes]).where(id: params[:id])[0]
+      unless @project = current_user.projects(includes: includes_array).where(id: params[:id])[0]
         render_not_associated_with_current_user('Project')
         return false
       end
+    end
+
+    def controller_resource
+      Project
     end
 
     def project_params

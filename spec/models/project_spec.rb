@@ -8,7 +8,8 @@ RSpec.describe Project, type: :model do
 			it { should belong_to(:lecturer) }
 			it { should belong_to(:unit) }
 			it { should have_many(:teams).dependent(:destroy) }
-			it { should have_many(:students).through(:teams) }
+			it { should have_many(:students_teams).through(:teams) }
+			it { should have_many(:students).through(:students_teams) }
 
 			it { should validate_presence_of(:start_date) }
 			it { should validate_presence_of(:end_date) }

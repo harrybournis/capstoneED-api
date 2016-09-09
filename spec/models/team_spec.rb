@@ -8,6 +8,7 @@ RSpec.describe Team, type: :model do
 			it { should have_many(:students).through(:students_teams).dependent(:delete_all) }
 			it { should have_many(:students_teams) }
 			it { should belong_to(:project) }
+			it { should have_one(:lecturer).through(:project) }
 
 			it { should validate_presence_of(:name) }
 			it { should validate_presence_of(:enrollment_key) }

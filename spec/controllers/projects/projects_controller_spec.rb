@@ -48,7 +48,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 
 			get :index_with_unit, params: { unit_id: unit.id }
 			expect(status).to eq(403)
-			expect(body['errors']['base'][0]).to eq('You must be Lecturer to access this resource')
+			expect(body['errors']['base'][0]).to include('You must be Lecturer to access this resource')
 		end
 	end
 
@@ -139,7 +139,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 					delete :destroy, params: { id: project.id }
 				}.to_not change { Project.all.length }
 				expect(response.status).to eq(403)
-				expect(parse_body['errors']['base'].first).to eq("You must be Lecturer to access this resource")
+				expect(parse_body['errors']['base'].first).to include("You must be Lecturer to access this resource")
 			end
 		end
 	end
