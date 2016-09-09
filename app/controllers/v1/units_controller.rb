@@ -1,12 +1,13 @@
 class V1::UnitsController < ApplicationController
 
   before_action :allow_if_lecturer, only: [:index ,:create]
-  before_action -> { set_if_owner(Unit, params[:id], '@unit') },    only: [:show, :update, :destroy]
+  #before_action -> { set_if_owner(Unit, params[:id], '@unit') },    only: [:show, :update, :destroy]
+  before_action :set_unit_if_associated, only: [:show, :update, :destroy]
 
   # GET /units
   # Only for Lecturers
   def index
-    serialize_collection_params current_user.load.units, :ok
+    serialize_collection_params current_user.units, :ok
   end
 
   # GET /units/:id
@@ -53,6 +54,13 @@ class V1::UnitsController < ApplicationController
 
 
   private
+
+    def set_unit_if_associated
+      unless @unit = current_user.units(includes: params[:includes]).where(id: params[:id])[0]
+        render_not_associated_with_current_user('Unit')
+        return false
+      end
+    end
 
     def unit_params
       params.permit(:id, :name, :code, :semester, :year, :archived_at, :department_id,

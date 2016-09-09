@@ -12,12 +12,23 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 		Project.where(lecturer_id: @id).eager_load(includes_array)
 	end
 
+	def units(options={})
+		if options[:includes]
+			return nil unless includes_array = validate_includes(unit_associations, options[:includes], 'Units')
+		end
+		Unit.where(lecturer_id: @id).eager_load(includes_array)
+	end
+
 
 	private
 
 		# The associations that the current_user can include in the query
 		def project_associations
 	   	['lecturer', 'unit', 'teams', 'students'] ### CAN THE STUDENT GET THE OTHER STUDENTS OF OTHER TEAMS??
+		end
+
+		def unit_associations
+		  ['lecturer', 'projects', 'department']
 		end
 
 	  # Returns an array or resources to be included in the query if the items

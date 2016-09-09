@@ -12,11 +12,24 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 		Project.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(includes_array)
 	end
 
+	def units(options={})
+		#binding.pry
+		if options[:includes]
+			return nil unless includes_array = validate_includes(unit_associations, options[:includes], 'Units')
+		end
+		Unit.joins(:projects, :teams, :students_teams).where(['students_teams.student_id = ?', @id]).eager_load(includes_array)
+	end
+
+
 	private
 
 		# The associations that the current_user can include in the query
 		def project_associations
 	   	['lecturer', 'unit', 'teams', 'students'] ### CAN THE STUDENT GET THE OTHER STUDENTS OF OTHER TEAMS??
+		end
+
+		def unit_associations
+		  ['lecturer', 'department']
 		end
 
 	  # Returns an array or resources to be included in the query if the items
@@ -35,7 +48,7 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 				includes_array.each { |e| valid = false unless associations.include? e }
 				return includes_array if valid
 			end
-			render json: format_errors({ base: ["Invalid 'includes' parameter. #{resource} resource accepts only: #{Project.associations.join(', ')}. Received: #{params[:includes]}."] }), status: :bad_request
+			render json: format_errors({ base: ["Invalid 'includes' parameter. #{resource} resource accepts only: #{associations.join(', ')}. Received: #{includes}."] }), status: :bad_request
 			return nil
 		end
 end
