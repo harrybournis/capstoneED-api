@@ -70,13 +70,13 @@ class ApplicationController < JWTApplicationController
 	  # @param [String] resource 			A String representing the name of the resource. Only used to display errors to the user.
 	  # @return [String] If valid, the 'includes' parameter in array form. Else nil.
  		def validate_includes(associations, includes_array, resource)
-			unless associations.length < includes_array.length
+			if associations.length >= includes_array.length
 				valid = true
 				includes_array.each { |e| valid = false unless associations.include? e }
 				return true if valid
 			end
 			#@errors << { message: "Invalid 'includes' parameter. #{resource} resource accepts only: #{associations.join(', ')}. Received: #{includes}.", status: :bad_request }
-			render json: format_errors({ base: ["Invalid 'includes' parameter. #{resource} resource accepts only: #{associations.join(', ')}. Received: #{params[:includes]}."] }), status: :bad_request
+			render json: format_errors({ base: ["Invalid 'includes' parameter. #{resource} resource for #{current_user.type} user accepts only: #{associations.join(', ')}. Received: #{params[:includes]}."] }), status: :bad_request
 			return false
 		end
 

@@ -76,7 +76,7 @@ RSpec.describe 'Includes', type: :controller do
 			it 'is invalid if * is in the includes' do
 				get :show, params: { id: @project.id, includes: 'teams,*' }
 				expect(status).to eq(400)
-				expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Project resource accepts only: lecturer, unit, teams, students. Received: teams,*.")
+				expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Project resource for Lecturer user accepts only: lecturer, unit, teams, students. Received: teams,*.")
 			end
 
 			it 'works for index' do
@@ -136,7 +136,7 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'GET index contains students and project compact' do
-				get :index_with_project, params: { project_id: @project.id, includes: 'students,project,lecturer', compact: true }
+				get :index_with_project, params: { project_id: @project.id, includes: 'students,project', compact: true }
 				expect(status).to eq(200)
 				expect(body['teams'].first['students'].first).to_not include('email', 'provider')
 				expect(body['teams'].first['project']).to_not include('description')
@@ -144,30 +144,5 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body['teams'].first['lecturer']).to be_falsy
 			end
 		end
-
-		# describe 'Departments' do
-		# 	before(:each) do
-		# 		@controller = V1::DepartmentsController.new
-		# 		@department = Department.first
-		# 	end
-
-		# 	it 'contains units' do
-		# 		get :index, params: { id: @department.id }
-		# 		expect(status).to eq(200)
-		# 		expect(body['departments'].first['enrollment_key']).to be_truthy
-
-		# 		get :index, params: { id: @department, includes: 'units' }
-		# 		expect(status).to eq(200)
-		# 		expect(body['departments'].first['units'].length).to eq(@department.units.length)
-		# 		expect(body['departments'].first['units'].first).to include('code','semester')
-
-		# 		get :index, params: { id: @department.id }
-		# 		expect(status).to eq(200)
-		# 		expect(body['departments'].first['units'].first['id']).to eq(@department.units.first.id)
-		# 		expect(body['departments'].first['units'].first).to_not include('code','semester')
-		# 	end
-		# end
 	end
-
-
 end

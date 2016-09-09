@@ -13,7 +13,7 @@ class V1::TeamsController < ApplicationController
 
 	before_action -> {
     validate_includes(current_user.team_associations, includes_array, 'Team')
-  }, only: [:index, :index_with_unit, :show], if: 'params[:includes]'
+  }, only: [:index, :index_with_project, :show], if: 'params[:includes]'
 
   before_action :delete_includes_from_params, only: [:update, :destroy]
 
@@ -30,12 +30,12 @@ class V1::TeamsController < ApplicationController
 		# 		render json: format_errors({ project_id: ["can't be blank"] }), status: 400
 		# 	end
 		# else
-			serialize_collection_params current_user.load.teams, :ok
+			serialize_collection_params current_user.teams(includes: includes_array), :ok
 		# end
 	end
 
 	def index_with_project
-		@teams = current_user.teams(includes: includes_array).where(project_id: params[:project_id])
+		@teams = current_user.teams(includes: includes_array).where(['projects.id = ?', params[:project_id]])
 		serialize_collection_params @teams, :ok
 	end
 

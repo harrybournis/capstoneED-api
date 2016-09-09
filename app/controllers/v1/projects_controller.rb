@@ -1,6 +1,6 @@
 class V1::ProjectsController < ApplicationController
 
-  before_action :allow_if_lecturer,     only: [:index_with_unit, :create, :update, :destroy]
+  before_action :allow_if_lecturer, only: [:index_with_unit, :create, :update, :destroy]
 
   before_action -> {
     validate_includes(current_user.project_associations, includes_array, 'Project')

@@ -6,12 +6,13 @@ class V1::UnitsController < ApplicationController
     validate_includes(current_user.unit_associations, includes_array, 'Unit')
   }, only: [:index, :show], if: 'params[:includes]'
 
-  before_action :set_unit_if_associated, only: [:show, :update, :destroy]
+  before_action :delete_includes_from_params, only: [:update, :destroy]
+  before_action :set_unit_if_associated,      only: [:show, :update, :destroy]
 
   # GET /units
   # Only for Lecturers
   def index
-    serialize_collection_params current_user.units, :ok
+    serialize_collection_params current_user.units(includes: includes_array), :ok
   end
 
   # GET /units/:id

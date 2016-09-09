@@ -3,8 +3,6 @@ require 'helpers/mock_request.rb'
 include JWTAuth::JWTAuthenticator
 
 RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
-	JWTAuthenticator = JWTAuth::JWTAuthenticator
-	CurrentUserLecturer = JWTAuth::CurrentUserLecturer
 
 	describe 'Projects' do
 

@@ -11,18 +11,16 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 
 
 	def units(options={})
-		Unit.joins(:projects, :teams, :students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes])
+		Unit.joins(:projects, :teams, :students_teams).eager_load(options[:includes]).where(['students_teams.student_id = ?', @id])
 	end
 
 	def teams(options={})
 		Team.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes])
 	end
 
-	def
-
 	# The associations that the current_user can include in the query
 	def project_associations
-   	['lecturer', 'unit', 'teams', 'students'] ### CAN THE STUDENT GET THE OTHER STUDENTS OF OTHER TEAMS??
+   	['lecturer', 'unit', 'teams', 'students']
 	end
 
 	def unit_associations
@@ -30,7 +28,7 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 	end
 
 	def team_associations
-		['project', 'students']
+		['project', 'students', 'lecturer']
 	end
 
 	private

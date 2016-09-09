@@ -10,7 +10,7 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 	end
 
 	def units(options={})
-		Unit.eager_load(options[:includes]).where(lecturer_id: @id)
+		Unit.where(lecturer_id: @id).eager_load(options[:includes])
 	end
 
 	def teams(options={})

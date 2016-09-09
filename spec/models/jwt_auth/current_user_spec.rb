@@ -3,8 +3,6 @@ require 'helpers/mock_request.rb'
 include JWTAuth::JWTAuthenticator
 
 RSpec.describe JWTAuth::CurrentUser, type: :model do
-	JWTAuthenticator = JWTAuth::JWTAuthenticator
-	CurrentUserStudent = JWTAuth::CurrentUserStudent
 	CurrentUserLecturer = JWTAuth::CurrentUserLecturer
 
 	context 'testing with User class' do
