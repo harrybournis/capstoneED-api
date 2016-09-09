@@ -6,12 +6,6 @@ class JWTAuth::CurrentUser
 		@id   					= user_id
 		@type 					= type
 		@current_device = device
-
-		if @type.start_with? 'Student'
-			self.class.send(:include, Student::ScopedAssociatable)
-		else
-			self.class.send(:include, Lecturer::ScopedAssociatable)
-		end
 	end
 
 	def load

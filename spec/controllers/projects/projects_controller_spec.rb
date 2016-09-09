@@ -50,7 +50,6 @@ RSpec.describe V1::ProjectsController, type: :controller do
 			expect(status).to eq(403)
 			expect(body['errors']['base'][0]).to eq('You must be Lecturer to access this resource')
 		end
-
 	end
 
 	describe 'GET show' do
@@ -59,22 +58,23 @@ RSpec.describe V1::ProjectsController, type: :controller do
 
 			before(:all) do
 				@controller = V1::ProjectsController.new
-				@user = FactoryGirl.build(:lecturer_with_units).process_new_record
-				@user.save
-				@project1 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
-				@project2 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
-				@project3 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.last)
+				@user_w = FactoryGirl.build(:lecturer_with_units).process_new_record
+				@user_w.save
+				@user_w.confirm
+				@project1 = FactoryGirl.create(:project, lecturer: @user_w, unit: @user_w.units.first)
+				@project2 = FactoryGirl.create(:project, lecturer: @user_w, unit: @user_w.units.first)
+				@project3 = FactoryGirl.create(:project, lecturer: @user_w, unit: @user_w.units.last)
 				@project_irrelevant = FactoryGirl.create(:project)
 			end
 
 			before(:each) do
-				mock_request = MockRequest.new(valid = true, @user)
+				mock_request = MockRequest.new(valid = true, @user_w)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 			end
 
 			it 'returns project if it belongs to current_user' do
-				get :show, params: { id: @project3.id }
+				get :show, params: { id: @project3.id, includes: 'unit' }
 				expect(response.status).to eq(200)
 				expect(parse_body['project']['id']).to eq(@project3.id)
 			end
@@ -105,8 +105,6 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 			end
 
 			it 'returns project if it belongs to current_user' do

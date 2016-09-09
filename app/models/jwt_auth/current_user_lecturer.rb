@@ -1,5 +1,7 @@
-module Student::ScopedAssociatable
-	extend ActiveSupport::Concern
+class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
+
+	def lecturer_only
+	end
 
 	# Returns the projects of the current user
 	# @param [String] includes Optional. The resources to be included in the query, in the form of a single stirng, separated by commas.
@@ -7,8 +9,9 @@ module Student::ScopedAssociatable
 		if options[:includes]
 			return nil unless includes_array = validate_includes(project_associations, options[:includes], 'Projects')
 		end
-		Project.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(includes_array)
+		Project.where(lecturer_id: @id).eager_load(includes_array)
 	end
+
 
 	private
 
@@ -25,7 +28,7 @@ module Student::ScopedAssociatable
 	  # @param [String] includes 			The param[:includes] usually. Resources separated by comma. Example: 'teams,students,units'
 	  # @param [String] resource 			A String representing the name of the resource. Only used to display errors to the user.
 	  # @return [String] If valid, the 'includes' parameter in array form. Else nil.
- 		def validate_includes(associations, includes, resource)
+		def validate_includes(associations, includes, resource)
 			includes_array = includes.split(',')
 
 			unless associations.length < includes_array.length

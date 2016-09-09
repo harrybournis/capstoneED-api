@@ -18,17 +18,17 @@ class Project < ApplicationRecord
   # Used in the controller to validate if the ?includes param is valid
   #
   # !Every resource must implement this method!
-  def self.associations
-    ['lecturer', 'unit', 'teams', 'students']
-  end
+  # def self.associations
+  #   ['lecturer', 'unit', 'teams', 'students']
+  # end
 
-  # The database query that associates the Project with the current user
-  # Eager loads associated resources if 'includes' is set.
-  #
-  # !Every resource must implenent this method!
-  def self.set_if_owner(project_id, current_user, includes = nil)
-    Project.where(id: project_id, lecturer_id: current_user.id).eager_load(includes)[0]
-  end
+  # # The database query that associates the Project with the current user
+  # # Eager loads associated resources if 'includes' is set.
+  # #
+  # # !Every resource must implenent this method!
+  # def self.set_if_owner(project_id, current_user, includes = nil)
+  #   Project.where(id: project_id, lecturer_id: current_user.id).eager_load(includes)[0]
+  # end
 
 	private
 
