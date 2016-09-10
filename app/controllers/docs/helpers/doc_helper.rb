@@ -19,4 +19,27 @@ module Docs::Helpers::DocHelper
 		"Associations to be returned. Must be separated with a comma. Accepted Vales: Student => #{JWTAuth::CurrentUserStudent.new(nil,nil,nil).send(association)}, Lecturer => #{JWTAuth::CurrentUserLecturer.new(nil,nil,nil).send(association)}"
 	end
 
+	def self.label_class_for_error(error)
+      case error[:code]
+	      when 200
+	        'label label-info'
+	      when 201
+	        'label label-success'
+	      when 204
+	        'label label-info2'
+	      when 400
+	      	'label label-warning3'
+	      when 401
+	        'label label-warning'
+	      when 403
+	        'label label-warning2'
+	      when 422
+	        'label label-important'
+	      when 404
+	        'label label-inverse'
+	      else
+	        'label'
+	    end
+	end
+
 end

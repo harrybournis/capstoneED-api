@@ -1,5 +1,5 @@
 <div id="top-of-website"></div>
-<div id="back-to-top" style="position: fixed; bottom: 10px; right: 10px; background: #c1dcc3; padding: 17px; border-radius: 50%; padding-top: 20px; padding-bottom: 4px;">
+<div id="back-to-top" style="">
   <a href="#top-of-website" style="font-size: 35px;">
     <span>^</span>
   </a>
@@ -89,7 +89,7 @@
         <!-- Authentication Metadata-->
         <% if method.dig(:metadata, :authentication?) %>
           <div class="alert alert-warning" role="warning">
-            <img src='/locked-padlock.svg' style="width: 23px; height: 23px; padding-bottom: 2px">
+            <img src='/docs_assets/locked-padlock.svg' style="width: 23px; height: 23px; padding-bottom: 2px">
             <span class="sr-only"></span>
             Authentication Needed
           </div>
@@ -112,9 +112,9 @@
         <!-- Inlcudes Metadata-->
         <% if method.dig(:metadata, :includes) %>
           <div class="alert alert-info" role="info">
-            <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
             <span class="sr-only"></span>
-            + Can Include other resources in the response
+            Can Include other resources in the response
           </div>
         <% end %>
 

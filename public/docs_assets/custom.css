@@ -1,0 +1,28 @@
+.label{padding:1px 4px 2px;font-size:10.998px;font-weight:bold;line-height:13px;color:#ffffff;vertical-align:middle;white-space:nowrap;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.25);background-color:#999999;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;}
+.label:hover{color:#ffffff;text-decoration:none;}
+.label-important{background-color:#b94a48;}
+.label-important:hover{background-color:#953b39;}
+.label-warning{background-color:#f88106;}
+.label-warning:hover{background-color:#c67605;}
+.label-warning2{background-color:#f89406;}
+.label-warning2:hover{background-color:#c67605;}
+.label-warning3{background-color:#f7bb10;}
+.label-warning3:hover{background-color:#c67605;}
+.label-success{background-color:#468847;}
+.label-success:hover{background-color:#356635;}
+.label-info{background-color:#3a87ad;}
+.label-info:hover{background-color:#2d6987;}
+.label-inverse{background-color:#333333;}
+.label-inverse:hover{background-color:#1a1a1a;}
+
+
+#back-to-top {
+	position: fixed;
+	bottom: 10px;
+	right: 10px;
+	background: #c1dcc3;
+	padding: 17px;
+ 	border-radius: 50%;
+ 	padding-top: 7px;
+ 	padding-bottom: 0px;
+}
