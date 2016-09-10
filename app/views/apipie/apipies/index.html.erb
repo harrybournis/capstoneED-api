@@ -1,8 +1,45 @@
 <div id="top-of-website"></div>
-<div id="back-to-top" style="">
+
   <a href="#top-of-website" style="font-size: 35px;">
-    <span>^</span>
+    <div id="back-to-top">
+      <span>^</span>
+    </div>
   </a>
+
+<div class="col-md-3 scrollspy">
+  <ul id="nav" class="nav hidden-xs hidden-sm" data-spy="affix">
+    <li>
+      <a href="#web-design">Web Design</a>
+    </li>
+    <li>
+      <a href="#web-development">Web Development</a>
+      <ul class="nav">
+        <li>
+          <a href="#ruby">
+            <span class="fa fa-angle-double-right"></span>Ruby
+          </a>
+        </li>
+        <li>
+          <a href="#python">
+            <span class="fa fa-angle-double-right"></span>Python
+          </a>
+        </li>
+
+      </ul><!--end of sub navigation-->
+    </li>
+
+  </ul><!-- end of main navigation -->
+</div>
+<div class="col-md-9">
+  <section id="web-design">
+  </section>
+  <section id="web-development">
+    <section id="ruby">
+    </section>
+    <section id="python">
+    </section>
+
+  </section>
 </div>
 
 <% @doc[:resources].sort_by(&:first).each do |key, resource| %>
