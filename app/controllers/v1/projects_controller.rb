@@ -2,15 +2,15 @@ class V1::ProjectsController < ApplicationController
 
   before_action :allow_if_lecturer, only: [:index_with_unit, :create, :update, :destroy]
 
-  before_action -> {
+  before_action only: [:index, :index_with_unit, :show], if: 'params[:includes]' do
     validate_includes(current_user.project_associations, includes_array, 'Project')
-  }, only: [:index, :index_with_unit, :show], if: 'params[:includes]'
-
+  end
   before_action :set_project_if_associated, only: [:show, :update, :destroy]
+
 
   # GET /projects
   def index
-    serialize_collection_params current_user.projects(includes: includes_array), :ok
+    serialize_collection current_user.projects(includes: includes_array), :ok
   end
 
   # GET /projects?unit_id=4
@@ -21,12 +21,12 @@ class V1::ProjectsController < ApplicationController
       render_not_associated_with_current_user('Unit')
       return false
     end
-    serialize_collection_params @projects, :ok
+    serialize_collection @projects, :ok
   end
 
   # GET /projects/:id
   def show
-    serialize_params @project, :ok
+    serialize_object @project, :ok
   end
 
   # POST /projects
@@ -65,6 +65,8 @@ class V1::ProjectsController < ApplicationController
 
   private
 
+    # Sets @project if it is asociated with the current user. Eager loads associations in the params[:includes].
+    # Renders error if not associated and Halts execution
     def set_project_if_associated
       unless @project = current_user.projects(includes: includes_array).where(id: params[:id])[0]
         render_not_associated_with_current_user('Project')
@@ -72,6 +74,7 @@ class V1::ProjectsController < ApplicationController
       end
     end
 
+    # The class of the resource that the controller handles
     def controller_resource
       Project
     end

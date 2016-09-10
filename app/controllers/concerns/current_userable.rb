@@ -1,4 +1,6 @@
-module CurrentUserHelper
+module CurrentUserable
+
+	extend ActiveSupport::Concern
 
 	# Returns a CurrentUser object, which responds to all the methods of a user.
 	# Calling current_user.id, current_user.type or current_user.current_device

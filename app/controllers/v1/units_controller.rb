@@ -1,23 +1,22 @@
 class V1::UnitsController < ApplicationController
 
   before_action :allow_if_lecturer, only: [:index ,:create]
-  #before_action -> { set_if_owner(Unit, params[:id], '@unit') },    only: [:show, :update, :destroy]
-  before_action -> {
-    validate_includes(current_user.unit_associations, includes_array, 'Unit')
-  }, only: [:index, :show], if: 'params[:includes]'
 
+  before_action only: [:index, :show], if: 'params[:includes]' do
+    validate_includes(current_user.unit_associations, includes_array, 'Unit')
+  end
   before_action :delete_includes_from_params, only: [:update, :destroy]
   before_action :set_unit_if_associated,      only: [:show, :update, :destroy]
 
   # GET /units
   # Only for Lecturers
   def index
-    serialize_collection_params current_user.units(includes: includes_array), :ok
+    serialize_collection current_user.units(includes: includes_array), :ok
   end
 
   # GET /units/:id
   def show
-    serialize_params @unit, :ok
+    serialize_object @unit, :ok
   end
 
   # POST /units
@@ -60,6 +59,8 @@ class V1::UnitsController < ApplicationController
 
   private
 
+    # Sets @unit if it is asociated with the current user. Eager loads associations in the params[:includes].
+    # Renders error if not associated and Halts execution
     def set_unit_if_associated
       unless @unit = current_user.units(includes: includes_array).where(id: params[:id])[0]
         render_not_associated_with_current_user('Unit')
@@ -67,6 +68,7 @@ class V1::UnitsController < ApplicationController
       end
     end
 
+    # The class of the resource that the controller handles
     def controller_resource
       Unit
     end

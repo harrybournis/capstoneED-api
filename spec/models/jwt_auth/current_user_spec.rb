@@ -16,27 +16,6 @@ RSpec.describe JWTAuth::CurrentUser, type: :model do
 			@current_user_obj = CurrentUserStudent.new(@token_id, 'Student', @device)
 		end
 
-		it 'each implantatio of current user has different methods' do
-			@user = FactoryGirl.create(:student)
-			@request = MockRequest.new(valid = true, @user)
-			decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
-			@token_id = decoded_token.first['id']
-			@device = decoded_token.first['device']
-			@current_user_obj = CurrentUserStudent.new(@token_id, 'Student', @device)
-
-			expect(@current_user_obj.methods.include?(:student_only)).to be_truthy #1
-
-			@user = FactoryGirl.create(:lecturer)
-			@request = MockRequest.new(valid = true, @user)
-			decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
-			@token_id = decoded_token.first['id']
-			@device = decoded_token.first['device']
-			@current_user_obj = CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
-
-			expect(@current_user_obj.methods.include?(:lecturer_only)).to be_truthy
-			expect(@current_user_obj.methods.include?(:student_only)).to be_falsy #2
-		end
-
 		it '.new a new object should be created without database queries' do
 			expect { CurrentUserStudent.new(@token_id, nil, @device) }.to_not make_database_queries
 		end
