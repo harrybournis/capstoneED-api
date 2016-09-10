@@ -95,6 +95,29 @@
           </div>
         <% end %>
 
+        <!-- Lecturers Only Metadata-->
+        <% if method.dig(:metadata, :lecturers_only) %>
+          <div class="alert alert-success" role="warning">
+            <b> Lecturers Only </b> The Current User must be a Lecturer to access this endopoint
+          </div>
+        <% end %>
+
+        <!-- Student Only Metadata-->
+        <% if method.dig(:metadata, :students_only) %>
+          <div class="alert alert-success" role="warning">
+            <b> Students Only </b> The Current User must be a Student to access this endopoint
+          </div>
+        <% end %>
+
+        <!-- Inlcudes Metadata-->
+        <% if method.dig(:metadata, :includes) %>
+          <div class="alert alert-info" role="info">
+            <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
+            <span class="sr-only"></span>
+            + Can Include other resources in the response
+          </div>
+        <% end %>
+
         <%= raw method[:full_description] %>
 
         <% unless method[:errors].blank? %>

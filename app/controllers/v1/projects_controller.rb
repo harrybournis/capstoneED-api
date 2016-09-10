@@ -5,6 +5,7 @@ class V1::ProjectsController < ApplicationController
   before_action only: [:index, :index_with_unit, :show], if: 'params[:includes]' do
     validate_includes(current_user.project_associations, includes_array, 'Project')
   end
+  before_action :delete_includes_from_params, only: [:update, :destroy]
   before_action :set_project_if_associated, only: [:show, :update, :destroy]
 
 

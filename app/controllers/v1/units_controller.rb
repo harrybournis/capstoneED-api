@@ -1,12 +1,13 @@
 class V1::UnitsController < ApplicationController
 
-  before_action :allow_if_lecturer, only: [:index ,:create]
+  before_action :allow_if_lecturer, only: [:create]
 
   before_action only: [:index, :show], if: 'params[:includes]' do
     validate_includes(current_user.unit_associations, includes_array, 'Unit')
   end
   before_action :delete_includes_from_params, only: [:update, :destroy]
   before_action :set_unit_if_associated,      only: [:show, :update, :destroy]
+
 
   # GET /units
   # Only for Lecturers

@@ -15,4 +15,8 @@ module Docs::Helpers::DocHelper
 		"Status: #{status} #{status_hash[status]} \nHeaders: \n#{headers} \nBody: \n#{body}"
 	end
 
+	def self.param_includes_text(association)
+		"Associations to be returned. Must be separated with a comma. Accepted Vales: Student => #{JWTAuth::CurrentUserStudent.new(nil,nil,nil).send(association)}, Lecturer => #{JWTAuth::CurrentUserLecturer.new(nil,nil,nil).send(association)}"
+	end
+
 end

@@ -108,9 +108,9 @@ RSpec.describe 'Includes', type: :controller do
 				it 'units responds with 400 for unsupported associations in includes' do
 					expect {
 						get :index, params: { includes: 'students,project' }
-					}.to make_database_queries(count: 1)
-					expect(status).to eq(403)
-					expect(body['errors']['base'][0]).to include("ou must be Lecturer to access this resource. ")
+					}.to make_database_queries(count: 0)
+					expect(status).to eq(400)
+					expect(body['errors']['base'][0]).to include("Invalid 'includes' parameter. Unit resource for Student user accepts only: lecturer, department. Received: students,project.")
 
 					unit = @lecturer.units[0]
 					expect {
