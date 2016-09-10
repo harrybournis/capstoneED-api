@@ -12,6 +12,9 @@ RSpec.describe Student, type: :model do
 		it { should validate_presence_of(:last_name) }
 		it { should validate_presence_of(:email) }
 
+		it { should validate_absence_of :position }
+		it { should validate_absence_of :university }
+
 		it { should validate_uniqueness_of(:id) }
 		it { should validate_uniqueness_of(:email).case_insensitive }
 
@@ -26,18 +29,6 @@ RSpec.describe Student, type: :model do
 	end
 
 	let(:student) { FactoryGirl.create(:student) }
-
-	it 'should not allow university or position to be assigned a value' do
-		student.university = 'New university'
-		student.position = 'Professor'
-		expect(student.university).to be_falsy
-		expect(student.position).to be_falsy
-
-		student = Student.new(FactoryGirl.attributes_for(:student).merge({ position: 'Professor', university: 'Harvard' }) )
-		expect(student.valid?).to be_truthy
-		expect(student.university).to be_falsy
-		expect(student.position).to be_falsy
-	end
 
 	it 'destroys students_teams on destroy' do
 		project = FactoryGirl.create(:project_with_teams)

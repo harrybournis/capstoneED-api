@@ -5,8 +5,6 @@ class Student < User
 	has_many :teams, through: :students_teams, dependent: :destroy
 	has_many :projects, through: :teams
 
-	# Silently don't allow university or position to be assigned a value
-	def university=(value) 	nil 	; end
-
-	def position=(value) 		nil 	; end
+	# Validations
+	validates_absence_of :position, :university
 end
