@@ -1,193 +1,169 @@
-<div id="top-of-website"></div>
-
-  <a href="#top-of-website" style="font-size: 35px;">
-    <div id="back-to-top">
-      <span>^</span>
-    </div>
-  </a>
-
 <div class="col-md-3 scrollspy">
-  <ul id="nav" class="nav hidden-xs hidden-sm" data-spy="affix">
-    <li>
-      <a href="#web-design">Web Design</a>
-    </li>
-    <li>
-      <a href="#web-development">Web Development</a>
-      <ul class="nav">
-        <li>
-          <a href="#ruby">
-            <span class="fa fa-angle-double-right"></span>Ruby
-          </a>
-        </li>
-        <li>
-          <a href="#python">
-            <span class="fa fa-angle-double-right"></span>Python
-          </a>
-        </li>
 
-      </ul><!--end of sub navigation-->
-    </li>
+  <ul id="nav" class="nav hidden-xs hidden-sm" data-spy="affix"> <!--Main Navigation-->
 
-  </ul><!-- end of main navigation -->
-</div>
-<div class="col-md-9">
-  <section id="web-design">
-  </section>
-  <section id="web-development">
-    <section id="ruby">
-    </section>
-    <section id="python">
-    </section>
+    <% @doc[:resources].sort_by(&:first).each do |key, resource| %>
+      <li> <!--Start Resource-->
+        <a href='#<%= key %>' class="resource-list-header"><%= resource[:name] %></a>
 
-  </section>
-</div>
-
-<% @doc[:resources].sort_by(&:first).each do |key, resource| %>
-  <h4><a href='#<%= key %>'><%= resource[:name] %></a></h4>
-  <ul>
-    <% resource[:methods].each do |method| %>
-      <% if !method[:show] %>
-        <% next %>
-      <% end %>
-      <li><a href='#<%= key %>-<%= method[:name] %>'><%= method[:name] %></a></li>
+        <ul class="nav"> <!--Sub navigation-->
+          <% resource[:methods].each do |method| %>
+            <% if !method[:show] %>
+              <% next %>
+            <% end %>
+            <li><a href='#<%= key %>-<%= method[:name] %>'><%= method[:name] %></a></li>
+          <% end %>
+        </ul><!--end of sub navigation-->
+      </li> <!--End Resource-->
     <% end %>
-  </ul>
-<% end %>
+  </ul><!-- end of main navigation -->
+</div> <!--End of col-md-3-->
 
+<div class="col-md-9">
 
+<!--Back to the TOP-->
+<div id="top-of-website"></div>
+<a href="#top-of-website" style="font-size: 28px;">
+  <div id="back-to-top">
+    <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+  </div>
+</a>
+<!--/Back to the TOP-->
 
 <div><%= @doc[:info].html_safe %></div>
 
-<hr>
+  <hr>
 
-<% @doc[:resources].sort_by(&:first).each do |key, resource| %>
+  <% @doc[:resources].sort_by(&:first).each do |key, resource| %>
 
-  <ul class='breadcrumb'  id='<%= key %>'>
-    <li><a href='#'><%= @doc[:name] %></a><span class='divider'>/</span></li>
-    <li class='active'><%= resource[:name] %></li>
-  </ul>
-
-  <div class='page-header'>
-    <h1>
-      <a href='#<%= key %>'><%= resource[:name] %></a><br>
-      <small><%= raw resource[:short_description] %></small>
-    </h1>
-  </div>
-
-  <% unless resource[:full_description].blank? %>
-    <div><%= raw resource[:full_description] %></div>
-  <% end %>
-
-  <!-- Resource Attributes-->
-  <% if resource.dig(:metadata, :attributes) %>
-    <h3>Attributes</h3>
-    <ul id="resource-attributes-list">
-      <% resource[:metadata][:attributes].each do |attribute,desc| %>
-        <li>
-          <%= attribute %> (<%= desc %>)
-        </li>
-      <% end %>
+    <ul class='breadcrumb'  id='<%= key %>'>
+      <li><a href='#'><%= @doc[:name] %></a><span class='divider'>/</span></li>
+      <li class='active'><%= resource[:name] %></li>
     </ul>
+
+    <div class='page-header'>
+      <h1>
+        <a href='#<%= key %>'><%= resource[:name] %></a><br>
+        <small><%= raw resource[:short_description] %></small>
+      </h1>
+    </div>
+
+    <% unless resource[:full_description].blank? %>
+      <div><%= raw resource[:full_description] %></div>
+    <% end %>
+
+    <!-- Resource Attributes-->
+    <% if resource.dig(:metadata, :attributes) %>
+      <h3>Attributes</h3>
+      <ul id="resource-attributes-list">
+        <% resource[:metadata][:attributes].each do |attribute,desc| %>
+          <li>
+            <%= attribute %> (<%= desc %>)
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <div class='accordion' id='accordion'>
+
+      <% resource[:methods].each do |method| %>
+        <% if !method[:show] %>
+          <% next %>
+        <% end %>
+        <hr>
+
+        <ul class='breadcrumb' id='<%= key %>-<%= method[:name] %>'>
+          <li>
+            <a href='#'><%= @doc[:name] %></a>
+            <span class='divider'>/</span>
+          </li>
+          <li>
+            <a href='#<%= key %>'><%= resource[:name] %></a>
+            <span class='divider'>/</span>
+          </li>
+          <li class='active'><%= method[:name] %></li>
+        </ul>
+
+        <div>
+          <% method[:apis].each do |api| %>
+            <h2>
+              <a href='#<%= key %>-<%= method[:name] %>'>
+                <%= api[:http_method] %> <%= api[:api_url] %>
+              </a><br>
+              <small><%= raw api[:short_description] %></small>
+            </h2>
+          <% end %>
+        </div>
+
+        <div>
+
+          <!-- Authentication Metadata-->
+          <% if method.dig(:metadata, :authentication?) %>
+            <div class="alert alert-warning" role="warning">
+              <img src='/docs_assets/locked-padlock.svg' style="width: 23px; height: 23px; padding-bottom: 2px">
+              <span class="sr-only"></span>
+              Authentication Needed
+            </div>
+          <% end %>
+
+          <!-- Lecturers Only Metadata-->
+          <% if method.dig(:metadata, :lecturers_only) %>
+            <div class="alert alert-success" role="warning">
+              <b> Lecturers Only </b> The Current User must be a Lecturer to access this endopoint
+            </div>
+          <% end %>
+
+          <!-- Student Only Metadata-->
+          <% if method.dig(:metadata, :students_only) %>
+            <div class="alert alert-success" role="warning">
+              <b> Students Only </b> The Current User must be a Student to access this endopoint
+            </div>
+          <% end %>
+
+          <!-- Inlcudes Metadata-->
+          <% if method.dig(:metadata, :includes) %>
+            <div class="alert alert-info" role="info">
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+              <span class="sr-only"></span>
+              Can Include other resources in the response
+            </div>
+          <% end %>
+
+          <%= raw method[:full_description] %>
+
+          <% unless method[:errors].blank? %>
+            <h2><%= t('apipie.errors') %></h2>
+            <%= render(:partial => "errors", :locals => {:errors => method[:errors]}) %>
+          <% end %>
+
+          <% unless method[:params].blank? %>
+            <h2><%= t('apipie.params') %></h2>
+            <table class='table'>
+              <thead>
+                <tr>
+                  <th><%= t('apipie.param_name') %></th>
+                  <th><%= t('apipie.description') %></th>
+                </tr>
+              </thead>
+              <tbody>
+                <%= render(:partial => "params", :locals => {:params => method[:params]}) %>
+              </tbody>
+            </table>
+          <% end %>
+
+          <% unless method[:examples].blank? %>
+            <h2><%= t('apipie.examples') %></h2>
+            <% method[:examples].each do |example| %>
+              <pre><%= example %></pre>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
   <% end %>
 
-  <div class='accordion' id='accordion'>
+  <%# unless content_for(:apipie_footer) == @doc[:copyright] %>
+    <%#= content_for :apipie_footer, raw(@doc[:copyright]) %>
+  <%# end %>
 
-    <% resource[:methods].each do |method| %>
-      <% if !method[:show] %>
-        <% next %>
-      <% end %>
-      <hr>
-
-      <ul class='breadcrumb' id='<%= key %>-<%= method[:name] %>'>
-        <li>
-          <a href='#'><%= @doc[:name] %></a>
-          <span class='divider'>/</span>
-        </li>
-        <li>
-          <a href='#<%= key %>'><%= resource[:name] %></a>
-          <span class='divider'>/</span>
-        </li>
-        <li class='active'><%= method[:name] %></li>
-      </ul>
-
-      <div>
-        <% method[:apis].each do |api| %>
-          <h3>
-            <a href='#<%= key %>-<%= method[:name] %>'>
-              <%= api[:http_method] %> <%= api[:api_url] %>
-            </a><br>
-            <small><%= raw api[:short_description] %></small>
-          </h3>
-        <% end %>
-      </div>
-
-      <div>
-
-        <!-- Authentication Metadata-->
-        <% if method.dig(:metadata, :authentication?) %>
-          <div class="alert alert-warning" role="warning">
-            <img src='/docs_assets/locked-padlock.svg' style="width: 23px; height: 23px; padding-bottom: 2px">
-            <span class="sr-only"></span>
-            Authentication Needed
-          </div>
-        <% end %>
-
-        <!-- Lecturers Only Metadata-->
-        <% if method.dig(:metadata, :lecturers_only) %>
-          <div class="alert alert-success" role="warning">
-            <b> Lecturers Only </b> The Current User must be a Lecturer to access this endopoint
-          </div>
-        <% end %>
-
-        <!-- Student Only Metadata-->
-        <% if method.dig(:metadata, :students_only) %>
-          <div class="alert alert-success" role="warning">
-            <b> Students Only </b> The Current User must be a Student to access this endopoint
-          </div>
-        <% end %>
-
-        <!-- Inlcudes Metadata-->
-        <% if method.dig(:metadata, :includes) %>
-          <div class="alert alert-info" role="info">
-            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-            <span class="sr-only"></span>
-            Can Include other resources in the response
-          </div>
-        <% end %>
-
-        <%= raw method[:full_description] %>
-
-        <% unless method[:errors].blank? %>
-          <h2><%= t('apipie.errors') %></h2>
-          <%= render(:partial => "errors", :locals => {:errors => method[:errors]}) %>
-        <% end %>
-
-        <% unless method[:params].blank? %>
-          <h2><%= t('apipie.params') %></h2>
-          <table class='table'>
-            <thead>
-              <tr>
-                <th><%= t('apipie.param_name') %></th>
-                <th><%= t('apipie.description') %></th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= render(:partial => "params", :locals => {:params => method[:params]}) %>
-            </tbody>
-          </table>
-        <% end %>
-
-        <% unless method[:examples].blank? %>
-          <h2><%= t('apipie.examples') %></h2>
-          <% method[:examples].each do |example| %>
-            <pre><%= example %></pre>
-          <% end %>
-        <% end %>
-      </div>
-    <% end %>
-  </div>
-<% end %>
-
-<% unless content_for(:apipie_footer) == @doc[:copyright] %>
-  <%= content_for :apipie_footer, raw(@doc[:copyright]) %>
-<% end %>
+</div> <!--End of col-md-9-->
