@@ -49,4 +49,11 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.action_dispatch.tld_length = 0
+
+  # Lograge Gem configuration
+  # config.lograge.enabled = true
+  # config.lograge.custom_options = lambda do |event|
+  #   params = event.payload[:params].reject { |k| %w(controller action).include?(k) }
+  #   { "params" => params }
+  # end
 end

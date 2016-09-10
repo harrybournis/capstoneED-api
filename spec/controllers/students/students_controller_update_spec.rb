@@ -80,7 +80,7 @@ RSpec.describe 'V1::StudentsController PUT /update', type: :controller do
 
 				put :update, params: { id: lecturer.id, first_name: 'different' }
 				expect(response.status).to eq(403)
-				expect(JSON.parse(response.body)['errors']['base'].first).to eq('You must be Student to access this resource')
+				expect(JSON.parse(response.body)['errors']['base'].first).to include('You must be Student to access this resource')
 			end
 
 			it 'ignores updates to the provider field' do

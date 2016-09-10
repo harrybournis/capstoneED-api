@@ -28,9 +28,11 @@ Rails.application.routes.draw do
 			resources :departments, only: [:create, :update, :destroy]
 
 			# Projects
+			get 'projects',					to: 'projects#index_with_unit', constraints: -> (request) { request.params[:unit_id] }
 			resources :projects,		only: [:index, :show, :create, :update, :destroy]
 
 			# Teams
+			get 'teams',						to: 'teams#index_with_project', constraints: -> (request) { request.params[:project_id] }
 			resources :teams,				only: [:index, :show, :create, :update, :destroy]
 			post '/teams/enrol', 		to: 'teams#enrol'
 		end

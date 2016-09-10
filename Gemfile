@@ -31,6 +31,9 @@ gem 'oauth2', '~> 1.2'
 # Documentation
 gem 'apipie-rails', '~> 0.3.6'
 
+# Logging
+gem 'lograge', '~> 0.4.1'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri

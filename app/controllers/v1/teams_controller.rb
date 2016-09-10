@@ -2,36 +2,45 @@ class V1::TeamsController < ApplicationController
 
 	before_action :allow_if_lecturer, 		only: [:create, :destroy]
 	before_action :allow_if_student,			only: [:enrol]
-	before_action -> {
-		set_if_owner(Project, params[:project_id], '@project') }, only: [:create]
-	before_action -> {
-		set_if_owner(Team, params[:id], '@team') }, 							only: [:show, :update, :destroy]
+	before_action only: :index_with_project do
+	 allow_if_lecturer(index_with_project_error_message)
+	end
+	before_action only: :index do
+		allow_if_student(index_error_message)
+	end
+
+	before_action only: [:index, :index_with_project, :show], if: 'params[:includes]' do
+    validate_includes(current_user.team_associations, includes_array, 'Team')
+  end
+  before_action :delete_includes_from_params, only: [:update, :destroy]
+  before_action :set_team_if_associated, only: [:show, :update, :destroy]
+
 
 	# GET /teams
-	# Lecturer: Must provide project_id, teams for that Project
-	# Student: 	All their teams
+	# Only for Students
 	def index
-		if current_user.load.instance_of? Lecturer
-			if team_params[:project_id]
-				#render json: @project.teams, status: :ok if set_if_owner(Project, params[:project_id], '@project')
-				serialize_collection_params @project.teams, :ok if set_if_owner(Project, params[:project_id], '@project')
-			else
-				render json: format_errors({ project_id: ["can't be blank"] }), status: 400
-			end
-		else
-			#render json: current_user.load.teams, status: :ok
-			serialize_collection_params current_user.load.teams, :ok
-		end
+		serialize_collection current_user.teams(includes: includes_array), :ok
+	end
+
+	# GET /teams?project_id=
+	# Only for Lecturers
+	def index_with_project
+		@teams = current_user.teams(includes: includes_array).where(['projects.id = ?', params[:project_id]])
+		serialize_collection @teams, :ok
 	end
 
 	# GET /teams/:id
 	def show
-		#render json: @team, status: :ok
-		serialize_params @team, :ok
+		serialize_object @team, :ok
 	end
 
 	# POST /teams
 	def create
+    unless @project = current_user.projects.where(id: params[:project_id])[0]
+      render_not_associated_with_current_user('Project')
+      return false
+    end
+
 		team = Team.new(team_params)
 
 		if team.save
@@ -78,11 +87,34 @@ class V1::TeamsController < ApplicationController
 
 	private
 
+    # Sets @team if it is asociated with the current user. Eager loads associations in the params[:includes].
+    # Renders error if not associated and Halts execution
+    def set_team_if_associated
+      unless @team = current_user.teams(includes: includes_array).where(id: params[:id])[0]
+        render_not_associated_with_current_user('Team')
+        return false
+      end
+    end
+
+    # The class of the resource that the controller handles
+    def controller_resource
+      Team
+    end
+
+    # Strong Params
 		def team_params
 			params.permit(:name, :logo, :enrollment_key, :student_id, :project_id)
 		end
 
 		def team_update_params
 			params.permit(:name, :logo, :enrollment_key)
+		end
+
+		def index_with_project_error_message
+			"Students can not access this route with a 'project_id' in the parameters. Retry without it."
+		end
+
+		def index_error_message
+			"Lecturers must provide a 'project_id' in the parameters for this route."
 		end
 end

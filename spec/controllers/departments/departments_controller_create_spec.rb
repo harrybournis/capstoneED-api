@@ -41,7 +41,7 @@ RSpec.describe V1::DepartmentsController, type: :controller do
 
 				post :create, params: FactoryGirl.attributes_for(:department)
 				expect(response.status).to eq(403)
-				expect(parse_body['errors']['base'].first).to eq('You must be Lecturer to access this resource')
+				expect(parse_body['errors']['base'].first).to include('You must be Lecturer to access this resource')
 			end
 
 			it 'responds with 422 unprocessable entity if validation fail' do

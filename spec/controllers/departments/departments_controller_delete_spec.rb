@@ -42,7 +42,7 @@ RSpec.describe V1::DepartmentsController, type: :controller do
 
 				delete :destroy, params: { id: @department.id }
 				expect(response.status).to eq(403)
-				expect(JSON.parse(response.body)['errors']['base'].first).to eq('You must be Lecturer to access this resource')
+				expect(JSON.parse(response.body)['errors']['base'].first).to include('You must be Lecturer to access this resource')
 			end
 		end
 	end

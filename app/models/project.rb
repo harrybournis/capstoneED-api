@@ -4,7 +4,8 @@ class Project < ApplicationRecord
   belongs_to 	:lecturer
   belongs_to 	:unit
   has_many 		:teams, dependent: :destroy
-  has_many		:students, through: :teams
+  has_many    :students_teams, through: :teams
+  has_many		:students, through: :students_teams
 
   # Validations
   validates_presence_of :start_date, :end_date, :description, :unit_id, :lecturer_id
