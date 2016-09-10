@@ -24,7 +24,8 @@ module JWTAuth::JWTAuthenticator
 		token_params 	= decoded_token.first
 
 		if validated_request.csrf_token == token_params['csrf_token']
-			JWTAuth::CurrentUser.new(token_params['id'], token_params['type'], token_params['device'])
+			#JWTAuth::CurrentUser.new(token_params['id'], token_params['type'], token_params['device'])
+			"JWTAuth::CurrentUser#{token_params['type']}".constantize.new(token_params['id'], token_params['type'], token_params['device'])
 		else
 			nil
 		end

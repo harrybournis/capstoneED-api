@@ -4,24 +4,27 @@
   <title><%= t('apipie.api_documentation') %></title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <%= Apipie.include_stylesheets %>
-  <link type='text/css' rel='stylesheet' href='<%= Apipie.full_url("stylesheets/application.css")%>'/>
+  <link rel='stylesheet' href="/docs_assets/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/docs_assets/custom.css">
+  <script type="text/javascript" src="/docs_assets/jquery-3.1.0.slim.min.js"></script>
+  <script type="text/javascript" src="/docs_assets/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/docs_assets/custom.js"></script>
+  <%#= Apipie.include_stylesheets %>
+  <!--link type='text/css' rel='stylesheet' href='<%= Apipie.full_url("stylesheets/application.css")%>'/-->
   <!-- IE6-8 support of HTML5 elements -->
   <!--[if lt IE 9]>
     <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
 </head>
-<body>
-  <div class="container-fluid">
-    <div class="row-fluid">
-      <div id='container'>
-        <%= yield %>
-        <%= render 'disqus' if Apipie.configuration.use_disqus? %>
-      </div>
+<body data-spy="scroll" data-target=".scrollspy">
+  <div class="container">
+    <div class='row'>
+      <%= yield %>
+      <%= render 'disqus' if Apipie.configuration.use_disqus? %>
+      <!--hr>
+      <footer><%#= yield :apipie_footer %></footer-->
     </div>
-    <hr>
-    <footer><%= yield :apipie_footer %></footer>
   </div>
-  <%= Apipie.include_javascripts %>
+  <%#= Apipie.include_javascripts %>
 </body>
 </html>

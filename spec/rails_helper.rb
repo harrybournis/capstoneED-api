@@ -87,3 +87,9 @@ Shoulda::Matchers.configure do |config|
     with.library :rails
   end
 end
+
+DBQueryMatchers.configure do |config|
+  config.schemaless = true
+  #config.log_backtrace = true
+end
+

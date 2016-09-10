@@ -43,7 +43,7 @@ RSpec.describe V1::DepartmentsController, type: :controller do
 
 				patch :update, params: { id: @department.id, university: 'different' }
 				expect(response.status).to eq(403)
-				expect(JSON.parse(response.body)['errors']['base'].first).to eq('You must be Lecturer to access this resource')
+				expect(JSON.parse(response.body)['errors']['base'].first).to include('You must be Lecturer to access this resource')
 			end
 		end
 	end

@@ -1,4 +1,5 @@
 class JWTAuth::CurrentUser
+	include ApiHelper
 
 	attr_reader :id, :type, :current_device
 

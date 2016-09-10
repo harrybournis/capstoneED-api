@@ -30,20 +30,20 @@ RSpec.describe 'Includes', type: :controller do
 
 			it 'returns only the specified resource in includes' do
 				get :show, params: { id: @project.id }
-				body_project = parse_body['project']
+				body_project = body['project']
 				expect(response.status).to eq(200) #1
 				expect(body_project).to include('description', 'start_date')
 				expect(body_project['teams']).to be_falsy
 				expect(body_project['teams']).to be_falsy
 
 				get :show, params: { id: @project.id, includes: 'teams'}
-				body_project = parse_body['project']
+				body_project = body['project']
 				expect(response.status).to eq(200) #2
 				expect(body_project['teams']).to be_truthy
 				expect(body_project['unit']).to be_falsy
 
 				get :show, params: { id: @project.id, includes: 'teams,unit'}
-				body_project = parse_body['project']
+				body_project = body['project']
 				expect(response.status).to eq(200) #3
 				expect(body_project['teams']).to be_truthy
 				expect(body_project['unit']).to be_truthy
@@ -51,21 +51,21 @@ RSpec.describe 'Includes', type: :controller do
 
 			it 'returns the resource full but only the associations ids if ?compact=true' do
 				get :show, params: { id: @project.id }
-				body_project = parse_body['project']
+				body_project = body['project']
 				expect(response.status).to eq(200)
 				expect(body_project).to include('description', 'start_date')
 				expect(body_project['teams']).to be_falsy
 				expect(body_project['unit']).to be_falsy
 
 				get :show, params: { id: @project.id, includes: 'teams', compact: true}
-				body_project = parse_body['project']
+				body_project = body['project']
 				expect(response.status).to eq(200)
 				expect(body_project['teams']).to be_truthy
 				expect(body_project['teams'].first).to_not include('name', 'enrollment_key')
 				expect(body_project['unit']).to be_falsy
 
 				get :show, params: { id: @project.id, includes: 'teams,unit'}
-				body_project = parse_body['project']
+				body_project = body['project']
 				expect(response.status).to eq(200)
 				expect(body_project['teams']).to be_truthy
 				expect(body_project['teams'].first).to include('name', 'enrollment_key')
@@ -73,39 +73,31 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body_project['unit']).to include('code', 'semester')
 			end
 
-			it 'strips the * from the includes params' do
-				get :show, params: { id: @project.id, includes: 'teams,**' }
-				expect(parse_body['project']['teams']).to be_truthy
-				expect(parse_body['project']['unit']).to be_falsy
-			end
-
-			it 'arbitrary includes associations will be ignored' do
-				get :show, params: { id: @project.id, includes: 'teams,*,lecturer,banana' }
-				expect(parse_body['project']['teams']).to be_truthy
-				expect(parse_body['project']['unit']).to be_falsy
-				expect(parse_body['project']['lecturer']).to be_falsy
-				expect(parse_body['project']['banana']).to be_falsy
+			it 'is invalid if * is in the includes' do
+				get :show, params: { id: @project.id, includes: 'teams,*' }
+				expect(status).to eq(400)
+				expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Project resource for Lecturer user accepts only: lecturer, unit, teams, students. Received: teams,*.")
 			end
 
 			it 'works for index' do
 				get :index, params: { includes: 'unit' }
 				expect(response.status).to eq(200)
-				expect(parse_body['projects'].first['unit']).to be_truthy
-				expect(parse_body['projects'].first['teams']).to be_falsy
+				expect(body['projects'].first['unit']).to be_truthy
+				expect(body['projects'].first['teams']).to be_falsy
 			end
 
 			it 'renders empty array if no collection is empty' do
 				@unit.projects.destroy_all
 				expect(@unit.projects.empty?).to be_truthy
-				get :index, params: { unit_id: @unit.id, includes: 'teams' }
+				get :index, params: { unit_id: @unit.id, includes: 'lecturer' }
 				expect(response.status).to eq(204)
 				expect(response.body.empty?).to be_truthy
 			end
 
 			it 'renders no associations if includes emtpy string?' do
 				get :show, params: { id: @project.id, includes: "" }
-				expect(parse_body['project']['unit']).to be_falsy
-				expect(parse_body['project']['teams']).to be_falsy
+				expect(body['project']['unit']).to be_falsy
+				expect(body['project']['teams']).to be_falsy
 			end
 		end
 
@@ -116,15 +108,15 @@ RSpec.describe 'Includes', type: :controller do
 
 			it 'GET show contains projects' do
 				get :show, params: { id: @unit.id }
-				expect(parse_body['unit']['projects']).to be_falsy
+				expect(body['unit']['projects']).to be_falsy
 
 				get :show, params: { id: @unit.id, includes: 'projects' }
-				expect(parse_body['unit']['projects']).to be_truthy
+				expect(body['unit']['projects']).to be_truthy
 			end
 
 			it 'GET index contains the projects compact' do
 				get :index, params: { includes: 'projects', compact: true }
-				expect(parse_body['units'].first['projects'].first).to_not include('description')
+				expect(body['units'].first['projects'].first).to_not include('description')
 			end
 		end
 
@@ -144,7 +136,7 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'GET index contains students and project compact' do
-				get :index, params: { project_id: @project.id, includes: 'students,project,lecturer', compact: true }
+				get :index_with_project, params: { project_id: @project.id, includes: 'students,project', compact: true }
 				expect(status).to eq(200)
 				expect(body['teams'].first['students'].first).to_not include('email', 'provider')
 				expect(body['teams'].first['project']).to_not include('description')
@@ -152,30 +144,5 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body['teams'].first['lecturer']).to be_falsy
 			end
 		end
-
-		# describe 'Departments' do
-		# 	before(:each) do
-		# 		@controller = V1::DepartmentsController.new
-		# 		@department = Department.first
-		# 	end
-
-		# 	it 'contains units' do
-		# 		get :index, params: { id: @department.id }
-		# 		expect(status).to eq(200)
-		# 		expect(body['departments'].first['enrollment_key']).to be_truthy
-
-		# 		get :index, params: { id: @department, includes: 'units' }
-		# 		expect(status).to eq(200)
-		# 		expect(body['departments'].first['units'].length).to eq(@department.units.length)
-		# 		expect(body['departments'].first['units'].first).to include('code','semester')
-
-		# 		get :index, params: { id: @department.id }
-		# 		expect(status).to eq(200)
-		# 		expect(body['departments'].first['units'].first['id']).to eq(@department.units.first.id)
-		# 		expect(body['departments'].first['units'].first).to_not include('code','semester')
-		# 	end
-		# end
 	end
-
-
 end

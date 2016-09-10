@@ -17,8 +17,10 @@ class Docs::V1::Units < ApplicationController
 
 	api :GET, '/units', "Get the current user's units"
   meta :authentication? => true
+  meta :includes => true
+  param :includes, String,	DocHelper.param_includes_text('unit_associations')
+  error code: 400, desc: "Invalid 'includes' parameter."
   error code: 401, desc: 'Authentication failed'
-  error code: 403, desc: 'The User logged in is not of type Lecturer'
   example DocHelper.format_example(status = 200, nil, body = "{\n  \"units\": [\n    {\n      \"id\": 1034,\n      \"name\": \"Open-source optimal moratorium\",\n      \"code\": \"B000AR9H5C\",\n      \"semester\": \"Spring\",\n      \"year\": 2017,\n      \"archived_at\": null\n    },\n    {\n      \"id\": 1035,\n      \"name\": \"Cross-group modular system engine\",\n      \"code\": \"B000GWGJK2\",\n      \"semester\": \"Spring\",\n      \"year\": 2016,\n      \"archived_at\": null\n    }\n  ]\n}")
   description <<-EOS
   	Show all Units associated with the current user. Must be logged in as a Lecturer.
@@ -28,9 +30,11 @@ class Docs::V1::Units < ApplicationController
 
 	api :GET, 'units/:id', 'Show a Unit'
   meta :authentication? => true
+  meta :includes => true
   param :id, String, 'The id of the Unit to be returned', required: true
+  param :includes, String,	DocHelper.param_includes_text('unit_associations')
+  error code: 400, desc: "Invalid 'includes' parameter."
   error code: 401, desc: 'Authentication failed'
-  error code: 403, desc: 'Current User is not a lecturer'
 	error code: 403, desc: 'This User is not the owner of this resource'
   example DocHelper.format_example(status = 200, nil, body = "{\n  \"unit\": {\n    \"id\": 1042,\n    \"name\": \"Enhanced methodical conglomeration\",\n    \"code\": \"B0002GM6DQ\",\n    \"semester\": \"Spring\",\n    \"year\": 2017,\n    \"archived_at\": null\n  }\n}")
 	example DocHelper.format_example(status = 403, nil, body = "{\n  \"errors\": {\n    \"base\": [\n      \"This Unit can not be found in the current user's Units\"\n    ]\n  }\n}")
@@ -43,6 +47,7 @@ class Docs::V1::Units < ApplicationController
 
 	api :POST, '/units', 'Create a new Unit resource'
 	meta :authentication? => true
+  meta :lecturers_only => true
 	param :name, String, 'Name of the Unit', required: true
 	param :code, String, 'A code that identifies the Unit within the university. Provided by Lecturer.', required: true
 	param :semester, String, 'The semester that this Unit currently takes place. Commonly: [Spring, Autumn]', required: true

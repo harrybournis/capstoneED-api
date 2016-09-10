@@ -1,77 +1,38 @@
-class ApplicationController < JWTApplicationController
+class ApplicationController < ActionController::API
 
-	# Handle any unexpected exceptions. Instead of rendering the deault 404.html or 500.html
-	# Respond with json. In case the environment is not production, send the exception as well.
-	rescue_from StandardError do |e|
-  	render json: format_errors({ base: [Rails.env.production? ? 'Operation Failed' : e.message] }), status: 500
-  end
+	include ActionController::Cookies, 	# Add cookie functionality
+					JWTAuth::JWTAuthenticator,	# Add the ability to authenticate via JWT tokens
+					UrlHelper,									# Url helpers to globally change URL's for emails or redirects
+					ApiHelper,									# Methods that provide a common behavior for the API (e.g. error rendering)
+					CurrentUserable,						# Current User helper methods, including validations
+					AssociationIncludable				# Logic for allowing the user to pass ?inlcudes= in the params, and autoload the associated records.
 
-  serialization_scope :params
+	before_action :authenticate_user_jwt
 
 	protected
 
-		###
-		# Checks if the 'id' of the 'resource' provided is assotiated with
-		# the current_user. If it is, a variable is created with the value
-		# passed in the 'variable' parameter.
-		#
-		# param resource, Class, 		'The class of the resource'
-		# param id 			, Integer,	'The id of the resource'
-		# param variable, String,		'The variable name that the resource will be available under'
-		def set_if_owner(resource, id, variable)
-			temp = resource.find_by(id: id)
-
-    	unless current_user.load.method(resource.table_name).call.include? temp
-    		render json: format_errors({ base: ["This #{resource} is not associated with the current user"] }), status: :forbidden
-    		return false
-    	end
-
-    	instance_variable_set "#{variable}", temp
-    	true
-		end
-
-		###
-		# Is passed to the render method in the controllers. It provides an abstraction in the controller,
-		# while initializing the correct Serializer depending on the received parameters.
-		# Serializes a single object. Used in: :show, :create, :update
-		#
-		# param, String, resource, The resource(s) that is to be rendered in json
-		def serialize_params(resource, status)
-			if params[:includes]
-				if params[:compact]
-					render 	json: resource, include: parse_includes, serializer: "IncludesCompact::#{resource.class.to_s}Serializer".constantize, status: status
-				else
-					render  json: resource, include: parse_includes, serializer: "Includes::#{resource.class.to_s}Serializer".constantize,  status: status
-				end
-			else
-				render json: resource, serializer: "#{resource.class.to_s}Serializer".constantize, status: status
+		# Authenticates the user using the access-token in the requres cookies.
+		# If authentication is successful, a CurrentUser object containing the
+		# actual Student or Lecturer object is assigned as current_user
+		def authenticate_user_jwt
+			unless @current = JWTAuth::JWTAuthenticator.authenticate(request)
+				render json: format_errors({ base: 'Authentication Failed' }), status: :unauthorized
 			end
 		end
 
-		###
-		# Is passed to the render method in the controllers. It provides an abstraction in the controller,
-		# while initializing the correct Serializer depending on the received parameters.
-		# Serializes an Array. Used in: :index
-		#
-		# param, String, resource, The resource(s) that is to be rendered in json
-		def serialize_collection_params(resource, status)
-			return [] unless resource.any?
-			if params[:includes]
-				if params[:compact]
-					render 	json: resource, include: parse_includes, each_serializer: "IncludesCompact::#{resource[0].class.to_s}Serializer".constantize, status: status
-				else
-					render  json: resource, include: parse_includes, each_serializer: "Includes::#{resource[0].class.to_s}Serializer".constantize,  status: status
-				end
-			else
-				render json: resource, each_serializer: "#{resource[0].class.to_s}Serializer".constantize, status: status
-			end
-		end
+		# Handle any unexpected exceptions. Instead of rendering the deault 404.html or 500.html
+		# Respond with json. In case the environment is not production, send the exception as well.
+		rescue_from StandardError do |e|
+			if Rails.env.test?
+				logger = Logger.new(STDOUT)
+				p ""
+		  	logger.error e.message
+		  	logger.error e.backtrace.join("\n\t")
+		  end
+	  	render json: format_errors({ base: [Rails.env.production? ? 'Operation Failed' : e.message] }), status: 500
+	  end
 
-		###
-		# Removes the '*' symbol from the inlcudes, to protect from users abusing the ?includes parameter
-		# in the requests. If not escaped, the serializer would render all of the resource's associations
-		# if passed ?includes=* or ?includes=**
-		def parse_includes
-			params[:includes].tr('*','')
-		end
+	  # Object to pass to every Active Model Serializer
+	  # If removed, it defaults to current_user
+	  serialization_scope :params
 end

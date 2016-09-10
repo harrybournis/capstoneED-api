@@ -18,23 +18,30 @@ class Docs::V1::Projects < ApplicationController
 
 	api :GET, '/projects', "Get the current user's Projects"
   meta :authentication? => true
+  meta :includes => true
   param :unit_id, Integer, 'Return all the Projects for a specific Unit.'
+  param :includes, String,	DocHelper.param_includes_text('project_associations')
+  error code: 400, desc: "Invalid 'includes' parameter."
   error code: 401, desc: 'Authentication failed'
-  error code: 403, desc: 'This User is not the owner of this resource'
+	error code: 403, desc: 'Current User is not a Lecturer. Only if the params contained a unit_id and current_user is a Student.'
+  error code: 403, desc: 'Current User is not associated with this resource'
   example DocHelper.format_example(status = 200, nil, body =  "{\n  \"projects\": [\n    {\n      \"id\": 402,\n      \"start_date\": \"2016-08-29\",\n      \"end_date\": \"2016-12-12\",\n      \"description\": \"Eos consectetur quidem enim rerum ad. Similique aut fuga suscipit est. Velit et nesciunt placeat earum quam culpa. Cum aut fuga. A et tenetur.\",\n      \"unit\": {\n        \"id\": 1802,\n        \"name\": \"Advanced high-level contingency\",\n        \"code\": \"B0000DGFW7\",\n        \"semester\": \"Spring\",\n        \"year\": 2017,\n        \"archived_at\": null\n      }\n    },\n    {\n      \"id\": 403,\n      \"start_date\": \"2016-08-29\",\n      \"end_date\": \"2017-08-26\",\n      \"description\": \"Et necessitatibus ex dolor et et. Adipisci explicabo harum molestias et aut consequuntur sit. Debitis nihil dolores. Laudantium ratione eveniet dolor.\",\n      \"unit\": {\n        \"id\": 1802,\n        \"name\": \"Advanced high-level contingency\",\n        \"code\": \"B0000DGFW7\",\n        \"semester\": \"Spring\",\n        \"year\": 2017,\n        \"archived_at\": null\n      }\n    }\n  ]\n}")
   description <<-EOS
-  	Show all Projects associated with the current user. By passing a unit_id in the params,
-  	the Projects returned can be scoped to that Unit. The Unit must belong to the current user.
-  	The current user can be either a Lecturer or a Student.
+  	Show all Projects associated with the current user. A Lecturer can pass a unit_id in the params,
+  	and the Projects returned can be scoped to that Unit. The Unit must belong to the current user.
+  	Including a unit_id if current_user is a Student will result in an error.
   EOS
   def index
   end
 
 	api :GET, 'projects/:id', 'Show a Project'
   meta :authentication? => true
+  meta :includes => true
   param :id, Integer, 'The id of the Project to be returned', required: true
+  param :includes, String,	DocHelper.param_includes_text('project_associations')
+  error code: 400, desc: "Invalid 'includes' parameter."
   error code: 401, desc: 'Authentication failed'
-	error code: 403, desc: 'This User is not the owner of this resource'
+	error code: 403, desc: 'Current User is not associated with this resource'
   example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 376,\n    \"start_date\": \"2016-08-29\",\n    \"end_date\": \"2016-10-03\",\n    \"description\": \"Quia dolore labore. Aut molestiae necessitatibus et hic vel ullam et. Nam doloribus eum qui recusandae. Atque eos ullam. Odit est consequatur.\",\n    \"unit\": {\n      \"id\": 1774,\n      \"name\": \"Cloned asymmetric Graphical User Interface\",\n      \"code\": \"B0000DHCZT\",\n      \"semester\": \"Spring\",\n      \"year\": 2017,\n      \"archived_at\": null\n    }\n  }\n}")
 	example DocHelper.format_example(status = 403, nil, body = "{\n  \"errors\": {\n    \"base\": [\n      \"This Project can not be found in the current user's Projects\"\n    ]\n  }\n}")
 	description <<-EOS
@@ -52,7 +59,7 @@ class Docs::V1::Projects < ApplicationController
 	param :unit_id, Integer,'The Unit that the Project belongs to', required: true
 	error code: 401, desc: 'Authentication failed'
 	error code: 403, desc: 'Current User is not a lecturer'
-	error code: 403, desc: 'This User is not the owner of this resource'
+	error code: 403, desc: 'Current User is not associated with this resource'
 	error code: 422, desc: 'Invalid Params'
 	example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 1133,\n    \"start_date\": \"2016-08-29\",\n    \"end_date\": \"2016-10-16\",\n    \"description\": \"Excepturi quis non minus dolor qui officia. Aperiam ex dolorum libero atque perferendis molestiae quos. Et est quidem. Veniam deleniti provident sit.\",\n    \"unit\": {\n      \"id\": 2839,\n      \"name\": \"Streamlined object-oriented encoding\",\n      \"code\": \"B000FQ9CTY\",\n      \"semester\": \"Autumn\",\n      \"year\": 2016,\n      \"archived_at\": null\n    }\n  }\n}")
 	description <<-EOS
@@ -72,7 +79,7 @@ class Docs::V1::Projects < ApplicationController
 	param :unit_id, Integer,'The Unit that the Project belongs to'
 	error code: 401, desc: 'Authentication failed'
 	error code: 403, desc: 'Current User is not a lecturer'
-	error code: 403, desc: 'This User is not the owner of this resource'
+	error code: 403, desc: 'Current User is not associated with this resource'
 	error code: 422, desc: 'Invalid Params'
 	example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 1134,\n    \"start_date\": \"2016-08-29\",\n    \"end_date\": \"2017-08-29\",\n    \"description\": \"Aspernatur rerum aut. Mollitia quam et. Et magnam atque eaque ducimus magni quia.\",\n    \"unit\": {\n      \"id\": 2845,\n      \"name\": \"Face to face upward-trending workforce\",\n      \"code\": \"B0006DRM02\",\n      \"semester\": \"Autumn\",\n      \"year\": 2017,\n      \"archived_at\": null\n    }\n  }\n}")
 	description <<-EOS
@@ -86,7 +93,7 @@ class Docs::V1::Projects < ApplicationController
 	param :id, Integer, 'The id of the Project to be deleted', required: true
 	error code: 401, desc: 'Authentication failed'
 	error code: 403, desc: 'Current User is not a lecturer'
-	error code: 403, desc: 'This User is not the owner of this resource'
+	error code: 403, desc: 'Current User is not associated with this resource'
 	error code: 422, desc: "Invalid params"
 	description <<-EOS
 		Delete Project resource. It must belong to the current user.
