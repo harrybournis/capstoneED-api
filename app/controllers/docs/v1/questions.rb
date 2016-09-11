@@ -96,7 +96,7 @@ class Docs::V1::Questions < ApplicationController
 	def update
 	end
 
-	api :DELETE, '/custom_questions/:id', 'Delete Department'
+	api :DELETE, '/custom_questions/:id', 'Delete Custom Question'
 	meta :authentication? => true
   meta :lecturers_only => true
 	param :id, String, 'The id of the department', required: true

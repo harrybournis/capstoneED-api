@@ -1,20 +1,18 @@
 class V1::IterationsController < ApplicationController
 
-	before_action :allow_if_lecturer, 					only: :create
-  before_action :set_iteration_if_associated, only: [:show, :update, :destroy]
+	before_action :validate_project_id_present, 							only: [:index]
+	before_action :validate_project_belongs_to_current_user, 	only: [:index, :create]
+	before_action :allow_if_lecturer, 												only: :create
+  before_action :set_iteration_if_associated, 							only: [:show, :update, :destroy]
+
 
 	# GET /iterations?project_id=
 	# Needs project_id in params
 	def index
-		unless params[:project_id]
-			render json: format_errors({ base: ['This Endpoint requires a project_id in the params'] }), status: :bad_request
-			return
-		end
-
 		if @iterations = current_user.iterations.where(project_id: params[:project_id])
 			render json: @iterations, status: :ok
 		else
-			render json: [], status: :no_content
+			render json: 'yo', status: :no_content
 		end
 	end
 
@@ -26,11 +24,6 @@ class V1::IterationsController < ApplicationController
 	# POST /iterations
 	# Only for Lecturers
 	def create
-		unless current_user.projects.find_by( id: params[:project_id])
-			render json: format_errors({ project_id: ["is not one of current user's projects"] }), status: :forbidden
-			return
-		end
-
 		@iteration = Iteration.create(iteration_params)
 
 		if @iteration.save
@@ -65,6 +58,20 @@ class V1::IterationsController < ApplicationController
         render_not_associated_with_current_user('Iteration')
         return false
       end
+    end
+
+    def validate_project_id_present
+			unless params[:project_id]
+				render json: format_errors({ base: ['This Endpoint requires a project_id in the params'] }), status: :bad_request
+				return
+			end
+    end
+
+    def validate_project_belongs_to_current_user
+			unless current_user.projects.find_by( id: params[:project_id])
+				render json: format_errors({ project_id: ["is not one of current user's projects"] }), status: :forbidden
+				return
+			end
     end
 
     # The class of the resource that the controller handles

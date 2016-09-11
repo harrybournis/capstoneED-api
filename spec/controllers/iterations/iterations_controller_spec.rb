@@ -99,6 +99,12 @@ RSpec.describe V1::IterationsController, type: :controller do
 			expect(errors['base'][0]).to include('This Endpoint requires a project_id in the params')
 		end
 
+		it 'GET index should respond with 403 forbidden is project_id is not one of current users projects' do
+			get :index, params: { project_id: @irrelevant_project.id }
+			expect(status).to eq(403)
+			expect(errors['project_id'][0]).to include("is not one of current user's projects")
+		end
+
 		it 'GET show responds with 403 forbidden if user is not associated with iteration project' do
 			project = FactoryGirl.create(:project)
 			get :show, params: { id: project.id }
