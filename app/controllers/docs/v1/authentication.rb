@@ -28,12 +28,14 @@ class Docs::V1::Authentication < ApplicationController
 
 
 	api :POST, '/sign_in', 'Sign In using Email and Password'
-	param :email, 		String, "User's Email", 		required: true
-	param :password, 	String, "User's Password",	required: true
-	error code: 401, desc: 'Missing email/password, wrong email/password, or unconfirmed account. see errors in response body.'
+	param :email, 			String, "User's Email", 		required: true
+	param :password, 		String, "User's Password",	required: true
+	param :remember_me, String, "Whether the user will stay logged in after the browser closes. Accepted Values: '0' for false, '1' for true. Defaults to false."
+	error code: 401, desc: 'Missing email/password, wrong email/password, invalid value for remember_me or unconfirmed account. see errors in response body.'
 	example DocHelper.format_example(status = 200, headers = "{\n  \"X-Frame-Options\": \"SAMEORIGIN\",\n  \"X-XSS-Protection\": \"1; mode=block\",\n  \"X-Content-Type-Options\": \"nosniff\",\n  \"XSRF-TOKEN\": \"T8s44Z44kQR0BbidKGhlvSC7mQoDoTf4lKWnuT1Z5LA=\",\n  \"Content-Type\": \"application/json; charset=utf-8\",\n  \"Set-Cookie\": \"access-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzE5OTU1MDIsImlkIjozMzYzOSwidHlwZSI6bnVsbCwiaXNzIjoiIiwiZGV2aWNlIjoiTGN2RjZDQnZTVzJ6bGtGbnp4SmJVTmpaWTl5SzJhazlmMnl1b3NEWkZFdz0iLCJjc3JmX3Rva2VuIjoiVDhzNDRaNDRrUVIwQmJpZEtHaGx2U0M3bVFvRG9UZjRsS1dudVQxWjVMQT0ifQ.YbqfKaDyjZXXPXkuzhvhfcLQhcRz-OxkKveg7AeHMLg; path=/; expires=Tue, 23 Aug 2016 23:38:22 -0000; HttpOnly; SameSite=Strict\\nrefresh-token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NzI1OTk3MDIsImlzcyI6IiIsImRldmljZSI6IkxjdkY2Q0J2U1cyemxrRm56eEpiVU5qWlk5eUsyYWs5ZjJ5dW9zRFpGRXc9In0.BrkCthYzKmwJn2JMYhsEeOqr8-o2-5W_L97lnOJFIl4; path=/v1/refresh; expires=Tue, 30 Aug 2016 23:28:22 -0000; HttpOnly; SameSite=Strict\"\n}", body = "{\n  \"user\": {\n    \"id\": 33639,\n    \"first_name\": \"Mireille\",\n    \"last_name\": \"Buckridge\",\n    \"email\": \"estelle@hotmail.com\"\n  }\n}")
 	example DocHelper.format_example(status = 401, nil, body = "{\n  \"errors\": {\n    \"base\": [\n      \"Invalid Login Credentials\"\n    ]\n  }\n}")
 	example DocHelper.format_example(status = 401, nil, body = "{\n  \"errors\": {\n    \"email\": [\n      \"is unconfirmed\"\n    ]\n  }\n}")
+	example DocHelper.format_example(status = 401, nil, body = "{\n  \"errors\": {\n    \"base\": [\n      \"remember_me must be either '0' or '1'. Received value: true\"\n    ]\n  }\n}")
 	description <<-EOS
 		Sign In using Email and Password. The user must have confirmed their account through the
 		confirmation email sent after /register. On successful authentication, the user is returned. The
@@ -43,6 +45,8 @@ class Docs::V1::Authentication < ApplicationController
 		accessible via javascript, and require no further action for the client in order to use them.
 		The access-token cookie will automatically be sent to all subsequent requests, while the
 		refresh-token cookie will only be sent to the /refresh path.
+
+		The remember_me param should be either '0' for false, or '1' for true.
 	EOS
 	def sign_in_email
 	end

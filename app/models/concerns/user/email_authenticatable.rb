@@ -18,6 +18,10 @@ module User::EmailAuthenticatable
 			user = User.find_by_email(params[:email])
 
 			user ||= User.new
+			if params[:remember_me].present? && !['1', '2'].include?(params[:remember_me])
+				user.errors[:base] << "remember_me must be either '0' or '1'. Received value: #{params[:remember_me]}"
+			end
+
 			unless user && user.valid_password?(params[:password])
 				user.errors[:base] << 'Invalid Login Credentials'
 			end
