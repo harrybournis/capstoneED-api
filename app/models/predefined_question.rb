@@ -1,4 +1,4 @@
-class Question::PredefinedQuestion < Question::Question
+class PredefinedQuestion < Question
 	# Attributes: category(string), text(string), type(string)
 
 	# Validations

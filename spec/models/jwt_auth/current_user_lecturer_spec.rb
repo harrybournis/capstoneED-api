@@ -9,10 +9,10 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 		before(:each) do
 			@user = FactoryGirl.create(:lecturer)
 			@request = MockRequest.new(valid = true, @user)
-			decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
 			@token_id = decoded_token.first['id']
 			@device = decoded_token.first['device']
-			@current_user = CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
+			@current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
 
 			@unit = FactoryGirl.create(:unit, lecturer: @user)
 			@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @user)
@@ -67,10 +67,10 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 		before(:each) do
 			@user = FactoryGirl.create(:lecturer)
 			@request = MockRequest.new(valid = true, @user)
-			decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
 			@token_id = decoded_token.first['id']
 			@device = decoded_token.first['device']
-			@current_user = CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
+			@current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
 
 			@other_unit = FactoryGirl.create(:unit)
 			@unit = FactoryGirl.create(:unit, lecturer: @user)
@@ -102,6 +102,27 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			expect {
 				@units[0].projects[0].start_date
 			}.to_not make_database_queries
+		end
+	end
+
+	describe 'CustomQuestions' do
+		before(:each) do
+			@user = FactoryGirl.create(:lecturer)
+			@request = MockRequest.new(valid = true, @user)
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			@token_id = decoded_token.first['id']
+			@device = decoded_token.first['device']
+			@current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
+
+			5.times { @user.custom_questions << FactoryGirl.build(:custom_question) }
+			expect(@user.custom_questions.count).to eq(5)
+		end
+
+		it 'should make one database query' do
+			expect {
+				(@questions = @current_user.custom_questions).length
+			}.to make_database_queries(count: 1)
+			expect(@questions.length).to eq(5)
 		end
 	end
 end

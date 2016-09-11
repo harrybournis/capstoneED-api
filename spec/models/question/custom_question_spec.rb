@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Question::CustomQuestion, type: :model do
+RSpec.describe CustomQuestion, type: :model do
 	subject(:custom_question) { FactoryGirl.build(:custom_question) }
 
 	it { should validate_presence_of :type }

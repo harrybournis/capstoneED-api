@@ -33,8 +33,14 @@ Rails.application.routes.draw do
 
 			# Teams
 			get 'teams',						to: 'teams#index_with_project', constraints: -> (request) { request.params[:project_id] }
-			resources :teams,				only: [:index, :show, :create, :update, :destroy]
 			post '/teams/enrol', 		to: 'teams#enrol'
+			resources :teams
+
+			# Custom Questions
+			resources :custom_questions
+
+			# Predefined Questions
+			resources :predefined_questions, only: [:index, :show]
 		end
 	end
 

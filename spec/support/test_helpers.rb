@@ -4,6 +4,10 @@ module TestHelpers
 		JSON.parse(response.body)
 	end
 
+	def errors
+		JSON.parse(response.body)['errors']
+	end
+
 	def status
 		response.status
 	end
