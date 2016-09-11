@@ -76,7 +76,7 @@ RSpec.describe 'Includes', type: :controller do
 			it 'is invalid if * is in the includes' do
 				get :show, params: { id: @project.id, includes: 'teams,*' }
 				expect(status).to eq(400)
-				expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Project resource for Lecturer user accepts only: lecturer, unit, teams, students. Received: teams,*.")
+				expect(body['errors']['base'][0]).to include("Invalid 'includes' parameter")
 			end
 
 			it 'works for index' do
@@ -98,6 +98,15 @@ RSpec.describe 'Includes', type: :controller do
 				get :show, params: { id: @project.id, includes: "" }
 				expect(body['project']['unit']).to be_falsy
 				expect(body['project']['teams']).to be_falsy
+			end
+
+			it 'includes iterations' do
+				3.times { FactoryGirl.create(:iteration, project_id: @project.id) }
+				get :show, params: { id: @project.id, includes: 'iterations,students' }
+				expect(status).to eq(200)
+				expect(body['project']['iterations'].length).to eq(@project.iterations.length)
+				expect(body['project']['iterations'][0]['name']).to eq(Iteration.find(body['project']['iterations'][0]['id']).name)
+				expect(body['project']['students'].length).to eq(@project.students.length)
 			end
 		end
 

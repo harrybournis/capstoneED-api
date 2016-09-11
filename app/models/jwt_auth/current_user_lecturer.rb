@@ -25,7 +25,7 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 	#
 	# ##
 	def project_associations
-   	['lecturer', 'unit', 'teams', 'students']
+   	['lecturer', 'unit', 'teams', 'students', 'iterations']
 	end
 
 	def unit_associations
