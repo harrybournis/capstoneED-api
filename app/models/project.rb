@@ -6,6 +6,7 @@ class Project < ApplicationRecord
   has_many 		:teams, dependent: :destroy
   has_many    :students_teams, through: :teams
   has_many		:students, through: :students_teams
+  has_many    :iterations
 
   # Validations
   validates_presence_of :start_date, :end_date, :description, :unit_id, :lecturer_id

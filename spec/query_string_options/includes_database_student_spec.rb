@@ -137,7 +137,7 @@ RSpec.describe 'Includes', type: :controller do
 				end
 
 				it 'show makes one query for project and students (+1 for only_if lecturer)' do
-					team = @lecturer.teams[0]
+					team = @student.teams[0]
 					expect {
 						get :show, params: { id: team.id, includes: 'project,students' }
 					}.to make_database_queries(count: 1)

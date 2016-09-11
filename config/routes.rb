@@ -41,6 +41,10 @@ Rails.application.routes.draw do
 
 			# Predefined Questions
 			resources :predefined_questions, only: [:index, :show]
+
+			# Iterations
+			get 'iterations', 			to: 'iterations#index', constraints: -> (request) { request.params[:project_id] }
+			resource :iterations, 					 only: [:index, :show, :create, :update, :destroy]
 		end
 	end
 
