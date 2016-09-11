@@ -72,19 +72,19 @@ RSpec.describe 'Includes', type: :controller do
 						get :show, params: { id: @project.id, includes: 'teams,unit,lecturer,banana' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400) #1
-					expect(body['errors']['base'].first).to eq("Invalid 'includes' parameter. Project resource for Student user accepts only: lecturer, unit, teams, students. Received: teams,unit,lecturer,banana.")
+					expect(body['errors']['base'].first).to include("Invalid 'includes' parameter")
 
 					expect {
 						get :show, params: { id: @project.id, includes: 'teams,unit,lecturer,banana,manyother,wrong_params,$@^&withsymbols,*,**' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400) #1
-					expect(body['errors']['base'].first).to eq("Invalid 'includes' parameter. Project resource for Student user accepts only: lecturer, unit, teams, students. Received: teams,unit,lecturer,banana,manyother,wrong_params,$@^&withsymbols,*,**.")
+					expect(body['errors']['base'].first).to include("Invalid 'includes' parameter")
 
 					expect {
 						get :show, params: { id: @project.id, includes: '*,**' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400) #1
-					expect(body['errors']['base'].first).to eq("Invalid 'includes' parameter. Project resource for Student user accepts only: lecturer, unit, teams, students. Received: *,**.")
+					expect(body['errors']['base'].first).to include("Invalid 'includes' parameter")
 				end
 			end
 		end

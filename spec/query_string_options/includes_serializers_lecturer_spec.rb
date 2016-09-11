@@ -102,7 +102,9 @@ RSpec.describe 'Includes', type: :controller do
 
 			it 'includes iterations' do
 				3.times { FactoryGirl.create(:iteration, project_id: @project.id) }
-				get :show, params: { id: @project.id, includes: 'iterations,students' }
+				expect {
+					get :show, params: { id: @project.id, includes: 'iterations,students' }
+				}.to make_database_queries(count: 1)
 				expect(status).to eq(200)
 				expect(body['project']['iterations'].length).to eq(@project.iterations.length)
 				expect(body['project']['iterations'][0]['name']).to eq(Iteration.find(body['project']['iterations'][0]['id']).name)
