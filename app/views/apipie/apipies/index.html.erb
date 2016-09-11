@@ -29,7 +29,7 @@
               <% if !method[:show] %>
                 <% next %>
               <% end %>
-              <li><a href='#<%= key %>-<%= method[:name] %>'><%= method[:name] %></a></li>
+              <li><a href='#<%= key %>-<%= method[:name] %>'><%= method[:name].titleize %></a></li>
             <% end %>
           </ul><!--end of sub navigation-->
         </li> <!--End Resource-->
@@ -102,7 +102,7 @@
               <a href='#<%= key %>'><%= resource[:name] %></a>
               <span class='divider'>/</span>
             </li>
-            <li class='active'><%= method[:name] %></li>
+            <li class='active'><%= method[:name].titleize %></li>
           </ul>
 
           <div>

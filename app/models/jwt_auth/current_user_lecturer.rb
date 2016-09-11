@@ -12,6 +12,10 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 		Team.joins(:project).eager_load(options[:includes]).where(['projects.lecturer_id = ?', @id])
 	end
 
+	def custom_questions(options={})
+		CustomQuestion.eager_load(options[:includes]).where(lecturer_id: @id)
+	end
+
 
 	# The associations that the current_user can include in the query
 	#

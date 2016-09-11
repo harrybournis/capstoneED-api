@@ -4,6 +4,7 @@ class Lecturer < User
 	has_many :units
 	has_many :projects
 	has_many :teams, through: :projects
+	has_many :custom_questions, dependent: :destroy
 
 	# Validations
 	validates_presence_of :position
