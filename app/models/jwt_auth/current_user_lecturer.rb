@@ -16,12 +16,16 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 		CustomQuestion.eager_load(options[:includes]).where(lecturer_id: @id)
 	end
 
+	def iterations(options={})
+		Iteration.joins(:project).eager_load(options[:includes]).where(['projects.lecturer_id = ?', @id])
+	end
+
 
 	# The associations that the current_user can include in the query
 	#
 	# ##
 	def project_associations
-   	['lecturer', 'unit', 'teams', 'students']
+   	['lecturer', 'unit', 'teams', 'students', 'iterations']
 	end
 
 	def unit_associations
@@ -30,5 +34,9 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 
 	def team_associations
 		['project', 'students']
+	end
+
+	def iteration_associations
+		[]
 	end
 end

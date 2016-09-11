@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160910213805) do
+ActiveRecord::Schema.define(version: 20160911142241) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,16 @@ ActiveRecord::Schema.define(version: 20160910213805) do
     t.string   "university"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "iterations", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "start_date"
+    t.datetime "deadline"
+    t.integer  "project_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_iterations_on_project_id", using: :btree
   end
 
   create_table "projects", force: :cascade do |t|
@@ -50,6 +60,7 @@ ActiveRecord::Schema.define(version: 20160910213805) do
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
     t.string   "category"
+    t.index ["lecturer_id"], name: "index_questions_on_lecturer_id", using: :btree
   end
 
   create_table "students_teams", id: false, force: :cascade do |t|

@@ -1,7 +1,7 @@
 <div id="top-of-website"></div>
 
 <div class="row" >
-  <span id="capstoned-title">CapstoneEDDOCS</span>
+  <span id="capstoned-title" class="jelly">CapstoneEDDOCS</span>
 </div>
 
 <div class="row">
@@ -121,7 +121,7 @@
             <!-- Authentication Metadata-->
             <% if method.dig(:metadata, :authentication?) %>
               <div class="alert alert-warning" role="warning">
-                <img src='/docs_assets/locked-padlock.svg' style="width: 23px; height: 23px; padding-bottom: 2px">
+                <img src='/docs_assets/locked-padlock.svg' style="width: 23px; height: 23px; padding-bottom: 2px; vertical-align: bottom;">
                 <span class="sr-only"></span>
                 Authentication Needed
               </div>
@@ -130,6 +130,7 @@
             <!-- Lecturers Only Metadata-->
             <% if method.dig(:metadata, :lecturers_only) %>
               <div class="alert alert-success" role="warning">
+                <span class="glyphicon glyphicon-education" aria-hidden="true"></span>
                 <b> Lecturers Only </b> The Current User must be a Lecturer to access this endopoint
               </div>
             <% end %>

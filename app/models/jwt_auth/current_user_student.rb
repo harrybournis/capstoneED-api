@@ -1,15 +1,19 @@
 class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 
 	def projects(options={})
-		Project.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes])
+		Project.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
 	end
 
 	def units(options={})
-		Unit.joins(:projects, :teams, :students_teams).eager_load(options[:includes]).where(['students_teams.student_id = ?', @id])
+		Unit.joins(:projects, :teams, :students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
 	end
 
 	def teams(options={})
 		Team.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes])
+	end
+
+	def iterations(options={})
+		Iteration.joins(:project, :teams, :students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
 	end
 
 
@@ -17,7 +21,7 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 	#
 	# ##
 	def project_associations
-   	['lecturer', 'unit', 'teams', 'students'] ### CAN THE STUDENT GET THE OTHER STUDENTS OF OTHER TEAMS??
+   	['lecturer', 'unit', 'teams', 'iterations','students'] ### CAN THE STUDENT GET THE OTHER STUDENTS OF OTHER TEAMS??
 	end
 
 	def unit_associations
@@ -26,5 +30,9 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 
 	def team_associations
 		['project', 'students', 'lecturer']
+	end
+
+	def iteration_associations
+		[]
 	end
 end
