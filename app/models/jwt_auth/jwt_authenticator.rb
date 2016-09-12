@@ -125,11 +125,11 @@ module JWTAuth::JWTAuthenticator
 		else
 
 			######   FOR DEVELOPMENT    #####
-			cookies['access-token'] = { value: access_token, domain: "", expires: exp_time, httponly: true, same_site: true }
+			cookies['access-token'] = { value: access_token, expires: exp_time, httponly: true, same_site: true }
 			if remember_me
-				cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, domain: "", path: '/v1/refresh', httponly: true, same_site: true }
+				cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, path: '/v1/refresh', httponly: true, same_site: true }
 			else
-				cookies['refresh-token'] = { value: refresh_token, domain: "", path: '/v1/refresh', httponly: true, same_site: true }
+				cookies['refresh-token'] = { value: refresh_token, path: '/v1/refresh', httponly: true, same_site: true }
 			end
 			###### <----------------------> #####
 
