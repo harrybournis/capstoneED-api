@@ -113,14 +113,23 @@ module JWTAuth::JWTAuthenticator
 				cookies['refresh-token'] = { value: refresh_token, domain: @@issuer, path: '/v1/refresh', secure: true, httponly: true, same_site: true }
 			end
 
+		elsif Rails.env.test? # removed path from refresh token to work with rspec
+
+			cookies['access-token'] = { value: access_token, domain: "api.example.com", expires: exp_time, httponly: true, same_site: true }
+			if remember_me
+				cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, domain: "api.example.com", httponly: true, same_site: true }
+			else
+				cookies['refresh-token'] = { value: refresh_token, domain: "api.example.com", httponly: true, same_site: true }
+			end
+
 		else
 
 			######   FOR DEVELOPMENT    #####
-			cookies['access-token'] = { value: access_token, expires: exp_time, httponly: true, same_site: true }
+			cookies['access-token'] = { value: access_token, domain: "", expires: exp_time, httponly: true, same_site: true }
 			if remember_me
-				cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, path: '/v1/refresh', httponly: true, same_site: true }
+				cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, domain: "", path: '/v1/refresh', httponly: true, same_site: true }
 			else
-				cookies['refresh-token'] = { value: refresh_token, path: '/v1/refresh', httponly: true, same_site: true }
+				cookies['refresh-token'] = { value: refresh_token, domain: "", path: '/v1/refresh', httponly: true, same_site: true }
 			end
 			###### <----------------------> #####
 

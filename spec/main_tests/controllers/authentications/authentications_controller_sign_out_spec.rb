@@ -36,8 +36,8 @@ RSpec.describe 'V1::AuthenticationsController DELETE /sign_out', type: :controll
 		it 'deletes the access-token and the refresh-token' do
 			delete :sign_out
 			expect(response.status).to eq(204)
-			expect(response.cookies.include?('access-token')).to be_truthy
-			expect(response.cookies.include?('refresh-token')).to be_truthy
+			expect(response.cookies['access-token']).to be_falsy
+			expect(response.cookies['refresh-token']).to be_falsy
 		end
 	end
 
