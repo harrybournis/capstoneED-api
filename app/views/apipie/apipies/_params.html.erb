@@ -5,7 +5,8 @@
     <%= render(:partial => "params", :locals => {:level => level, :params => param[:params]}) unless param[:params].blank? %>
     <% next %>
   <% end %>
-  <tr style='background-color:rgb(<%= "#{col},#{col},#{col}" %>);'>
+  <!--tr style='background-color:rgb(<%= "#{col},#{col},#{col}" %>);'-->
+  <tr>
     <td>
       <strong><%= param[:full_name] %> </strong><br>
       <small>
