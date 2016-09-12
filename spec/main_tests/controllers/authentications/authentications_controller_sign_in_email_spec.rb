@@ -42,6 +42,15 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 			expect(cookies['access-token']).to be_truthy
 			expect(cookies['refresh-token']).to be_truthy
 		end
+
+		it 'refresh token has no expirations date if remember_me is true' do
+			@user.confirm
+			post :sign_in_email, params: { email: @user.email, password: '12345678', remember_me: 1 }
+			expect(cookies['access-token']).to be_truthy
+			expect(cookies['refresh-token']).to be_truthy
+			decoded = JWTAuth::JWTAuthenticator.decode_token(cookies['refresh-token'])
+			expect(decoded.first["remember_me"]).to be_truthy
+		end
 	end
 
 	context 'invalid request' do
@@ -73,6 +82,12 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 			expect(response.status).to eq(401)
 			expect(parse_body['errors']['email'].first).to eq('is unconfirmed')
 			expect(User.find_by_email(@user.email).confirmed_at).to be_falsy
+		end
+
+		it 'remember_me is not 0 or 1' do
+			post :sign_in_email, params: { email: @user.email, password: '12345678', remember_me: 'true' }
+			expect(response.status).to eq(401)
+			expect(parse_body['errors']['base'].first).to eq("remember_me must be either '0' or '1'. Received value: true")
 		end
 
 		it 'response does NOT contain XSRF-TOKEN' do

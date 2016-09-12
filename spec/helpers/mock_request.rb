@@ -4,14 +4,14 @@ class MockRequest
 
 	attr_reader :headers, :cookies, :body
 
-	def initialize(valid, user = nil, device = nil)
-		valid ? valid_request(user, device) : invalid_request_hardcoded
+	def initialize(valid, user = nil, device = nil, remember_me = nil)
+		valid ? valid_request(user, device, remember_me) : invalid_request_hardcoded
 	end
 
 
 private
 
-	def valid_request(set_user = nil, set_device = nil)
+	def valid_request(set_user = nil, set_device = nil, remember_me = true)
 		csrf = "NIBzka/3Plj8yg30+uYnyEBGunKPMhvG8ThF7EJxrBs="
 		time = Time.now
 		if set_user
@@ -27,7 +27,7 @@ private
 		end
 
 		access_token  = JWTAuth::JWTAuthenticator.encode_token(user, time, csrf, device)
-		refresh_token = JWTAuth::JWTAuthenticator.encode_token(user, time, nil, device)
+		refresh_token = JWTAuth::JWTAuthenticator.encode_token(user, time, nil, device, remember_me)
 
 		@headers = { "X-XSRF-TOKEN"  => csrf }
 		@cookies = { "access-token"  => access_token, #"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjMwNDg2MjA1MzYsImp0aSI6Imk3c3FlRVNFREpIVVNCWmQ0SEpONDJvMSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiY3NyZl90b2tlbiI6Ik5JQnprYS8zUGxqOHlnMzArdVlueUVCR3VuS1BNaHZHOFRoRjdFSnhyQnM9In0.HHs3KKfsxkxdcSzeafU1FiXXMfeiomJehdfK9vlKTHQ",

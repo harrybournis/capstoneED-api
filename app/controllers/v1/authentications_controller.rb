@@ -2,8 +2,6 @@ class V1::AuthenticationsController < ApplicationController
 
 	skip_before_action :authenticate_user_jwt, only: [:sign_in_email, :refresh]
 
-	include JWTAuth::JWTAuthenticator
-
 	# GET /me
 	# validates the JWT access-token and returns the current user
 	def me
@@ -23,7 +21,7 @@ class V1::AuthenticationsController < ApplicationController
 		@user = User.validate_for_sign_in(auth_params)
 
 		if @user.errors.empty?
-			if JWTAuth::JWTAuthenticator.sign_in(@user, response, cookies)
+			if JWTAuth::JWTAuthenticator.sign_in(@user, response, cookies, params[:remember_me] == '1')
 				render json: @user, status: :ok
 				return
 			end
@@ -78,7 +76,7 @@ class V1::AuthenticationsController < ApplicationController
 private
 
 	def auth_params
-		params.permit(:email, :password)
+		params.permit(:email, :password, :remember_me)
 	end
 
 end

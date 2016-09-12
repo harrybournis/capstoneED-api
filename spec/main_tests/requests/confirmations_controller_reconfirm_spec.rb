@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Confirmation Controller - Reconfirmation" do
+RSpec.describe "Confirmation Controller - Reconfirmation", type: :request do
 
 	before(:each) { host! 'api.example.com' }
 
