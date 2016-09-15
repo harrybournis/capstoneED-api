@@ -47,7 +47,7 @@ class V1::LecturersController < ApplicationController
 			if current_user.id.to_s == lecturer_params[:id]
 				@lecturer = current_user.load
 			else
-				render json: format_errors({ lecturer: ["Lecturer with id #{lecturer_params[:id]} is not authorized to access this resourse." ]}),
+				render json: format_errors({ user: ["User with id #{lecturer_params[:id]} is not authorized to access this resourse." ]}),
 					status: :forbidden
 			end
 		end

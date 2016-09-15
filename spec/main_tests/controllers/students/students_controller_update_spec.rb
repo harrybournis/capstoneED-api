@@ -35,10 +35,10 @@ RSpec.describe 'V1::StudentsController PUT /update', type: :controller do
 				put :update, params: { id: @student.id, first_name: 'different' }
 				expect(response.status).to eq(200)
 				res_body = JSON.parse(response.body)
-				expect(res_body).to include('student')
-				expect(res_body['student']['id']).to eq(@student.id)
+				expect(res_body).to include('user')
+				expect(res_body['user']['id']).to eq(@student.id)
 				@student.reload
-				expect(res_body['student']['first_name']).to eq('different')
+				expect(res_body['user']['first_name']).to eq('different')
 			end
 
 			it 'requires the old password to update the password' do
@@ -114,7 +114,7 @@ RSpec.describe 'V1::StudentsController PUT /update', type: :controller do
 				different_user.reload
 				expect(different_user.first_name).to_not eq('change_their_name')
 				expect(different_user.first_name).to eq(old_name)
-				expect(JSON.parse(response.body)['errors']['student'].first).to include('not authorized to access this resourse.')
+				expect(JSON.parse(response.body)['errors']['user'].first).to include('not authorized to access this resourse.')
 			end
 
 			it 'returns 422 unprocessable_entity if email format wrong' do

@@ -6,7 +6,7 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 
 	before(:each) do
 		@controller = V1::AuthenticationsController.new
-		@user = FactoryGirl.build(:user_with_password).process_new_record
+		@user = FactoryGirl.build(:lecturer_with_password).process_new_record
 		@user.save
 	end
 
