@@ -10,7 +10,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     origins 'example.com'
 
     resource '*',
-      headers: ['X-XSRF-TOKEN'],
+      headers: '*',
       methods: [:get, :post, :put, :patch, :delete, :options, :head]
   end
 end
