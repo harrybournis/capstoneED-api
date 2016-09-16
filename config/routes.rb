@@ -9,18 +9,12 @@ Rails.application.routes.draw do
 			delete	'sign_out',	to: 'authentications#sign_out'
 			post		'refresh', 	to: 'authentications#refresh'
 
-			# User
+			# Users
 			devise_for :users, skip: [:sessions], skip_helpers: true, controllers: {
 				confirmations: 'v1/confirmations',
 				passwords: 		 'v1/passwords'
 			}
-			resources :users,				only: [:create, :destroy, :update]
-
-			# Students
-			#resources :students, 		only:	[:update]
-
-			# Lecturers
-			#resources :lecturers, 	only:	[:update]
+			resources :users,				only: [:create, :update]
 
 			# Units
 			resources :units, 			only: [:index, :show, :create, :update, :destroy, :options]

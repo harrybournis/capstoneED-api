@@ -105,12 +105,11 @@ module JWTAuth::JWTAuthenticator
 		response.headers['XSRF-TOKEN'] = csrf_token
 
 		# SET XSRF-TOKEN AS COOKIE
-		cookies.delete('XSRF-TOKEN')
-		if Rails.env.production?
-			cookies['XSRF-TOKEN'] = { value: csrf_token, expires: exp_time, secure: true }
-		else
-			cookies['XSRF-TOKEN'] = { value: csrf_token, expires: exp_time, domain: 'localhost:8080'}
-		end
+		# if Rails.env.production?
+		# 	cookies['XSRF-TOKEN'] = { value: csrf_token, expires: exp_time }
+		# else
+		# 	cookies['XSRF-TOKEN'] = { value: csrf_token, expires: exp_time }
+		# end
 
 		if Rails.env.production?
 
@@ -133,11 +132,11 @@ module JWTAuth::JWTAuthenticator
 		else
 
 			######   FOR DEVELOPMENT    #####
-			cookies['access-token'] = { value: access_token, domain: 'localhost:8080', expires: exp_time, httponly: true }
+			cookies['access-token'] = { value: access_token, expires: exp_time }
 			if remember_me
-				cookies['refresh-token'] = { value: refresh_token, domain: 'localhost:8080', expires: refresh_exp_time, path: '/v1/refresh', httponly: true }
+				cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, path: '/v1/refresh' }
 			else
-				cookies['refresh-token'] = { value: refresh_token, domain: 'localhost:8080', path: '/v1/refresh', httponly: true }
+				cookies['refresh-token'] = { value: refresh_token, path: '/v1/refresh' }
 			end
 			###### <----------------------> #####
 

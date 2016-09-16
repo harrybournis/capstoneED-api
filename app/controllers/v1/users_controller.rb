@@ -12,6 +12,7 @@ class V1::UsersController < ApplicationController
 			render json: format_errors({ type: ["must be either Student or Lecturer. Received: #{params[:type]}"] }), status: :unprocessable_entity
 			return
 		end
+
 		@user = User.new(user_params).process_new_record
 
 		if @user.save
@@ -37,13 +38,13 @@ class V1::UsersController < ApplicationController
 
 	# DELETE destroy
 	# Requires current_password
-	def destroy
-		if @user.destroy_with_password(user_params[:current_password])
-			render json: '', status: :no_content
-		else
-			render json: format_errors(@user.errors), status: :unprocessable_entity
-		end
-	end
+	# def destroy
+	# 	if @user.destroy_with_password(user_params[:current_password])
+	# 		render json: '', status: :no_content
+	# 	else
+	# 		render json: format_errors(@user.errors), status: :unprocessable_entity
+	# 	end
+	# end
 
 
 private

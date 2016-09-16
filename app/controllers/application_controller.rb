@@ -18,7 +18,7 @@ class ApplicationController < ActionController::API
 			if Rails.env.development?
 				p 'no access-token' if request.cookies['access-token'].nil?
 				p 'no X-XSRF-TOKEN' if request.headers['X-XSRF-TOKEN'].nil?
-				p 'different csrf'  if request.headers['X-XSRF-TOKEN'].present? && request.headers['X-XSRF-TOKEN'] != JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token']).first['csrf_token']
+				p 'different csrf'  if request.headers['X-XSRF-TOKEN'].present? && request.cookies['access-token'].present? && request.headers['X-XSRF-TOKEN'] != JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token']).first['csrf_token']
 			end
 			unless @current = JWTAuth::JWTAuthenticator.authenticate(request)
 				render json: format_errors({ base: 'Authentication Failed' }), status: :unauthorized
