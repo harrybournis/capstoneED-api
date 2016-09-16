@@ -149,10 +149,12 @@ RSpec.describe 'Includes', type: :controller do
 			it 'GET index contains students and project compact' do
 				get :index_with_project, params: { project_id: @project.id, includes: 'students,project', compact: true }
 				expect(status).to eq(200)
-				expect(body['teams'].first['students'].first).to_not include('email', 'provider')
-				expect(body['teams'].first['project']).to_not include('description')
-				expect(body['teams'].first['project']['id']).to eq(@project.id)
-				expect(body['teams'].first['lecturer']).to be_falsy
+				team = body['teams'].second
+				expect(team['students'].first['email']).to be_falsy
+				expect(team['students'].first['provider']).to be_falsy
+				expect(team['project']).to_not include('description')
+				expect(team['project']['id']).to eq(@project.id)
+				expect(team['lecturer']).to be_falsy
 			end
 		end
 	end

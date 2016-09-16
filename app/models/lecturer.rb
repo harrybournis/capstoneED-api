@@ -9,4 +9,5 @@ class Lecturer < User
 	# Validations
 	validates_presence_of :position
 	validates_presence_of :university
+	validates_inclusion_of :type, in: ['Lecturer']
 end

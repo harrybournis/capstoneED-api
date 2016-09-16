@@ -20,7 +20,7 @@ RSpec.describe "Confirmation Controller - Reconfirmation", type: :request do
 
 			get '/v1/me', params: nil, headers: { 'X-XSRF-TOKEN' => csrf }, as: :json
 			expect(status).to eq(200) #me
-			expect(body['lecturer']['first_name']).to eq(@lecturer.first_name)
+			expect(body['user']['first_name']).to eq(@lecturer.first_name)
 		end
 
 		it 'allows the user to refresh and get /me succuessfully' do
@@ -43,7 +43,7 @@ RSpec.describe "Confirmation Controller - Reconfirmation", type: :request do
 
 			get '/v1/me', params: nil, headers: { 'X-XSRF-TOKEN' => csrf }, as: :json
 			expect(status).to eq(200) #me3
-			expect(body['lecturer']['first_name']).to eq(@lecturer.first_name)
+			expect(body['user']['first_name']).to eq(@lecturer.first_name)
 		end
 	end
 

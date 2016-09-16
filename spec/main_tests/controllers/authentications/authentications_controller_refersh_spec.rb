@@ -8,7 +8,7 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 
 		before(:each) do
 			@controller = V1::AuthenticationsController.new
-			@user = FactoryGirl.build(:user_with_password).process_new_record
+			@user = FactoryGirl.build(:lecturer_with_password).process_new_record
 			@user.save
 			@mock_request = MockRequest.new(valid = true, @user, remember_me = true)
 			request.cookies['access-token'] = @mock_request.cookies['access-token']

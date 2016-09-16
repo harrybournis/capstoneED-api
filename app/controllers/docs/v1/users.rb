@@ -4,11 +4,59 @@ class Docs::V1::Users < ApplicationController
 	DocHelper = Docs::Helpers::DocHelper
 
 	resource_description do
-	  short 'Superclass of Student and Lecturer'
+	  short 'Students and Lecturers'
 	  name 'User'
-	  api_base_url '/v1/users'
+	  api_base_url '/v1'
 	  api_version 'v1'
-	  description 'The User model handles authentication.'
+	  description <<-EOS
+	  	A User can be either a Student or a Lecturer. The /users endpoint is used to handle account creation,
+	  	and account updates. It also contais the functionality of reseting one's password, and confirming the
+	  	account.
+	  EOS
+	end
+
+
+	api :POST, '/users', 'Register a new Lecturer or Student using email and password as authentication'
+	param :email, String,									'A unique email', 								required: true
+	param :password, String,							'Minimum 8 characters', 					required: true
+	param :password_confirmation, String, 'Must equal the password param', 	required: true
+	param :first_name, String,						"User's first name", 							required: true
+	param :last_name, String,							"User's last name", 							required: true
+	param :type, String, 									"Student or Lecturer",						required: true
+	param :university, String,						"Lecturer's University. Required ONLY if User is a Lecturer. MUST be absent if User is a Student."
+	param :position, String, 							"Lecturer's Academic Position. Required ONLY if User is a Lecturer. MUST be absent if User is a Lecturer."
+	error code: 422, desc: "Failed to save User. Params are invalid. See errors in response body."
+	example DocHelper.format_example(status = 200)
+	example DocHelper.format_example(status = 422, nil, body = "{\n  \"errors\": {\n    \"email\": [\n      \"is invalid\"\n    ],\n    \"password\": [\n      \"is too short (minimum is 8 characters)\"\n    ],\n    \"first_name\": [\n      \"can't be blank\"\n    ]\n  }\n}")
+	description <<-EOS
+		Register a new User resource, of type Student or Lecturer, that is authenticatable with email and
+		password. For registering a user with OAuth please refer to <link>.
+	EOS
+	def register_new_user
+	end
+
+	api :PATCH, '/users/:id', 'Update User resource'
+	meta :authentication? => true
+	param :id, String,	'The users ID in the database. Used to find the user.', required: true
+	param :email, String,	'A unique email'
+	param :current_password, String, "Only required if password and password_confirmation are sent in the params"
+	param :password, String, 'Minimum 8 characters. Requires current_password to be present in the params'
+	param :password_confirmation, String, 'Must equal the password param. Requires current_password to be present in the params'
+	param :first_name, String, "User's first name"
+	param :last_name, String, "User's last name"
+	param :university, String,						"Lecturer's University. ONLY for Lecturers."
+	param :position, String, 							"Lecturer's Academic Position. ONLY for Lecturers."
+	error code: 401, desc: 'User Authentication failed'
+	error code: 403, desc: 'The User to be updated is not the authenticated user. One can only update themselves.'
+	error code: 422, desc: "Failed to save User. Params are invalid. See errors in response body."
+	example DocHelper.format_example(status = 200, nil, body = "{\n  \"user\": {\n    \"id\": 30876,\n    \"first_name\": \"different\",\n    \"last_name\": \"Metz\",\n    \"email\": \"quentin.senger@gmail.com\"\n  }\n}")
+	example DocHelper.format_example(status = 422, nil, body = "{\n  \"errors\": {\n    \"password_confirmation\": [\n      \"doesn't match Password\"\n    ]\n  }\n}")
+	description <<-EOS
+		Update an existing User. If the request aims to update the User's password,
+		along with `password` and `password_confirmation`, the user's current password must
+		be provided as `current_password` in the params. A User can only update themselves.
+	EOS
+	def update_user
 	end
 
 
@@ -23,7 +71,7 @@ class Docs::V1::Users < ApplicationController
 		If this fails, assure that the link sent to the user contains the confirmation token in the url,
 		and offer the user the option to resend the confirmation email through the POST /confirmation endpoint.
 	EOS
-	def confirm
+	def confirm_account
 	end
 
 	api :POST, '/confirmation', 'Resend confirmation email'
@@ -36,7 +84,7 @@ class Docs::V1::Users < ApplicationController
 		Resends a confirmation email to the email provided in the params. The email must be a valid email
 		in the system.
 	EOS
-	def resend
+	def resend_confirmation_email
 	end
 
 	api :PATCH, '/password', "Reset user's password"

@@ -48,7 +48,7 @@ class Docs::V1::Authentication < ApplicationController
 
 		The remember_me param should be either '0' for false, or '1' for true.
 	EOS
-	def sign_in_email
+	def sign_in_with_email
 	end
 
 	api :DELETE, '/sign_out', 'Sign Out'

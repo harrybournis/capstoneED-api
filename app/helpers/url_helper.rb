@@ -3,7 +3,7 @@ module UrlHelper
 	# Used @ views/devise/mailer/reset_password_instructions.html.erb
 	# Should be the url of the client application that allows the user to reset their password
 	def client_reset_password_url(token)
-		"https://capstoned.com?reset_password_token=#{token}"
+		"https://localhost:3000?reset_password_token=#{token}"
 	end
 
 	# Used @ models/jwt_auth/jwt_authenticator.rb

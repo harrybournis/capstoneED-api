@@ -5,7 +5,7 @@ include JWTAuth::JWTAuthenticator
 RSpec.describe 'V1::StudentsController PUT /update', type: :controller do
 
 	before(:each) do
-		@controller = V1::StudentsController.new
+		@controller = V1::UsersController.new
 		@student = FactoryGirl.build(:student_with_password).process_new_record
 		@student.save
 		mock_request = MockRequest.new(valid = true, @student)
@@ -35,10 +35,10 @@ RSpec.describe 'V1::StudentsController PUT /update', type: :controller do
 				put :update, params: { id: @student.id, first_name: 'different' }
 				expect(response.status).to eq(200)
 				res_body = JSON.parse(response.body)
-				expect(res_body).to include('student')
-				expect(res_body['student']['id']).to eq(@student.id)
+				expect(res_body).to include('user')
+				expect(res_body['user']['id']).to eq(@student.id)
 				@student.reload
-				expect(res_body['student']['first_name']).to eq('different')
+				expect(res_body['user']['first_name']).to eq('different')
 			end
 
 			it 'requires the old password to update the password' do
@@ -69,20 +69,6 @@ RSpec.describe 'V1::StudentsController PUT /update', type: :controller do
 
 		describe 'PUT update' do
 
-			it 'is returns 403 forbidden if user is not a student' do
-				lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
-				lecturer.save
-				mock_request = MockRequest.new(valid = true, lecturer)
-				request.cookies['access-token'] = mock_request.cookies['access-token']
-				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-
-				put :update, params: { id: lecturer.id, first_name: 'different' }
-				expect(response.status).to eq(403)
-				expect(JSON.parse(response.body)['errors']['base'].first).to include('You must be Student to access this resource')
-			end
-
 			it 'ignores updates to the provider field' do
 				put :update, params: { id: @student.id, provider: 'facebook', last_name: 'new_last_name' }
 				expect(response.status).to eq(200)
@@ -92,7 +78,7 @@ RSpec.describe 'V1::StudentsController PUT /update', type: :controller do
 			end
 
 			it 'returns 401 if authentication problem' do
-				@controller = V1::StudentsController.new
+				@controller = V1::UsersController.new
 				@student = FactoryGirl.build(:student_with_password).process_new_record
 				@student.save
 				mock_request = MockRequest.new(valid = false, @student)
@@ -114,7 +100,7 @@ RSpec.describe 'V1::StudentsController PUT /update', type: :controller do
 				different_user.reload
 				expect(different_user.first_name).to_not eq('change_their_name')
 				expect(different_user.first_name).to eq(old_name)
-				expect(JSON.parse(response.body)['errors']['student'].first).to include('not authorized to access this resourse.')
+				expect(JSON.parse(response.body)['errors']['user'].first).to include('not authorized to access this resourse.')
 			end
 
 			it 'returns 422 unprocessable_entity if email format wrong' do

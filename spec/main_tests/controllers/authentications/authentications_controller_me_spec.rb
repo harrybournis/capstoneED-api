@@ -44,7 +44,7 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
 
 				get :me
 				expect(response.status).to eq(200)
-				expect(JSON.parse(response.body)['student']['type']).to eq('Student')
+				expect(JSON.parse(response.body)['user']['type']).to eq('Student')
 			end
 
 		end

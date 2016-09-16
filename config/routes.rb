@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-	constraints subdomain: "api" do
+	#constraints subdomain: "api" do
 		namespace :v1, constraints: { format: 'json' } do
 
 			# Authentication Routes
@@ -9,17 +9,12 @@ Rails.application.routes.draw do
 			delete	'sign_out',	to: 'authentications#sign_out'
 			post		'refresh', 	to: 'authentications#refresh'
 
-			# User
+			# Users
 			devise_for :users, skip: [:sessions], skip_helpers: true, controllers: {
 				confirmations: 'v1/confirmations',
 				passwords: 		 'v1/passwords'
 			}
-
-			# Students
-			resources :students, 		only:	[:create, :update, :destroy]
-
-			# Lecturers
-			resources :lecturers, 	only:	[:create, :update, :destroy]
+			resources :users,				only: [:create, :update]
 
 			# Units
 			resources :units, 			only: [:index, :show, :create, :update, :destroy, :options]
@@ -46,7 +41,7 @@ Rails.application.routes.draw do
 			get 'iterations', 			to: 'iterations#index', constraints: -> (request) { request.params[:project_id] }
 			resource :iterations, 					 only: [:index, :show, :create, :update, :destroy]
 		end
-	end
+	#end
 
 	## To be removed
 	#post 'auth/facebook', to: 'authentications#facebook'

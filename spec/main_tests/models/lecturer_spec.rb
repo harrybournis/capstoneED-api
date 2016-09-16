@@ -19,6 +19,8 @@ RSpec.describe Lecturer, type: :model do
   	it { should validate_uniqueness_of(:id) }
 		it { should validate_uniqueness_of(:email).case_insensitive }
 
+		it { should validate_inclusion_of(:type).in_array(['Lecturer']) }
+
 		it 'does not allow provider to be updated' do
 			lecturer = FactoryGirl.create(:lecturer)
 			expect(lecturer.update(provider: 'email')).to be_truthy

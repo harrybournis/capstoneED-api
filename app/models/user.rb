@@ -1,19 +1,21 @@
 class User < ApplicationRecord
 
-	# Associations
-	has_many :active_tokens, dependent: :destroy
-
 	# Includes
 	include User::EmailAuthenticatable
 	devise :database_authenticatable, :confirmable, :recoverable,
 	       :trackable, :validatable
 
+	# Associations
+	has_many :active_tokens, dependent: :destroy
+
+	# Class Constants
+	USER_TYPES = %w(Student Lecturer)
+
 	# Validations
 	validates_presence_of :first_name, :last_name
-
+	validates_presence_of :password_confirmation, if: :password_required?
 	validates_uniqueness_of :id
 	validates_uniqueness_of :email, case_sensitive: false
-	validates_presence_of :password_confirmation, if: :password_required?
 	validates_confirmation_of :password
 
 	# Instance Methods
