@@ -5,7 +5,7 @@ include JWTAuth::JWTAuthenticator
 RSpec.describe 'V1::StudentsController DELETE /destroy', type: :controller do
 
 	before(:each) do
-		@controller = V1::StudentsController.new
+		@controller = V1::UsersController.new
 		@student = FactoryGirl.build(:student_with_password).process_new_record
 		@student.save
 		mock_request = MockRequest.new(valid = true, @student)
@@ -59,7 +59,7 @@ RSpec.describe 'V1::StudentsController DELETE /destroy', type: :controller do
 
 		describe 'DELETE destroy' do
 			it 'valid tokens are not deleted' do
-				@controller = V1::StudentsController.new
+				@controller = V1::UsersController.new
 				@student = FactoryGirl.build(:student_with_password).process_new_record
 				@student.save
 				mock_request = MockRequest.new(valid = false, @student)
@@ -73,7 +73,7 @@ RSpec.describe 'V1::StudentsController DELETE /destroy', type: :controller do
 			end
 
 			it 'returns 401 if authentication problem' do
-				@controller = V1::StudentsController.new
+				@controller = V1::UsersController.new
 				@student = FactoryGirl.build(:student_with_password).process_new_record
 				@student.save
 				mock_request = MockRequest.new(valid = false, @student)

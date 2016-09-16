@@ -8,37 +8,37 @@ class V1::LecturersController < ApplicationController
 
 	# POST '/register'
 	# Register a new user using email and password as authentication
-	def create
-		@lecturer = Lecturer.new(lecturer_params).process_new_record
+	# def create
+	# 	@lecturer = Lecturer.new(lecturer_params).process_new_record
 
-		if @lecturer.save
-			render json: @lecturer, status: :created
-		else
-			render json: format_errors(@lecturer.errors), status: :unprocessable_entity
-		end
-	end
+	# 	if @lecturer.save
+	# 		render json: @lecturer, status: :created
+	# 	else
+	# 		render json: format_errors(@lecturer.errors), status: :unprocessable_entity
+	# 	end
+	# end
 
 	# PUT '/users/:id'
 	# Requires current_password if password is to be updated
-	def update
-		update_method = lecturer_params[:current_password] ? 'update_with_password' : 'update_without_password'
+	# def update
+	# 	update_method = lecturer_params[:current_password] ? 'update_with_password' : 'update_without_password'
 
-		if @lecturer.method(update_method).call(lecturer_params)
-			render json: @lecturer, status: :ok
-		else
-			render json: format_errors(@lecturer.errors), status: :unprocessable_entity
-		end
-	end
+	# 	if @lecturer.method(update_method).call(lecturer_params)
+	# 		render json: @lecturer, status: :ok
+	# 	else
+	# 		render json: format_errors(@lecturer.errors), status: :unprocessable_entity
+	# 	end
+	# end
 
 	# DELETE destroy
 	# Requires current_password
-	def destroy
-		if @lecturer.destroy_with_password(lecturer_params[:current_password])
-			render json: '', status: :no_content
-		else
-			render json: format_errors(@lecturer.errors), status: :unprocessable_entity
-		end
-	end
+	# def destroy
+	# 	if @lecturer.destroy_with_password(lecturer_params[:current_password])
+	# 		render json: '', status: :no_content
+	# 	else
+	# 		render json: format_errors(@lecturer.errors), status: :unprocessable_entity
+	# 	end
+	# end
 
 
 	private

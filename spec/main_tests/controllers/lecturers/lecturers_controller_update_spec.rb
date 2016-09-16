@@ -5,7 +5,7 @@ include JWTAuth::JWTAuthenticator
 RSpec.describe 'V1::LecturersController PUT /update', type: :controller do
 
 	before(:each) do
-		@controller = V1::LecturersController.new
+		@controller = V1::UsersController.new
 		@lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
 		@lecturer.save
 		mock_request = MockRequest.new(valid = true, @lecturer)
@@ -71,20 +71,6 @@ RSpec.describe 'V1::LecturersController PUT /update', type: :controller do
 
 		describe 'PUT update' do
 
-			it 'is returns 403 forbidden if user is not a lecturer' do
-				student = FactoryGirl.build(:student_with_password).process_new_record
-				student.save
-				mock_request = MockRequest.new(valid = true, student)
-				request.cookies['access-token'] = mock_request.cookies['access-token']
-				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-
-				put :update, params: { id: student.id, first_name: 'different' }
-				expect(response.status).to eq(403)
-				expect(JSON.parse(response.body)['errors']['base'].first).to include('You must be Lecturer to access this resource')
-			end
-
 			it 'ignores updates to the provider field' do
 				put :update, params: { id: @lecturer.id, provider: 'facebook', last_name: 'new_last_name' }
 				expect(response.status).to eq(200)
@@ -94,7 +80,7 @@ RSpec.describe 'V1::LecturersController PUT /update', type: :controller do
 			end
 
 			it 'returns 401 if authentication problem' do
-				@controller = V1::LecturersController.new
+				@controller = V1::UsersController.new
 				@lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
 				@lecturer.save
 				mock_request = MockRequest.new(valid = false, @lecturer)

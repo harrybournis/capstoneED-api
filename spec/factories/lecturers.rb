@@ -6,6 +6,7 @@ FactoryGirl.define do
     provider 		    { 'test' }
     university 	    { "University of Important Potato" }
     position	      { "Master of Parking" }
+    type            { 'Lecturer' }
 
     factory :lecturer_with_password do
       provider 'email'

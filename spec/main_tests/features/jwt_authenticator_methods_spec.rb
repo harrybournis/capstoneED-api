@@ -104,7 +104,7 @@ RSpec.describe "JWTAuth::JWTAuthenticator method" do
 					old_access_token = @request.cookies['access-token'] if @request.cookies['access-token']
 					old_refresh_token = @request.cookies['refresh-token']
 					expect(JWTAuth::JWTAuthenticator.refresh(@request, @response, @cookies)).to be_truthy
-					expect(@cookies.size).to eq(2)
+					expect(@cookies.size).to eq(3)
 					expect(@cookies['access-token']).to be_truthy
 					expect(@cookies['access-token']).to_not eq(old_access_token)
 					expect(@cookies['refresh-token']).to be_truthy

@@ -8,15 +8,14 @@ class V1::UsersController < ApplicationController
 	# POST '/register'
 	# Register a new user using email and password as authentication
 	def create
-		if !user_params['email'] || !user_params['password'] || !user_params['password_confirmation']
-			render json: '', status: :bad_request
+		unless User::USER_TYPES.include? params[:type]
+			render json: format_errors({ type: ["must be either Student or Lecturer. Received: #{params[:type]}"] }), status: :unprocessable_entity
 			return
 		end
-
 		@user = User.new(user_params).process_new_record
 
 		if @user.save
-			render json: '', status: :created
+			render json: @user, status: :created
 		else
 			render json: format_errors(@user.errors), status: :unprocessable_entity
 		end
@@ -60,7 +59,7 @@ private
 
 	def user_params
 		params.permit(:id, :first_name, :last_name, :email, :password, :password_confirmation,
-			:current_password)
+			:current_password, :university, :position, :type)
 	end
 
 end

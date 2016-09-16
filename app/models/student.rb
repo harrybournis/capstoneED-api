@@ -7,4 +7,5 @@ class Student < User
 
 	# Validations
 	validates_absence_of :position, :university
+	validates_inclusion_of :type, in: ['Student']
 end
