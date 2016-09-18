@@ -59,7 +59,7 @@ class Docs::V1::Units < ApplicationController
 	error code: 403, desc: 'Current User is not a lecturer'
 	error code: 403, desc: 'This User is not the owner of this resource'
 	error code: 422, desc: 'Invalid Params'
-	example DocHelper.format_example(status = 200, headers = "{\n  \"unit\": {\n    \"id\": 1074,\n    \"name\": \"Triple-buffered mission-critical data-warehouse\",\n    \"code\": \"B000F8MENI\",\n    \"semester\": \"Spring\",\n    \"year\": 2016,\n    \"archived_at\": null\n  }\n}")
+	example DocHelper.format_example(status = 200, nil, body = "{\n  \"unit\": {\n    \"id\": 1,\n    \"name\": \"Unit 604\",\n    \"code\": \"737B8\",\n    \"semester\": \"Spring\",\n    \"year\": 2015,\n    \"archived_at\": null,\n    \"department\": {\n      \"id\": 1,\n      \"university\": \"university\",\n      \"name\": \"departmentname\"\n    }\n  }\n}", request = "{\n  \"archived_at\": \"\",\n  \"code\": \"JD938D93\",\n  \"department_attributes\": {\n    \"name\": \"departmentname\",\n    \"university\": \"university\"\n  },\n  \"name\": \"Unit 604\",\n  \"semester\": \"Spring\",\n  \"year\": \"2015\" \n}")
 	example DocHelper.format_example(status = 422, nil, body = "{\n  \"errors\": {\n    \"department.university\": [\n      \"can't be blank\"\n    ]\n  }\n}")
 	description <<-EOS
 		Create a new Unit. A Unit belongs to a Department. If a department_id is supplied in the params,
