@@ -1,6 +1,6 @@
 module Docs::Helpers::DocHelper
 
-	def self.format_example(status, headers = nil, body = nil)
+	def self.format_example(status, headers = nil, body = nil, request = nil)
 		status_hash = {
 			200 => 'Created',
 			204 => 'No Content',
@@ -9,10 +9,15 @@ module Docs::Helpers::DocHelper
 			403 => 'Forbidden',
 			422 => 'Unprocessable Entity'
 		}
+		request_block = if request
+			 								"Request\n" + request + "\n\n\nResponse\n"
+										else
+											""
+										end
 		body ||= "{ \n}"
 		headers ||= "{\n  \"X-Frame-Options\": \"SAMEORIGIN\",\n  \"X-XSS-Protection\": \"1; mode=block\",\n  \"X-Content-Type-Options\": \"nosniff\",\n  \"Content-Type\": \"application/json; charset=utf-8\"\n}"
 
-		"Status: #{status} #{status_hash[status]} \nHeaders: \n#{headers} \nBody: \n#{body}"
+		"#{request_block}Status: #{status} #{status_hash[status]} \nHeaders: \n#{headers} \nBody: \n#{body}"
 	end
 
 	def self.param_includes_text(association)

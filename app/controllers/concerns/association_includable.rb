@@ -77,10 +77,4 @@ module AssociationIncludable
 			render json: resources, each_serializer: "#{resources[0].class.to_s}Serializer".constantize, status: status
 		end
 	end
-
-
-	# Renders error message with :forbidden status code
-	def render_not_associated_with_current_user(resource)
-		render json: format_errors({ base: ["This #{resource} is not associated with the current user"] }), status: :forbidden
-	end
 end

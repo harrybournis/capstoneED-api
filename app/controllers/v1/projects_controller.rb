@@ -33,11 +33,14 @@ class V1::ProjectsController < ApplicationController
   # POST /projects
   # Only Lecturers
   def create
-    @project = Project.new(project_params)
-    @project.lecturer_id = current_user.id
+    @project = Project.new(project_params.merge(lecturer_id: current_user.id))
 
     if @project.save
-      render json: @project, status: :created
+      if params[:teams_attributes]
+        render json: @project, serializer: Includes::ProjectSerializer, include: 'teams', status: :created
+      else
+        render json: @project, status: :created
+      end
     else
       render json: format_errors(@project.errors), status: :unprocessable_entity
     end
@@ -81,6 +84,7 @@ class V1::ProjectsController < ApplicationController
     end
 
     def project_params
-      params.permit(:id, :start_date, :end_date, :description, :unit_id)
+      params.permit(:id, :start_date, :end_date, :description, :unit_id,
+        teams_attributes: [:name, :enrollment_key, :logo])
     end
 end

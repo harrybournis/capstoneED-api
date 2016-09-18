@@ -8,12 +8,16 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 		Unit.where(lecturer_id: @id).eager_load(options[:includes])
 	end
 
+	def departments(options={})
+		Department.joins(:units).where(['units.lecturer_id = ?', @id])
+	end
+
 	def teams(options={})
 		Team.joins(:project).eager_load(options[:includes]).where(['projects.lecturer_id = ?', @id])
 	end
 
-	def custom_questions(options={})
-		CustomQuestion.eager_load(options[:includes]).where(lecturer_id: @id)
+	def questions(options={})
+		Question.eager_load(options[:includes]).where(lecturer_id: @id)
 	end
 
 	def iterations(options={})
@@ -25,15 +29,15 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 	#
 	# ##
 	def project_associations
-   	['lecturer', 'unit', 'teams', 'students', 'iterations']
+   	%w(lecturer unit teams students iterations)
 	end
 
 	def unit_associations
-	  ['lecturer', 'projects', 'department']
+	  %w(lecturer projects department)
 	end
 
 	def team_associations
-		['project', 'students']
+		%w(project students)
 	end
 
 	def iteration_associations

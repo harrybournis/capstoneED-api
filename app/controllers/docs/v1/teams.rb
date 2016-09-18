@@ -69,24 +69,6 @@ class Docs::V1::Teams < ApplicationController
 	def create
 	end
 
-	api :POST, '/teams/enrol', 'Students joins Team with enrolment_key'
-	meta :authentication? => true
-	meta :students_only => true
-	param :enrollment_key, String, 'The enrollment key of the Team.', required: true
-	error code: 401, desc: 'Authentication failed'
-	error code: 403, desc: 'Current User is not a Student'
-	error code: 403, desc: 'Student tried to join same Team twice'
-	error code: 403, desc: 'Student tried to join two Teams in the same Project'
-	error code: 422, desc: 'Wrong enrollment key'
-	example DocHelper.format_example(status = 201, nil, body = "{\n  \"team\": {\n    \"id\": 2,\n    \"name\": \"Team 2\",\n    \"logo\": null,\n    \"enrollment_key\": \"e549c159189fbc1916843ca1becace65\"\n  }\n}")
-	example DocHelper.format_example(status = 403, nil, body = "{\n  \"errors\": {\n    \"base\": [\n      \"Student can not exist in the same Team twice\"\n    ]\n  }\n}")
-	description <<-EOS
-		Add a Student in a Team. Needs the enrollment key of the Team. A Student can not belong to
-		two Teams in the same project.
-	EOS
-	def enrol
-	end
-
 	api :PATCH, '/teams/:id', 'Update a Team resource'
 	meta :authentication? => true
 	param :id, Integer, "The id of the Team", required: true
@@ -118,5 +100,40 @@ class Docs::V1::Teams < ApplicationController
 		Team.
 	EOS
 	def destroy
+	end
+
+	api :POST, '/teams/enrol', 'Students joins Team with enrolment_key'
+	meta :authentication? => true
+	meta :students_only => true
+	param :enrollment_key, String, 'The enrollment key of the Team.', required: true
+	error code: 401, desc: 'Authentication failed'
+	error code: 403, desc: 'Current User is not a Student'
+	error code: 403, desc: 'Student tried to join same Team twice'
+	error code: 403, desc: 'Student tried to join two Teams in the same Project'
+	error code: 422, desc: 'Wrong enrollment key'
+	example DocHelper.format_example(status = 201, nil, body = "{\n  \"team\": {\n    \"id\": 2,\n    \"name\": \"Team 2\",\n    \"logo\": null,\n    \"enrollment_key\": \"e549c159189fbc1916843ca1becace65\"\n  }\n}")
+	example DocHelper.format_example(status = 403, nil, body = "{\n  \"errors\": {\n    \"base\": [\n      \"Student can not exist in the same Team twice\"\n    ]\n  }\n}")
+	description <<-EOS
+		Add a Student in a Team. Needs the enrollment key of the Team. A Student can not belong to
+		two Teams in the same project.
+	EOS
+	def enrol
+	end
+
+	api :DELETE, '/teams/:id/remove_student', 'Lecturer removes a Student from a Team'
+	meta :authentication? => true
+	meta :lecturers_only => true
+	param :id, Integer, 'The id of the Team that the student belongs to', required: true
+	param :student_id, Integer, 'The Id of the Student to be removed from the Team', required: true
+	error code: 401, desc: 'Authentication failed'
+	error code: 403, desc: 'Current User is not a Lecturer'
+	error code: 403, desc: 'The current Lecturer is not associated with this Team.'
+	error code: 422, desc: "The student_id does not belong to any Student of this Team."
+	example DocHelper.format_example(status = 204, nil , body = "{\n}" )
+	example DocHelper.format_example(status = 422, nil, body = "{\n  \"errors\": {\n    \"base\": [\n      \"Can't find Student with id 63 in this Team.\"\n    ]\n  }\n}")
+	description <<-EOS
+		A Lecturer can remove a Student from one of the Teams that belong to one of their Projects.
+	EOS
+	def remove_student_from_team
 	end
 end

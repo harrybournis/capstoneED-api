@@ -51,26 +51,28 @@ class Docs::V1::Projects < ApplicationController
 	def show
 	end
 
-	api :POST, '/units', 'Create a new Unit resource'
+	api :POST, '/projects', 'Create a new Project resource'
 	meta :authentication? => true
 	param :start_date, Date, 'Date the Project Started', required: true
 	param :end_date, Date, 'Date the Project Ended'
 	param :description, String, 'Project description', required: true
 	param :unit_id, Integer,'The Unit that the Project belongs to', required: true
+	param :teams_attributes, Hash, 'Create Teams for this Project. Format: "teams_attributes": [{ "name": "Team Name", "enrollment_key": "Key" }, { "name": "Team Name 2", "enrollment_key": "Key2" }]. See Examples for more information.'
 	error code: 401, desc: 'Authentication failed'
 	error code: 403, desc: 'Current User is not a lecturer'
 	error code: 403, desc: 'Current User is not associated with this resource'
 	error code: 422, desc: 'Invalid Params'
 	example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 1133,\n    \"start_date\": \"2016-08-29\",\n    \"end_date\": \"2016-10-16\",\n    \"description\": \"Excepturi quis non minus dolor qui officia. Aperiam ex dolorum libero atque perferendis molestiae quos. Et est quidem. Veniam deleniti provident sit.\",\n    \"unit\": {\n      \"id\": 2839,\n      \"name\": \"Streamlined object-oriented encoding\",\n      \"code\": \"B000FQ9CTY\",\n      \"semester\": \"Autumn\",\n      \"year\": 2016,\n      \"archived_at\": null\n    }\n  }\n}")
+	example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 10,\n    \"start_date\": \"2016-09-18\",\n    \"end_date\": \"2017-03-22\",\n    \"description\": \"Lorem ipsum dolor sit amet, pri in erant detracto antiopam, duis altera nostrud id eam. Feugait invenire ut vim, novum reprimique reformidans id vis, sit at quis hinc liberavisse. Eam ex sint elaboraret assueverit, sed an equidem reformidans, idque doming ut quo. Ex aperiri labores has, dolorem indoctum hendrerit has cu. At case posidonium pri.\",\n    \"href\": \"/projects/10\",\n    \"teams\": [\n      {\n        \"id\": 2,\n        \"name\": \"New Team2\",\n        \"logo\": null,\n        \"enrollment_key\": \"key2\"\n      },\n      {\n        \"id\": 1,\n        \"name\": \"New Team1\",\n        \"logo\": null,\n        \"enrollment_key\": \"key\"\n      }\n    ]\n  }\n}", request = "{\n  \"description\": \"Lorem ipsum dolor sit amet, pri in erant detracto antiopam, duis altera nostrud id eam. Feugait invenire ut vim, novum reprimique reformidans id vis, sit at quis hinc liberavisse. Eam ex sint elaboraret assueverit, sed an equidem reformidans, idque doming ut quo. Ex aperiri labores has, dolorem indoctum hendrerit has cu. At case posidonium pri.\",\n  \"end_date\": \"2017-03-22\",\n  \"lecturer\": \"18\",\n  \"lecturer_id\": \"18\",\n  \"start_date\": \"2016-09-18\",\n \"unit_id\": \"7\",\n \"teams_attributes\": [\n    {\n      \"enrollment_key\": \"key\",\n      \"name\": \"New Team1\"\n    },\n    {\n      \"enrollment_key\": \"key2\",\n      \"name\": \"New Team2\"\n    }\n  ] \n}")
 	description <<-EOS
 		Create a new Project. Only Lecturers can create a Project, and it will automatically be
 		associated with the current user. Requires a unit_id, which must be a Unit that belongs to the
-		current user.
+		current user. Can also create multiple Teams through the same request. See examples.
 	EOS
 	def create
 	end
 
-	api :PATCH, '/projects/:id', 'Update a Unit resource'
+	api :PATCH, '/projects/:id', 'Update a Project resource'
 	meta :authentication? => true
 	param :id, Integer, "The id of the Unit", required: true
 	param :start_date, Date, 'Date the Project Started'

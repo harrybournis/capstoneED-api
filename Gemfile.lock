@@ -46,7 +46,7 @@ GEM
     addressable (2.4.0)
     apipie-rails (0.3.6)
       json
-    arel (7.1.1)
+    arel (7.1.2)
     awesome_print (1.7.0)
     bcrypt (3.1.11)
     benchmark-ips (2.7.2)
@@ -78,7 +78,7 @@ GEM
     json (1.8.3)
     jsonapi (0.1.1.beta2)
       json (~> 1.8)
-    jwt (1.5.4)
+    jwt (1.5.5)
     launchy (2.4.3)
       addressable (~> 2.3)
     letter_opener (1.4.1)

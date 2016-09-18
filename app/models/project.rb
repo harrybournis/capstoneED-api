@@ -3,10 +3,12 @@ class Project < ApplicationRecord
 	# Associations
   belongs_to 	:lecturer
   belongs_to 	:unit
-  has_many 		:teams, dependent: :destroy
+  has_many 		:teams, inverse_of: :project, dependent: :destroy
   has_many    :students_teams, through: :teams
   has_many		:students, through: :students_teams
   has_many    :iterations
+
+  accepts_nested_attributes_for :teams
 
   # Validations
   validates_presence_of :start_date, :end_date, :description, :unit_id, :lecturer_id
