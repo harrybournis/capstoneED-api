@@ -1,6 +1,6 @@
 class V1::TeamsController < ApplicationController
 
-	before_action :allow_if_lecturer, 		only: [:create, :destroy]
+	before_action :allow_if_lecturer, 		only: [:create, :destroy, :remove_student]
 	before_action :allow_if_student,			only: [:enrol]
 	before_action only: :index_with_project do
 	 allow_if_lecturer(index_with_project_error_message)
@@ -12,8 +12,8 @@ class V1::TeamsController < ApplicationController
 	before_action only: [:index, :index_with_project, :show], if: 'params[:includes]' do
     validate_includes(current_user.team_associations, includes_array, 'Team')
   end
-  before_action :delete_includes_from_params, only: [:update, :destroy]
-  before_action :set_team_if_associated, only: [:show, :update, :destroy]
+  before_action :delete_includes_from_params, only: [:update, :destroy, :remove_student]
+  before_action :set_team_if_associated, only: [:show, :update, :destroy, :remove_student]
 
 
 	# GET /teams
@@ -50,20 +50,6 @@ class V1::TeamsController < ApplicationController
 		end
 	end
 
-	# POST /teams/enrol
-	# Needs enrollemnt_key in params
-	def enrol
-		if @team = Team.find_by(enrollment_key: params[:enrollment_key])
-			if @team.enrol(current_user.load)
-				render json: @team, status: :created
-			else
-				render json: format_errors(@team.errors), status: :forbidden
-			end
-		else
-			render json: format_errors({ enrollment_key: ['is invalid'] })
-		end
-	end
-
 	# PATCH /teams/:id
 	def update
 		params.delete(:enrollment_key) if current_user.load.instance_of? Student
@@ -81,6 +67,37 @@ class V1::TeamsController < ApplicationController
 			render json: '', status: :no_content
 		else
 			render json: format_errors(@team.errors), status: :unprocessable_entity
+		end
+	end
+
+
+	# POST /teams/enrol
+	# Needs enrollemnt_key in params
+	def enrol
+		if @team = Team.find_by(enrollment_key: params[:enrollment_key])
+			if @team.enrol(current_user.load)
+				render json: @team, status: :created
+			else
+				render json: format_errors(@team.errors), status: :forbidden
+			end
+		else
+			render json: format_errors({ enrollment_key: ['is invalid'] })
+		end
+	end
+
+	# DELETE /teams/:id/remove_student
+	# Only for Lecturer
+	def remove_student
+		unless params[:student_id]
+			render json: format_errors({ student_id: ["can't be blank"] }), status: :bad_request
+			return
+		end
+
+		if student = @team.students.find_by(id: params[:student_id])
+			@team.students.delete(student)
+			render json: '', status: 204
+		else
+			render json: format_errors({ base: ["Can't find Student with id #{params[:student_id]} in this Team."] }), status: :unprocessable_entity
 		end
 	end
 
