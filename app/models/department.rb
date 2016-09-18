@@ -2,6 +2,7 @@ class Department < ApplicationRecord
 
 	# Associations
 	has_many :units
+	has_one :lecturer, through: :units
 
 	#Validations
 	validates_presence_of :name, :university

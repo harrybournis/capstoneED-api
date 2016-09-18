@@ -13,7 +13,8 @@ RSpec.describe V1::DepartmentsController, type: :controller do
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				@department = FactoryGirl.create(:department)
+				unit = FactoryGirl.create(:unit, lecturer_id: @user.id)
+				@department = unit.department
 			end
 
 			it 'responds with 200 ok' do

@@ -8,6 +8,10 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 		Unit.where(lecturer_id: @id).eager_load(options[:includes])
 	end
 
+	def departments(options={})
+		Department.joins(:units).where(['units.lecturer_id = ?', @id])
+	end
+
 	def teams(options={})
 		Team.joins(:project).eager_load(options[:includes]).where(['projects.lecturer_id = ?', @id])
 	end

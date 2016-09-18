@@ -125,4 +125,19 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			expect(@questions.length).to eq(5)
 		end
 	end
+
+	describe 'Departments' do
+		it 'returns correct number of departments' do
+			@user = FactoryGirl.create(:lecturer)
+			@request = MockRequest.new(valid = true, @user)
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			@token_id = decoded_token.first['id']
+			@device = decoded_token.first['device']
+			@current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
+
+			2.times { FactoryGirl.create(:unit, lecturer_id: @user.id) }
+
+			expect(@current_user.departments.length).to eq(2)
+		end
+	end
 end
