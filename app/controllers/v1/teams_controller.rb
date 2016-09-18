@@ -96,8 +96,10 @@ class V1::TeamsController < ApplicationController
 		if student = @team.students.find_by(id: params[:student_id])
 			@team.students.delete(student)
 			render json: '', status: 204
+			binding.pry
 		else
 			render json: format_errors({ base: ["Can't find Student with id #{params[:student_id]} in this Team."] }), status: :unprocessable_entity
+			binding.pry
 		end
 	end
 
