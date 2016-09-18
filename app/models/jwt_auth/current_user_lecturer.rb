@@ -25,15 +25,15 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 	#
 	# ##
 	def project_associations
-   	['lecturer', 'unit', 'teams', 'students', 'iterations']
+   	%w(lecturer unit teams students iterations)
 	end
 
 	def unit_associations
-	  ['lecturer', 'projects', 'department']
+	  %w(lecturer projects department)
 	end
 
 	def team_associations
-		['project', 'students']
+		%w(project students)
 	end
 
 	def iteration_associations

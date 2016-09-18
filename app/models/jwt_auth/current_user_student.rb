@@ -21,15 +21,15 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 	#
 	# ##
 	def project_associations
-   	['lecturer', 'unit', 'teams', 'iterations','students'] ### CAN THE STUDENT GET THE OTHER STUDENTS OF OTHER TEAMS??
+		%w(lecturer unit teams iterations students)
 	end
 
 	def unit_associations
-	  ['lecturer', 'department']
+	  %w(lecturer department)
 	end
 
 	def team_associations
-		['project', 'students', 'lecturer']
+		%w(project students lecturer)
 	end
 
 	def iteration_associations
