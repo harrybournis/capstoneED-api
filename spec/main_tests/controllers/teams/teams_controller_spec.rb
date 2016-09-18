@@ -21,8 +21,6 @@ RSpec.describe V1::TeamsController, type: :controller do
 			mock_request = MockRequest.new(valid = true, @student)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 		end
 
 		describe 'GET index' do
