@@ -105,7 +105,7 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 		end
 	end
 
-	describe 'CustomQuestions' do
+	describe 'Questions' do
 		before(:each) do
 			@user = FactoryGirl.create(:lecturer)
 			@request = MockRequest.new(valid = true, @user)
@@ -114,13 +114,13 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			@device = decoded_token.first['device']
 			@current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
 
-			5.times { @user.custom_questions << FactoryGirl.build(:custom_question) }
-			expect(@user.custom_questions.count).to eq(5)
+			5.times { @user.questions << FactoryGirl.build(:question) }
+			expect(@user.questions.count).to eq(5)
 		end
 
 		it 'should make one database query' do
 			expect {
-				(@questions = @current_user.custom_questions).length
+				(@questions = @current_user.questions).length
 			}.to make_database_queries(count: 1)
 			expect(@questions.length).to eq(5)
 		end

@@ -32,10 +32,7 @@ Rails.application.routes.draw do
 			resources :teams
 
 			# Custom Questions
-			resources :custom_questions
-
-			# Predefined Questions
-			resources :predefined_questions, only: [:index, :show]
+			resources :questions
 
 			# Iterations
 			get 'iterations', 			to: 'iterations#index', constraints: -> (request) { request.params[:project_id] }
