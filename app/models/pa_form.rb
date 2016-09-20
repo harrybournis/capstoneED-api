@@ -1,0 +1,2 @@
+class PAForm < ApplicationRecord
+end
