@@ -23,6 +23,7 @@ class PAForm < ApplicationRecord
 		return self
 	end
 
+
 	private
 
 		def format_of_questions
