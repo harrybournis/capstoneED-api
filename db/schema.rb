@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160921085425) do
+ActiveRecord::Schema.define(version: 20160921182213) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,10 +42,10 @@ ActiveRecord::Schema.define(version: 20160921085425) do
   end
 
   create_table "pa_forms", force: :cascade do |t|
-    t.jsonb    "questions",    default: "{}", null: false
+    t.jsonb    "questions",    default: {}, null: false
     t.integer  "iteration_id"
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
     t.index ["iteration_id"], name: "index_pa_forms_on_iteration_id", using: :btree
     t.index ["questions"], name: "index_pa_forms_on_questions", using: :gin
   end
