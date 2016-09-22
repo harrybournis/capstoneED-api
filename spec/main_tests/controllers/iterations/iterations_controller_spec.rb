@@ -77,6 +77,12 @@ RSpec.describe V1::IterationsController, type: :controller do
 			expect(body['iteration']['name']).to eq('name')
 		end
 
+		it 'POST create accepts params for pa_form' do
+			post :create, params: { project_id: @user.projects[0].id, name: 'name', start_date: DateTime.now + 1.week, deadline: DateTime.now + 3.months, pa_form_attributes: { questions: ['Who is it?', 'Human?', 'Hello?', 'Favorite Power Ranger?'] } }
+			expect(status).to eq(201)
+			expect(body['iteration']['pa_form']['questions']).to eq([{"question_id"=>1, "text"=>"Who is it?"}, {"question_id"=>2, "text"=>"Human?"}, {"question_id"=>3, "text"=>"Hello?"}, {"question_id"=>4, "text"=>"Favorite Power Ranger?"}])
+		end
+
 		it 'PATCH update current user must be associated with the project' do
 			patch :update, params: { id: @user.projects[1].iterations[0], name: 'different' }
 			expect(status).to eq(200)

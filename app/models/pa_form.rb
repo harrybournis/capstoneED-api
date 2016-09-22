@@ -2,31 +2,40 @@ class PAForm < ApplicationRecord
 	# Attributes id(Integer), iteration_id(Integer), questions: { question_id => question_text }(hash)
 
 	# Associations
-	belongs_to :iteration
+	belongs_to :iteration, inverse_of: :pa_form
 	has_one :project, through: :iteration
 	has_many :teams, through: :project
 	has_many :students_teams, through: :teams
 
 	# Validations
-	validates_presence_of :iteration_id, :questions
+	validates_presence_of :iteration, :questions
 	validate :format_of_questions
 
 	# Instance Methods
-	def store_questions(questions_param)
-		return self unless questions_param && questions_param.is_a?(Array)
+
+	def questions=(questions_param)
+		unless questions_param && questions_param.is_a?(Array) && questions_param.any?
+			super(nil)
+			return
+		end
 
 		questions_array = questions_param
 		jsonb_array = []
 
 		index = 0
 		while index < questions_array.length
-			jsonb_array << { 'question_id' => index + 1, 'text' => questions_array[index] }
+			elem = questions_array[index]
+
+			unless elem.is_a? String
+				super(nil)
+				return
+			end
+
+			jsonb_array << { 'question_id' => index + 1, 'text' => elem }
 			index += 1
 		end
 
-		self.questions = jsonb_array
-
-		return self
+		super(jsonb_array)
 	end
 
 

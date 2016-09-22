@@ -3,9 +3,11 @@ class Iteration < ApplicationRecord
 
 	# Associations
 	belongs_to :project
-	has_one :pa_form, class_name: PAForm, dependent: :destroy
+	has_one :pa_form, class_name: PAForm, inverse_of: :iteration , dependent: :destroy
 	has_many :teams, through: :project
 	has_many :students_teams, through: :teams
+
+	accepts_nested_attributes_for :pa_form
 
 	# Validations
 	validates_presence_of :name, :start_date, :deadline, :project_id

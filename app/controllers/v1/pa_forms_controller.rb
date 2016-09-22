@@ -26,7 +26,8 @@ class V1::PAFormsController < ApplicationController
 			return
 		end
 
-		@pa_form = PAForm.new(pa_form_wout_questions_params).store_questions(params[:questions])
+		#@pa_form = PAForm.new(pa_form_wout_questions_params).store_questions(params[:questions])
+		@pa_form = PAForm.new(pa_form_params)
 
 		if @pa_form.save
 			render json: @pa_form, status: :created

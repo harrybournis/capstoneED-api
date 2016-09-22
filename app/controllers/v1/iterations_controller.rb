@@ -83,7 +83,7 @@ class V1::IterationsController < ApplicationController
     end
 
     def iteration_params
-    	params.permit(:name, :start_date, :deadline, :project_id)
+    	params.permit(:name, :start_date, :deadline, :project_id, pa_form_attributes: [questions: []])
     end
 
     def iteration_update_params
