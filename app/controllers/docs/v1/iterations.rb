@@ -21,9 +21,10 @@ class Docs::V1::Iterations < ApplicationController
   error code: 400, desc: 'The project_id is missing from the params'
   error code: 401, desc: 'Authentication failed'
   error code: 403, desc: 'The project_id does not belong to a project associated with current_user'
+  example DocHelper.format_example(status = 200, nil, body = "{\n  \"iterations\": [\n    {\n      \"id\": 6,\n      \"name\": \"Implementation\",\n      \"start_date\": \"2016-11-30T12:40:16.580Z\",\n      \"deadline\": \"2017-10-29T01:50:00.220Z\",\n      \"pa_form\": {\n        \"id\": 3,\n        \"iteration_id\": 6,\n        \"questions\": [\n          {\n            \"text\": \"What?\",\n            \"question_id\": 1\n          },\n          {\n            \"text\": \"Who?\",\n            \"question_id\": 2\n          },\n          {\n            \"text\": \"When?\",\n            \"question_id\": 3\n          },\n          {\n            \"text\": \"Where?\",\n            \"question_id\": 4\n          },\n          {\n            \"text\": \"Why?\",\n            \"question_id\": 5\n          }\n        ]\n      }\n    },\n    {\n      \"id\": 7,\n      \"name\": \"Implementation\",\n      \"start_date\": \"2016-12-21T21:16:10.588Z\",\n      \"deadline\": \"2017-12-14T21:27:02.095Z\",\n      \"pa_form\": {\n        \"id\": 4,\n        \"iteration_id\": 7,\n        \"questions\": [\n          {\n            \"text\": \"What?\",\n            \"question_id\": 1\n          },\n          {\n            \"text\": \"Who?\",\n            \"question_id\": 2\n          },\n          {\n            \"text\": \"When?\",\n            \"question_id\": 3\n          },\n          {\n            \"text\": \"Where?\",\n            \"question_id\": 4\n          },\n          {\n            \"text\": \"Why?\",\n            \"question_id\": 5\n          }\n        ]\n      }\n    }\n  ]\n}")
   description <<-EOS
   	Get all predefined questions for a specific project. The current user must be associated
-  	with the project.
+  	with the project. Includes the PAForm by default
   EOS
   def index_for_project_id
   end
@@ -33,8 +34,9 @@ class Docs::V1::Iterations < ApplicationController
   param :id, Integer, 'The id of the Iteration to be returned', required: true
   error code: 401, desc: 'Authentication failed'
 	error code: 403, desc: 'The Iteration is not associated with the current user'
+	example DocHelper.format_example(status = 200, nil, body = "{\n  \"iteration\": {\n    \"id\": 8,\n    \"name\": \"Implementation\",\n    \"start_date\": \"2016-12-16T01:55:27.603Z\",\n    \"deadline\": \"2017-12-26T01:12:50.078Z\",\n    \"pa_form\": {\n      \"id\": 5,\n      \"iteration_id\": 8,\n      \"questions\": [\n        {\n          \"text\": \"What?\",\n          \"question_id\": 1\n        },\n        {\n          \"text\": \"Who?\",\n          \"question_id\": 2\n        },\n        {\n          \"text\": \"When?\",\n          \"question_id\": 3\n        },\n        {\n          \"text\": \"Where?\",\n          \"question_id\": 4\n        },\n        {\n          \"text\": \"Why?\",\n          \"question_id\": 5\n        }\n      ]\n    }\n  }\n}")
 	description <<-EOS
-		Returns an Iteration. Must be associated with the current user.
+		Returns an Iteration. Must be associated with the current user. Includes the PAForm by default.
 	EOS
 	def show_iteration
 	end
