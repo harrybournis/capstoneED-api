@@ -6,7 +6,8 @@ class Project < ApplicationRecord
   has_many 		:teams, inverse_of: :project, dependent: :destroy
   has_many    :students_teams, through: :teams
   has_many		:students, through: :students_teams
-  has_many    :iterations
+  has_many    :iterations, dependent: :destroy
+  has_many    :pa_forms, through: :iterations
 
   accepts_nested_attributes_for :teams
 

@@ -3,6 +3,7 @@ class Iteration < ApplicationRecord
 
 	# Associations
 	belongs_to :project
+	has_one :pa_form, class_name: PAForm, dependent: :destroy
 	has_many :teams, through: :project
 	has_many :students_teams, through: :teams
 

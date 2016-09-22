@@ -9,6 +9,7 @@ RSpec.describe Iteration, type: :model do
 	it { should validate_presence_of(:project_id) }
 
 	it { should belong_to(:project) }
+	it { should have_one(:pa_form).dependent(:destroy) }
 
 	it 'validates that start_date is not in the past' do
 		iteration  = FactoryGirl.build(:iteration, start_date: DateTime.yesterday)

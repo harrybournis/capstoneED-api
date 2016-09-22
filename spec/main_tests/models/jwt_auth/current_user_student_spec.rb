@@ -1,6 +1,6 @@
 require 'rails_helper'
 require 'helpers/mock_request.rb'
-include JWTAuth::JWTAuthenticator
+#include JWTAuth::JWTAuth::JWTAuthenticator
 
 RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 
@@ -9,10 +9,10 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 		before(:each) do
 			@user = FactoryGirl.create(:student)
 			@request = MockRequest.new(valid = true, @user)
-			decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
 			@token_id = decoded_token.first['id']
 			@device = decoded_token.first['device']
-			@current_user = CurrentUserStudent.new(@token_id, 'Student', @device)
+			@current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
 			lecturer = FactoryGirl.create(:lecturer)
 			@unit = FactoryGirl.create(:unit, lecturer: lecturer)
@@ -68,18 +68,18 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 
 	describe 'Units' do
 		before(:all) do
-			@lecturer = FactoryGirl.create(:lecturer)
+			@user = FactoryGirl.create(:lecturer)
 			@other_unit = FactoryGirl.create(:unit)
-			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-			@project = FactoryGirl.create(:project_with_teams, unit: @lecturer.units[0], lecturer: @lecturer)
+			@unit = FactoryGirl.create(:unit, lecturer: @user)
+			@project = FactoryGirl.create(:project_with_teams, unit: @user.units[0], lecturer: @user)
 		end
 		before(:each) do
 			@user = FactoryGirl.create(:student)
 			@request = MockRequest.new(valid = true, @user)
-			decoded_token = JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
 			@token_id = decoded_token.first['id']
 			@device = decoded_token.first['device']
-			@current_user = CurrentUserStudent.new(@token_id, 'Student', @device)
+			@current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
 			@project.teams.first.students << @user
 		end
@@ -108,6 +108,29 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			expect {
 				@units[0].projects[0].start_date
 			}.to_not make_database_queries
+		end
+	end
+
+	describe 'PAForms' do
+		it 'returns correct pa_forms' do
+			@user = FactoryGirl.create(:lecturer)
+			@student = FactoryGirl.create(:student)
+			@request = MockRequest.new(valid = true, @student)
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			@token_id = decoded_token.first['id']
+			@device = decoded_token.first['device']
+			@current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
+
+			@unit = FactoryGirl.create(:unit, lecturer: @user)
+			@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @user)
+			@team = FactoryGirl.create(:team, project_id: @project.id)
+			@team.students << @student
+
+			iteration = FactoryGirl.create(:iteration, project_id: @project.id)
+			iteration2 = FactoryGirl.create(:iteration, project_id: @project.id)
+			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
+			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
+			expect(@current_user.pa_forms.length).to eq(2)
 		end
 	end
 end
