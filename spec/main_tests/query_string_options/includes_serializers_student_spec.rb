@@ -62,5 +62,32 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body['errors']['base'].first).to include("Invalid 'includes' parameter. Unit resource for Student user accepts only: lecturer, department. Received: projects.")
 			end
 		end
+
+		describe 'Iteration' do
+			before(:each) do
+				@controller = V1::IterationsController.new
+			end
+
+			it 'GET index includes pa_form' do
+				iteration = FactoryGirl.create(:iteration, project_id: @project.id)
+				iteration2 = FactoryGirl.create(:iteration, project_id: @project.id)
+				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
+				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
+
+				get :index, params: { project_id: @project.id }
+				expect(status).to eq(200)
+				expect(body['iterations'].length).to eq(2)
+				expect(body['iterations'][1]['pa_form']['questions']).to eq(pa_form2.questions)
+			end
+
+			it 'GET show includes pa_form' do
+				iteration = FactoryGirl.create(:iteration, project_id: @project.id)
+				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
+
+				get :show, params: { id: iteration.id }
+				expect(status).to eq(200)
+				expect(body['iteration']['pa_form']['questions']).to eq(pa_form.questions)
+			end
+		end
 	end
 end

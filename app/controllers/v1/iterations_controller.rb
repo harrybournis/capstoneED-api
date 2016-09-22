@@ -3,22 +3,25 @@ class V1::IterationsController < ApplicationController
 	before_action :validate_project_id_present, 							only: [:index]
 	before_action :validate_project_belongs_to_current_user, 	only: [:index, :create]
 	before_action :allow_if_lecturer, 												only: :create
+	before_action only: [:index, :show], if: 'params[:includes]' do
+    validate_includes(current_user.iteration_associations, includes_array, 'Iteration')
+  end
   before_action :set_iteration_if_associated, 							only: [:show, :update, :destroy]
 
 
 	# GET /iterations?project_id=
 	# Needs project_id in params
 	def index
-		if @iterations = current_user.iterations.where(project_id: params[:project_id])
-			render json: @iterations, status: :ok
-		else
-			render json: 'yo', status: :no_content
-		end
+		if (@iterations = current_user.iterations(includes: params[:includes]).where(project_id: params[:project_id])).empty?
+      render_not_associated_with_current_user('Iteration')
+      return false
+    end
+    serialize_collection @iterations, :ok
 	end
 
 	# GET /iterations/:id
 	def show
-		render json: @iteration, status: :ok
+		serialize_object @iteration, :ok
 	end
 
 	# POST /iterations
@@ -54,7 +57,7 @@ class V1::IterationsController < ApplicationController
     # Sets @team if it is asociated with the current user. Eager loads associations in the params[:includes].
     # Renders error if not associated and Halts execution
     def set_iteration_if_associated
-      unless @iteration = current_user.iterations.where(id: params[:id])[0]
+      unless @iteration = current_user.iterations(includes: includes_array).where(id: params[:id])[0]
         render_not_associated_with_current_user('Iteration')
         return false
       end

@@ -110,6 +110,19 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body['project']['iterations'][0]['name']).to eq(Iteration.find(body['project']['iterations'][0]['id']).name)
 				expect(body['project']['students'].length).to eq(@project.students.length)
 			end
+
+			it 'includes pa_forms' do
+				iteration1 = FactoryGirl.create(:iteration, project_id: @project.id)
+				iteration2 = FactoryGirl.create(:iteration, project_id: @project.id)
+				pa_form = FactoryGirl.create(:pa_form, iteration: iteration1)
+				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
+
+				expect {
+					get :show, params: { id: @project.id, includes: 'iterations' }
+				}.to make_database_queries(count: 1)
+				expect(status).to eq(200)
+				expect(body['project'])
+			end
 		end
 
 		describe 'Units' do
@@ -155,6 +168,35 @@ RSpec.describe 'Includes', type: :controller do
 				expect(team['project']).to_not include('description')
 				expect(team['project']['id']).to eq(@project.id)
 				expect(team['lecturer']).to be_falsy
+			end
+		end
+
+		describe 'Iteration' do
+			before(:each) do
+				@controller = V1::IterationsController.new
+			end
+
+			it 'GET index includes pa_form' do
+				iteration = FactoryGirl.create(:iteration, project_id: @project.id)
+				iteration2 = FactoryGirl.create(:iteration, project_id: @project.id)
+				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
+				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
+
+				get :index, params: { project_id: @project.id }
+				expect(status).to eq(200)
+				expect(body['iterations'].length).to eq(2)
+				expect(body['iterations'][1]['pa_form']['questions']).to eq(pa_form2.questions)
+			end
+
+			it 'GET show includes pa_form' do
+				iteration = FactoryGirl.create(:iteration, project_id: @project.id)
+				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
+
+				expect {
+					get :show, params: { id: iteration.id }
+				}.to make_database_queries(count: 1)
+				expect(status).to eq(200)
+				expect(body['iteration']['pa_form']['questions']).to eq(pa_form.questions)
 			end
 		end
 	end
