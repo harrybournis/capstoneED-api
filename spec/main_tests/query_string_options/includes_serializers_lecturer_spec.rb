@@ -186,7 +186,6 @@ RSpec.describe 'Includes', type: :controller do
 				expect(status).to eq(200)
 				expect(body['iterations'].length).to eq(2)
 				expect(body['iterations'][1]['pa_form']['questions']).to eq(pa_form2.questions)
-				binding.pry
 			end
 
 			it 'GET show includes pa_form' do
@@ -198,7 +197,6 @@ RSpec.describe 'Includes', type: :controller do
 				}.to make_database_queries(count: 1)
 				expect(status).to eq(200)
 				expect(body['iteration']['pa_form']['questions']).to eq(pa_form.questions)
-				binding.pry
 			end
 		end
 	end

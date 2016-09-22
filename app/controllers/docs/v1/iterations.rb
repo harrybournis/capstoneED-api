@@ -49,7 +49,7 @@ class Docs::V1::Iterations < ApplicationController
 	param :deadline, 		Date, "The Deadline for submitting this Iteration. Must be after the start_date parameter.", required: true
 	param :project_id, Integer, "The Project that this Iteration belongs to", required: true
 	error code: 401, desc: 'Authentication failed'
-	error code: 403, desc: 'Current User is not a lecturer'
+	error code: 403, desc: 'Current User is not a Lecturer'
   error code: 403, desc: 'The project_id does not belong to a project associated with current_user'
 	error code: 422, desc: "Params are missing or are invalid. Start Date must be sometime AFTER the current time, and deadline must be AFTER start_date."
 	description <<-EOS
