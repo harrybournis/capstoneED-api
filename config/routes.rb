@@ -37,7 +37,10 @@ Rails.application.routes.draw do
 
 			# Iterations
 			get 'iterations', 			to: 'iterations#index', constraints: -> (request) { request.params[:project_id] }
-			resource :iterations, 					 only: [:index, :show, :create, :update, :destroy]
+			resources :iterations, 					 only: [:index, :show, :create, :update, :destroy]
+
+			# PAForms
+			resources :pa_forms, only: [:show, :create]
 		end
 	#end
 

@@ -140,4 +140,24 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			expect(@current_user.departments.length).to eq(2)
 		end
 	end
+
+	describe 'PAForms' do
+		it 'returns correct pa_forms' do
+			@user = FactoryGirl.create(:lecturer)
+			@request = MockRequest.new(valid = true, @user)
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			@token_id = decoded_token.first['id']
+			@device = decoded_token.first['device']
+			@current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
+
+			@unit = FactoryGirl.create(:unit, lecturer: @user)
+			@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @user)
+
+			iteration = FactoryGirl.create(:iteration, project_id: @project.id)
+			iteration2 = FactoryGirl.create(:iteration, project_id: @project.id)
+			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
+			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
+			expect(@current_user.pa_forms.length).to eq(2)
+		end
+	end
 end

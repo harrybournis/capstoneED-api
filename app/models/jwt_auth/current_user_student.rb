@@ -5,7 +5,7 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 	end
 
 	def units(options={})
-		Unit.joins(:projects, :teams, :students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
+		Unit.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
 	end
 
 	def teams(options={})
@@ -13,7 +13,16 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 	end
 
 	def iterations(options={})
-		Iteration.joins(:project, :teams, :students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
+		if options[:includes]
+			includes = options[:includes].unshift('pa_form')
+		else
+			includes = 'pa_form'
+		end
+		Iteration.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(includes).distinct
+	end
+
+	def pa_forms(options={})
+		PAForm.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
 	end
 
 
@@ -21,7 +30,7 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 	#
 	# ##
 	def project_associations
-		%w(lecturer unit teams iterations students)
+		%w(lecturer unit teams iterations students pa_forms)
 	end
 
 	def unit_associations
@@ -34,5 +43,9 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 
 	def iteration_associations
 		[]
+	end
+
+	def pa_form_associations
+		%w(iteration)
 	end
 end

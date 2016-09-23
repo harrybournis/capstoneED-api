@@ -10,8 +10,8 @@ RSpec.describe V1::TeamsController, type: :controller do
 		@student = FactoryGirl.create(:student_with_password).process_new_record
 		@student.save
 		@student.confirm
-		Team.first.students << @student
-		Team.last.students 	<< @student
+		@lecturer.teams.first.students << @student
+		@lecturer.teams.last.students 	<< @student
 	end
 
 	context 'Student' do
@@ -231,6 +231,7 @@ RSpec.describe V1::TeamsController, type: :controller do
 
 		describe 'DELETE remove_student' do
 			it 'removes student from team if Lecturer is owner' do
+				@lecturer.reload
 				expect(@lecturer.teams.first.students.length).to eq(1)
 				delete :remove_student, params: { id: @lecturer.teams[0].id, student_id: @lecturer.teams[0].students[0] }
 				expect(status).to eq(204)
