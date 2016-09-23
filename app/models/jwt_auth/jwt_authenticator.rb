@@ -40,7 +40,7 @@ module JWTAuth::JWTAuthenticator
 	#
 	# returns boolean
 	#
-	def self.sign_in (user, response, cookies, remember_me = nil)
+	def self.sign_in (user, response, cookies, remember_me)
 		new_device = nil
 		loop do
 			new_device = SecureRandom.base64(32)
@@ -80,6 +80,9 @@ module JWTAuth::JWTAuthenticator
 			device 			= valid_token.device
 			time_now 		= DateTime.now
 			remember_me = decoded_token.first['remember_me']
+
+			cookies.delete('access-token')
+			cookies.delete('refresh-token')
 
 			if create_new_tokens(valid_token.user, response, cookies, device, time_now, remember_me)
 				return true if valid_token.update(exp: time_now + @@refresh_exp)
@@ -138,7 +141,7 @@ module JWTAuth::JWTAuthenticator
 	end
 
 
-	def self.encode_token (user, time_now, csrf_token = nil, device_id = nil, remember_me = nil)
+	def self.encode_token (user, time_now, csrf_token = nil, device_id = nil, remember_me = false)
 		if csrf_token
 			exp_time = time_now + @@exp
 			access_token_payload = { exp: exp_time.to_i, id: user.id, type: user.type, iss: @@issuer, device: device_id, csrf_token: csrf_token }

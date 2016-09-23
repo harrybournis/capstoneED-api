@@ -10,7 +10,7 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 			@controller = V1::AuthenticationsController.new
 			@user = FactoryGirl.build(:lecturer_with_password).process_new_record
 			@user.save
-			@mock_request = MockRequest.new(valid = true, @user, remember_me = true)
+			@mock_request = MockRequest.new(valid = true, @user, nil, remember_me = true)
 			request.cookies['access-token'] = @mock_request.cookies['access-token']
 			request.cookies['refresh-token']= @mock_request.cookies['refresh-token']
 			request.headers['X-XSRF-TOKEN'] = @mock_request.headers['X-XSRF-TOKEN']

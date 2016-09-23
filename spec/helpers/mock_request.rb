@@ -4,7 +4,7 @@ class MockRequest
 
 	attr_reader :headers, :cookies, :body
 
-	def initialize(valid, user = nil, device = nil, remember_me = nil)
+	def initialize(valid, user = nil, device = nil, remember_me = true)
 		valid ? valid_request(user, device, remember_me) : invalid_request_hardcoded
 	end
 

@@ -13,7 +13,7 @@ RSpec.describe "JWTAuth::JWTAuthenticator method" do
 		end
 
 		it 'returns a response with an access token, a refresh token, and a csrf token in the headers' do
-			expect(JWTAuth::JWTAuthenticator.sign_in(@user, @response, @cookies)).to be_truthy
+			expect(JWTAuth::JWTAuthenticator.sign_in(@user, @response, @cookies, true)).to be_truthy
 			expect(@response.headers).to include('XSRF-TOKEN')
 			expect(@cookies["access-token"]).to be_truthy
 			expect(@cookies["refresh-token"]).to be_truthy
@@ -21,7 +21,7 @@ RSpec.describe "JWTAuth::JWTAuthenticator method" do
 
 		it 'creates a active_token database entry with the exp of the new refresh token' do
 			original_active_tokens = @user.active_tokens.count
-			expect(JWTAuth::JWTAuthenticator.sign_in(@user, @response, @cookies)).to be_truthy
+			expect(JWTAuth::JWTAuthenticator.sign_in(@user, @response, @cookies, true)).to be_truthy
 			expect(ActiveToken.last.user).to eq(@user)
 			expect(@user.active_tokens.count).to eq(original_active_tokens + 1)
 		end
