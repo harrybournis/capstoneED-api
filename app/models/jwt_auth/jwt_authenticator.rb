@@ -104,42 +104,34 @@ module JWTAuth::JWTAuthenticator
 
 		response.headers['XSRF-TOKEN'] = csrf_token
 
-		# SET XSRF-TOKEN AS COOKIE
-		# if Rails.env.production?
-		# 	cookies['XSRF-TOKEN'] = { value: csrf_token, expires: exp_time }
-		# else
-		# 	cookies['XSRF-TOKEN'] = { value: csrf_token, expires: exp_time }
-		# end
-
 		if Rails.env.production?
-
-			cookies['access-token'] = { value: access_token, domain: @@domain, expires: exp_time, secure: true, httponly: true, same_site: true }
 			if remember_me
+				cookies['access-token'] = { value: access_token, domain: @@domain, expires: exp_time, secure: true, httponly: true, same_site: true }
 				cookies['refresh-token'] = { value: refresh_token, domain: @@domain, expires: refresh_exp_time, path: '/v1/refresh', secure: true, httponly: true, same_site: true }
 			else
+				cookies['access-token'] = { value: access_token, domain: @@domain, secure: true, httponly: true, same_site: true }
 				cookies['refresh-token'] = { value: refresh_token, domain: @@domain, path: '/v1/refresh', secure: true, httponly: true, same_site: true }
 			end
 
 		elsif Rails.env.test? # removed path from refresh token to work with rspec
-
-			cookies['access-token'] = { value: access_token, domain: "api.example.com", expires: exp_time, httponly: true, same_site: true }
 			if remember_me
+				cookies['access-token'] = { value: access_token, domain: "api.example.com", expires: exp_time, httponly: true, same_site: true }
 				cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, domain: "api.example.com", httponly: true, same_site: true }
 			else
+				cookies['access-token'] = { value: access_token, domain: "api.example.com", httponly: true, same_site: true }
 				cookies['refresh-token'] = { value: refresh_token, domain: "api.example.com", httponly: true, same_site: true }
 			end
 
 		else
-
 			######   FOR DEVELOPMENT    #####
-			cookies['access-token'] = { value: access_token, expires: exp_time }
 			if remember_me
+				cookies['access-token'] = { value: access_token, expires: exp_time }
 				cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, path: '/v1/refresh' }
 			else
+				cookies['access-token'] = { value: access_token }
 				cookies['refresh-token'] = { value: refresh_token, path: '/v1/refresh' }
 			end
 			###### <----------------------> #####
-
 		end
 
 		true
