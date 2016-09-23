@@ -21,12 +21,11 @@ class V1::PAFormsController < ApplicationController
 
 	# POST /pa_forms
 	def create
-		unless current_user.iterations.where(id: params[:iteration_id])[0]
+		unless iteration = current_user.iterations.where(id: params[:iteration_id])[0]
 			render_not_associated_with_current_user('Iteration')
 			return
 		end
 
-		#@pa_form = PAForm.new(pa_form_wout_questions_params).store_questions(params[:questions])
 		@pa_form = PAForm.new(pa_form_params)
 
 		if @pa_form.save

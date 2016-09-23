@@ -9,6 +9,7 @@ class PAForm < ApplicationRecord
 
 	# Validations
 	validates_presence_of :iteration, :questions
+	validates_uniqueness_of :iteration, message: 'is already associated with a PAForm'
 	validate :format_of_questions
 
 	# Instance Methods

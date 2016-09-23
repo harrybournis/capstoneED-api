@@ -55,6 +55,15 @@ RSpec.describe V1::PAFormsController, type: :controller do
 			expect(errors['base'][0]).to include('not associated')
 		end
 
+		it 'POST create responds with 403 forbidden if iteration_id already has a pa_form' do
+			post :create, params: { iteration_id: @iteration.id, questions: ['Who is it?', 'Human?', 'Hello?', 'Favorite Power Ranger?'] }
+			expect(status).to eq(201)
+
+			post :create, params: { iteration_id: @iteration.id, questions: ['Other', 'Questions?', 'Doesnt?', 'Matter'] }
+			expect(status).to eq(422)
+			expect(errors['iteration'][0]).to include('is already associated with a PAForm')
+		end
+
 		# it 'PATCH update responds with 201 if correct params' do
 		# 	pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
 		# 	patch :update, params: { id: pa_form.id, questions: ['new Who is it?', 'Human?', 'new Hello?', 'Favorite Power Ranger?'] }
