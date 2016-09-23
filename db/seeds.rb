@@ -2,7 +2,8 @@
 department = FactoryGirl.create(:department, name: 'Computer Science')
 department2 = FactoryGirl.create(:department, name: 'English Studies')
 
-@lecturer1 = FactoryGirl.build(:lecturer_with_password).process_new_record
+@lecturer1 = FactoryGirl.build(:lecturer_with_password, email: 'foo1@bar.com').process_new_record
+@lecturer1.skip_confirmation_notification!
 @lecturer1.save
 @lecturer1.confirm
 @unit1 = FactoryGirl.create(:unit, lecturer: @lecturer1, department: department)
@@ -27,8 +28,18 @@ FactoryGirl.create(:question, lecturer_id: @lecturer1.id)
 FactoryGirl.create(:question, lecturer_id: @lecturer1.id)
 FactoryGirl.create(:question, lecturer_id: @lecturer1.id)
 
-30.times do
-	@student = FactoryGirl.create(:student_with_password).process_new_record
+@student = FactoryGirl.build(:student_with_password, email: 'kostas@bar.com').process_new_record
+@student.skip_confirmation_notification!
+@student.save
+@student.confirm
+
+@project1.teams.sample.students << @student
+@project2.teams.sample.students << @student
+@project3.teams.sample.students << @student
+
+29.times do
+	@student = FactoryGirl.build(:student_with_password).process_new_record
+	@student.skip_confirmation_notification!
 	@student.save
 	@student.confirm
 
@@ -38,7 +49,8 @@ FactoryGirl.create(:question, lecturer_id: @lecturer1.id)
 end
 
 # 2nd Lecturer
-@lecturer1 = FactoryGirl.build(:lecturer_with_password).process_new_record
+@lecturer1 = FactoryGirl.build(:lecturer_with_password, email: 'foo2@bar.com').process_new_record
+@lecturer1.skip_confirmation_notification!
 @lecturer1.save
 @lecturer1.confirm
 @unit1 = FactoryGirl.create(:unit, lecturer: @lecturer1, department: department)
@@ -70,7 +82,8 @@ Student.all.each do |student|
 end
 
 # 3rd Lecturer
-@lecturer1 = FactoryGirl.build(:lecturer_with_password).process_new_record
+@lecturer1 = FactoryGirl.build(:lecturer_with_password, email: 'foo3@bar.com').process_new_record
+@lecturer1.skip_confirmation_notification!
 @lecturer1.save
 @lecturer1.confirm
 @unit1 = FactoryGirl.create(:unit, lecturer: @lecturer1, department: department)
