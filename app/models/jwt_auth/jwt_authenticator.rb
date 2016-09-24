@@ -5,7 +5,7 @@ module JWTAuth::JWTAuthenticator
 	@@algorithm 	= 'HS256'				# available algorithms: https://github.com/jwt/ruby-jwt
 	@@exp					= 10.minutes		# expiration time for access-token
 	@@refresh_exp	= 1.week				# expiration time for refresh-token
-	@@leeway			= 1.week				# grace period after a token has expired.
+	@@leeway			= 0							# grace period after a token has expired.
 	@@domain  		= api_host_url	# to be added to the cookies. left blank for developement in order to work with browsers. Change variable in helpers/url_helper.rb
 	@@issuer			= @@domain			# typically the website url. added to JWT tokens.
 
@@ -126,7 +126,6 @@ module JWTAuth::JWTAuthenticator
 			end
 
 		else
-			######   FOR DEVELOPMENT    #####
 			if remember_me
 				cookies['access-token'] = { value: access_token, expires: exp_time }
 				cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, path: '/v1/refresh' }
@@ -134,7 +133,6 @@ module JWTAuth::JWTAuthenticator
 				cookies['access-token'] = { value: access_token }
 				cookies['refresh-token'] = { value: refresh_token, path: '/v1/refresh' }
 			end
-			###### <----------------------> #####
 		end
 
 		true
@@ -158,18 +156,16 @@ module JWTAuth::JWTAuthenticator
 
 
 	def self.decode_token (token)
-		###### UNCOMMENT FOR PRODUCTION #####
-		# JWT.decode(token, @@secret, true, { algorithm: @@algorithm,
-		# 									leeway: @@leeway.to_i,
-		# 									iss: @@issuer,
-		# 									verify_iss: true
-		# 															})
-		###### <----------------------> #####
-
-		######   FOR DEVELOPMENT ONLY   #####
-		JWT.decode(token, @@secret, true, { algorithm: @@algorithm,
-											leeway: @@leeway.to_i})
-		###### <----------------------> #####
+		if Rails.env.production?
+			JWT.decode(token, @@secret, true, { algorithm: @@algorithm,
+									leeway: @@leeway.to_i,
+									iss: @@issuer,
+									verify_iss: true
+															})
+		else
+			JWT.decode(token, @@secret, true, { algorithm: @@algorithm,
+												leeway: @@leeway.to_i})
+		end
 	end
 
 
