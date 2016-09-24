@@ -23,7 +23,8 @@ module CurrentUserable
 	end
 
 	def allow_if_lecturer(extra_suggestion = nil)
-		unless @current.load.instance_of? Lecturer
+		#unless @current.load.instance_of? Lecturer
+		unless @current.type == 'Lecturer'
 			message = ["You must be Lecturer to access this resource. #{extra_suggestion if extra_suggestion}"]
 			render json: format_errors({ base: message }), status: :forbidden
 			false
@@ -31,7 +32,8 @@ module CurrentUserable
 	end
 
 	def allow_if_student(extra_suggestion = nil)
-		unless @current.load.instance_of? Student
+		#unless @current.load.instance_of? Student
+		unless @current.type == 'Student'
 			message = ["You must be Student to access this resource. #{extra_suggestion if extra_suggestion}"]
 			render json: format_errors({ base: message }), status: :forbidden
 			false

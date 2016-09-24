@@ -129,10 +129,9 @@ RSpec.describe 'Includes', type: :controller do
 
 			context 'Valid' do
 				it 'index_with_project makes two query for project and students (+1 for only_if lecturer)' do
-					project = @lecturer.projects[0]
 					expect {
 						get :index, params: { includes: 'project' }
-					}.to make_database_queries(count: 2)
+					}.to make_database_queries(count: 1)
 					expect(status).to eq(200)
 				end
 
@@ -149,7 +148,7 @@ RSpec.describe 'Includes', type: :controller do
 				it 'teams responds with 400 for unsupported associations in includes' do
 					expect {
 						get :index, params: { includes: 'department,projects,students' }
-					}.to make_database_queries(count: 1)
+					}.to make_database_queries(count: 0)
 					expect(status).to eq(400)
 					expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Team resource for Student user accepts only: project, students, lecturer. Received: department,projects,students.")
 
