@@ -81,9 +81,6 @@ module JWTAuth::JWTAuthenticator
 			time_now 		= DateTime.now
 			remember_me = decoded_token.first['remember_me']
 
-			cookies.delete('access-token')
-			cookies.delete('refresh-token')
-
 			if create_new_tokens(valid_token.user, response, cookies, device, time_now, remember_me)
 				return true if valid_token.update(exp: time_now + @@refresh_exp)
 			end
