@@ -1,4 +1,10 @@
 class Student < User
+	# Attributes
+	# first_name 	:string
+	# last_name		:string
+	# email				:string
+	# provider		:string (email, facebook)
+	# type				:string Student
 
 	# Associations
 	has_many 	:students_teams, class_name: JoinTables::StudentsTeam

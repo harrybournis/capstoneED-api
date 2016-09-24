@@ -1,5 +1,9 @@
 class Team < ApplicationRecord
-  # Attributes: name, enrollment_key, logo, project_id
+  # Attributes
+  # name            :string
+  # enrollment_key  :string
+  # logo            :string
+  # project_id      :integer
 
 	# Associations
   belongs_to  :project, inverse_of: :teams

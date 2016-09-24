@@ -1,5 +1,8 @@
 class Question < ApplicationRecord
-	# Attributes: category(string), text(string), lecturer_id(integer), type(string)
+	# Attributes
+	# category 			:string
+	# text					:string
+	# lecturer_id		:integer
 
 	# Associations
 	belongs_to :lecturer

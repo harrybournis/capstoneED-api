@@ -1,4 +1,7 @@
 class JoinTables::StudentsTeam < ApplicationRecord
+	# Attributes
+	# student_id 	:integer
+	# team_id			:integer
 
 	# Associations
 	belongs_to :student

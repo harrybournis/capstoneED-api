@@ -1,4 +1,7 @@
 class Department < ApplicationRecord
+	# Attributes
+	# name 				:string
+	# university 	:string
 
 	# Associations
 	has_many :units

@@ -1,4 +1,12 @@
 class Lecturer < User
+	# Attributes
+	# first_name 	:string
+	# last_name		:string
+	# email				:string
+	# provider		:string (email, facebook etc.)
+	# type				:string Lecturer
+	# position		:string
+	# university	:string
 
 	# Associations
 	has_many :units

@@ -1,4 +1,8 @@
 class ActiveToken < ApplicationRecord
+	# Attributes
+	# exp 		:datetime
+	# user_id	:integer
+	# device	:string
 
 	belongs_to :user
 
