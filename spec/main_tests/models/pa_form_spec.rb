@@ -5,6 +5,7 @@ RSpec.describe PAForm, type: :model do
 	subject(:pa_form) { FactoryGirl.build(:pa_form) }
 
 	it { should belong_to :iteration }
+	it { should have_many :peer_assessments }
 	it { should validate_presence_of :iteration }
 	it { should validate_uniqueness_of(:iteration).with_message('is already associated with a PAForm') }
 

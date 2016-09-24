@@ -10,6 +10,14 @@ FactoryGirl.define do
       provider 'email'
       password '12345678'
       password_confirmation '12345678'
+
+      factory :student_confirmed do
+        after :build do |obj|
+          obj.skip_confirmation_notification!
+          obj.save
+          obj.confirm
+        end
+      end
     end
   end
 end

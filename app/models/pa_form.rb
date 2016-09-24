@@ -1,16 +1,19 @@
 class PAForm < ApplicationRecord
-	# Attributes id(Integer), iteration_id(Integer), questions: { question_id => question_text }(hash)
+	# Attributes
+	# iteration_id 	:integer
+	# questions 		:jsonb { question_id => question_text }
 
 	# Associations
-	belongs_to :iteration, inverse_of: :pa_form
-	has_one :project, through: :iteration
-	has_many :teams, through: :project
-	has_many :students_teams, through: :teams
+	belongs_to 	:iteration, inverse_of: :pa_form
+	has_many 		:peer_assessments
+	has_one 		:project, through: :iteration
+	has_many 		:teams, through: :project
+	has_many 		:students_teams, through: :teams
 
 	# Validations
-	validates_presence_of :iteration, :questions
+	validates_presence_of 	:iteration, :questions
 	validates_uniqueness_of :iteration, message: 'is already associated with a PAForm'
-	validate :format_of_questions
+	validate 								:format_of_questions
 
 	# Instance Methods
 
