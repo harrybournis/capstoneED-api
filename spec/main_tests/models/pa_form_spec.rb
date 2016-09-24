@@ -7,7 +7,6 @@ RSpec.describe PAForm, type: :model do
 	it { should belong_to :iteration }
 	it { should have_many :peer_assessments }
 	it { should validate_presence_of :iteration }
-	it { should validate_uniqueness_of(:iteration).with_message('is already associated with a PAForm') }
 
 	it 'validates presence of questions' do
 		iteration = FactoryGirl.create(:iteration)
@@ -53,17 +52,5 @@ RSpec.describe PAForm, type: :model do
 		pa_form = PAForm.new(iteration_id: iteration.id, questions: ['dkd', 4])
 		expect(pa_form.save).to be_falsy
 		expect(pa_form.errors['questions'][0]).to include("can't be blank")
-	end
-
-	it 'validates that the iteration_id does not alredy have a pa_form' do
-		iteration = FactoryGirl.create(:iteration)
-		questions = ['What?', 'Who?', 'When?', 'Where?']
-		pa_form = PAForm.new(iteration_id: iteration.id, questions: questions)
-		expect(pa_form.save).to be_truthy
-
-		questions = ['Other?', 'Different?', 'Questions?', 'Doesnt matter?']
-		pa_form = PAForm.new(iteration_id: iteration.id, questions: questions)
-		expect(pa_form.save).to be_falsy
-		expect(pa_form.errors[:iteration][0]).to include('is already associated')
 	end
 end

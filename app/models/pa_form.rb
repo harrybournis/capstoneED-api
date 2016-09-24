@@ -12,11 +12,13 @@ class PAForm < ApplicationRecord
 
 	# Validations
 	validates_presence_of 	:iteration, :questions
-	validates_uniqueness_of :iteration, message: 'is already associated with a PAForm'
 	validate 								:format_of_questions
 
 	# Instance Methods
 
+  # Override questions setter to receive an array and format and save it in the desired format
+  #
+  # @param 	[Array] 	questions_param The questions of the PAform as an Array in the order they are supposed to appear
 	def questions=(questions_param)
 		unless questions_param && questions_param.is_a?(Array) && questions_param.any?
 			super(nil)
@@ -45,6 +47,8 @@ class PAForm < ApplicationRecord
 
 	private
 
+		# Validation of the questions format
+		#
 		def format_of_questions
 			return unless questions.present?
 
