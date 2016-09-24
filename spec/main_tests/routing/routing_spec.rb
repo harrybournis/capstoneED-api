@@ -33,4 +33,25 @@ RSpec.describe 'Routing', type: :routing do
 		expect(delete: "#{url}/v1/teams/4/remove_student").to route_to(
 			controller: 'v1/teams', action: 'remove_student', id: '4')
 	end
+
+	it 'GET /peer_assessments?pa_form_id routes to index_with_pa_form' do
+		expect(get: "#{url}/v1/peer_assessments?pa_form_id=2").to route_to(
+			controller: 'v1/peer_assessments', action: 'index_with_pa_form', pa_form_id: '2')
+	end
+
+	it 'GET /peer_assessments?submitted_for_id routes to index_with_submitted_for' do
+		expect(get: "#{url}/v1/peer_assessments?submitted_for_id=2").to route_to(
+			controller: 'v1/peer_assessments', action: 'index_with_submitted_for', submitted_for_id: '2')
+	end
+
+	it 'GET /peer_assessments?submitted_for_id routes to index_with_submitted_for' do
+		expect(get: "#{url}/v1/peer_assessments?submitted_by_id=2").to route_to(
+			controller: 'v1/peer_assessments', action: 'index_with_submitted_by', submitted_by_id: '2')
+	end
+
+	it 'GET /peer_assessments routes to index' do
+		expect(get: "#{url}/v1/peer_assessments").to route_to(
+			controller: 'v1/peer_assessments', action: 'index')
+	end
+
 end
