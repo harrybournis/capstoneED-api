@@ -10,6 +10,9 @@ class PeerAssessment < ApplicationRecord
 	belongs_to :pa_form, class_name: PAForm
 	belongs_to :submitted_by, class_name: Student, foreign_key: :submitted_by_id
 	belongs_to :submitted_for, class_name: Student, foreign_key: :submitted_for_id
+	has_one :iteration, through: :pa_form
+	has_one :project, through: :iteration
+	has_one :lecturer, through: :project
 
 	# Validations
 	validates_presence_of :pa_form_id, :submitted_for_id, :submitted_by_id, :date_submitted, :answers

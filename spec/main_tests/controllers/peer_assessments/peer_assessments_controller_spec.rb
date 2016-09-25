@@ -29,7 +29,10 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 	context 'when current_user is Lecturer' do
 
 		before :all do
-			@pa_form = FactoryGirl.create(:pa_form)
+			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
+			@project = FactoryGirl.create(:project, lecturer: @lecturer, unit: @unit)
+			@iteration = FactoryGirl.create(:iteration, project: @project)
+			@pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
 			@student2 = FactoryGirl.create(:student_confirmed)
 			@student3 = FactoryGirl.create(:student_confirmed)
 			@student4 = FactoryGirl.create(:student_confirmed)
@@ -55,6 +58,7 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 
 		describe 'GET index' do
 			it 'shows all peer assessments for a PAForm if pa_form_id is in the params' do
+				binding.pry
 				get :index_with_pa_form, params: { pa_form_id: @pa_form.id }
 				p body
 				expect(status).to eq(200)
@@ -63,7 +67,12 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 
 			it 'shows all peer assessments BY a Student if submitted_by is in the params'
 			it 'shows all peer assessments FOR a Student if submitted_for is in the params'
-			it 'responds with 400 bad request if no PAForm, submitted_by, submitted_for is present in the params'
+
+			it 'responds with 400 bad request if no PAForm, submitted_by, submitted_for is present in the params' do
+				get :index
+				expect(status).to eq(403)
+				expect(errors['base'][0]).to include('There was no pa_form_id, submitted_by_id, or submitted_for_id in the params. Retry with one of those')
+			end
 		end
 
 		describe 'GET show' do

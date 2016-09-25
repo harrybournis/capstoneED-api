@@ -25,6 +25,17 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 		PAForm.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
 	end
 
+	def peer_assessments(options={})
+		PeerAssessment.where(['submitted_for_id = ? or submitted_by_id = ?', @id, @id]).eager_load(options[:includes])
+	end
+
+	def peer_assessments_for(options={})
+		PeerAssessment.where(['submitted_for_id = ?', @id]).eager_load(options[:includes])
+	end
+
+	def peer_assessments_by(options={})
+		PeerAssessment.where(['submitted_by_id = ?', @id]).eager_load(options[:includes])
+	end
 
 	# The associations that the current_user can include in the query
 	#
@@ -47,5 +58,9 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 
 	def pa_form_associations
 		%w(iteration)
+	end
+
+	def peer_assessment_associations
+		%w(pa_form submitted_by submitted_for)
 	end
 end

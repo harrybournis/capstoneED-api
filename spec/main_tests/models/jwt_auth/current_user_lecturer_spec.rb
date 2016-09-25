@@ -160,4 +160,30 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			expect(@current_user.pa_forms.length).to eq(2)
 		end
 	end
+
+	describe "Peer Assessment" do
+		it 'returns the associated peer assessments' do
+			@user = FactoryGirl.create(:lecturer_confirmed)
+			@request = MockRequest.new(valid = true, @user)
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			@token_id = decoded_token.first['id']
+			@device = decoded_token.first['device']
+			@current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
+
+			unit = FactoryGirl.create(:unit, lecturer_id: @user.id)
+			project = FactoryGirl.create(:project, lecturer_id: @user.id, unit: unit)
+			iteration  = FactoryGirl.create(:iteration, project: project)
+			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
+			student = FactoryGirl.create(:student_confirmed)
+			student2 = FactoryGirl.create(:student_confirmed)
+			student3 = FactoryGirl.create(:student_confirmed)
+			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student, submitted_for: student2)
+			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student, submitted_for: student3)
+			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student2, submitted_for: student)
+			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student2, submitted_for: student3)
+			peer_assessment_irrellevant = FactoryGirl.create(:peer_assessment)
+
+			expect(@current_user.peer_assessments.length).to eq(4)
+		end
+	end
 end

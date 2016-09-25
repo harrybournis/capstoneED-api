@@ -33,6 +33,10 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 		PAForm.joins(:iteration, :project).eager_load(options[:includes]).where(['projects.lecturer_id = ?', @id])
 	end
 
+	def peer_assessments(options={})
+		PeerAssessment.joins(:project).eager_load(options[:includes]).where(['projects.lecturer_id = ?', @id])
+	end
+
 
 	# The associations that the current_user can include in the query
 	#
@@ -55,5 +59,9 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 
 	def pa_form_associations
 		%w(iteration)
+	end
+
+	def peer_assessment_associations
+		%w(pa_form submitted_by submitted_for)
 	end
 end
