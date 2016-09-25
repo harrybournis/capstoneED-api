@@ -58,7 +58,6 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 
 		describe 'GET index' do
 			it 'shows all peer assessments for a PAForm if pa_form_id is in the params' do
-				binding.pry
 				get :index_with_pa_form, params: { pa_form_id: @pa_form.id }
 				p body
 				expect(status).to eq(200)

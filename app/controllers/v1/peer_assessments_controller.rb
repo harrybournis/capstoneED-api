@@ -7,7 +7,6 @@ class V1::PeerAssessmentsController < ApplicationController
 	# GET /peer_assessments?pa_form_id=2
 	def index_with_pa_form
 		@peer_assessments = current_user.peer_assessments(includes: includes_array).where(['pa_form_id = ?', params[:pa_form_id]])
-		binding.pry
 		serialize_collection @peer_assessments, :ok
 	end
 
