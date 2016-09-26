@@ -30,7 +30,7 @@ class V1::AuthenticationsController < ApplicationController
 	end
 
 
-	# DELETE /sign_out
+	# POST /sign_out
 	# Signs out user by deleting the ActiveToken for their device, and deleting the access-token
 	# and refresh token cookies
 	def sign_out
