@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 			# Authentication Routes
 			get 		'me', 		  to: 'authentications#me'
 			post		'sign_in',	to: 'authentications#sign_in_email'
-			delete	'sign_out',	to: 'authentications#sign_out'
+			post		'sign_out',	to: 'authentications#sign_out'
 			post		'refresh', 	to: 'authentications#refresh'
 
 			# Users

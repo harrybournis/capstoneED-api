@@ -24,7 +24,7 @@ RSpec.describe "Confirmation Controller - Reconfirmation", type: :request do
 		expect(user.email).to eq(old_email)
 		expect(user.unconfirmed_email).to eq('different@email.com')
 
-		delete '/v1/sign_out', headers: { 'X-XSRF-TOKEN' => csrf }
+		post '/v1/sign_out', headers: { 'X-XSRF-TOKEN' => csrf }
 
 		expect(response.status).to eq(204)
 

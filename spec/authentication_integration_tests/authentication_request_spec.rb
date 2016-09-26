@@ -57,7 +57,7 @@ RSpec.describe "Confirmation Controller - Reconfirmation", type: :request do
 			get '/v1/me', params: nil, headers: { 'X-XSRF-TOKEN' => csrf }, as: :json
 			expect(status).to eq(200) #me
 
-			delete '/v1/sign_out', params: nil, headers: { 'X-XSRF-TOKEN' => csrf }, as: :json
+			post '/v1/sign_out', params: nil, headers: { 'X-XSRF-TOKEN' => csrf }, as: :json
 			expect(status).to eq(204)
 			expect(response.cookies['access-token']).to be_falsy
 			expect(response.cookies['refresh-token']).to be_falsy
