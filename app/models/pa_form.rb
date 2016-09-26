@@ -15,6 +15,7 @@ class PAForm < ApplicationRecord
 	validate 								:format_of_questions
 
 	# Instance Methods
+	delegate :deadline, :start_date, to: :iteration
 
   # Override questions setter to receive an array and format and save it in the desired format
   #
@@ -43,6 +44,10 @@ class PAForm < ApplicationRecord
 
 		super(jsonb_array)
 	end
+
+	# def deadline
+	# 	iteration.deadline
+	# end
 
 
 	private

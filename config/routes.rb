@@ -43,9 +43,9 @@ Rails.application.routes.draw do
 			resources :pa_forms, 					only: [:show, :create]
 
 			# Peer Assessments
+			get 		'peer_assessments',						to: 'peer_assessments#index_with_submitted_for', constraints: -> (request) { request.params[:pa_form_id] && request.params[:submitted_for_id] }
+			get 		'peer_assessments',						to: 'peer_assessments#index_with_submitted_by', constraints: -> (request) { request.params[:pa_form_id] && request.params[:submitted_by_id] }
 			get 		'peer_assessments',						to: 'peer_assessments#index_with_pa_form', constraints: -> (request) { request.params[:pa_form_id] }
-			get 		'peer_assessments',						to: 'peer_assessments#index_with_submitted_for', constraints: -> (request) { request.params[:submitted_for_id] }
-			get 		'peer_assessments',						to: 'peer_assessments#index_with_submitted_by', constraints: -> (request) { request.params[:submitted_by_id] }
 			resources :peer_assessments, 	only: [:index, :show, :create]
 		end
 	#end

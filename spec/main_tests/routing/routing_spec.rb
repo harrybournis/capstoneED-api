@@ -40,13 +40,13 @@ RSpec.describe 'Routing', type: :routing do
 	end
 
 	it 'GET /peer_assessments?submitted_for_id routes to index_with_submitted_for' do
-		expect(get: "#{url}/v1/peer_assessments?submitted_for_id=2").to route_to(
-			controller: 'v1/peer_assessments', action: 'index_with_submitted_for', submitted_for_id: '2')
+		expect(get: "#{url}/v1/peer_assessments?pa_form_id=1&submitted_for_id=2").to route_to(
+			controller: 'v1/peer_assessments', action: 'index_with_submitted_for', submitted_for_id: '2', pa_form_id: '1')
 	end
 
 	it 'GET /peer_assessments?submitted_for_id routes to index_with_submitted_for' do
-		expect(get: "#{url}/v1/peer_assessments?submitted_by_id=2").to route_to(
-			controller: 'v1/peer_assessments', action: 'index_with_submitted_by', submitted_by_id: '2')
+		expect(get: "#{url}/v1/peer_assessments?pa_form_id=1&submitted_by_id=2").to route_to(
+			controller: 'v1/peer_assessments', action: 'index_with_submitted_by', submitted_by_id: '2', pa_form_id: '1')
 	end
 
 	it 'GET /peer_assessments routes to index' do

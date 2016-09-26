@@ -19,10 +19,15 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 		end
 
 		describe 'POST create' do
-			it 'creates a new Peer Assessment for a certain user with submitted_by from the current_user'
+			it 'creates a new Peer Assessment for a certain user with submitted_by from the current_user' do
+				#post :create, params: {  }
+			end
 			it 'responds with 400 bad request if params are missing'
 			it 'responds with 400 bad request if answers are not in correct format'
-			it 'responds with 403 forbidden if PAForm deadline has passed'
+			it 'responds with 422 forbidden if submitted for is not in the same Team'
+			it 'responds with 422 forbidden if PAForm is not associated with Student through Project/Teams'
+			it 'responds with 422 forbidden if PAForm deadline has passed'
+			it 'responds with 422 forbidden if PAForm start date is not open yet'
 		end
 	end
 
@@ -64,14 +69,14 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			end
 
 			it 'shows all peer assessments BY a Student if submitted_by is in the params' do
-				get :index_with_submitted_by, params: { submitted_by_id: @student.id }
+				get :index_with_submitted_by, params: { pa_form_id: @pa_form.id, submitted_by_id: @student.id }
 				expect(status).to eq(200)
 				expect(body['peer_assessments'].length).to eq(@student.peer_assessments_submitted_by.length)
 				expect(body['peer_assessments'].length).to eq(4)
 			end
 
 			it 'shows all peer assessments FOR a Student if submitted_for is in the params' do
-				get :index_with_submitted_for, params: { submitted_for_id: @student.id }
+				get :index_with_submitted_for, params: { pa_form_id: @pa_form.id, submitted_for_id: @student.id }
 				expect(status).to eq(200)
 				expect(body['peer_assessments'].length).to eq(@student.peer_assessments_submitted_for.length)
 				expect(body['peer_assessments'].length).to eq(1)
@@ -79,8 +84,8 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 
 			it 'responds with 400 bad request if no PAForm, submitted_by, submitted_for is present in the params' do
 				get :index
-				expect(status).to eq(403)
-				expect(errors['base'][0]).to include('There was no pa_form_id, submitted_by_id, or submitted_for_id in the params. Retry with one of those')
+				expect(status).to eq(400)
+				expect(errors['base'][0]).to include('no pa_form_id in the params')
 			end
 		end
 

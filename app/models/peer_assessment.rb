@@ -15,14 +15,30 @@ class PeerAssessment < ApplicationRecord
 	has_one :lecturer, through: :project
 
 	# Validations
-	validates_presence_of :pa_form_id, :submitted_for_id, :submitted_by_id, :date_submitted, :answers
+	validates_presence_of :pa_form_id, :submitted_for_id, :submitted_by_id, :answers
 	validate :format_of_answers
+	validate :submit_is_before_deadline
 
-	# Class Methods
 
 	# Instance Methods
+
+	# Assigns the current time as date_submitted
+	def submit
+		self.date_submitted = DateTime.now
+		if save
+			return self
+		else
+			return nil
+		end
+	end
+
+	def submitted?
+		return date_submitted.present?
+	end
+
 	private
 
+		# answers validation
 		def format_of_answers
 			return unless answers.present?
 
@@ -35,6 +51,15 @@ class PeerAssessment < ApplicationRecord
 				unless q.length == 2 && q['question_id'].present? && q['answer'].present?
 					errors.add(:answers, "invalid parameters. Only 'question_id' and 'answer' are accepted, and they must BOTH be present for each question.")
 					return
+				end
+			end
+		end
+
+		# date_submitted validation
+		def submit_is_before_deadline
+			if date_submitted.present?
+				unless date_submitted <= pa_form.deadline
+					errors.add(:date_submitted, 'deadline for the PAForm has passed')
 				end
 			end
 		end

@@ -24,7 +24,7 @@ RSpec.describe PAForm, type: :model do
 	end
 
 
-	it 'store_questions formats questions in the correct form' do
+	it '#store_questions formats questions in the correct form' do
 		questions = ['What?', 'Who?', 'When?', 'Where?']
 		pa_form = PAForm.new(iteration_id: 1, questions: questions)
 
@@ -32,6 +32,15 @@ RSpec.describe PAForm, type: :model do
 			{ 'question_id' => 1, 'text' => 'What?' }, { 'question_id' => 2, 'text' => 'Who?' }, { 'question_id' => 3, 'text' => 'When?' }, { 'question_id' => 4, 'text' => 'Where?' }])
 	end
 
+	it '#deadline returns the deadline of the iteration' do
+		pa_form.save
+		expect(pa_form.deadline).to eq(pa_form.iteration.deadline)
+	end
+
+	it '#start_date returns the start_date of the iteration' do
+		pa_form.save
+		expect(pa_form.start_date).to eq(pa_form.iteration.start_date)
+	end
 
 	it 'validates the format of the questions' do
 		iteration = FactoryGirl.create(:iteration)
