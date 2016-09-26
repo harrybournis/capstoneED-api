@@ -16,8 +16,10 @@ class PeerAssessment < ApplicationRecord
 
 	# Validations
 	validates_presence_of :pa_form_id, :submitted_for_id, :submitted_by_id, :answers
+	validate :submitted_for_is_in_the_same_team
 	validate :format_of_answers
 	validate :submit_is_before_deadline
+	validate :submit_is_after_start_date
 
 
 	# Instance Methods
@@ -59,8 +61,23 @@ class PeerAssessment < ApplicationRecord
 		def submit_is_before_deadline
 			if date_submitted.present?
 				unless date_submitted <= pa_form.deadline
-					errors.add(:date_submitted, 'deadline for the PAForm has passed')
+					errors.add(:date_submitted, "deadline for the PAForm has passed. Deadline was #{pa_form.deadline.to_formatted_s(:long_ordinal)}")
 				end
+			end
+		end
+
+		# date_submitted validation
+		def submit_is_after_start_date
+			if date_submitted.present?
+				unless date_submitted >= pa_form.start_date
+					errors.add(:date_submitted, "this PAForm is not yet available for submission. Try after #{pa_form.start_date.to_formatted_s(:long_ordinal)}")
+				end
+			end
+		end
+
+		def submitted_for_is_in_the_same_team
+			if submitted_for_id.present? && !persisted?
+				if submitted_by.
 			end
 		end
 end

@@ -42,7 +42,7 @@ RSpec.describe PeerAssessment, type: :model do
 	end
 
 	it '#submit should assign the current time as date_submitted' do
-		time_now = DateTime.now
+		time_now = @pa_form.start_date + 1.minute
 		Timecop.freeze(time_now) do
 			peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
 				answers: [{ question_id: 1, answer: 'answ' }])
@@ -63,12 +63,24 @@ RSpec.describe PeerAssessment, type: :model do
 		end
 	end
 
+	it '#submit should not be allowed if PAForm start_date has not arrived yet' do
+		peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+			answers: [{ question_id: 1, answer: 'answ' }])
+		peer_assessment.save
+		Timecop.travel(@pa_form.start_date - 1.day) do
+			expect(peer_assessment.submit).to be_falsy
+			expect(peer_assessment.errors[:date_submitted][0]).to include("not yet available")
+		end
+	end
+
 	it '#submitted? should return false if date_submitted is nil' do
 		peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
 			answers: [{ question_id: 1, answer: 'answ' }])
 		peer_assessment.save
 		expect(peer_assessment.submitted?).to be_falsy
-		expect(peer_assessment.submit).to be_truthy
+		Timecop.travel(@pa_form.start_date + 1.day) do
+			expect(peer_assessment.submit).to be_truthy
+		end
 		expect(peer_assessment.submitted?).to be_truthy
 	end
 end

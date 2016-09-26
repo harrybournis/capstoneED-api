@@ -20,14 +20,73 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 
 		describe 'POST create' do
 			it 'creates a new Peer Assessment for a certain user with submitted_by from the current_user' do
-				#post :create, params: {  }
+				Timecop.travel(@pa_form.start_date + 1.minute) do
+					@controller = V1::PeerAssessmentsController.new
+					mock_request = MockRequest.new(valid = true, @student)
+					request.cookies['access-token'] = mock_request.cookies['access-token']
+					request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+					post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
+					expect(status).to eq(201)
+					expect(body['peer_assessment']['submitted_by_id']).to eq(@student.id)
+					expect(body['peer_assessment']['answers'][1]['answer']).to eq('dsfdfsdsf')
+				end
 			end
-			it 'responds with 400 bad request if params are missing'
-			it 'responds with 400 bad request if answers are not in correct format'
-			it 'responds with 422 forbidden if submitted for is not in the same Team'
-			it 'responds with 422 forbidden if PAForm is not associated with Student through Project/Teams'
-			it 'responds with 422 forbidden if PAForm deadline has passed'
-			it 'responds with 422 forbidden if PAForm start date is not open yet'
+
+			describe 'responds with 422 unprocessable_entity if' do
+				it 'params are missing' do
+					post :create, params: { pa_form_id: @pa_form.id, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
+					expect(status).to eq(422)
+				end
+
+				it 'answers are not in correct format' do
+					post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for, answers: { question_id: 3, answer: 'dkdk', something: 'ddd' } }
+					expect(status).to eq(422)
+					expect(errors['answers'][0]).to include('is not an Array')
+				end
+
+				it 'submitted for is not in the same Team'
+
+				it 'PAForm is not associated with Student through Project/Teams' do
+					irrelevant_student = FactoryGirl.create(:student_confirmed)
+
+					Timecop.travel(@pa_form.start_date + 1.minute) do
+						@controller = V1::PeerAssessmentsController.new
+						mock_request = MockRequest.new(valid = true, @student)
+						request.cookies['access-token'] = mock_request.cookies['access-token']
+						request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+						post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: irrelevant_student, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
+						p body
+						expect(status).to eq(422)
+						expect(errors['submitted_for_id'][0]).to include('is not in the same Team with the current user')
+					end
+				end
+
+				it 'PAForm deadline has passed' do
+					Timecop.travel(@pa_form.deadline + 1.hour) do
+						@controller = V1::PeerAssessmentsController.new
+						mock_request = MockRequest.new(valid = true, @student)
+						request.cookies['access-token'] = mock_request.cookies['access-token']
+						request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+						post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
+						expect(status).to eq(422)
+					end
+				end
+
+				it 'PAForm start date is not open yet' do
+					Timecop.travel(@pa_form.deadline + 1.hour) do
+						@controller = V1::PeerAssessmentsController.new
+						mock_request = MockRequest.new(valid = true, @student)
+						request.cookies['access-token'] = mock_request.cookies['access-token']
+						request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+						post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
+						expect(status).to eq(422)
+					end
+				end
+			end
 		end
 	end
 
@@ -43,15 +102,17 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			@student4 = FactoryGirl.create(:student_confirmed)
 			@student5 = FactoryGirl.create(:student_confirmed)
 
-			@peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)
-			FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student3)
-			FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student4)
-			FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student5)
+			Timecop.travel(@iteration.start_date + 1.minute) do
+				@peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)
+				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student3)
+				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student4)
+				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student5)
 
-			FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student)
-			FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student3)
-			FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student4)
-			FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student5)
+				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student)
+				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student3)
+				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student4)
+				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student5)
+			end
 		end
 
 		before do
@@ -100,6 +161,14 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 				get :show, params: { id: other.id }
 				expect(status).to eq(403)
 				expect(errors['base'][0]).to include('not associated')
+			end
+		end
+
+		describe 'POST create' do
+			it 'does not work for lecturers' do
+				post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
+				expect(status).to eq(403)
+				expect(errors['base'][0]).to include('must be Student')
 			end
 		end
 	end

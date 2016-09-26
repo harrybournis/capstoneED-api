@@ -1,6 +1,7 @@
 class V1::PeerAssessmentsController < ApplicationController
 
 	before_action :allow_if_lecturer, only: [:index_with_pa_form, :index_with_submitted_for, :index_with_submitted_by, :index]
+	before_action :allow_if_student, 	only: [:create]
   before_action only: [:index_with_pa_form, :index_with_submitted_for, :index_with_submitted_by], if: 'params[:includes]' do
     validate_includes(current_user.peer_assessment_associations, includes_array, 'Peer Assessment')
   end
@@ -40,6 +41,14 @@ class V1::PeerAssessmentsController < ApplicationController
 
 	# POST /peer_assessments
 	def create
+		@peer_assessment = PeerAssessment.new(peer_assessment_params)
+		@peer_assessment.submitted_by = current_user.load
+
+		if @peer_assessment.save && @peer_assessment.submit # submit it
+			render json: @peer_assessment, status: :created
+		else
+			render json: format_errors(@peer_assessment.errors), status: :unprocessable_entity
+		end
 	end
 
 
@@ -59,7 +68,7 @@ class V1::PeerAssessmentsController < ApplicationController
       PeerAssessment
     end
 
-		def peer_assessments_params
-			params.permit(:pa_form, :submitted_for_id, :submitted_by_id, :date_submitted, :answers)
+		def peer_assessment_params
+			params.permit(:pa_form_id, :submitted_for_id, answers: [:question_id, :answer])
 		end
 end
