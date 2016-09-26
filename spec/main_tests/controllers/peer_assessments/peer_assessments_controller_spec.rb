@@ -71,10 +71,10 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			end
 
 			it 'shows all peer assessments FOR a Student if submitted_for is in the params' do
-				get :index_with_submitted_by, params: { submitted_by_id: @student.id }
+				get :index_with_submitted_for, params: { submitted_for_id: @student.id }
 				expect(status).to eq(200)
-				expect(body['peer_assessments'].length).to eq(@student.peer_assessments_submitted_by.length)
-				expect(body['peer_assessments'].length).to eq(4)
+				expect(body['peer_assessments'].length).to eq(@student.peer_assessments_submitted_for.length)
+				expect(body['peer_assessments'].length).to eq(1)
 			end
 
 			it 'responds with 400 bad request if no PAForm, submitted_by, submitted_for is present in the params' do
