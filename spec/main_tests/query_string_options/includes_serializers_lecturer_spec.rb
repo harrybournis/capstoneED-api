@@ -199,5 +199,27 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body['iteration']['pa_form']['questions']).to eq(pa_form.questions)
 			end
 		end
+
+		describe 'Peer Assessment' do
+			before do
+				@iteration = FactoryGirl.create(:iteration, project: @project)
+				@pa_form  = FactoryGirl.create(:pa_form, iteration: @iteration)
+				@peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form)
+				@controller = V1::PeerAssessmentsController.new
+			end
+
+			it 'GET show includes pa_form submitted_for submitted_by' do
+				get :show, params: { id: @peer_assessment.id, includes: 'submitted_by,pa_form,submitted_for' }
+				expect(status).to eq(200)
+				expect(body['peer_assessment']['submitted_for']['email']).to eq(@peer_assessment.submitted_for.email)
+				expect(body['peer_assessment']['submitted_by']['email']).to eq(@peer_assessment.submitted_by.email)
+			end
+
+			it 'returns peer assessment if associated including the PAForm' do
+				get :show, params: { id: @peer_assessment.id, includes: 'pa_form' }
+				expect(status).to eq(200)
+				expect(body['peer_assessment']['pa_form']['questions'][0]).to eq(@pa_form.questions[0])
+			end
+		end
 	end
 end

@@ -57,7 +57,7 @@ class V1::PAFormsController < ApplicationController
 
 
 	private
-    # Sets @team if it is asociated with the current user. Eager loads associations in the params[:includes].
+    # Sets @pa_form if it is asociated with the current user. Eager loads associations in the params[:includes].
     # Renders error if not associated and Halts execution
     def set_pa_form_if_associated
       unless @pa_form = current_user.pa_forms(includes: params[:includes]).where(id: params[:id])[0]

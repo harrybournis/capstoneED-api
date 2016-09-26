@@ -3,6 +3,8 @@ class V1::PeerAssessmentsController < ApplicationController
   before_action only: [:index_with_pa_form], if: 'params[:includes]' do
     validate_includes(current_user.peer_assessment_associations, includes_array, 'Peer Assessment')
   end
+  before_action :set_peer_assessment_if_associated, only: [:show]
+
 
 	# GET /peer_assessments?pa_form_id=2
 	def index_with_pa_form
@@ -29,6 +31,7 @@ class V1::PeerAssessmentsController < ApplicationController
 
 	# GET /peer_assessments/:id
 	def show
+		serialize_object @peer_assessment, :ok
 	end
 
 	# POST /peer_assessments
@@ -37,6 +40,15 @@ class V1::PeerAssessmentsController < ApplicationController
 
 
 	private
+
+    # Sets @peer_assessment if it is asociated with the current user. Eager loads associations in the params[:includes].
+    # Renders error if not associated and Halts execution
+    def set_peer_assessment_if_associated
+      unless @peer_assessment = current_user.peer_assessments(includes: includes_array).where(id: params[:id])[0]
+        render_not_associated_with_current_user('Peer Assessment')
+        return false
+      end
+    end
 
     # The class of the resource that the controller handles
     def controller_resource

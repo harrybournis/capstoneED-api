@@ -38,7 +38,7 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			@student4 = FactoryGirl.create(:student_confirmed)
 			@student5 = FactoryGirl.create(:student_confirmed)
 
-			FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)
+			@peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)
 			FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student3)
 			FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student4)
 			FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student5)
@@ -85,7 +85,17 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 		end
 
 		describe 'GET show' do
-			it 'returns peer assessment if associated'
+			it 'returns peer assessment if associated' do
+				get :show, params: { id: @peer_assessment.id }
+				expect(status).to eq(200)
+			end
+
+			it 'returns 403 forbiden if peer_assement not associated' do
+				other = FactoryGirl.create(:peer_assessment)
+				get :show, params: { id: other.id }
+				expect(status).to eq(403)
+				expect(errors['base'][0]).to include('not associated')
+			end
 		end
 	end
 

@@ -54,7 +54,7 @@ class V1::IterationsController < ApplicationController
 
 	private
 
-    # Sets @team if it is asociated with the current user. Eager loads associations in the params[:includes].
+    # Sets @iteration if it is asociated with the current user. Eager loads associations in the params[:includes].
     # Renders error if not associated and Halts execution
     def set_iteration_if_associated
       unless @iteration = current_user.iterations(includes: includes_array).where(id: params[:id])[0]
