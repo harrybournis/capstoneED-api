@@ -12,10 +12,14 @@ class V1::PeerAssessmentsController < ApplicationController
 
 	# GET /peer_assessments?submitted_for_id=2
 	def index_with_submitted_for
+		@peer_assessments = current_user.peer_assessments(includes: includes_array).where(['submitted_for_id = ?', params[:submitted_for_id]])
+		serialize_collection @peer_assessments, :ok
 	end
 
 	# GET /peer_assessments?submitted_by_id=2
 	def index_with_submitted_by
+		@peer_assessments = current_user.peer_assessments(includes: includes_array).where(['submitted_by_id = ?', params[:submitted_by_id]])
+		serialize_collection @peer_assessments, :ok
 	end
 
 	# GET /peer_assessments
