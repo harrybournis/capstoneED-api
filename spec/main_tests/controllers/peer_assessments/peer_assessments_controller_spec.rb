@@ -15,7 +15,18 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
 			@student_for = FactoryGirl.create(:student_confirmed)
-			@pa_form = FactoryGirl.create(:pa_form)
+			@project = FactoryGirl.create(:project)
+			@team = FactoryGirl.create(:team, project: @project)
+			@iteration = FactoryGirl.create(:iteration, project: @project)
+			@team.students << @student_for
+			@team.students << @student
+			@team.students << FactoryGirl.create(:student_confirmed)
+			@pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
+
+			@irrelevant_team = FactoryGirl.create(:team)
+			@irrelevant_student = FactoryGirl.create(:student_confirmed)
+			4.times { @irrelevant_team.students << FactoryGirl.create(:student_confirmed) }
+			@irrelevant_team.students << @irrelevant_student
 		end
 
 		describe 'POST create' do
@@ -48,18 +59,15 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 				it 'submitted for is not in the same Team'
 
 				it 'PAForm is not associated with Student through Project/Teams' do
-					irrelevant_student = FactoryGirl.create(:student_confirmed)
-
 					Timecop.travel(@pa_form.start_date + 1.minute) do
 						@controller = V1::PeerAssessmentsController.new
 						mock_request = MockRequest.new(valid = true, @student)
 						request.cookies['access-token'] = mock_request.cookies['access-token']
 						request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-						post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: irrelevant_student, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
-						p body
+						post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @irrelevant_student.id, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
 						expect(status).to eq(422)
-						expect(errors['submitted_for_id'][0]).to include('is not in the same Team with the current user')
+						expect(errors['submitted_for'][0]).to include('is not in the same Team with the current user')
 					end
 				end
 
@@ -69,7 +77,6 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 						mock_request = MockRequest.new(valid = true, @student)
 						request.cookies['access-token'] = mock_request.cookies['access-token']
 						request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-
 						post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
 						expect(status).to eq(422)
 					end
@@ -101,6 +108,12 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			@student3 = FactoryGirl.create(:student_confirmed)
 			@student4 = FactoryGirl.create(:student_confirmed)
 			@student5 = FactoryGirl.create(:student_confirmed)
+			@team = FactoryGirl.create(:team, project: @project)
+			@team.students << @student
+			@team.students << @student2
+			@team.students << @student3
+			@team.students << @student4
+			@team.students << @student5
 
 			Timecop.travel(@iteration.start_date + 1.minute) do
 				@peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)

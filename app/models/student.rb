@@ -16,4 +16,9 @@ class Student < User
 	# Validations
 	validates_absence_of :position, :university
 	validates_inclusion_of :type, in: ['Student']
+
+	# Instance Methods
+	def teammates
+		Student.joins(:teams).where('teams.id' => teams.ids).where.not(id: id).distinct
+	end
 end

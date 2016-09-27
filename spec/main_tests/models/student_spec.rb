@@ -42,4 +42,23 @@ RSpec.describe Student, type: :model do
 		expect { student.destroy }.to change { JoinTables::StudentsTeam.all.count }.by(-1)
 		expect(Team.all.size).to eq(team_count)
 	end
+
+	it '#teammates returns students in the same teams' do
+		@user = FactoryGirl.create(:student_confirmed)
+
+		team1 = FactoryGirl.create(:team)
+		team2 = FactoryGirl.create(:team)
+		team3 = FactoryGirl.create(:team)
+		teammate = FactoryGirl.create(:student_confirmed)
+		3.times { team1.students << FactoryGirl.create(:student_confirmed) }
+		team1.students << @user
+		team1.students << teammate
+		3.times { team2.students << FactoryGirl.create(:student_confirmed) }
+		3.times { team3.students << FactoryGirl.create(:student_confirmed) }
+		team3.students << @user
+		team3.students << teammate
+
+		expect(@user.teams.length).to eq 2
+		expect(@user.teammates.length).to eq 7
+	end
 end

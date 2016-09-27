@@ -6,6 +6,12 @@ FactoryGirl.define do
 		date_submitted { pa_form.start_date + 2.hours }
 		answers { [{ question_id: 1, answer: 'Something' }, { question_id: 2, answer: 'A guy' }, { question_id: 3, answer: 'Yesterwhatever' }, { question_id: 4, answer: 'You know where' }, { question_id: 5, answer: 'Because' }] }
 
+    after :build do |obj|
+    	team = FactoryGirl.create(:team)
+      team.students << obj.submitted_by
+      team.students << obj.submitted_for
+    end
+
 		factory :peer_assessment_unsubmitted do
 			date_submitted nil
 		end

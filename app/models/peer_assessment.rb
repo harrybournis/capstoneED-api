@@ -76,8 +76,10 @@ class PeerAssessment < ApplicationRecord
 		end
 
 		def submitted_for_is_in_the_same_team
-			if submitted_for_id.present? && !persisted?
-				if submitted_by.
+			if submitted_for_id.present?
+				unless submitted_by.teammates.include? submitted_for
+					errors.add(:submitted_for, 'is not in the same Team with the current user')
+				end
 			end
 		end
 end
