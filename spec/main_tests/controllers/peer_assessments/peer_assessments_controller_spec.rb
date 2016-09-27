@@ -56,43 +56,7 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 					expect(errors['answers'][0]).to include('is not an Array')
 				end
 
-				it 'submitted for is not in the same Team'
-
-				it 'PAForm is not associated with Student through Project/Teams' do
-					Timecop.travel(@pa_form.start_date + 1.minute) do
-						@controller = V1::PeerAssessmentsController.new
-						mock_request = MockRequest.new(valid = true, @student)
-						request.cookies['access-token'] = mock_request.cookies['access-token']
-						request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-
-						post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @irrelevant_student.id, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
-						expect(status).to eq(422)
-						expect(errors['submitted_for'][0]).to include('is not in the same Team with the current user')
-					end
-				end
-
-				it 'PAForm deadline has passed' do
-					Timecop.travel(@pa_form.deadline + 1.hour) do
-						@controller = V1::PeerAssessmentsController.new
-						mock_request = MockRequest.new(valid = true, @student)
-						request.cookies['access-token'] = mock_request.cookies['access-token']
-						request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-						post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
-						expect(status).to eq(422)
-					end
-				end
-
-				it 'PAForm start date is not open yet' do
-					Timecop.travel(@pa_form.deadline + 1.hour) do
-						@controller = V1::PeerAssessmentsController.new
-						mock_request = MockRequest.new(valid = true, @student)
-						request.cookies['access-token'] = mock_request.cookies['access-token']
-						request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-
-						post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
-						expect(status).to eq(422)
-					end
-				end
+				#it 'has already submitted this PAForm for this Student'
 			end
 		end
 	end

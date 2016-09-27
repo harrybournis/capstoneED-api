@@ -7,9 +7,9 @@ FactoryGirl.define do
 		answers { [{ question_id: 1, answer: 'Something' }, { question_id: 2, answer: 'A guy' }, { question_id: 3, answer: 'Yesterwhatever' }, { question_id: 4, answer: 'You know where' }, { question_id: 5, answer: 'Because' }] }
 
     after :build do |obj|
-    	team = FactoryGirl.create(:team)
-      team.students << obj.submitted_by
-      team.students << obj.submitted_for
+    	team = FactoryGirl.create(:team, project: obj.pa_form.project)
+      team.students << obj.submitted_by unless obj.submitted_by.teammates.include? obj.submitted_for
+      team.students << obj.submitted_for unless obj.submitted_for.teammates.include? obj.submitted_by
     end
 
 		factory :peer_assessment_unsubmitted do

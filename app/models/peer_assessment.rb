@@ -16,7 +16,9 @@ class PeerAssessment < ApplicationRecord
 
 	# Validations
 	validates_presence_of :pa_form_id, :submitted_for_id, :submitted_by_id, :answers
+	validates_uniqueness_of :pa_form, scope: [:submitted_for_id, :submitted_by_id], message: 'has already been completed for this student'
 	validate :submitted_for_is_in_the_same_team
+	validate :pa_form_is_from_project_that_student_belongs_to
 	validate :format_of_answers
 	validate :submit_is_before_deadline
 	validate :submit_is_after_start_date
@@ -58,6 +60,7 @@ class PeerAssessment < ApplicationRecord
 		end
 
 		# date_submitted validation
+		# Validates that the submission is withing the deadline
 		def submit_is_before_deadline
 			if date_submitted.present?
 				unless date_submitted <= pa_form.deadline
@@ -67,6 +70,7 @@ class PeerAssessment < ApplicationRecord
 		end
 
 		# date_submitted validation
+		# validates that the PAForm is open for submission
 		def submit_is_after_start_date
 			if date_submitted.present?
 				unless date_submitted >= pa_form.start_date
@@ -75,10 +79,22 @@ class PeerAssessment < ApplicationRecord
 			end
 		end
 
+		# submitted_fo validation
+		# validates that the submitted_for student belongs to the same teams
+		# submitted_by
 		def submitted_for_is_in_the_same_team
-			if submitted_for_id.present?
+			if submitted_for_id.present? && submitted_by_id.present?
 				unless submitted_by.teammates.include? submitted_for
 					errors.add(:submitted_for, 'is not in the same Team with the current user')
+				end
+			end
+		end
+
+		# validates that submitted_for belongs in a Team in the PAForm's Project
+		def pa_form_is_from_project_that_student_belongs_to
+			if pa_form_id.present? && submitted_by_id.present?
+				unless submitted_by.projects.include? pa_form.project
+					errors.add(:pa_form, 'is for a Project that the current user does not belong to')
 				end
 			end
 		end

@@ -147,12 +147,15 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			unit = FactoryGirl.create(:unit, lecturer_id: lecturer.id)
 			project = FactoryGirl.create(:project, lecturer_id: lecturer.id, unit: unit)
 			iteration  = FactoryGirl.create(:iteration, project: project)
-			pa_form = FactoryGirl.create(:pa_form)
+			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 			student  = FactoryGirl.create(:student_confirmed)
 			student2 = FactoryGirl.create(:student_confirmed)
 			student3 = FactoryGirl.create(:student_confirmed)
 			team = FactoryGirl.create(:team, project: project)
 			team.students << @user
+			team.students << student
+			team.students << student2
+			team.students << student3
 			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student)
 			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student2)
 			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student3)
