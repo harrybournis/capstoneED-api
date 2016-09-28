@@ -47,7 +47,7 @@ class V1::QuestionsController < ApplicationController
 
 	private
 
-    # Sets @unit if it is asociated with the current user. Eager loads associations in the params[:includes].
+    # Sets @question if it is asociated with the current user. Eager loads associations in the params[:includes].
     # Renders error if not associated and Halts execution
 		def set_question_if_associated
       unless @question = current_user.questions.where(id: params[:id])[0]

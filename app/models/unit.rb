@@ -1,4 +1,12 @@
 class Unit < ApplicationRecord
+	# Attributes
+	# name						:string
+	# code						:string
+	# semester				:string
+	# year						:integer
+	# archived_at			:date
+	# department_id 	:integer
+	# lecturer_id			:integer
 
 	# Associations
 	belongs_to :lecturer

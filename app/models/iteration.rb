@@ -1,5 +1,9 @@
 class Iteration < ApplicationRecord
-	# Attributes: name(string), start_date(datetime), deadline(datetime), project_id(integer)
+	# Attributes
+	# name 				:string
+	# start_date 	:datetime
+	# deadline 		:datetime
+	# project_id	:integer
 
 	# Associations
 	belongs_to :project

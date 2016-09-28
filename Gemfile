@@ -65,6 +65,7 @@ group :test do
   gem 'db-query-matchers', '~> 0.6.0'
   gem 'pry-byebug', '~> 3.4'
   gem 'database_cleaner', '~> 1.5', '>= 1.5.3'
+  gem 'timecop', '~> 0.8.1'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

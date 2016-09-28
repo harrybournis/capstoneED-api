@@ -1,4 +1,10 @@
 class Project < ApplicationRecord
+  # Attributes
+  # start_date  :date
+  # end_date    :date
+  # description :text
+  # unit_id     :integer
+  # lecturer_id :integer
 
 	# Associations
   belongs_to 	:lecturer

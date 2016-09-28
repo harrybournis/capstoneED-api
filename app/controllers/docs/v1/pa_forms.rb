@@ -19,7 +19,7 @@ class Docs::V1::PaForms < ApplicationController
   meta :authentication? => true
   param :id, Integer, 'The id of the Peer Assessment to be returned', required: true
   error code: 401, desc: 'Authentication failed'
-	error code: 403, desc: 'The Iteration is not associated with the current user'
+	error code: 403, desc: 'The PAForm is not associated with the current user'
 	example DocHelper.format_example(status = 200, nil, body = "{\n  \"pa_form\": {\n    \"id\": 1,\n    \"iteration_id\": 1,\n    \"questions\": [\n      {\n        \"text\": \"What?\",\n        \"question_id\": 1\n      },\n      {\n        \"text\": \"Who?\",\n        \"question_id\": 2\n      },\n      {\n        \"text\": \"When?\",\n        \"question_id\": 3\n      },\n      {\n        \"text\": \"Where?\",\n        \"question_id\": 4\n      },\n      {\n        \"text\": \"Why?\",\n        \"question_id\": 5\n      }\n    ]\n  }\n}")
 	description <<-EOS
 		Returns a Peer Assessment Form. Must be associated with the current user.

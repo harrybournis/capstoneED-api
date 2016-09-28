@@ -133,4 +133,40 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			expect(@current_user.pa_forms.length).to eq(2)
 		end
 	end
+
+	describe "Peer Assessment" do
+		it 'returns the associated peer assessments' do
+			@user = FactoryGirl.create(:student_confirmed)
+			@request = MockRequest.new(valid = true, @user)
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			@token_id = decoded_token.first['id']
+			@device = decoded_token.first['device']
+			@current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
+
+			lecturer = FactoryGirl.create(:lecturer_confirmed)
+			unit = FactoryGirl.create(:unit, lecturer_id: lecturer.id)
+			project = FactoryGirl.create(:project, lecturer_id: lecturer.id, unit: unit)
+			iteration  = FactoryGirl.create(:iteration, project: project)
+			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
+			student  = FactoryGirl.create(:student_confirmed)
+			student2 = FactoryGirl.create(:student_confirmed)
+			student3 = FactoryGirl.create(:student_confirmed)
+			team = FactoryGirl.create(:team, project: project)
+			team.students << @user
+			team.students << student
+			team.students << student2
+			team.students << student3
+			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student)
+			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student2)
+			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student3)
+			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student, submitted_for: student2)
+			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student, submitted_for: student3)
+			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student, submitted_for: @user)
+			peer_assessment_irrellevant = FactoryGirl.create(:peer_assessment)
+
+			expect(@current_user.peer_assessments_for.length).to eq(1)
+			expect(@current_user.peer_assessments_by.length).to eq(3)
+			expect(@current_user.peer_assessments.length).to eq(4)
+		end
+	end
 end

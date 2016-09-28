@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160921182213) do
+ActiveRecord::Schema.define(version: 20160924130730) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,19 @@ ActiveRecord::Schema.define(version: 20160921182213) do
     t.datetime "updated_at",                null: false
     t.index ["iteration_id"], name: "index_pa_forms_on_iteration_id", using: :btree
     t.index ["questions"], name: "index_pa_forms_on_questions", using: :gin
+  end
+
+  create_table "peer_assessments", force: :cascade do |t|
+    t.integer  "pa_form_id"
+    t.integer  "submitted_by_id"
+    t.integer  "submitted_for_id"
+    t.datetime "date_submitted"
+    t.jsonb    "answers"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.index ["pa_form_id"], name: "index_peer_assessments_on_pa_form_id", using: :btree
+    t.index ["submitted_by_id"], name: "index_peer_assessments_on_submitted_by_id", using: :btree
+    t.index ["submitted_for_id"], name: "index_peer_assessments_on_submitted_for_id", using: :btree
   end
 
   create_table "projects", force: :cascade do |t|
