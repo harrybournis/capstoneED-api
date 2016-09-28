@@ -55,8 +55,6 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 					expect(status).to eq(422)
 					expect(errors['answers'][0]).to include('is not an Array')
 				end
-
-				#it 'has already submitted this PAForm for this Student'
 			end
 		end
 	end
