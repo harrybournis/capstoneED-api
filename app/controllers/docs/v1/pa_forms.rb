@@ -15,6 +15,17 @@ class Docs::V1::PaForms < ApplicationController
 	end
 
 
+	api :GET, 'pa_forms', 'Get all Active PAForms'
+	meta :authentication => true
+	meta :students_only => true
+	example DocHelper.format_example(status = 200, nil, body = "{\n  \"pa_forms\": [\n    {\n      \"id\": 5,\n      \"iteration_id\": 5,\n      \"questions\": [\n        {\n          \"text\": \"What?\",\n          \"question_id\": 1\n        },\n        {\n          \"text\": \"Who?\",\n          \"question_id\": 2\n        },\n        {\n          \"text\": \"When?\",\n          \"question_id\": 3\n        },\n        {\n          \"text\": \"Where?\",\n          \"question_id\": 4\n        },\n        {\n          \"text\": \"Why?\",\n          \"question_id\": 5\n        }\n      ]\n    }\n  ]\n}")
+	description <<-EOS
+		Returns all Peer Assessment forms, associated with the current_user, that can be submitted at the
+		moment, meaning that the start_date has passed, but the deadline is still in the future.
+	EOS
+	def get_active_pa_forms
+	end
+
 	api :GET, 'pa_forms/:id', 'Show an Peer Assessment Form'
   meta :authentication? => true
   param :id, Integer, 'The id of the Peer Assessment to be returned', required: true
