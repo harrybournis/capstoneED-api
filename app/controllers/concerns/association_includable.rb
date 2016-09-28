@@ -30,6 +30,9 @@ module AssociationIncludable
   # @param 	[String] 	resource 				A String representing the name of the resource. Only used to display errors to the user.
   # @return [Boolean]
 	def validate_includes(associations, includes_array, resource)
+		associations = current_user.method("#{controller_resource.name.underscore}_associations").call
+		resource = controller_resource.name
+
 		if associations.length >= includes_array.length
 			valid = true
 			includes_array.each { |e| valid = false unless associations.include? e }
