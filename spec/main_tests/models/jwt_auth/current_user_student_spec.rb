@@ -112,7 +112,8 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 	end
 
 	describe 'PAForms' do
-		it 'returns correct pa_forms' do
+
+		before do
 			@user = FactoryGirl.create(:lecturer)
 			@student = FactoryGirl.create(:student)
 			@request = MockRequest.new(valid = true, @student)
@@ -125,16 +126,41 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @user)
 			@team = FactoryGirl.create(:team, project_id: @project.id)
 			@team.students << @student
+		end
 
+		it 'returns correct pa_forms' do
 			iteration = FactoryGirl.create(:iteration, project_id: @project.id)
 			iteration2 = FactoryGirl.create(:iteration, project_id: @project.id)
 			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
+
 			expect(@current_user.pa_forms.length).to eq(2)
 		end
 
 		it '#pa_forms_active returns only the currently available forms for submission' do
+			now = DateTime.now
+			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, project_id: @project.id)
+			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, project_id: @project.id)
+			FactoryGirl.create(:pa_form, iteration: iteration1)
+			FactoryGirl.create(:pa_form, iteration: iteration2)
+			irrelevant = FactoryGirl.create(:pa_form)
+			expect(PAForm.all.length).to eq 3
 
+			Timecop.travel(now + 3.days + 1.minute) do
+				expect(@current_user.pa_forms_active.length).to eq 1
+			end
+
+			Timecop.travel(now + 4.days + 1.minute) do
+				expect(@current_user.pa_forms_active.length).to eq 2
+			end
+
+			Timecop.travel(now + 5.days + 1.minute) do
+				expect(@current_user.pa_forms_active.length).to eq 1
+			end
+
+			Timecop.travel(now + 6.days + 1.minute) do
+				expect(@current_user.pa_forms_active.length).to eq 0
+			end
 		end
 	end
 
