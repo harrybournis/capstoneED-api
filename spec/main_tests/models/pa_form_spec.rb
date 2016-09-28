@@ -62,4 +62,29 @@ RSpec.describe PAForm, type: :model do
 		expect(pa_form.save).to be_falsy
 		expect(pa_form.errors['questions'][0]).to include("can't be blank")
 	end
+
+	it '.active returns only the forms that can be currently submitted' do
+		now = DateTime.now
+		iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days)
+		iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days)
+		FactoryGirl.create(:pa_form, iteration: iteration1)
+		FactoryGirl.create(:pa_form, iteration: iteration2)
+		expect(PAForm.all.length).to eq 2
+
+		Timecop.travel(now + 3.days + 1.minute) do
+			expect(PAForm.active.length).to eq 1
+		end
+
+		Timecop.travel(now + 4.days + 1.minute) do
+			expect(PAForm.active.length).to eq 2
+		end
+
+		Timecop.travel(now + 5.days + 1.minute) do
+			expect(PAForm.active.length).to eq 1
+		end
+
+		Timecop.travel(now + 6.days + 1.minute) do
+			expect(PAForm.active.length).to eq 0
+		end
+	end
 end

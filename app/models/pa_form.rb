@@ -15,6 +15,14 @@ class PAForm < ApplicationRecord
 	validate 								:format_of_questions
 
 
+	# Class Methods
+
+	# Returns only the PAForms that are available for completion now
+	def self.active
+		joins(:iteration).where('iterations.start_date < :now and iterations.deadline > :now', now: DateTime.now)
+	end
+
+
 	# Instance Methods
 
 	delegate :deadline, :start_date, to: :iteration

@@ -25,6 +25,10 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 		PAForm.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
 	end
 
+	def pa_forms_active(options={})
+		#PAForm.joins(:students_teams).where(['iteration_students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
+	end
+
 	def peer_assessments(options={})
 		PeerAssessment.where(['submitted_for_id = ? or submitted_by_id = ?', @id, @id]).eager_load(options[:includes])
 	end

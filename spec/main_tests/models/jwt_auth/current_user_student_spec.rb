@@ -132,6 +132,10 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 			expect(@current_user.pa_forms.length).to eq(2)
 		end
+
+		it '#pa_forms_active returns only the currently available forms for submission' do
+
+		end
 	end
 
 	describe "Peer Assessment" do
