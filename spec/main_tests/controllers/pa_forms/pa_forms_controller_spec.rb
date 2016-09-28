@@ -109,7 +109,6 @@ RSpec.describe V1::PAFormsController, type: :controller do
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 				get :index
-				p body
 				expect(status).to eq 200
 				expect(body['pa_forms'].length).to eq(1)
 			end
