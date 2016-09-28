@@ -16,8 +16,10 @@ class Team < ApplicationRecord
   validates_uniqueness_of :id, :enrollment_key
   validates_uniqueness_of :name, scope: :project_id, case_sensitive: false
 
+
   # Instance Methods
 
+  # Add a student to a Team with validations
   def enrol(student)
   	enrolment = JoinTables::StudentsTeam.new(team: self, student: student)
 

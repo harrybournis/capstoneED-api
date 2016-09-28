@@ -24,6 +24,7 @@ class Project < ApplicationRecord
 
 	private
 
+    # unit validation
 		def unit_is_owned_by_lecturer
 			unless lecturer.units.include?(unit)
 				errors.add(:unit, "does not belong in the Lecturer's list of Units")

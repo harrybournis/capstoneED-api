@@ -1,15 +1,10 @@
 class User < ApplicationRecord
-
-	# Includes
 	include User::EmailAuthenticatable
 	devise :database_authenticatable, :confirmable, :recoverable,
 	       :trackable, :validatable
 
 	# Associations
 	has_many :active_tokens, dependent: :destroy
-
-	# Class Constants
-	USER_TYPES = %w(Student Lecturer)
 
 	# Validations
 	validates_presence_of :first_name, :last_name
@@ -18,10 +13,17 @@ class User < ApplicationRecord
 	validates_uniqueness_of :email, case_sensitive: false
 	validates_confirmation_of :password
 
-	# Instance Methods
-	def full_name ; "#{first_name} #{last_name}" end
+	# Class Constants
+	USER_TYPES = %w(Student Lecturer)
 
-	# Disallow assignment to the provider attribute
+
+	# Instance Methods
+
+	def full_name
+		"#{first_name} #{last_name}"
+	end
+
+	# Override provider setter to not allow editing of the provider after creation
 	def provider=(value)
 		if self.persisted?
 			self.errors.add(:provider, "can't be modified for security reasons.")

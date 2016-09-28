@@ -12,8 +12,12 @@ class JoinTables::StudentsTeam < ApplicationRecord
 	validates_uniqueness_of :student_id, scope: :team_id, message: 'can not exist in the same Team twice'
 	validate :student_id_unique_for_teams_project
 
+
 	# Instance Methods
+
 	private
+
+		# student_id validation
 		def student_id_unique_for_teams_project
 			if team.project.students.include? student
 				errors[:student_id] << 'has already enroled in a different team for this Project'

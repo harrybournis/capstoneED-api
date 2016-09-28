@@ -17,7 +17,10 @@ class Student < User
 	validates_absence_of :position, :university
 	validates_inclusion_of :type, in: ['Student']
 
+
 	# Instance Methods
+
+	# returns all the Students that share a Team with self
 	def teammates
 		Student.joins(:teams).where('teams.id' => teams.ids).where.not(id: id).distinct
 	end
