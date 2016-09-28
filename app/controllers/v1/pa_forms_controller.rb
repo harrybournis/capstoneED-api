@@ -1,16 +1,12 @@
 class V1::PAFormsController < ApplicationController
 
 	before_action :allow_if_lecturer, only: [:create, :update, :destroy]
-  before_action :validate_includes, only: [:show], if: 'params[:includes]'
+  before_action :validate_includes, only: [:index, :show], if: 'params[:includes]'
   before_action :set_pa_form_if_associated, only: [:show, :update, :destroy]
 
-	# def index
-	# 	if iteration = current_user.iterations.where(id: params[:iteration_id])[0]
-	# 		render json: iteration.pa_form, status: :ok
-	# 	else
-	# 		render_not_associated_with_current_user('Iteration')
-	# 	end
-	# end
+	def index
+  	serialize_collection current_user.pa_forms_active(includes: params[:includes]), :ok
+	end
 
 	# GET /pa_forms/:id
 	def show

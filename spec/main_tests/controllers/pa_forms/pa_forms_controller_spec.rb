@@ -95,6 +95,34 @@ RSpec.describe V1::PAFormsController, type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 		end
 
+		it 'GET index returns the active PAForms' do
+			now = DateTime.now
+			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, project_id: @project.id)
+			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, project_id: @project.id)
+			FactoryGirl.create(:pa_form, iteration: iteration1)
+			FactoryGirl.create(:pa_form, iteration: iteration2)
+			irrelevant = FactoryGirl.create(:pa_form)
+			expect(PAForm.all.length).to eq 3
+
+			Timecop.travel(now + 5.days + 1.minute) do
+				mock_request = MockRequest.new(valid = true, @student)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+				get :index
+				p body
+				expect(status).to eq 200
+				expect(body['pa_forms'].length).to eq(1)
+			end
+
+			Timecop.travel(now + 6.days + 1.minute) do
+				mock_request = MockRequest.new(valid = true, @student)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+				get :index
+				expect(status).to eq 204
+			end
+		end
+
 		it 'GET show returns the PAForm if associated with current user' do
 			pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
 			get :show, params: { id: pa_form.id }

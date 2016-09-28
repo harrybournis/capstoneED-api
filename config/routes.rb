@@ -40,7 +40,7 @@ Rails.application.routes.draw do
 			resources :iterations, 				only: [:index, :show, :create, :update, :destroy]
 
 			# PAForms
-			resources :pa_forms, 					only: [:show, :create]
+			resources :pa_forms, 					only: [:index, :show, :create]
 
 			# Peer Assessments
 			get 		'peer_assessments',						to: 'peer_assessments#index_with_submitted_for', constraints: -> (request) { request.params[:pa_form_id] && request.params[:submitted_for_id] }
