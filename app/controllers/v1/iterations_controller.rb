@@ -3,9 +3,7 @@ class V1::IterationsController < ApplicationController
 	before_action :validate_project_id_present, 							only: [:index]
 	before_action :validate_project_belongs_to_current_user, 	only: [:index, :create]
 	before_action :allow_if_lecturer, 												only: :create
-	before_action only: [:index, :show], if: 'params[:includes]' do
-    validate_includes(current_user.iteration_associations, includes_array, 'Iteration')
-  end
+ 	before_action :validate_includes, only: [:index, :show], if: 'params[:includes]'
   before_action :set_iteration_if_associated, 							only: [:show, :update, :destroy]
 
 

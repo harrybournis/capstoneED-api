@@ -1,7 +1,6 @@
 class V1::UsersController < ApplicationController
 
 	skip_before_action :authenticate_user_jwt, only: [:create]
-
 	before_action :allow_if_self, only: [:update, :destroy]
 
 

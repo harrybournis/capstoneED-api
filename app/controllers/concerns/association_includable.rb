@@ -29,7 +29,7 @@ module AssociationIncludable
   # @param 	[Array] 	includes_array 	An array of strings. The includes param can be transformed using the includes_arry method.
   # @param 	[String] 	resource 				A String representing the name of the resource. Only used to display errors to the user.
   # @return [Boolean]
-	def validate_includes(associations, includes_array, resource)
+	def validate_includes #(associations, includes_array, resource)
 		associations = current_user.method("#{controller_resource.name.underscore}_associations").call
 		resource = controller_resource.name
 

@@ -2,9 +2,7 @@ class V1::PeerAssessmentsController < ApplicationController
 
 	before_action :allow_if_lecturer, only: [:index_with_pa_form, :index_with_submitted_for, :index_with_submitted_by, :index, :show]
 	before_action :allow_if_student, 	only: [:create]
-  before_action only: [:index_with_pa_form, :index_with_submitted_for, :index_with_submitted_by, :show], if: 'params[:includes]' do
-    validate_includes(current_user.peer_assessment_associations, includes_array, 'Peer Assessment')
-  end
+  before_action :validate_includes, only: [:index_with_pa_form, :index_with_submitted_for, :index_with_submitted_by, :show], if: 'params[:includes]'
   before_action :set_peer_assessment_if_associated, only: [:show]
 
 

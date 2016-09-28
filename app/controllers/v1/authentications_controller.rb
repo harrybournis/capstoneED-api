@@ -2,6 +2,7 @@ class V1::AuthenticationsController < ApplicationController
 
 	skip_before_action :authenticate_user_jwt, only: [:sign_in_email, :refresh]
 
+
 	# GET /me
 	# validates the JWT access-token and returns the current user
 	def me

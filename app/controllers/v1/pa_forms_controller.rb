@@ -1,9 +1,7 @@
 class V1::PAFormsController < ApplicationController
 
 	before_action :allow_if_lecturer, only: [:create, :update, :destroy]
-  before_action only: [:show], if: 'params[:includes]' do
-    validate_includes(current_user.pa_form_associations, includes_array, 'PAForm')
-  end
+  before_action :validate_includes, only: [:show], if: 'params[:includes]'
   before_action :set_pa_form_if_associated, only: [:show, :update, :destroy]
 
 	# def index

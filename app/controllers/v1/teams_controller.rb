@@ -2,16 +2,9 @@ class V1::TeamsController < ApplicationController
 
 	before_action :allow_if_lecturer, 		only: [:create, :destroy, :remove_student]
 	before_action :allow_if_student,			only: [:enrol]
-	before_action only: :index_with_project do
-	 allow_if_lecturer(index_with_project_error_message)
-	end
-	before_action only: :index do
-		allow_if_student(index_error_message)
-	end
-
-	before_action only: [:index, :index_with_project, :show], if: 'params[:includes]' do
-    validate_includes(current_user.team_associations, includes_array, 'Team')
-  end
+	before_action -> { allow_if_lecturer(index_with_project_error_message) }, only: :index_with_project
+	before_action -> { allow_if_student(index_error_message) }, only: :index
+ 	before_action :validate_includes, only: [:index, :index_with_project, :show], if: 'params[:includes]'
   before_action :delete_includes_from_params, only: [:update, :destroy, :remove_student]
   before_action :set_team_if_associated, only: [:show, :update, :destroy, :remove_student]
 
