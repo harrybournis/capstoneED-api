@@ -37,10 +37,10 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 					request.cookies['access-token'] = mock_request.cookies['access-token']
 					request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-					post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for, answers: [{ question_id: 3, answer: 'dkdk' }, { question_id: 2, answer: 'dsfdfsdsf' }] }
+					post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }
 					expect(status).to eq(201)
 					expect(body['peer_assessment']['submitted_by_id']).to eq(@student.id)
-					expect(body['peer_assessment']['answers'][1]['answer']).to eq('dsfdfsdsf')
+					expect(body['peer_assessment']['answers'][1]['answer']).to eq('I enjoyed the presentations')
 				end
 			end
 
@@ -102,6 +102,7 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 				get :index_with_pa_form, params: { pa_form_id: @pa_form.id }
 				expect(status).to eq(200)
 				expect(body['peer_assessments'].length).to eq(@pa_form.peer_assessments.length)
+
 			end
 
 			it 'shows all peer assessments BY a Student if submitted_by is in the params' do
@@ -109,6 +110,7 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 				expect(status).to eq(200)
 				expect(body['peer_assessments'].length).to eq(@student.peer_assessments_submitted_by.length)
 				expect(body['peer_assessments'].length).to eq(4)
+
 			end
 
 			it 'shows all peer assessments FOR a Student if submitted_for is in the params' do
@@ -116,12 +118,14 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 				expect(status).to eq(200)
 				expect(body['peer_assessments'].length).to eq(@student.peer_assessments_submitted_for.length)
 				expect(body['peer_assessments'].length).to eq(1)
+
 			end
 
 			it 'responds with 400 bad request if no PAForm, submitted_by, submitted_for is present in the params' do
 				get :index
 				expect(status).to eq(400)
 				expect(errors['base'][0]).to include('no pa_form_id in the params')
+
 			end
 		end
 

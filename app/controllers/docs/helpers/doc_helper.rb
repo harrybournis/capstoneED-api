@@ -2,7 +2,8 @@ module Docs::Helpers::DocHelper
 
 	def self.format_example(status, headers = nil, body = nil, request = nil)
 		status_hash = {
-			200 => 'Created',
+			200 => 'OK',
+			201 => 'Created',
 			204 => 'No Content',
 			400 => 'Bad Request',
 			401 => 'Unauthorized',
