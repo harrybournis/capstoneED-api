@@ -66,6 +66,11 @@ class V1::PAFormsController < ApplicationController
       end
     end
 
+    # The class of the resource that the controller handles
+    def controller_resource
+      PAForm
+    end
+
     def pa_form_params
     	params.permit(:iteration_id, questions: [])
     end

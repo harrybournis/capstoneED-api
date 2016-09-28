@@ -45,16 +45,11 @@ class V1::DepartmentsController < ApplicationController
     # Sets @unit if it is asociated with the current user. Eager loads associations in the params[:includes].
     # Renders error if not associated and Halts execution
     def set_department_if_associated
-      unless @department = current_user.departments(includes: includes_array).where(id: params[:id])[0]
+      unless @department = current_user.departments.where(id: params[:id])[0]
         render_not_associated_with_current_user('Department')
         return false
       end
     end
-
-
-		def set_department
-			@department = Department.find(params[:id])
-		end
 
 		def department_params
 			params.permit(:id, :university, :name)
