@@ -51,7 +51,7 @@ GEM
     bcrypt (3.1.11)
     benchmark-ips (2.7.2)
     builder (3.2.2)
-    byebug (9.0.5)
+    byebug (9.0.6)
     coderay (1.1.1)
     concurrent-ruby (1.0.2)
     database_cleaner (1.5.3)
@@ -114,7 +114,7 @@ GEM
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
     orm_adapter (0.5.0)
-    pg (0.18.4)
+    pg (0.19.0)
     pkg-config (1.1.7)
     pry (0.10.4)
       coderay (~> 1.1.0)
@@ -224,7 +224,7 @@ DEPENDENCIES
   listen (~> 3.0.5)
   lograge (~> 0.4.1)
   oauth2 (~> 1.2)
-  pg (~> 0.18.4)
+  pg (~> 0.19.0)
   pry
   pry-byebug (~> 3.4)
   puma (~> 3.6)
@@ -244,4 +244,4 @@ RUBY VERSION
    ruby 2.3.1p112
 
 BUNDLED WITH
-   1.12.5
+   1.13.1
