@@ -46,7 +46,6 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body['teams'].first['students'].first).to_not include('email', 'provider')
 				expect(body['teams'].length).to eq(2)
 				expect(body['teams'].first['project']).to_not include('description')
-				expect(body['teams'].first['project']['id']).to eq(@project2.id)
 				expect(body['teams'].first['lecturer']).to include('id')
 			end
 		end
