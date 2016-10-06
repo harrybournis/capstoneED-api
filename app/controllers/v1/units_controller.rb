@@ -7,7 +7,6 @@ class V1::UnitsController < ApplicationController
 
 
   # GET /units
-  # Only for Lecturers
   def index
     serialize_collection current_user.units(includes: includes_array), :ok
   end
