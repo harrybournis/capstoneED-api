@@ -46,7 +46,7 @@ GEM
     addressable (2.4.0)
     apipie-rails (0.3.6)
       json
-    arel (7.1.2)
+    arel (7.1.4)
     awesome_print (1.7.0)
     bcrypt (3.1.11)
     benchmark-ips (2.7.2)
