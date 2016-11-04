@@ -17,11 +17,17 @@
 
 #capstoned-title {
   color: #0f97ec;
-  font-size: 60px;
+  font-size: 6rem;
   background-color: #4604e6;
   text-shadow: rgb(255, 255, 255) -2px -2px 1px, rgb(255, 255, 255) -1px -1px 1px, rgba(232, 247, 255, 0.901961) 1px 1px 1px, rgb(42, 101, 139) 1px 1px 0px, rgb(41, 99, 138) 2px 2px 0px, rgb(40, 97, 136) 3px 3px 0px, rgb(39, 95, 133) 4px 4px 0px, rgb(38, 93, 131) 5px 5px 0px, rgb(37, 90, 128) 6px 6px 0px, rgb(36, 87, 125) 7px 7px 0px, rgb(35, 84, 121) 8px 8px 0px, rgb(33, 80, 117) 9px 9px 0px, rgb(31, 76, 113) 10px 10px 0px, rgb(30, 72, 108) 11px 11px 0px, rgba(28, 67, 103, 0.498039) 12px 12px 1px, rgba(5, 13, 20, 0.498039) 14px 14px 12px;
   letter-spacing: 3px;
 }
+
+  @media (max-width: 576px) {
+    #capstoned-title {
+      font-size: 4rem;
+    }
+  }
 
 
 #back-to-top {
