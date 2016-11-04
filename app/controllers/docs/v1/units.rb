@@ -52,7 +52,7 @@ class Docs::V1::Units < ApplicationController
 	param :code, String, 'A code that identifies the Unit within the university. Provided by Lecturer.', required: true
 	param :semester, String, 'The semester that this Unit currently takes place. Commonly: [Spring, Autumn]', required: true
 	param :year, Integer,'The academic year', required: true
-	param :archived_at, Date, 'The Date it was archived', required: true
+	param :archived_at, Date, 'The Date it was archived'
 	param :department_id, Integer, 'If supplied, it associated the Unit with an existing Department. If not supplied, then the department_attributes param must be present instead.'
 	param :department_attributes, Hash, 'If supplied, it creates a new Department, and associated it with the Unit. If not supplied, then the department_id param must be present instead.'
 	error code: 401, desc: 'Authentication failed'
