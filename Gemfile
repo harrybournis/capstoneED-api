@@ -34,13 +34,15 @@ gem 'apipie-rails', '~> 0.3.6'
 # Logging
 gem 'lograge', '~> 0.4.1'
 
+gem 'factory_girl_rails', '~> 4.7'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
   gem 'rspec-rails', '~> 3.5', '>= 3.5.1'
   gem 'rails-controller-testing', '~> 1.0'
   gem 'spring-commands-rspec', '~> 1.0', '>= 1.0.4'
-  gem 'factory_girl_rails', '~> 4.7'
+
   gem 'benchmark-ips', '~> 2.7', '>= 2.7.1'
   gem 'dotenv-rails', '~> 2.1', '>= 2.1.1' # read environment variables from a .env file in root
 end
