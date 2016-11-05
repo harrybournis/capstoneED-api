@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+	root to: 'apipie/apipies#index', version: 'v1'
 	#constraints subdomain: "api" do
 		namespace :v1, constraints: { format: 'json' } do
 
