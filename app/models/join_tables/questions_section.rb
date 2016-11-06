@@ -1,4 +1,4 @@
-class QuestionsSection < ApplicationRecord
+class JoinTables::QuestionsSection < ApplicationRecord
 	# Attributes
 	# question_id 	:integer
 	# section_id		:integer

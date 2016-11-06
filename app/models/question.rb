@@ -6,7 +6,7 @@ class Question < ApplicationRecord
 
 	# Associations
 	belongs_to :lecturer
-	has_many :questions_sections
+	has_many :questions_sections, class_name: JoinTables::QuestionsSection
 	has_many :sections, through: :questions_sections
 
 	# Validations

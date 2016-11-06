@@ -13,7 +13,6 @@ RSpec.describe Question, type: :model do
 
 	it 'works' do
 		q = FactoryGirl.build(:question)
-		binding.pry
 		puts q.errors unless q.valid?
 		expect(q.valid?).to be_truthy
 	end
