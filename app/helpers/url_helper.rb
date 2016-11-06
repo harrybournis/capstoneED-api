@@ -3,14 +3,22 @@ module UrlHelper
 	# Used @ views/devise/mailer/reset_password_instructions.html.erb
 	# Should be the url of the client application that allows the user to reset their password
 	def client_reset_password_url(token)
-		"https://localhost:3000?reset_password_token=#{token}"
+		if Rails.env.development? || Rails.env.test?
+			"https://capstoned-dev.org?reset_password_token=#{token}" # add the correct path in the frontend app
+		else
+			"http://capstoneed-api.herokuapp.com?reset_password_token=#{token}" # add the correct path in the frontend app
+		end
 	end
 
 	# Used @ models/jwt_auth/jwt_authenticator.rb
 	# Should be the API's host url
 	# Left empty for development
 	def api_host_url
-		""
+		if Rails.env.development? || Rails.env.test?
+			""
+		else
+			"http://capstoneed-api.herokuapp.com/"
+		end
 	end
 
 	# Used @ controllers/v1/confirmations_controller.rb
