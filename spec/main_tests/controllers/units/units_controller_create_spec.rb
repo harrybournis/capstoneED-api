@@ -41,7 +41,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 				expect(Unit.last.lecturer).to eq(@user)
 			end
 
-			it 'what if both?' do
+			it 'if both then department_id takes precedence' do
 				department = FactoryGirl.create(:department)
 				parameters = FactoryGirl.attributes_for(:unit, department_id: department.id).merge(department_attributes: { name: 'departmentname', university: 'university' })
 				expect {
@@ -50,6 +50,15 @@ RSpec.describe V1::UnitsController, type: :controller do
 				expect(response.status).to eq(201)
 				expect(Unit.last.department).to eq(department)
 				expect(Unit.last.lecturer).to eq(@user)
+			end
+
+			it 'if only department present' do
+				parameters = FactoryGirl.attributes_for(:unit)
+				expect {
+					post :create, params: parameters
+				}.to_not change { Department.all.count }
+				expect(response.status).to eq(422)
+				expect(errors['department'][1]).to include('must exist. Either provide a department_id, or deparment_attributes in order to create a new Department')
 			end
 		end
 

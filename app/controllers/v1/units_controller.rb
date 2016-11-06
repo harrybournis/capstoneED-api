@@ -21,7 +21,6 @@ class V1::UnitsController < ApplicationController
   # If department_attributes, the department is created
   def create
     params.delete(:department_attributes) if unit_params[:department_id]
-
     @unit = Unit.new(unit_params)
 
     if current_user.load.units << @unit

@@ -20,6 +20,7 @@ class Unit < ApplicationRecord
 
 	# Validations
 	validates_presence_of :name, :code, :semester, :year, :lecturer_id
+	validates_presence_of :department, message: 'must exist. Either provide a department_id, or deparment_attributes in order to create a new Department'
 	validates_numericality_of :year
 	validates_uniqueness_of :id
 end
