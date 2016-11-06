@@ -34,7 +34,7 @@ RSpec.describe V1::PAFormsController, type: :controller do
 		end
 
 		it 'POST create responds with 201 if correct params' do
-			post :create, params: { iteration_id: @iteration.id, questions: ['Who is it?', 'Human?', 'Hello?', 'Favorite Power Ranger?'] }
+			post :create, params: { iteration_id: @iteration.id, questions: ['Who is it?', 'Human?', 'Hello?', 'Favorite Power Ranger?'], start_date: DateTime.now + 1.day, deadline: DateTime.now + 2.days }
 			expect(status).to eq(201)
 			expect(body['pa_form']['questions']).to eq([{ "question_id" => 1, "text" => 'Who is it?' }, { "question_id" => 2, "text" => 'Human?' }, { "question_id" => 3, "text" => 'Hello?' }, { "question_id" => 4, "text" => 'Favorite Power Ranger?' }])
 		end

@@ -23,7 +23,7 @@ class Iteration < ApplicationRecord
 
 		# start_date validation
 		def start_date_is_in_the_future
-			unless start_date.present? && start_date > DateTime.now
+			unless start_date.present? && start_date >= DateTime.now - 1.minute
 				errors.add(:start_date, "can't be in the past")
 			end
 		end

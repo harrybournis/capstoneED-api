@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160924130730) do
+ActiveRecord::Schema.define(version: 20161106125825) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -46,6 +46,8 @@ ActiveRecord::Schema.define(version: 20160924130730) do
     t.integer  "iteration_id"
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
+    t.datetime "start_date"
+    t.datetime "deadline"
     t.index ["iteration_id"], name: "index_pa_forms_on_iteration_id", using: :btree
     t.index ["questions"], name: "index_pa_forms_on_questions", using: :gin
   end

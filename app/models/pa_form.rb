@@ -11,8 +11,10 @@ class PAForm < ApplicationRecord
 	has_many 		:students_teams, through: :teams
 
 	# Validations
-	validates_presence_of 	:iteration, :questions
+	validates_presence_of 	:iteration, :questions, :start_date, :deadline
 	validate 								:format_of_questions
+	validate 								:start_date_is_in_the_future
+	validate 								:deadline_is_after_start_date
 
 
 	# Class Methods
@@ -24,8 +26,6 @@ class PAForm < ApplicationRecord
 
 
 	# Instance Methods
-
-	delegate :deadline, :start_date, to: :iteration
 
   # Override questions setter to receive an array and format and save it in the desired format
   #
@@ -73,6 +73,20 @@ class PAForm < ApplicationRecord
 					errors.add(:questions, "missing required parameters. Only 'question_id' and 'text' are accepted, and they must BOTH be present for each question.")
 					return
 				end
+			end
+		end
+
+		# start_date validation
+		def start_date_is_in_the_future
+			unless start_date.present? && start_date >= DateTime.now - 1.minute
+				errors.add(:start_date, "can't be in the past")
+			end
+		end
+
+		# deadline validation
+		def deadline_is_after_start_date
+			unless deadline.present? && start_date.present? && deadline > start_date
+				errors.add(:deadline, "can't be before the start_date")
 			end
 		end
 end

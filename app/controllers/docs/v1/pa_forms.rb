@@ -8,7 +8,7 @@ class Docs::V1::PaForms < ApplicationController
 	  name 'Peer Assessment Forms'
 	  api_base_url '/v1'
 	  api_version 'v1'
-	  meta attributes: { iteration_id: 'Integer', questions: 'Array' }
+	  meta attributes: { iteration_id: 'Integer', start_date: 'DateTime', deadline: 'DateTime', questions: 'Array' }
 	  description <<-EOS
 			Lecturers create a Peer Assessment for each Project Iteration. An Iteration has one Peer Assessment.
 	  EOS
@@ -42,6 +42,8 @@ class Docs::V1::PaForms < ApplicationController
 	meta :authentication? => true
   meta :lecturers_only => true
 	param :iteration_id, 		Integer, "The id of the iteration. It must belong a project of the current user.", 		required: true
+	param :start_date, Date, "The day/time from which the form will be available for completion to the Students", required: true
+	param :dealine, Date, "Completing the form after this date is impossible for Students", required: true
 	param :questions, Array, "The Questions of the form. Must be an Array of Strings. e.g. ['Who?', 'What?', 'When?']", required: true
 	error code: 401, desc: 'Authentication failed'
 	error code: 403, desc: 'Current User is not a Lecturer'

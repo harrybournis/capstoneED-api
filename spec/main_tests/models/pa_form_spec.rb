@@ -7,6 +7,8 @@ RSpec.describe PAForm, type: :model do
 	it { should belong_to :iteration }
 	it { should have_many :peer_assessments }
 	it { should validate_presence_of :iteration }
+	it { should validate_presence_of :start_date }
+	it { should validate_presence_of :deadline }
 
 	it 'validates presence of questions' do
 		iteration = FactoryGirl.create(:iteration)
@@ -18,7 +20,7 @@ RSpec.describe PAForm, type: :model do
 	it 'jsonb keeps questions order intact' do
 		iteration = FactoryGirl.create(:iteration)
 		pa_form = PAForm.create(iteration_id: iteration.id,
-			questions: ["1st", "2nd" ,"3rd" ])
+			questions: ["1st", "2nd" ,"3rd" ], start_date: iteration.start_date, deadline: iteration.deadline)
 		pa_form.reload
 		expect(pa_form.questions[1]).to eq({ 'question_id' => 2, 'text' => "2nd" })
 	end
@@ -30,16 +32,6 @@ RSpec.describe PAForm, type: :model do
 
 		expect(pa_form.questions).to eq([
 			{ 'question_id' => 1, 'text' => 'What?' }, { 'question_id' => 2, 'text' => 'Who?' }, { 'question_id' => 3, 'text' => 'When?' }, { 'question_id' => 4, 'text' => 'Where?' }])
-	end
-
-	it '#deadline returns the deadline of the iteration' do
-		pa_form.save
-		expect(pa_form.deadline).to eq(pa_form.iteration.deadline)
-	end
-
-	it '#start_date returns the start_date of the iteration' do
-		pa_form.save
-		expect(pa_form.start_date).to eq(pa_form.iteration.start_date)
 	end
 
 	it 'validates the format of the questions' do
