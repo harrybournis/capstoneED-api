@@ -8,4 +8,13 @@ RSpec.describe Question, type: :model do
 	it { should validate_presence_of :lecturer_id }
 
 	it { should belong_to :lecturer }
+	it { should have_many :questions_sections }
+	it { should have_many :sections }
+
+	it 'works' do
+		q = FactoryGirl.build(:question)
+		binding.pry
+		puts q.errors unless q.valid?
+		expect(q.valid?).to be_truthy
+	end
 end

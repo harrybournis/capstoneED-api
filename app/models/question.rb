@@ -6,6 +6,8 @@ class Question < ApplicationRecord
 
 	# Associations
 	belongs_to :lecturer
+	has_many :questions_sections
+	has_many :sections, through: :questions_sections
 
 	# Validations
 	validates_presence_of :text, :category, :lecturer_id
