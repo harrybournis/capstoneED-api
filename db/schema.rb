@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161107091216) do
+ActiveRecord::Schema.define(version: 20161107180131) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,16 @@ ActiveRecord::Schema.define(version: 20161107091216) do
     t.string   "university"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "extensions", force: :cascade do |t|
+    t.integer  "team_id"
+    t.integer  "iteration_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.integer  "extra_time"
+    t.index ["iteration_id"], name: "index_extensions_on_iteration_id", using: :btree
+    t.index ["team_id"], name: "index_extensions_on_team_id", using: :btree
   end
 
   create_table "iterations", force: :cascade do |t|

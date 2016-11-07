@@ -2,10 +2,13 @@ class PAForm < ApplicationRecord
 	# Attributes
 	# iteration_id 	:integer
 	# questions 		:jsonb { question_id => question_text }
+	# start_date 		:datetime
+	# deadline 			:datetime
 
 	# Associations
 	belongs_to 	:iteration, inverse_of: :pa_form
 	has_many 		:peer_assessments
+	has_many		:extensions, through: :iteration
 	has_one 		:project, through: :iteration
 	has_many 		:teams, through: :project
 	has_many 		:students_teams, through: :teams
@@ -53,6 +56,17 @@ class PAForm < ApplicationRecord
 		end
 
 		super(jsonb_array)
+	end
+
+	# return the deadline plus the extension time if there is one
+	# if there is no extension returns just the deadline
+	def deadline_with_extension_for_team(team)
+		extension = Extension.where(team_id: team.id, iteration_id: iteration.id)[0]
+		if extension.present?
+			Time.at(deadline.to_i + extension.extra_time).to_datetime
+		else
+			deadline
+		end
 	end
 
 

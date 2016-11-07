@@ -6,6 +6,7 @@ RSpec.describe PAForm, type: :model do
 
 	it { should belong_to :iteration }
 	it { should have_many :peer_assessments }
+	it { should have_many(:extensions).through(:iteration) }
 	it { should validate_presence_of :iteration }
 	it { should validate_presence_of :start_date }
 	it { should validate_presence_of :deadline }
@@ -78,5 +79,24 @@ RSpec.describe PAForm, type: :model do
 		Timecop.travel(now + 6.days + 1.minute) do
 			expect(PAForm.active.length).to eq 0
 		end
+	end
+
+	it 'validates that deadline with extension adds the time of the extension' do
+		start = DateTime.now
+		finish = start + 1.day
+		pa_form = FactoryGirl.create(:pa_form, start_date: start, deadline: finish)
+		team = FactoryGirl.create(:team)
+		extension  = FactoryGirl.create(:extension, iteration_id: pa_form.iteration_id, team_id: team.id)
+		expect(pa_form.deadline_with_extension_for_team(team)).to eq(Time.at(finish.to_i + extension.extra_time).to_datetime)
+	end
+
+	it 'return only deadline if iteration does not exist' do
+		start = DateTime.now
+		finish = start + 1.day
+		pa_form = FactoryGirl.create(:pa_form, start_date: start, deadline: finish)
+		team = FactoryGirl.create(:team)
+		wrong_iteration = FactoryGirl.create(:iteration)
+		extension  = FactoryGirl.create(:extension, iteration_id: wrong_iteration.id, team_id: team.id)
+		expect(pa_form.deadline_with_extension_for_team(team)).to eq(finish)
 	end
 end

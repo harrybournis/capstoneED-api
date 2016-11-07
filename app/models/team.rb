@@ -32,6 +32,7 @@ class Team < ApplicationRecord
 		end
   end
 
+
   private
 
     def generate_enrollment_key
