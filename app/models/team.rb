@@ -12,10 +12,11 @@ class Team < ApplicationRecord
   has_one     :lecturer,  through: :project
 
   # Validations
-  validates_presence_of 	:name, :enrollment_key, :project
+  validates_presence_of 	:name, :project
   validates_uniqueness_of :id, :enrollment_key
   validates_uniqueness_of :name, scope: :project_id, case_sensitive: false
 
+  before_validation :generate_enrollment_key
 
   # Instance Methods
 
@@ -30,4 +31,17 @@ class Team < ApplicationRecord
 			false
 		end
   end
+
+  private
+
+    def generate_enrollment_key
+      unless enrollment_key.present?
+        generated_key = nil
+        loop do
+          generated_key = SecureRandom.base64(32)
+          break unless Team.where(enrollment_key: generated_key).any?
+        end
+        self.enrollment_key = generated_key
+      end
+    end
 end
