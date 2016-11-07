@@ -15,13 +15,12 @@ class ApplicationController < ActionController::API
 		# If authentication is successful, a CurrentUser object containing the
 		# actual Student or Lecturer object is assigned as current_user
 		def authenticate_user_jwt
-			if Rails.env.development? || Rails.env.production?
-				log = ""
-				log << "\n no access-token " if request.cookies['access-token'].nil?
-				log << "\n no X-XSRF-TOKEN " if request.headers['X-XSRF-TOKEN'].nil?
-				log << "\n X-XSRF-TOKEN header is empty " if request.headers['X-XSRF-TOKEN'].empty?
-				log << "\n different csrf "  if request.headers['X-XSRF-TOKEN'].present? && request.cookies['access-token'].present? && request.headers['X-XSRF-TOKEN'] != JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token']).first['csrf_token']
-			end
+			log = ""
+			log << "no access-token " if request.cookies['access-token'].nil?
+			log << "no X-XSRF-TOKEN " if request.headers['X-XSRF-TOKEN'].nil?
+			log << "X-XSRF-TOKEN header is empty " if request.headers['X-XSRF-TOKEN'].empty?
+			log << "different csrf "  if request.headers['X-XSRF-TOKEN'].present? && request.cookies['access-token'].present? && request.headers['X-XSRF-TOKEN'] != JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token']).first['csrf_token']
+
 			unless @current = JWTAuth::JWTAuthenticator.authenticate(request)
 				message = 'Authentication Failed'
 				message << log unless log.empty?
@@ -32,7 +31,7 @@ class ApplicationController < ActionController::API
 		# Handle any unexpected exceptions. Instead of rendering the deault 404.html or 500.html
 		# Respond with json. In case the environment is not production, send the exception as well.
 		rescue_from StandardError do |e|
-			if Rails.env.test?
+			if Rails.env.test? || Rails.env.production?
 				logger = Logger.new(STDOUT)
 				p ""
 		  	logger.error e.message
