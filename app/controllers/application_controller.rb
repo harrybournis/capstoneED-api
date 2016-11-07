@@ -15,7 +15,7 @@ class ApplicationController < ActionController::API
 		# If authentication is successful, a CurrentUser object containing the
 		# actual Student or Lecturer object is assigned as current_user
 		def authenticate_user_jwt
-			log = ""
+			log = " "
 			log << "no access-token " if request.cookies['access-token'].nil?
 			log << "no X-XSRF-TOKEN " if request.headers['X-XSRF-TOKEN'].nil?
 			log << "X-XSRF-TOKEN header is empty " if request.headers['X-XSRF-TOKEN'].empty?
