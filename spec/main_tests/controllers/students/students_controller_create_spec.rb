@@ -19,17 +19,17 @@ RSpec.describe 'V1::StudentsController POST /create', type: :controller do
 				expect {
 					post :create, params: { 'email' => 'email@email.com', 'password' => '12345678',
 					'password_confirmation' => '12345678', 'first_name' => @student.first_name,
-					'last_name' => @student.last_name, type: 'Student' }
+					'last_name' => @student.last_name, :nickname => @student.nickname, type: 'Student' }
 				}. to change { Student.count }
 
-				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
+				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name', 'nickname')
 				expect(status).to eq(201)
 				expect(assigns[:user].valid?).to be_truthy
 				expect(assigns[:user].persisted?).to be_truthy
 			end
 
 			it 'encrypts the users password before saving' do
-				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @student.first_name, 'last_name' => @student.last_name, type: 'Student' }
+				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @student.first_name, 'last_name' => @student.last_name, 'nickname' => @student.nickname, type: 'Student' }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(status).to eq(201)
 				expect(Student.find(assigns[:user].id).encrypted_password).to_not eq(request.params['password'])
@@ -37,20 +37,20 @@ RSpec.describe 'V1::StudentsController POST /create', type: :controller do
 			end
 
 			it 'returns 201 created' do
-				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @student.first_name, 'last_name' => @student.last_name, type: 'Student' }
-				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
+				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @student.first_name, 'last_name' => @student.last_name, 'nickname' => @student.nickname, type: 'Student' }
+				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name', 'nickname')
 				expect(status).to eq(201)
 			end
 
 			it 'has email as a provider' do
-				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @student.first_name, 'last_name' => @student.last_name, type: 'Student' }
+				post :create, params: { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @student.first_name, 'last_name' => @student.last_name, 'nickname' => @student.nickname, type: 'Student' }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(status).to eq(201)
 				expect(assigns[:user].provider).to eq('email')
 			end
 
 			it 'sends confirmation email' do
-				post :create, params: { 'email' => @student.email, 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @student.first_name, 'last_name' => @student.last_name, type: 'Student' }
+				post :create, params: { 'email' => @student.email, 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => @student.first_name, 'last_name' => @student.last_name, 'nickname' => @student.nickname, type: 'Student' }
 				expect(status).to eq(201)
 				expect(ActionMailer::Base.deliveries.last.to.first).to eq(@student.email)
 			end

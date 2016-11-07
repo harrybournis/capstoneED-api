@@ -16,6 +16,8 @@ RSpec.describe Lecturer, type: :model do
 		it { should validate_presence_of(:university) }
   	it { should validate_presence_of(:position) }
 
+  	it { should validate_absence_of :nickname }
+
   	it { should validate_uniqueness_of(:id) }
 		it { should validate_uniqueness_of(:email).case_insensitive }
 

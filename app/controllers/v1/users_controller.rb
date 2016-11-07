@@ -58,7 +58,7 @@ private
 	end
 
 	def user_params
-		params.permit(:id, :first_name, :last_name, :email, :password, :password_confirmation,
+		params.permit(:id, :first_name, :last_name, :nickname, :email, :password, :password_confirmation,
 			:current_password, :university, :position, :type)
 	end
 

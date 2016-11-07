@@ -23,6 +23,7 @@ class Docs::V1::Users < ApplicationController
 	param :first_name, String,						"User's first name", 							required: true
 	param :last_name, String,							"User's last name", 							required: true
 	param :type, String, 									"Student or Lecturer",						required: true
+	param :nickname, String,							"Student's nickname. ONLY for Students",	required: true
 	param :university, String,						"Lecturer's University. Required ONLY if User is a Lecturer. MUST be absent if User is a Student."
 	param :position, String, 							"Lecturer's Academic Position. Required ONLY if User is a Lecturer. MUST be absent if User is a Lecturer."
 	error code: 422, desc: "Failed to save User. Params are invalid. See errors in response body."
@@ -44,6 +45,7 @@ class Docs::V1::Users < ApplicationController
 	param :password_confirmation, String, 'Must equal the password param. Requires current_password to be present in the params'
 	param :first_name, String, "User's first name"
 	param :last_name, String, "User's last name"
+	param :nickname, String, "Student's Nickname. ONLY for Students"
 	param :university, String,						"Lecturer's University. ONLY for Lecturers."
 	param :position, String, 							"Lecturer's Academic Position. ONLY for Lecturers."
 	error code: 401, desc: 'User Authentication failed'
