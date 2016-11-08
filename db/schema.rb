@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161107180131) do
+ActiveRecord::Schema.define(version: 20161108174440) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,18 @@ ActiveRecord::Schema.define(version: 20161107180131) do
     t.index ["user_id"], name: "index_active_tokens_on_user_id", using: :btree
   end
 
+  create_table "deliverables", force: :cascade do |t|
+    t.jsonb    "questions",    default: {}, null: false
+    t.integer  "iteration_id"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.string   "type"
+    t.integer  "start_offset"
+    t.integer  "end_offset"
+    t.index ["iteration_id"], name: "index_deliverables_on_iteration_id", using: :btree
+    t.index ["questions"], name: "index_deliverables_on_questions", using: :gin
+  end
+
   create_table "departments", force: :cascade do |t|
     t.string   "name"
     t.string   "university"
@@ -33,11 +45,11 @@ ActiveRecord::Schema.define(version: 20161107180131) do
 
   create_table "extensions", force: :cascade do |t|
     t.integer  "team_id"
-    t.integer  "iteration_id"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.integer  "deliverable_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
     t.integer  "extra_time"
-    t.index ["iteration_id"], name: "index_extensions_on_iteration_id", using: :btree
+    t.index ["deliverable_id"], name: "index_extensions_on_deliverable_id", using: :btree
     t.index ["team_id"], name: "index_extensions_on_team_id", using: :btree
   end
 
@@ -49,17 +61,6 @@ ActiveRecord::Schema.define(version: 20161107180131) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["project_id"], name: "index_iterations_on_project_id", using: :btree
-  end
-
-  create_table "pa_forms", force: :cascade do |t|
-    t.jsonb    "questions",    default: {}, null: false
-    t.integer  "iteration_id"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
-    t.datetime "start_date"
-    t.datetime "deadline"
-    t.index ["iteration_id"], name: "index_pa_forms_on_iteration_id", using: :btree
-    t.index ["questions"], name: "index_pa_forms_on_questions", using: :gin
   end
 
   create_table "peer_assessments", force: :cascade do |t|

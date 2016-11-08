@@ -132,6 +132,7 @@ RSpec.describe PeerAssessment, type: :model do
 		peer_assessment.save
 		expect(peer_assessment.submitted?).to be_falsy
 		Timecop.travel(@pa_form.start_date + 1.day) do
+			peer_assessment.submit
 			expect(peer_assessment.submit).to be_truthy
 		end
 		expect(peer_assessment.submitted?).to be_truthy

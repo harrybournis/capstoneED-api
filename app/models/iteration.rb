@@ -10,7 +10,7 @@ class Iteration < ApplicationRecord
 	has_one :pa_form, class_name: PAForm, inverse_of: :iteration , dependent: :destroy
 	has_many :teams, through: :project
 	has_many :students_teams, through: :teams
-	has_many :extensions
+	has_many :extensions, through: :pa_form
 
 	accepts_nested_attributes_for :pa_form
 

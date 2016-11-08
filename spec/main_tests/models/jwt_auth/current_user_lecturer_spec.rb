@@ -204,7 +204,7 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			iteration = FactoryGirl.create(:iteration, project_id: project.id)
 			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
 			team = @user.projects[0].teams[0]
-			extension = FactoryGirl.create(:extension, team_id: team.id, iteration_id: iteration.id)
+			extension = FactoryGirl.create(:extension, team_id: team.id, deliverable_id: pa_form.id)
 			extension_other = FactoryGirl.create(:extension)
 			expect(@current_user.extensions.length).to eq(1)
 			expect(@current_user.extensions[0]).to eq(extension)
