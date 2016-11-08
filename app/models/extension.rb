@@ -11,6 +11,7 @@ class Extension < ApplicationRecord
 	# Associations
 	belongs_to :iteration
 	belongs_to :team
+	has_one :project, through: :team
 
 
 	# Instance Methods
