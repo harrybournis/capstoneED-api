@@ -17,7 +17,7 @@ module UrlHelper
 		if Rails.env.development? || Rails.env.test?
 			""
 		else
-			"http://capstoneed-api.herokuapp.com/"
+			"http://capstoneed-api.herokuapp.com"
 		end
 	end
 
