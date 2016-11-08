@@ -6,10 +6,10 @@ RSpec.describe PAForm, type: :model do
 
 	it { should belong_to :iteration }
 	it { should have_many :peer_assessments }
-	it { should have_many(:extensions).through(:iteration) }
+	it { should have_many(:extensions) }
 	it { should validate_presence_of :iteration }
-	it { should validate_presence_of :start_date }
-	it { should validate_presence_of :deadline }
+	it { should validate_presence_of :start_offset }
+	it { should validate_presence_of :end_offset }
 
 	it 'validates presence of questions' do
 		iteration = FactoryGirl.create(:iteration)
@@ -21,7 +21,7 @@ RSpec.describe PAForm, type: :model do
 	it 'jsonb keeps questions order intact' do
 		iteration = FactoryGirl.create(:iteration)
 		pa_form = PAForm.create(iteration_id: iteration.id,
-			questions: ["1st", "2nd" ,"3rd" ], start_date: iteration.start_date, deadline: iteration.deadline)
+			questions: ["1st", "2nd" ,"3rd" ], start_offset: iteration.start_date, end_offset: iteration.deadline)
 		pa_form.reload
 		expect(pa_form.questions[1]).to eq({ 'question_id' => 2, 'text' => "2nd" })
 	end
@@ -82,21 +82,21 @@ RSpec.describe PAForm, type: :model do
 	end
 
 	it 'validates that deadline with extension adds the time of the extension' do
-		start = DateTime.now
-		finish = start + 1.day
-		pa_form = FactoryGirl.create(:pa_form, start_date: start, deadline: finish)
+		start = 1.day.to_i
+		finish = 4.days.to_i
+		pa_form = FactoryGirl.create(:pa_form, start_offset: start, end_offset: finish)
 		team = FactoryGirl.create(:team)
-		extension  = FactoryGirl.create(:extension, iteration_id: pa_form.iteration_id, team_id: team.id)
-		expect(pa_form.deadline_with_extension_for_team(team)).to eq(Time.at(finish.to_i + extension.extra_time).to_datetime)
+		extension  = FactoryGirl.create(:extension, deliverable_id: pa_form.id, team_id: team.id)
+		expect(pa_form.deadline_with_extension_for_team(team)).to eq(Time.at(pa_form.iteration.deadline.to_i + finish + extension.extra_time).to_datetime)
 	end
 
 	it 'return only deadline if iteration does not exist' do
-		start = DateTime.now
-		finish = start + 1.day
-		pa_form = FactoryGirl.create(:pa_form, start_date: start, deadline: finish)
+		start = 1.day.to_i
+		finish = 4.days.to_i
+		pa_form = FactoryGirl.create(:pa_form, start_offset: start, end_offset: finish)
 		team = FactoryGirl.create(:team)
-		wrong_iteration = FactoryGirl.create(:iteration)
-		extension  = FactoryGirl.create(:extension, iteration_id: wrong_iteration.id, team_id: team.id)
-		expect(pa_form.deadline_with_extension_for_team(team)).to eq(finish)
+		wrong_pa = FactoryGirl.create(:pa_form)
+		extension  = FactoryGirl.create(:extension, deliverable_id: wrong_pa.id, team_id: team.id)
+		expect(pa_form.deadline_with_extension_for_team(team)).to eq(Time.at(pa_form.iteration.deadline.to_i + finish).to_datetime)
 	end
 end

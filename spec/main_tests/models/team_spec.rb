@@ -9,6 +9,7 @@ RSpec.describe Team, type: :model do
 			it { should have_many(:students_teams) }
 			it { should belong_to(:project) }
 			it { should have_one(:lecturer).through(:project) }
+			it { should have_one :extension }
 
 			it { should validate_presence_of(:name) }
 			it { should validate_presence_of(:project) }

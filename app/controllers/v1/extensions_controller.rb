@@ -5,8 +5,8 @@ class V1::ExtensionsController < ApplicationController
 
 	# POST /extensions
 	def create
-		unless current_user.iterations.where(id: params[:iteration_id]).any? && current_user.teams.where(id: params[:team_id]).any?
-			render_not_associated_with_current_user('Iteration or Team')
+		unless current_user.pa_forms.where(id: params[:deliverable_id]).any? && current_user.teams.where(id: params[:team_id]).any?
+			render_not_associated_with_current_user('PAForm or Team')
 			return false
 		end
 
@@ -49,10 +49,10 @@ class V1::ExtensionsController < ApplicationController
     end
 
 		def extension_params
-			params.permit(:team_id, :iteration_id, :extra_time)
+			params.permit(:team_id, :deliverable_id, :extra_time)
 		end
 
 		def update_extension_params
-			params.permit(:team_id, :iteration_id, :extra_time)
+			params.permit(:extra_time)
 		end
 end

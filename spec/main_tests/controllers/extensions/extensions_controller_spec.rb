@@ -19,10 +19,11 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 		it 'creates new extension' do
 			project = @lecturer.projects[0]
 			iteration = FactoryGirl.create(:iteration, project_id: project.id)
+			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
 			team = project.teams[0]
 			time = 2.days.to_i
 			expect {
-				post :create, params: { iteration_id: iteration.id, team_id: team.id, extra_time: time.to_i }
+				post :create, params: { deliverable_id: pa_form.id, team_id: team.id, extra_time: time.to_i }
 			}.to change { Extension.count }.by(1)
 			expect(status).to eq(201)
 			expect(Extension.last.extra_time).to eq(time.to_i)
@@ -31,9 +32,10 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 
 		it 'responds with 403 forbidden if team or iteration are not associated with current lecturer' do
 			iteration = FactoryGirl.create(:iteration, project_id: @lecturer.projects[0].id)
+			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
 			team = FactoryGirl.create(:team)
 			expect {
-				post :create, params: { iteration_id: iteration.id, team_id: team.id, extra_time: DateTime.now + 2.days }
+				post :create, params: { deliverable_id: pa_form.id, team_id: team.id, extra_time: DateTime.now + 2.days }
 			}.to_not change { Extension.count }
 			expect(status).to eq(403)
 		end
@@ -43,9 +45,10 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 		it 'updates the extra time' do
 			project = @lecturer.projects[0]
 			iteration = FactoryGirl.create(:iteration, project_id: project.id)
+			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
 			team = project.teams[0]
 			time = 3.days.to_i
-			extension = FactoryGirl.create(:extension, team_id: team.id, iteration_id: iteration.id)
+			extension = FactoryGirl.create(:extension, team_id: team.id, deliverable_id: pa_form.id)
 			patch :update, params: { id: extension.id, team_id: team.id, extra_time: time }
 			expect(status).to eq(200)
 
@@ -68,9 +71,10 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 		it 'deletes extension' do
 			project = @lecturer.projects[0]
 			iteration = FactoryGirl.create(:iteration, project_id: project.id)
+			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
 			team = project.teams[0]
 			time = 3.days.to_i
-			extension = FactoryGirl.create(:extension, team_id: team.id, iteration_id: iteration.id)
+			extension = FactoryGirl.create(:extension, team_id: team.id, deliverable_id: pa_form.id)
 			expect {
 				delete :destroy, params: { id: extension.id, team_id: team.id }
 			}.to change { Extension.count }.by(-1)
