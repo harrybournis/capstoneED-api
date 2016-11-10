@@ -199,4 +199,34 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			expect(@current_user.peer_assessments.length).to eq(4)
 		end
 	end
+
+	describe 'Extensions' do
+
+		before do
+			@user = FactoryGirl.create(:lecturer)
+			@student = FactoryGirl.create(:student)
+			@request = MockRequest.new(valid = true, @student)
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			@token_id = decoded_token.first['id']
+			@device = decoded_token.first['device']
+			@current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
+
+			@unit = FactoryGirl.create(:unit, lecturer: @user)
+			@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @user)
+			@team = FactoryGirl.create(:team, project_id: @project.id)
+			@team.students << @student
+		end
+
+		it 'returns the associated extensions' do
+			iteration = FactoryGirl.create(:iteration, project_id: @project.id)
+			iteration2 = FactoryGirl.create(:iteration, project_id: @project.id)
+			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
+			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
+			extension = FactoryGirl.create(:extension, deliverable_id: pa_form.id, team_id: @team.id)
+			extension_other = FactoryGirl.create(:extension)
+
+			expect(@current_user.extensions.length).to eq(1)
+			expect(@current_user.extensions[0]).to eq(extension)
+		end
+	end
 end

@@ -41,6 +41,10 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 		PeerAssessment.where(['submitted_by_id = ?', @id]).eager_load(options[:includes])
 	end
 
+	def extensions
+		Extension.joins(:students_teams).where(['students_teams.student_id = ?', @id])
+	end
+
 	# The associations that the current_user can include in the query
 	#
 	# ##

@@ -15,14 +15,20 @@ class ApplicationController < ActionController::API
 		# If authentication is successful, a CurrentUser object containing the
 		# actual Student or Lecturer object is assigned as current_user
 		def authenticate_user_jwt
-			log = " "
-			log << "no access-token " if request.cookies['access-token'].nil?
-			log << "no X-XSRF-TOKEN " if request.headers['X-XSRF-TOKEN'].nil?
-			log << "X-XSRF-TOKEN header is empty " if request.headers['X-XSRF-TOKEN'].empty?
-			log << "different csrf "  if request.headers['X-XSRF-TOKEN'].present? && request.cookies['access-token'].present? && request.headers['X-XSRF-TOKEN'] != JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token']).first['csrf_token']
+			log = ""
+			log << " no access-token " if request.cookies['access-token'].nil?
+			log << " no X-XSRF-TOKEN " if request.headers['X-XSRF-TOKEN'].nil?
+			log << "X-XSRF-TOKEN header is empty " if request.headers['X-XSRF-TOKEN'].present?
+			if request.headers['X-XSRF-TOKEN'].present? && request.cookies['access-token'].present? &&
+				begin
+					log << " different csrf "if request.headers['X-XSRF-TOKEN'] != JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token']).first['csrf_token']
+				rescue
+					log << " invalid JWT token "
+				end
+			end
 
 			unless @current = JWTAuth::JWTAuthenticator.authenticate(request)
-				message = 'Authentication Failed'
+				message = 'Authentication Failed '
 				message << log unless log.empty?
 				render json: format_errors({ base: message }), status: :unauthorized
 			end
@@ -42,5 +48,5 @@ class ApplicationController < ActionController::API
 
 	  # Object to pass to every Active Model Serializer
 	  # If removed, it defaults to current_user
-	  serialization_scope :params
+	  #serialization_scope :params
 end

@@ -67,7 +67,7 @@ class V1::PAFormsController < ApplicationController
     end
 
     def pa_form_params
-    	params.permit(:iteration_id, :start_date, :deadline, questions: [])
+    	params.permit(:iteration_id, :start_offset, :end_offset, questions: [])
     end
 
     def pa_form_wout_questions_params

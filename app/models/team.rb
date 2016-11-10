@@ -10,6 +10,7 @@ class Team < ApplicationRecord
   has_many    :students_teams, class_name: JoinTables::StudentsTeam
   has_many    :students, through: :students_teams, dependent: :delete_all
   has_one     :lecturer,  through: :project
+  has_one     :extension
 
   # Validations
   validates_presence_of 	:name, :project
@@ -31,6 +32,7 @@ class Team < ApplicationRecord
 			false
 		end
   end
+
 
   private
 

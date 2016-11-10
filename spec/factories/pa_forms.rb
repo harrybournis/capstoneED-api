@@ -4,22 +4,7 @@ FactoryGirl.define do
 
     association :iteration, factory: :iteration
 
-		start_date do
-			if iteration
-				iteration.start_date
-			else
-				DateTime.now + 1.months + (100*rand())
-			end
-		end
-
-		deadline   do
-			if iteration
-				iteration.deadline
-			else
-				DateTime.now + 1.year + (100*rand())
-			end
-		end
-
-
+    start_offset { 2.days.to_i }
+    end_offset { 5.days.to_i }
 	end
 end

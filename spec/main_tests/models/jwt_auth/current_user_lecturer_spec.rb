@@ -190,4 +190,24 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			expect(@current_user.peer_assessments.length).to eq(4)
 		end
 	end
+
+	describe 'Extension' do
+		it 'returns the associated extensions' do
+			@user = get_lecturer_with_units_projects_teams
+			@request = MockRequest.new(valid = true, @user)
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			@token_id = decoded_token.first['id']
+			@device = decoded_token.first['device']
+			@current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
+
+			project = @user.projects[0]
+			iteration = FactoryGirl.create(:iteration, project_id: project.id)
+			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
+			team = @user.projects[0].teams[0]
+			extension = FactoryGirl.create(:extension, team_id: team.id, deliverable_id: pa_form.id)
+			extension_other = FactoryGirl.create(:extension)
+			expect(@current_user.extensions.length).to eq(1)
+			expect(@current_user.extensions[0]).to eq(extension)
+		end
+	end
 end

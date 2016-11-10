@@ -78,7 +78,7 @@ RSpec.describe V1::IterationsController, type: :controller do
 		end
 
 		it 'POST create accepts params for pa_form' do
-			post :create, params: { project_id: @user.projects[0].id, name: 'name', start_date: DateTime.now + 1.week, deadline: DateTime.now + 3.months, pa_form_attributes: { questions: ['Who is it?', 'Human?', 'Hello?', 'Favorite Power Ranger?'], start_date: DateTime.now + 12.hours, deadline: DateTime.now + 1.day } }
+			post :create, params: { project_id: @user.projects[0].id, name: 'name', start_date: DateTime.now + 1.week, deadline: DateTime.now + 3.months, pa_form_attributes: { questions: ['Who is it?', 'Human?', 'Hello?', 'Favorite Power Ranger?'], start_offset: 0, end_offset: 5.days.to_i } }
 			expect(status).to eq(201)
 			expect(body['iteration']['pa_form']['questions']).to eq([{"question_id"=>1, "text"=>"Who is it?"}, {"question_id"=>2, "text"=>"Human?"}, {"question_id"=>3, "text"=>"Hello?"}, {"question_id"=>4, "text"=>"Favorite Power Ranger?"}])
 		end
@@ -92,6 +92,38 @@ RSpec.describe V1::IterationsController, type: :controller do
 		it 'DELETE destroy current user must be associated with the project' do
 			delete :destroy, params: { id: @user.projects[1].iterations[0] }
 			expect(status).to eq(204)
+		end
+
+		it 'GET index return with the extensions on the pa_forms' do
+			now = DateTime.now
+			@project = FactoryGirl.create(:project, lecturer: @user, unit: @unit)
+			@iteration = FactoryGirl.create(:iteration, project_id: @project.id)
+			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, project_id: @project.id)
+			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, project_id: @project.id)
+			iteration3 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days + 1.hour, project_id: @project.id)
+			irrelevant = FactoryGirl.create(:pa_form, iteration: iteration1)
+			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
+			pa_form = FactoryGirl.create(:pa_form, iteration: iteration3)
+			@student = FactoryGirl.build(:student_with_password).process_new_record
+			@student.save
+			@student.confirm
+			@team = FactoryGirl.create(:team, project_id: @project.id)
+			@team.students << @student
+			extension = FactoryGirl.create(:extension, team_id: @team.id, deliverable_id: pa_form2.id)
+			extension2 = FactoryGirl.create(:extension, team_id: @team.id, deliverable_id: pa_form.id)
+			expect(PAForm.all.length).to eq 5
+
+			Timecop.travel(now + 5.days + 1.minute) do
+				mock_request = MockRequest.new(valid = true, @user)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+				get :index, params: { project_id: @project.id }
+				expect(status).to eq 200
+				expect(body['iterations'].length).to eq(4)
+				expect(body['iterations'][1]['pa_form']['extensions']).to be_falsy
+				expect(body['iterations'][2]['pa_form']['extensions'].length).to eq(1)
+				expect(body['iterations'][3]['pa_form']['extensions'][0]['id']).to eq(extension2.id)
+			end
 		end
 	end
 

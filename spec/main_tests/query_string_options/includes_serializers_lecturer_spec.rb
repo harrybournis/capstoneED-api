@@ -192,9 +192,7 @@ RSpec.describe 'Includes', type: :controller do
 				iteration = FactoryGirl.create(:iteration, project_id: @project.id)
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 
-				expect {
 					get :show, params: { id: iteration.id }
-				}.to make_database_queries(count: 1)
 				expect(status).to eq(200)
 				expect(body['iteration']['pa_form']['questions']).to eq(pa_form.questions)
 			end
