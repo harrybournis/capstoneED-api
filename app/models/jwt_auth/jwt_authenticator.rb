@@ -9,7 +9,7 @@ module JWTAuth::JWTAuthenticator
 	@@domain  		= api_host_url	# to be added to the cookies. left blank for developement in order to work with browsers. Change variable in helpers/url_helper.rb
 	@@issuer			= @@domain			# typically the website url. added to JWT tokens.
 
-	@@cookies_secure 		= true # transmit cookies only on https
+	@@cookies_secure 		= false # transmit cookies only on https
 	@@cookies_httponly 	= true 	# javascript can't read cookies
 	@@cookies_samesite	= false	# send cookies only if url in address bar matches the current site
 
@@ -112,8 +112,8 @@ module JWTAuth::JWTAuthenticator
 
 		if Rails.env.production?
 			if remember_me
-				cookies['access-token'] = { value: access_token, domain: @@domain, expires: exp_time, secure: @@cookies_secure, httponly: @@cookies_httponly, same_site: @@cookies_samesite }
-				cookies['refresh-token'] = { value: refresh_token, domain: @@domain, expires: refresh_exp_time, path: '/v1/refresh', secure: @@cookies_secure, httponly: @@cookies_httponly, same_site: @@cookies_samesite }
+				cookies['access-token'] = { value: access_token, domain: @@domain, expires: exp_time, httponly: @@cookies_httponly, same_site: @@cookies_samesite }
+				cookies['refresh-token'] = { value: refresh_token, domain: @@domain, expires: refresh_exp_time, path: '/v1/refresh', httponly: @@cookies_httponly, same_site: @@cookies_samesite }
 			else
 				cookies['access-token'] = { value: access_token, domain: @@domain, secure: @@cookies_secure, httponly: @@cookies_httponly, same_site: @@cookies_samesite }
 				cookies['refresh-token'] = { value: refresh_token, domain: @@domain, path: '/v1/refresh', secure: @@cookies_secure, httponly: @@cookies_httponly, same_site: @@cookies_samesite }

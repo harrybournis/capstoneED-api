@@ -55,35 +55,6 @@ RSpec.describe V1::PAFormsController, type: :controller do
 			expect(errors['base'][0]).to include('not associated')
 		end
 
-		it 'GET index return with the extensions' do
-			now = DateTime.now
-			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, project_id: @project.id)
-			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, project_id: @project.id)
-			iteration3 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days + 1.hour, project_id: @project.id)
-			irrelevant = FactoryGirl.create(:pa_form, iteration: iteration1)
-			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
-			pa_form = FactoryGirl.create(:pa_form, iteration: iteration3)
-			@student = FactoryGirl.build(:student_with_password).process_new_record
-			@student.save
-			@student.confirm
-			@team = FactoryGirl.create(:team, project_id: @project.id)
-			@team.students << @student
-			extension = FactoryGirl.create(:extension, team_id: @team.id, deliverable_id: pa_form2.id)
-			extension2 = FactoryGirl.create(:extension, team_id: @team.id, deliverable_id: pa_form.id)
-			expect(PAForm.all.length).to eq 5
-
-			Timecop.travel(now + 5.days + 1.minute) do
-				mock_request = MockRequest.new(valid = true, @student)
-				request.cookies['access-token'] = mock_request.cookies['access-token']
-				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				get :index
-				expect(status).to eq 200
-				expect(body['pa_forms'].length).to eq(2)
-				expect(DateTime.parse(body['pa_forms'][0]['extension_until'])).to eq(pa_form2.deadline_with_extension_for_team(@team))
-				expect(DateTime.parse(body['pa_forms'][1]['extension_until']).to_s).to eq(pa_form.deadline_with_extension_for_team(@team).to_s)
-			end
-		end
-
 		# it 'PATCH update responds with 201 if correct params' do
 		# 	pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
 		# 	patch :update, params: { id: pa_form.id, questions: ['new Who is it?', 'Human?', 'new Hello?', 'Favorite Power Ranger?'] }
@@ -183,7 +154,7 @@ RSpec.describe V1::PAFormsController, type: :controller do
 				get :index
 				expect(status).to eq 200
 				expect(body['pa_forms'].length).to eq(2)
-				expect(DateTime.parse(body['pa_forms'][0]['extension_until'])).to eq(pa_form2.deadline_with_extension_for_team(@team))
+				expect(DateTime.parse(body['pa_forms'][0]['extension_until'])).to eq(pa_form2.deadline_with_extension_for_team(@team).to_datetime)
 			end
 		end
 	end

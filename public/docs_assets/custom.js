@@ -7,4 +7,15 @@ $(function() {
 		    }
 		});
 	}
+	var body = document.getElementById("body");
 });
+
+
+
+function animateBackground () {
+	body.className = "jelly";
+};
+
+function stopAnimatingBackground () {
+	body.className = "";
+};

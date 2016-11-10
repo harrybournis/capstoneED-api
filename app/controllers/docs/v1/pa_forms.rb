@@ -15,18 +15,20 @@ class Docs::V1::PaForms < ApplicationController
 	end
 
 
-	api :GET, 'pa_forms', 'Get all Active PAForms'
+	api :GET, '/pa_forms', 'Get all Active PAForms'
 	meta :authentication => true
 	meta :students_only => true
-	example DocHelper.format_example(status = 200, nil, body = "{\n  \"pa_forms\": [\n    {\n      \"id\": 5,\n      \"iteration_id\": 5,\n      \"questions\": [\n        {\n          \"text\": \"What?\",\n          \"question_id\": 1\n        },\n        {\n          \"text\": \"Who?\",\n          \"question_id\": 2\n        },\n        {\n          \"text\": \"When?\",\n          \"question_id\": 3\n        },\n        {\n          \"text\": \"Where?\",\n          \"question_id\": 4\n        },\n        {\n          \"text\": \"Why?\",\n          \"question_id\": 5\n        }\n      ]\n    }\n  ]\n}")
+	example DocHelper.format_example(status = 200, nil, body = "{\n  \"pa_forms\": [\n    {\n      \"id\": 11,\n      \"iteration_id\": 10,\n      \"questions\": [\n        {\n          \"text\": \"What?\",\n          \"question_id\": 1\n        },\n        {\n          \"text\": \"Who?\",\n          \"question_id\": 2\n        },\n        {\n          \"text\": \"When?\",\n          \"question_id\": 3\n        },\n        {\n          \"text\": \"Where?\",\n          \"question_id\": 4\n        },\n        {\n          \"text\": \"Why?\",\n          \"question_id\": 5\n        }\n      ],\n      \"start_date\": \"2016-11-18T17:01:49.000+02:00\",\n      \"deadline\": \"2016-11-21T17:01:49.000+02:00\"\n    },\n    {\n      \"id\": 10,\n      \"iteration_id\": 9,\n      \"questions\": [\n        {\n          \"text\": \"What?\",\n          \"question_id\": 1\n        },\n        {\n          \"text\": \"Who?\",\n          \"question_id\": 2\n        },\n        {\n          \"text\": \"When?\",\n          \"question_id\": 3\n        },\n        {\n          \"text\": \"Where?\",\n          \"question_id\": 4\n        },\n        {\n          \"text\": \"Why?\",\n          \"question_id\": 5\n        }\n      ],\n      \"start_date\": \"2016-11-18T16:01:49.000+02:00\",\n      \"deadline\": \"2016-11-21T16:01:49.000+02:00\",\n      \"extension_until\": \"2016-11-23T16:01:49.000+02:00\"\n    }\n  ]\n}")
 	description <<-EOS
 		Returns all Peer Assessment forms, associated with the current_user, that can be submitted at the
 		moment, meaning that the start_date has passed, but the deadline is still in the future.
+		If there is an extension on pa_form, the new submission date (with the extension) is included inside
+		the pa_form object as 'extension_until'.
 	EOS
 	def get_active_pa_forms
 	end
 
-	api :GET, 'pa_forms/:id', 'Show an Peer Assessment Form'
+	api :GET, '/pa_forms/:id', 'Show an Peer Assessment Form'
   meta :authentication? => true
   param :id, Integer, 'The id of the Peer Assessment to be returned', required: true
   error code: 401, desc: 'Authentication failed'
@@ -34,6 +36,10 @@ class Docs::V1::PaForms < ApplicationController
 	example DocHelper.format_example(status = 200, nil, body = "{\n  \"pa_form\": {\n    \"id\": 1,\n    \"iteration_id\": 1,\n    \"questions\": [\n      {\n        \"text\": \"What?\",\n        \"question_id\": 1\n      },\n      {\n        \"text\": \"Who?\",\n        \"question_id\": 2\n      },\n      {\n        \"text\": \"When?\",\n        \"question_id\": 3\n      },\n      {\n        \"text\": \"Where?\",\n        \"question_id\": 4\n      },\n      {\n        \"text\": \"Why?\",\n        \"question_id\": 5\n      }\n    ]\n  }\n}")
 	description <<-EOS
 		Returns a Peer Assessment Form. Must be associated with the current user.
+		If there is an extension on pa_form, the new submission date (with the extension) is included inside
+		the pa_form object as 'extension_until'.
+		It there are any extensions for any team for a pa_form, they are included in 'extensions' inside the
+		'pa_form' object.
 	EOS
 	def show_peer_assessment_form
 	end

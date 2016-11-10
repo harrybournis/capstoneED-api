@@ -208,7 +208,6 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			extension_other = FactoryGirl.create(:extension)
 			expect(@current_user.extensions.length).to eq(1)
 			expect(@current_user.extensions[0]).to eq(extension)
-
 		end
 	end
 end
