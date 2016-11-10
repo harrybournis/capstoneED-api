@@ -28,7 +28,7 @@ class ApplicationController < ActionController::API
 			end
 
 			unless @current = JWTAuth::JWTAuthenticator.authenticate(request)
-				message = 'Authentication Failed'
+				message = 'Authentication Failed '
 				message << log unless log.empty?
 				render json: format_errors({ base: message }), status: :unauthorized
 			end

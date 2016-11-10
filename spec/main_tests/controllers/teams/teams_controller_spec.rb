@@ -232,11 +232,12 @@ RSpec.describe V1::TeamsController, type: :controller do
 		describe 'DELETE remove_student' do
 			it 'removes student from team if Lecturer is owner' do
 				@lecturer.reload
-				expect(@lecturer.teams.first.students.length).to eq(1)
-				delete :remove_student, params: { id: @lecturer.teams[0].id, student_id: @lecturer.teams[0].students[0] }
+				@lecturer.teams.first.students << FactoryGirl.create(:student)
+				expect(@lecturer.teams.first.students.length).to eq(2)
+				delete :remove_student, params: { id: @lecturer.teams[0].id, student_id: @lecturer.teams[0].students[1] }
 				expect(status).to eq(204)
 				@lecturer.reload
-				expect(@lecturer.teams.first.students.length).to eq(0)
+				expect(@lecturer.teams.first.students.length).to eq(1)
 			end
 
 			it 'responds with 400 if no student_id present in params' do

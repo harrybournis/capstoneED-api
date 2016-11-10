@@ -12,10 +12,10 @@ class PAFormSerializer < Base::BaseSerializer
 	end
 
 	def extension_condition
-		scope.type == 'Lecturer' && scope.extensions.any?
+		scope.type == 'Lecturer' && scope.extensions.where(deliverable_id: object.id).any?
 	end
 
 	def extensions
-		scope.extensions
+		scope.extensions.where(deliverable_id: object.id)
 	end
 end
