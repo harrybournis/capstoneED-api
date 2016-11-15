@@ -10,14 +10,14 @@ module UrlHelper
 		end
 	end
 
-	# Used @ models/jwt_auth/jwt_authenticator.rb
+	# Used @ models/jwt_auth/jwt_authenticator.rb in the cookies' domain
 	# Should be the API's host url
 	# Left empty for development
 	def api_host_url
 		if Rails.env.development? || Rails.env.test?
 			""
 		else
-			"http://capstoneed-api.herokuapp.com"
+			"https://capstoneed-api.herokuapp.com"
 		end
 	end
 
