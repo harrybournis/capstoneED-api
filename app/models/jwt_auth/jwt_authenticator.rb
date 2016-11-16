@@ -112,8 +112,8 @@ module JWTAuth::JWTAuthenticator
 
 		if Rails.env.production?
 			if remember_me
-				cookies['access-token'] = { value: access_token, domain: @@domain, expires: exp_time, secure: @@cookies_secure, httponly: @@cookies_httponly, same_site: @@cookies_samesite }
-				cookies['refresh-token'] = { value: refresh_token, domain: @@domain, expires: refresh_exp_time, path: '/v1/refresh', secure: @@cookies_secure, httponly: @@cookies_httponly, same_site: @@cookies_samesite }
+				cookies['access-token'] = { value: access_token, domain: @@domain, expires: exp_time, httponly: @@cookies_httponly, same_site: @@cookies_samesite }
+				cookies['refresh-token'] = { value: refresh_token, domain: @@domain, expires: refresh_exp_time, path: '/v1/refresh', httponly: @@cookies_httponly, same_site: @@cookies_samesite }
 			else
 				cookies['access-token'] = { value: access_token, domain: @@domain, secure: @@cookies_secure, httponly: @@cookies_httponly, same_site: @@cookies_samesite }
 				cookies['refresh-token'] = { value: refresh_token, domain: @@domain, path: '/v1/refresh', secure: @@cookies_secure, httponly: @@cookies_httponly, same_site: @@cookies_samesite }
