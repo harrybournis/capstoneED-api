@@ -4,7 +4,7 @@ require 'helpers/mock_request.rb'
 
 RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 
-	describe 'Projects' do
+	describe 'Assignments' do
 
 		before(:each) do
 			@user = FactoryGirl.create(:student)
@@ -16,53 +16,53 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 
 			lecturer = FactoryGirl.create(:lecturer)
 			@unit = FactoryGirl.create(:unit, lecturer: lecturer)
-			@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: lecturer)
-			3.times { @project.teams.first.students << FactoryGirl.build(:student) }
-			Team.first.students << @user
-			expect(@user.projects.length).to eq(1)
+			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: lecturer)
+			3.times { @assignment.projects.first.students << FactoryGirl.build(:student) }
+			Project.first.students << @user
+			expect(@user.assignments.length).to eq(1)
 		end
 
-		it 'loads the correct projects' do
+		it 'loads the correct assignments' do
 			expect {
-				(@projects = @current_user.projects).length
+				(@assignments = @current_user.assignments).length
 			}.to make_database_queries(count: 1)
-			expect(@projects.length).to eq(@current_user.load.projects.length)
+			expect(@assignments.length).to eq(@current_user.load.assignments.length)
 		end
 
 		it 'includes associations' do
 			expect {
-				@projects.length if @projects = @current_user.projects(includes: 'unit')
+				@assignments.length if @assignments = @current_user.assignments(includes: 'unit')
 			}.to make_database_queries(count: 1)
 			expect {
-				unit = @projects[0].unit
+				@assignments[0].unit
 			}.to_not make_database_queries
 
 			expect {
-				(@projects = @current_user.projects(includes: ['unit','teams'])).length
+				(@assignments = @current_user.assignments(includes: ['unit','projects'])).length
 			}.to make_database_queries(count: 1)
 			expect {
-				teams = @projects[0].teams
+				@assignments[0].projects
 			}.to_not make_database_queries
 			expect {
-				teams = @projects[0].unit
+				@assignments[0].unit
 			}.to_not make_database_queries
 
 			expect {
-				(@projects = @current_user.projects(includes: ['lecturer','teams','students'])).length
+				(@assignments = @current_user.assignments(includes: ['lecturer','projects','students'])).length
 			}.to make_database_queries(count: 1)
 			expect {
-				teams = @projects[0].lecturer
+				@assignments[0].lecturer
 			}.to_not make_database_queries
 			expect {
-				teams = @projects[0].teams[0].students
+				@assignments[0].projects[0].students
 			}.to_not make_database_queries
 		end
 
 		it 'can chain queries' do
 			expect {
-				@project_find[0].unit if (@project_find = @current_user.projects(includes: ['unit']).where(unit_id: @unit)).length > 0
+				@assignment_find[0].unit if (@assignment_find = @current_user.assignments(includes: ['unit']).where(unit_id: @unit)).length > 0
 			}.to make_database_queries(count: 1)
-			expect(@project_find[0].unit).to eq(@unit)
+			expect(@assignment_find[0].unit).to eq(@unit)
 		end
 	end
 
@@ -71,7 +71,7 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			@user = FactoryGirl.create(:lecturer)
 			@other_unit = FactoryGirl.create(:unit)
 			@unit = FactoryGirl.create(:unit, lecturer: @user)
-			@project = FactoryGirl.create(:project_with_teams, unit: @user.units[0], lecturer: @user)
+			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @user.units[0], lecturer: @user)
 		end
 		before(:each) do
 			@user = FactoryGirl.create(:student)
@@ -81,7 +81,7 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			@device = decoded_token.first['device']
 			@current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
-			@project.teams.first.students << @user
+			@assignment.projects.first.students << @user
 		end
 
 		it 'loads the correct units' do
@@ -103,10 +103,10 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			}.to_not make_database_queries
 
 			expect {
-				(@units = @current_user.units(includes: ['projects'])).length
+				(@units = @current_user.units(includes: ['assignments'])).length
 			}.to make_database_queries(count: 1)
 			expect {
-				@units[0].projects[0].start_date
+				@units[0].assignments[0].start_date
 			}.to_not make_database_queries
 		end
 	end
@@ -123,14 +123,14 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			@current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
 			@unit = FactoryGirl.create(:unit, lecturer: @user)
-			@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @user)
-			@team = FactoryGirl.create(:team, project_id: @project.id)
-			@team.students << @student
+			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @user)
+			@project = FactoryGirl.create(:project, assignment_id: @assignment.id)
+			@project.students << @student
 		end
 
 		it 'returns correct pa_forms' do
-			iteration = FactoryGirl.create(:iteration, project_id: @project.id)
-			iteration2 = FactoryGirl.create(:iteration, project_id: @project.id)
+			iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+			iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
 			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 
@@ -139,8 +139,8 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 
 		it '#pa_forms_active returns only the currently available forms for submission' do
 			now = DateTime.now
-			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, project_id: @project.id)
-			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, project_id: @project.id)
+			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
+			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
 			FactoryGirl.create(:pa_form, iteration: iteration1)
 			FactoryGirl.create(:pa_form, iteration: iteration2)
 			irrelevant = FactoryGirl.create(:pa_form)
@@ -175,17 +175,17 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 
 			lecturer = FactoryGirl.create(:lecturer_confirmed)
 			unit = FactoryGirl.create(:unit, lecturer_id: lecturer.id)
-			project = FactoryGirl.create(:project, lecturer_id: lecturer.id, unit: unit)
-			iteration  = FactoryGirl.create(:iteration, project: project)
+			assignment = FactoryGirl.create(:assignment, lecturer_id: lecturer.id, unit: unit)
+			iteration  = FactoryGirl.create(:iteration, assignment: assignment)
 			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 			student  = FactoryGirl.create(:student_confirmed)
 			student2 = FactoryGirl.create(:student_confirmed)
 			student3 = FactoryGirl.create(:student_confirmed)
-			team = FactoryGirl.create(:team, project: project)
-			team.students << @user
-			team.students << student
-			team.students << student2
-			team.students << student3
+			project = FactoryGirl.create(:project, assignment: assignment)
+			project.students << @user
+			project.students << student
+			project.students << student2
+			project.students << student3
 			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student)
 			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student2)
 			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student3)
@@ -212,17 +212,17 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			@current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
 			@unit = FactoryGirl.create(:unit, lecturer: @user)
-			@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @user)
-			@team = FactoryGirl.create(:team, project_id: @project.id)
+			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @user)
+			@team = FactoryGirl.create(:project, assignment_id: @assignment.id)
 			@team.students << @student
 		end
 
 		it 'returns the associated extensions' do
-			iteration = FactoryGirl.create(:iteration, project_id: @project.id)
-			iteration2 = FactoryGirl.create(:iteration, project_id: @project.id)
+			iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+			iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
 			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
-			extension = FactoryGirl.create(:extension, deliverable_id: pa_form.id, team_id: @team.id)
+			extension = FactoryGirl.create(:extension, deliverable_id: pa_form.id, project_id: @team.id)
 			extension_other = FactoryGirl.create(:extension)
 
 			expect(@current_user.extensions.length).to eq(1)
