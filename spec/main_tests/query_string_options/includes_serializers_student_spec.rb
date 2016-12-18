@@ -10,23 +10,23 @@ RSpec.describe 'Includes', type: :controller do
 			@lecturer.save
 			@lecturer.confirm
 			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-			@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @lecturer)
-			3.times { @project.teams.first.students << FactoryGirl.build(:student) }
-			expect(@project.teams.length).to eq(2)
-			expect(@project.teams.first.students.length).to eq(3)
+			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @lecturer)
+			3.times { @assignment.projects.first.students << FactoryGirl.build(:student) }
+			expect(@assignment.projects.length).to eq(2)
+			expect(@assignment.projects.first.students.length).to eq(3)
 
 			@unit2 = FactoryGirl.create(:unit, lecturer: @lecturer)
-			@project2 = FactoryGirl.create(:project_with_teams, unit: @unit2, lecturer: @lecturer)
-			3.times { @project2.teams.first.students << FactoryGirl.build(:student) }
-			expect(@project2.teams.length).to eq(2)
-			expect(@project2.teams.first.students.length).to eq(3)
+			@assignment2 = FactoryGirl.create(:assignment_with_projects, unit: @unit2, lecturer: @lecturer)
+			3.times { @assignment2.projects.first.students << FactoryGirl.build(:student) }
+			expect(@assignment2.projects.length).to eq(2)
+			expect(@assignment2.projects.first.students.length).to eq(3)
 
 			@student = FactoryGirl.build(:student_with_password).process_new_record
 			@student.save
 			@student.confirm
 
-			@project.teams[0].students << @student
-			@project2.teams[0].students << @student
+			@assignment.projects[0].students << @student
+			@assignment2.projects[0].students << @student
 		end
 
 		before(:each) do
@@ -35,18 +35,18 @@ RSpec.describe 'Includes', type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 		end
 
-		describe 'Teams' do
+		describe 'Projects' do
 			before(:each) do
-				@controller = V1::TeamsController.new
+				@controller = V1::ProjectsController.new
 			end
 
 			it 'GET index can include lecturer' do
-				get :index, params: { includes: 'students,project,lecturer', compact: true }
+				get :index, params: { includes: 'students,assignment,lecturer', compact: true }
 				expect(status).to eq(200)
-				expect(body['teams'].first['students'].first).to_not include('email', 'provider')
-				expect(body['teams'].length).to eq(2)
-				expect(body['teams'].first['project']).to_not include('description')
-				expect(body['teams'].first['lecturer']).to include('id')
+				expect(body['projects'].first['students'].first).to_not include('email', 'provider')
+				expect(body['projects'].length).to eq(2)
+				expect(body['projects'].first['assignment']).to_not include('description')
+				expect(body['projects'].first['lecturer']).to include('id')
 			end
 		end
 
@@ -68,19 +68,19 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'GET index includes pa_form' do
-				iteration = FactoryGirl.create(:iteration, project_id: @project.id)
-				iteration2 = FactoryGirl.create(:iteration, project_id: @project.id)
+				iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+				iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 
-				get :index, params: { project_id: @project.id }
+				get :index, params: { assignment_id: @assignment.id }
 				expect(status).to eq(200)
 				expect(body['iterations'].length).to eq(2)
 				expect(body['iterations'][1]['pa_form']['questions']).to eq(pa_form2.questions)
 			end
 
 			it 'GET show includes pa_form' do
-				iteration = FactoryGirl.create(:iteration, project_id: @project.id)
+				iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 
 				get :show, params: { id: iteration.id }

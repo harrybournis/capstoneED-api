@@ -23,15 +23,15 @@ Rails.application.routes.draw do
 			# Departments
 			resources :departments, 			only: [:create, :update, :destroy]
 
-			# Projects
-			get 		'projects',						to: 'projects#index_with_unit', constraints: -> (request) { request.params[:unit_id] }
-			resources :projects,					only: [:index, :show, :create, :update, :destroy]
+			# Assignments
+			get 		'assignments',				to: 'assignments#index_with_unit', constraints: -> (request) { request.params[:unit_id] }
+			resources :assignments,				only: [:index, :show, :create, :update, :destroy]
 
-			# Teams
-			get 		'teams',											to: 'teams#index_with_project', constraints: -> (request) { request.params[:project_id] }
-			post 		'teams/enrol', 								to: 'teams#enrol'
-			delete 	'teams/:id/remove_student', 	to: 'teams#remove_student'
-			resources :teams do
+			# Projects
+			get 		'projects',										to: 'projects#index_with_assignment', constraints: -> (request) { request.params[:assignment_id] }
+			post 		'projects/enrol', 						to: 'projects#enrol'
+			delete 	'projects/:id/remove_student',to: 'projects#remove_student'
+			resources :projects do
 				resources :extensions, only: [:create, :update, :destroy]
 			end
 

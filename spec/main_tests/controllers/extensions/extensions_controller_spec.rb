@@ -5,7 +5,7 @@ include JWTAuth::JWTAuthenticator
 RSpec.describe V1::ExtensionsController, type: :controller do
 
 	before(:all) do
-		@lecturer = get_lecturer_with_units_projects_teams
+		@lecturer = get_lecturer_with_units_assignments_projects
 	end
 
 	before(:each) do
@@ -17,25 +17,25 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 
 	describe 'POST /extensions' do
 		it 'creates new extension' do
-			project = @lecturer.projects[0]
-			iteration = FactoryGirl.create(:iteration, project_id: project.id)
+			assignment = @lecturer.assignments[0]
+			iteration = FactoryGirl.create(:iteration, assignment_id: assignment.id)
 			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
-			team = project.teams[0]
+			project = assignment.projects[0]
 			time = 2.days.to_i
 			expect {
-				post :create, params: { deliverable_id: pa_form.id, team_id: team.id, extra_time: time.to_i }
+				post :create, params: { deliverable_id: pa_form.id, project_id: project.id, extra_time: time.to_i }
 			}.to change { Extension.count }.by(1)
 			expect(status).to eq(201)
 			expect(Extension.last.extra_time).to eq(time.to_i)
 
 		end
 
-		it 'responds with 403 forbidden if team or iteration are not associated with current lecturer' do
-			iteration = FactoryGirl.create(:iteration, project_id: @lecturer.projects[0].id)
+		it 'responds with 403 forbidden if project or iteration are not associated with current lecturer' do
+			iteration = FactoryGirl.create(:iteration, assignment_id: @lecturer.assignments[0].id)
 			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
-			team = FactoryGirl.create(:team)
+			project = FactoryGirl.create(:project)
 			expect {
-				post :create, params: { deliverable_id: pa_form.id, team_id: team.id, extra_time: DateTime.now + 2.days }
+				post :create, params: { deliverable_id: pa_form.id, project_id: project.id, extra_time: DateTime.now + 2.days }
 			}.to_not change { Extension.count }
 			expect(status).to eq(403)
 		end
@@ -43,13 +43,13 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 
 	describe 'PATCH /extensions' do
 		it 'updates the extra time' do
-			project = @lecturer.projects[0]
-			iteration = FactoryGirl.create(:iteration, project_id: project.id)
+			assignment = @lecturer.assignments[0]
+			iteration = FactoryGirl.create(:iteration, assignment_id: assignment.id)
 			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
-			team = project.teams[0]
+			project = assignment.projects[0]
 			time = 3.days.to_i
-			extension = FactoryGirl.create(:extension, team_id: team.id, deliverable_id: pa_form.id)
-			patch :update, params: { id: extension.id, team_id: team.id, extra_time: time }
+			extension = FactoryGirl.create(:extension, project_id: project.id, deliverable_id: pa_form.id)
+			patch :update, params: { id: extension.id, project_id: project.id, extra_time: time }
 			expect(status).to eq(200)
 
 			extension.reload
@@ -57,36 +57,36 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 		end
 
 		it 'returns 403 if team extension not associated with current lecturer' do
-			project = @lecturer.projects[0]
-			iteration = FactoryGirl.create(:iteration, project_id: project.id)
-			team = FactoryGirl.create(:team)
+			assignment = @lecturer.assignments[0]
+			iteration = FactoryGirl.create(:iteration, assignment_id: assignment.id)
+			project = FactoryGirl.create(:project)
 			time = 3.days.to_i
 			extension = FactoryGirl.create(:extension)
-			patch :update, params: { id: extension.id, team_id: team.id, extra_time: time }
+			patch :update, params: { id: extension.id, project_id: project.id, extra_time: time }
 			expect(status).to eq(403)
 		end
 	end
 
 	describe 'DELETE /extensions' do
 		it 'deletes extension' do
-			project = @lecturer.projects[0]
-			iteration = FactoryGirl.create(:iteration, project_id: project.id)
+			assignment = @lecturer.assignments[0]
+			iteration = FactoryGirl.create(:iteration, assignment_id: assignment.id)
 			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
-			team = project.teams[0]
+			project = assignment.projects[0]
 			time = 3.days.to_i
-			extension = FactoryGirl.create(:extension, team_id: team.id, deliverable_id: pa_form.id)
+			extension = FactoryGirl.create(:extension, project_id: project.id, deliverable_id: pa_form.id)
 			expect {
-				delete :destroy, params: { id: extension.id, team_id: team.id }
+				delete :destroy, params: { id: extension.id, project_id: project.id }
 			}.to change { Extension.count }.by(-1)
 		end
 
 		it 'returns 403 if team extension not associated with current lecturer' do
-			project = @lecturer.projects[0]
-			iteration = FactoryGirl.create(:iteration, project_id: project.id)
-			team = FactoryGirl.create(:team)
+			assignment = @lecturer.assignments[0]
+			iteration = FactoryGirl.create(:iteration, assignment_id: assignment.id)
+			project = FactoryGirl.create(:project)
 			time = 3.days.to_i
 			extension = FactoryGirl.create(:extension)
-			delete :destroy, params: { id: extension.id, team_id: team.id, extra_time: time }
+			delete :destroy, params: { id: extension.id, project_id: project.id, extra_time: time }
 			expect(status).to eq(403)
 		end
 	end

@@ -87,7 +87,7 @@ RSpec.describe PAForm, type: :model do
 		pa_form = FactoryGirl.create(:pa_form, start_offset: start, end_offset: finish)
 		project = FactoryGirl.create(:project)
 		extension  = FactoryGirl.create(:extension, deliverable_id: pa_form.id, project_id: project.id)
-		expect(pa_form.deadline_with_extension_for_team(project)).to eq(Time.at(pa_form.iteration.deadline.to_i + finish + extension.extra_time).to_datetime)
+		expect(pa_form.deadline_with_extension_for_project(project)).to eq(Time.at(pa_form.iteration.deadline.to_i + finish + extension.extra_time).to_datetime)
 	end
 
 	it 'return only deadline if iteration does not exist' do
@@ -97,6 +97,6 @@ RSpec.describe PAForm, type: :model do
 		project = FactoryGirl.create(:project)
 		wrong_pa = FactoryGirl.create(:pa_form)
 		extension  = FactoryGirl.create(:extension, deliverable_id: wrong_pa.id, project_id: project.id)
-		expect(pa_form.deadline_with_extension_for_team(project)).to eq(Time.at(pa_form.iteration.deadline.to_i + finish).to_datetime)
+		expect(pa_form.deadline_with_extension_for_project(project)).to eq(Time.at(pa_form.iteration.deadline.to_i + finish).to_datetime)
 	end
 end

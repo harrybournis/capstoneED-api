@@ -15,15 +15,15 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
 			@student_for = FactoryGirl.create(:student_confirmed)
-			@project = FactoryGirl.create(:project)
-			@team = FactoryGirl.create(:team, project: @project)
-			@iteration = FactoryGirl.create(:iteration, project: @project)
-			@team.students << @student_for
-			@team.students << @student
-			@team.students << FactoryGirl.create(:student_confirmed)
+			@assignment = FactoryGirl.create(:assignment)
+			@project = FactoryGirl.create(:project, assignment: @assignment)
+			@iteration = FactoryGirl.create(:iteration, assignment: @assignment)
+			@project.students << @student_for
+			@project.students << @student
+			@project.students << FactoryGirl.create(:student_confirmed)
 			@pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
 
-			@irrelevant_team = FactoryGirl.create(:team)
+			@irrelevant_team = FactoryGirl.create(:project)
 			@irrelevant_student = FactoryGirl.create(:student_confirmed)
 			4.times { @irrelevant_team.students << FactoryGirl.create(:student_confirmed) }
 			@irrelevant_team.students << @irrelevant_student
@@ -63,19 +63,19 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 
 		before :all do
 			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-			@project = FactoryGirl.create(:project, lecturer: @lecturer, unit: @unit)
-			@iteration = FactoryGirl.create(:iteration, project: @project)
+			@assignment = FactoryGirl.create(:assignment, lecturer: @lecturer, unit: @unit)
+			@iteration = FactoryGirl.create(:iteration, assignment: @assignment)
 			@pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
 			@student2 = FactoryGirl.create(:student_confirmed)
 			@student3 = FactoryGirl.create(:student_confirmed)
 			@student4 = FactoryGirl.create(:student_confirmed)
 			@student5 = FactoryGirl.create(:student_confirmed)
-			@team = FactoryGirl.create(:team, project: @project)
-			@team.students << @student
-			@team.students << @student2
-			@team.students << @student3
-			@team.students << @student4
-			@team.students << @student5
+			@project = FactoryGirl.create(:project, assignment: @assignment)
+			@project.students << @student
+			@project.students << @student2
+			@project.students << @student3
+			@project.students << @student4
+			@project.students << @student5
 
 			Timecop.travel(@iteration.start_date + 1.minute) do
 				@peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)

@@ -85,7 +85,7 @@ class PAForm < Deliverable
 
 	# return the deadline plus the extension time if there is one for a specific project
 	# if there is no extension returns just the deadline
-	def deadline_with_extension_for_team(project)
+	def deadline_with_extension_for_project(project)
 		extension = Extension.where(project_id: project.id, deliverable_id: id)[0]
 		if extension.present?
 			Time.at(deadline.to_i + extension.extra_time).to_datetime

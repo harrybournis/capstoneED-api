@@ -193,7 +193,7 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 
 	describe 'Extension' do
 		it 'returns the associated extensions' do
-			@user = get_lecturer_with_units_projects_teams
+			@user = get_lecturer_with_units_assignments_projects
 			@request = MockRequest.new(valid = true, @user)
 			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
 			@token_id = decoded_token.first['id']
