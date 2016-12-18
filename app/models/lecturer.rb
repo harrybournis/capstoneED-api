@@ -10,8 +10,8 @@ class Lecturer < User
 
 	# Associations
 	has_many :units
-	has_many :projects
-	has_many :teams, through: :projects
+	has_many :assignments
+	has_many :projects, through: :assignments
 	has_many :questions, dependent: :destroy
 
 	# Validations

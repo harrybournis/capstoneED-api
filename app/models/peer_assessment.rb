@@ -11,8 +11,8 @@ class PeerAssessment < ApplicationRecord
 	belongs_to :submitted_by, class_name: Student, foreign_key: :submitted_by_id
 	belongs_to :submitted_for, class_name: Student, foreign_key: :submitted_for_id
 	has_one :iteration, through: :pa_form
-	has_one :project, through: :iteration
-	has_one :lecturer, through: :project
+	has_one :assignment, through: :iteration
+	has_one :lecturer, through: :assignment
 
 	# Validations
 	validates_presence_of :pa_form_id, :submitted_for_id, :submitted_by_id, :answers
@@ -85,7 +85,7 @@ class PeerAssessment < ApplicationRecord
 		def submitted_for_is_in_the_same_team
 			if submitted_for_id.present? && submitted_by_id.present?
 				unless submitted_by.teammates.include? submitted_for
-					errors.add(:submitted_for, 'is not in the same Team with the current user')
+					errors.add(:submitted_for, 'is not in the same Project with the current user')
 				end
 			end
 		end
@@ -93,8 +93,8 @@ class PeerAssessment < ApplicationRecord
 		# validates that submitted_for belongs in a Team in the PAForm's Project
 		def pa_form_is_from_project_that_student_belongs_to
 			if pa_form_id.present? && submitted_by_id.present?
-				unless submitted_by.projects.include? pa_form.project
-					errors.add(:pa_form, 'is for a Project that the current user does not belong to')
+				unless submitted_by.assignments.include? pa_form.assignment
+					errors.add(:pa_form, 'is for an Assignment that the current user does not belong to')
 				end
 			end
 		end

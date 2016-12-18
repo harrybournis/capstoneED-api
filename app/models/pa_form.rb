@@ -9,9 +9,9 @@ class PAForm < Deliverable
 	belongs_to 	:iteration
 	has_many 		:peer_assessments
 	has_many		:extensions, foreign_key: :deliverable_id
-	has_one 		:project, through: :iteration
-	has_many 		:teams, through: :project
-	has_many 		:students_teams, through: :teams
+	has_one 		:assignment, through: :iteration
+	has_many 		:projects, through: :assignment
+	has_many 		:students_projects, through: :projects
 
 	# Validations
 	validates_presence_of 	:iteration, :questions, :start_offset, :end_offset
@@ -83,10 +83,10 @@ class PAForm < Deliverable
 		super(jsonb_array)
 	end
 
-	# return the deadline plus the extension time if there is one for a specific team
+	# return the deadline plus the extension time if there is one for a specific project
 	# if there is no extension returns just the deadline
-	def deadline_with_extension_for_team(team)
-		extension = Extension.where(team_id: team.id, deliverable_id: id)[0]
+	def deadline_with_extension_for_team(project)
+		extension = Extension.where(project_id: project.id, deliverable_id: id)[0]
 		if extension.present?
 			Time.at(deadline.to_i + extension.extra_time).to_datetime
 		else

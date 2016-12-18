@@ -11,10 +11,10 @@ class Unit < ApplicationRecord
 	# Associations
 	belongs_to :lecturer
 	belongs_to :department
-	has_many :projects
-  has_many :teams, through: :projects
-  has_many :students_teams, through: :teams
-  has_many :students, through: :students_teams
+	has_many :assignments
+  has_many :projects, through: :assignments
+  has_many :students_projects, through: :projects
+  has_many :students, through: :students_projects
 
 	accepts_nested_attributes_for :department
 

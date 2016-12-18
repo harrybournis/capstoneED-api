@@ -17,9 +17,9 @@ RSpec.describe PeerAssessment, type: :model do
 		@student_by = FactoryGirl.create(:student_confirmed)
 		@student_for = FactoryGirl.create(:student_confirmed)
 		@pa_form  = FactoryGirl.create(:pa_form)
-		@team = FactoryGirl.create(:team, project: @pa_form.project)
-		@team.students << @student_by
-		@team.students << @student_for
+		@project = FactoryGirl.create(:project, assignment: @pa_form.assignment)
+		@project.students << @student_by
+		@project.students << @student_for
 	end
 
 	it 'should validate format of answers' do
@@ -100,14 +100,14 @@ RSpec.describe PeerAssessment, type: :model do
 			peer_assessment.save
 			Timecop.travel(wrong_pa.start_date + 1.day) do
 				expect(peer_assessment.submit).to be_falsy
-				expect(peer_assessment.errors[:pa_form][0]).to include('is for a Project that the current user does not belong to')
+				expect(peer_assessment.errors[:pa_form][0]).to include('is for an Assignment that the current user does not belong to')
 			end
 		end
 
-		it 'submitted_for is not in the same Team as user' do
-			irrelevant_team = FactoryGirl.create(:team)
+		it 'submitted_for is not in the same Project as user' do
+			irrelevant_project = FactoryGirl.create(:project)
 			irrelevant_student = FactoryGirl.create(:student_confirmed)
-			irrelevant_team.students << irrelevant_student
+			irrelevant_project.students << irrelevant_student
 
 			peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: irrelevant_student,
 				answers: [{ question_id: 1, answer: 'answ' }])
@@ -115,7 +115,7 @@ RSpec.describe PeerAssessment, type: :model do
 
 			Timecop.travel(@pa_form.start_date + 1.day) do
 				expect(peer_assessment.submit).to be_falsy
-				expect(peer_assessment.errors[:submitted_for][0]).to include('not in the same Team')
+				expect(peer_assessment.errors[:submitted_for][0]).to include('not in the same Project')
 
 				peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
 					answers: [{ question_id: 1, answer: 'answ' }])

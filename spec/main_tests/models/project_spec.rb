@@ -5,38 +5,47 @@ RSpec.describe Project, type: :model do
 		describe 'validations' do
 			subject(:project) { FactoryGirl.build(:project) }
 
-			it { should belong_to(:lecturer) }
-			it { should belong_to(:unit) }
-			it { should have_many(:teams).dependent(:destroy) }
-			it { should have_many(:students_teams).through(:teams) }
-			it { should have_many(:students).through(:students_teams) }
-			it { should have_many(:iterations).dependent :destroy }
-			it { should have_many(:pa_forms).through(:iterations) }
+			it { should have_many(:students).through(:students_projects).dependent(:delete_all) }
+			it { should have_many(:students_projects) }
+			it { should belong_to(:assignment) }
+			it { should have_one(:lecturer).through(:assignment) }
+			it { should have_one :extension }
 
-			it { should validate_presence_of(:start_date) }
-			it { should validate_presence_of(:end_date) }
-			it { should validate_presence_of(:unit_id) }
-			it { should validate_presence_of(:lecturer_id) }
+			it { should validate_presence_of(:name) }
+			it { should validate_presence_of(:assignment) }
 
 			it { should validate_uniqueness_of(:id) }
+			it { should validate_uniqueness_of(:enrollment_key) }
+			it { should validate_uniqueness_of(:name).scoped_to(:assignment_id).case_insensitive }
 
-			it 'should validate that unit_id belongs to lecturer_id' do
-				project.unit = FactoryGirl.create(:unit)
-				expect(project.lecturer.units).to_not include(project.unit)
-				expect(project.valid?).to be_falsy
-				expect(project.errors[:unit].first).to eq("does not belong in the Lecturer's list of Units")
-
-				project.lecturer.units << project.unit
-				expect(project.lecturer.units).to include(project.unit)
-				expect(project.valid?).to be_truthy
+			it 'destroys StudentTeams on destroy' do
+				assignment = FactoryGirl.create(:assignment_with_projects)
+				@project = assignment.projects.first
+				2.times { @project.students << FactoryGirl.create(:student) }
+				students_count = Student.all.size
+				expect(JoinTables::StudentsProject.all.count).to eq(2)
+				expect { Project.destroy(@project.id) }.to change { JoinTables::StudentsProject.all.count }.by(-2)
+				expect(Student.all.size).to eq(students_count)
 			end
 
-			it 'desroying a project should destroy its all teams' do
-				project = FactoryGirl.create(:project_with_teams)
-				expect(project.teams.length).to eq(2)
-				expect {
-					project.destroy
-				}.to change { Team.all.count }.by(-2)
+			it 'autogenerates enrollment key if not provided by user' do
+				assignment = FactoryGirl.create(:assignment)
+				attributes = FactoryGirl.attributes_for(:project).except(:enrollment_key).merge(assignment_id: assignment.id)
+				project = Project.new(attributes)
+				project.valid?
+				expect(project.errors[:enrollment_key]).to be_empty
+				expect(project.save).to be_truthy
+				project = Project.create(FactoryGirl.attributes_for(:project).except(:enrollment_key).merge(assignment_id: assignment.id))
+				expect(project).to be_truthy
+			end
+
+			it 'does not autogenerate key if provided' do
+				assignment = FactoryGirl.create(:assignment)
+				attributes = FactoryGirl.attributes_for(:project).merge(assignment_id: assignment.id, enrollment_key: 'key')
+				project = Project.new(attributes)
+				project.valid?
+				expect(project.errors[:enrollment_key]).to be_empty
+				expect(project.enrollment_key).to eq('key')
 			end
 	end
 end
