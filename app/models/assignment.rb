@@ -18,7 +18,7 @@ class Assignment < ApplicationRecord
   accepts_nested_attributes_for :projects
 
   # Validations
-  validates_presence_of :start_date, :end_date, :unit_id, :lecturer_id
+  validates_presence_of :start_date, :end_date, :name, :unit_id, :lecturer_id
   validate :unit_is_owned_by_lecturer, unless: 'lecturer_id.nil?'
   validates_uniqueness_of :id
 

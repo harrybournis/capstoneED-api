@@ -17,6 +17,7 @@ RSpec.describe Assignment, type: :model do
 			it { should validate_presence_of(:end_date) }
 			it { should validate_presence_of(:unit_id) }
 			it { should validate_presence_of(:lecturer_id) }
+			it { should validate_presence_of(:name) }
 
 			it { should validate_uniqueness_of(:id) }
 

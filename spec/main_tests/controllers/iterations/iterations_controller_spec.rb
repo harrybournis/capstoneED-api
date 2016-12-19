@@ -98,20 +98,20 @@ RSpec.describe V1::IterationsController, type: :controller do
 			now = DateTime.now
 			@assignment = FactoryGirl.create(:assignment, lecturer: @user, unit: @unit)
 			@iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
-			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
-			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
-			iteration3 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days + 1.hour, assignment_id: @assignment.id)
-			irrelevant = FactoryGirl.create(:pa_form, iteration: iteration1)
-			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
-			pa_form = FactoryGirl.create(:pa_form, iteration: iteration3)
+			@iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
+			@iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
+			@iteration3 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days + 1.hour, assignment_id: @assignment.id)
+			pa_form0 = FactoryGirl.create(:pa_form, iteration: @iteration)
+			pa_form1 = FactoryGirl.create(:pa_form, iteration: @iteration1)
+			pa_form2 = FactoryGirl.create(:pa_form, iteration: @iteration2)
+			pa_form3 = FactoryGirl.create(:pa_form, iteration: @iteration3)
 			@student = FactoryGirl.build(:student_with_password).process_new_record
 			@student.save
 			@student.confirm
 			@project = FactoryGirl.create(:project, assignment_id: @assignment.id)
 			@project.students << @student
-			extension = FactoryGirl.create(:extension, project_id: @project.id, deliverable_id: pa_form2.id)
-			extension2 = FactoryGirl.create(:extension, project_id: @project.id, deliverable_id: pa_form.id)
-			expect(PAForm.all.length).to eq 5
+			extension = FactoryGirl.create(:extension, project_id: @project.id, deliverable_id: pa_form1.id)
+			extension2 = FactoryGirl.create(:extension, project_id: @project.id, deliverable_id: pa_form2.id)
 
 			Timecop.travel(now + 5.days + 1.minute) do
 				mock_request = MockRequest.new(valid = true, @user)
@@ -120,9 +120,11 @@ RSpec.describe V1::IterationsController, type: :controller do
 				get :index, params: { assignment_id: @assignment.id }
 				expect(status).to eq 200
 				expect(body['iterations'].length).to eq(4)
-				expect(body['iterations'][1]['pa_form']['extensions']).to be_falsy
-				expect(body['iterations'][2]['pa_form']['extensions'].length).to eq(1)
-				expect(body['iterations'][3]['pa_form']['extensions'][0]['id']).to eq(extension2.id)
+				body['iterations'].each do |i|
+					if i['id'] == @iteration1.id
+						expect(i['pa_form']['extensions'].length).to eq @iteration1.pa_form.extensions.length
+					end
+				end
 			end
 		end
 	end
