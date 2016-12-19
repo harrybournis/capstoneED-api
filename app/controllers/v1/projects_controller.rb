@@ -113,11 +113,11 @@ class V1::ProjectsController < ApplicationController
 
     # Strong Params
 		def project_params
-			params.permit(:project_name, :team_name, :logo, :enrollment_key, :student_id, :assignment_id)
+			params.permit(:project_name, :team_name, :description, :logo, :enrollment_key, :student_id, :assignment_id)
 		end
 
 		def project_update_params
-			params.permit(:project_name, :team_name, :logo, :enrollment_key)
+			params.permit(:project_name, :team_name, :description, :logo, :enrollment_key)
 		end
 
 		def index_with_assignment_error_message

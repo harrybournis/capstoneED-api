@@ -14,7 +14,7 @@ class Project < ApplicationRecord
   has_one     :extension
 
   # Validations
-  validates_presence_of 	:project_name, :team_name, :assignment
+  validates_presence_of 	:project_name, :team_name, :assignment, :description
   validates_uniqueness_of :id, :enrollment_key
   validates_uniqueness_of :project_name, scope: :assignment_id, case_sensitive: false
 

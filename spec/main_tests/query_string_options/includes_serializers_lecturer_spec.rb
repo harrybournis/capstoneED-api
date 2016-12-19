@@ -32,7 +32,7 @@ RSpec.describe 'Includes', type: :controller do
 				get :show, params: { id: @assignment.id }
 				body_assignment = body['assignment']
 				expect(response.status).to eq(200) #1
-				expect(body_assignment).to include('description', 'start_date')
+				expect(body_assignment).to include('end_date', 'start_date')
 				expect(body_assignment['projects']).to be_falsy
 				expect(body_assignment['projects']).to be_falsy
 
@@ -53,7 +53,7 @@ RSpec.describe 'Includes', type: :controller do
 				get :show, params: { id: @assignment.id }
 				body_assignment = body['assignment']
 				expect(response.status).to eq(200)
-				expect(body_assignment).to include('description', 'start_date')
+				expect(body_assignment).to include('end_date', 'start_date')
 				expect(body_assignment['projects']).to be_falsy
 				expect(body_assignment['unit']).to be_falsy
 
