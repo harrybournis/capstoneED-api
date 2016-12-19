@@ -82,6 +82,6 @@ class V1::AssignmentsController < ApplicationController
 
     def assignment_params
       params.permit(:id, :start_date, :end_date, :description, :unit_id,
-        projects_attributes: [:name, :enrollment_key, :logo])
+        projects_attributes: [:project_name, :team_name, :enrollment_key, :logo])
     end
 end

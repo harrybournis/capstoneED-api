@@ -56,8 +56,8 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		describe 'PATCH update' do
 			it 'updates the parameters successfully if student is member of the project' do
 				expect {
-					patch :update, params: { id: Project.first.id, name: 'CrazyProject666', logo: 'http://www.images.com/images/4259' }
-				}.to change { Project.first.name }
+					patch :update, params: { id: Project.first.id, project_name: 'CrazyProject666', logo: 'http://www.images.com/images/4259' }
+				}.to change { Project.first.project_name }
 				expect(status).to eq(200)
 				expect(parse_body['project']['logo']).to eq('http://www.images.com/images/4259')
 			end
@@ -65,8 +65,8 @@ RSpec.describe V1::ProjectsController, type: :controller do
 			it 'responds with 403 if student is not member of the Project' do
 				project = FactoryGirl.create(:project)
 				expect {
-					patch :update, params: { id: project.id, name: 'Something' }
-				}.to_not change { Project.first.name }
+					patch :update, params: { id: project.id, project_name: 'Something' }
+				}.to_not change { Project.first.project_name }
 				expect(status).to eq(403)
 			end
 
@@ -189,8 +189,8 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		describe 'PATCH update' do
 			it 'updates the parameters successfully if Lecturer owns the project' do
 				expect {
-					patch :update, params: { id: @lecturer.projects.first.id, name: 'CrazyProject666', logo: 'http://www.images.com/images/4259' }
-				}.to change { Project.first.name }
+					patch :update, params: { id: @lecturer.projects.first.id, project_name: 'CrazyProject666', logo: 'http://www.images.com/images/4259' }
+				}.to change { Project.first.project_name }
 				expect(status).to eq(200)
 				expect(parse_body['project']['logo']).to eq('http://www.images.com/images/4259')
 			end

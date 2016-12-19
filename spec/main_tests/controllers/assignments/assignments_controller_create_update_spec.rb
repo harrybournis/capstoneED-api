@@ -27,7 +27,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 			end
 
 			it 'accepts nested attributes for projects' do
-				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ name: 'New Project1', enrollment_key: 'key' }, { name: 'New Project2', enrollment_key: 'key2' }] )
+				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', team_name: 'persons', enrollment_key: 'key' }, { project_name: 'New Project2', team_name: 'persons2', enrollment_key: 'key2' }] )
 				expect {
 					post :create, params: parameters
 				}.to change { Project.count }.by(2)

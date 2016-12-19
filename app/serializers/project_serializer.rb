@@ -1,3 +1,3 @@
 class ProjectSerializer < Base::BaseSerializer
-  attributes :id, :name, :logo, :enrollment_key
+  attributes :id, :project_name, :team_name, :logo, :enrollment_key
 end

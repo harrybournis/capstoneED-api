@@ -11,12 +11,13 @@ RSpec.describe Project, type: :model do
 			it { should have_one(:lecturer).through(:assignment) }
 			it { should have_one :extension }
 
-			it { should validate_presence_of(:name) }
+			it { should validate_presence_of(:project_name) }
 			it { should validate_presence_of(:assignment) }
+			it { should validate_presence_of :team_name }
 
 			it { should validate_uniqueness_of(:id) }
 			it { should validate_uniqueness_of(:enrollment_key) }
-			it { should validate_uniqueness_of(:name).scoped_to(:assignment_id).case_insensitive }
+			it { should validate_uniqueness_of(:project_name).scoped_to(:assignment_id).case_insensitive }
 
 			it 'destroys StudentTeams on destroy' do
 				assignment = FactoryGirl.create(:assignment_with_projects)

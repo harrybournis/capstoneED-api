@@ -61,14 +61,14 @@ RSpec.describe 'Includes', type: :controller do
 				body_assignment = body['assignment']
 				expect(response.status).to eq(200)
 				expect(body_assignment['projects']).to be_truthy
-				expect(body_assignment['projects'].first).to_not include('name', 'enrollment_key')
+				expect(body_assignment['projects'].first).to_not include('project_name', 'enrollment_key')
 				expect(body_assignment['unit']).to be_falsy
 
 				get :show, params: { id: @assignment.id, includes: 'projects,unit'}
 				body_assignment = body['assignment']
 				expect(response.status).to eq(200)
 				expect(body_assignment['projects']).to be_truthy
-				expect(body_assignment['projects'].first).to include('name', 'enrollment_key')
+				expect(body_assignment['projects'].first).to include('project_name', 'enrollment_key')
 				expect(body_assignment['unit']).to be_truthy
 				expect(body_assignment['unit']).to include('code', 'semester')
 			end

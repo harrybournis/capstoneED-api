@@ -1,6 +1,7 @@
 class Project < ApplicationRecord
   # Attributes
-  # name            :string
+  # project_name    :string
+  # team_name       :string
   # enrollment_key  :string
   # logo            :string
   # assignment_id   :integer
@@ -13,9 +14,9 @@ class Project < ApplicationRecord
   has_one     :extension
 
   # Validations
-  validates_presence_of 	:name, :assignment
+  validates_presence_of 	:project_name, :team_name, :assignment
   validates_uniqueness_of :id, :enrollment_key
-  validates_uniqueness_of :name, scope: :assignment_id, case_sensitive: false
+  validates_uniqueness_of :project_name, scope: :assignment_id, case_sensitive: false
 
   before_validation :generate_enrollment_key
 
