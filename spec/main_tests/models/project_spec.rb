@@ -7,6 +7,7 @@ RSpec.describe Project, type: :model do
 
 			it { should have_many(:students).through(:students_projects).dependent(:delete_all) }
 			it { should have_many(:students_projects) }
+			it { should have_many(:iterations).through(:assignment) }
 			it { should belong_to(:assignment) }
 			it { should have_one(:lecturer).through(:assignment) }
 			it { should have_one :extension }

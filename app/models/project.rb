@@ -10,6 +10,7 @@ class Project < ApplicationRecord
   belongs_to  :assignment, inverse_of: :projects
   has_many    :students_projects, class_name: JoinTables::StudentsProject
   has_many    :students, through: :students_projects, dependent: :delete_all
+  has_many    :iterations, through: :assignment
   has_one     :lecturer,  through: :assignment
   has_one     :extension
 

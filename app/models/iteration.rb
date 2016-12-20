@@ -11,6 +11,7 @@ class Iteration < ApplicationRecord
 	has_many :projects, through: :assignment
 	has_many :students_projects, through: :projects
 	has_many :extensions, through: :pa_form
+	has_many :project_evaluations
 
 	accepts_nested_attributes_for :pa_form
 
@@ -19,6 +20,12 @@ class Iteration < ApplicationRecord
 	validate :start_date_is_in_the_future
 	validate :deadline_is_after_start_date
 
+
+	# return whether the iteration is currently happening
+	def active?
+		now = DateTime.now
+		start_date < now && now < deadline
+	end
 
 	private
 

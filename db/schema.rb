@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161219130023) do
+ActiveRecord::Schema.define(version: 20161219202631) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -86,6 +86,21 @@ ActiveRecord::Schema.define(version: 20161219130023) do
     t.index ["pa_form_id"], name: "index_peer_assessments_on_pa_form_id", using: :btree
     t.index ["submitted_by_id"], name: "index_peer_assessments_on_submitted_by_id", using: :btree
     t.index ["submitted_for_id"], name: "index_peer_assessments_on_submitted_for_id", using: :btree
+  end
+
+  create_table "project_evaluations", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "project_id"
+    t.integer  "feeling_id"
+    t.integer  "percent_complete"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.integer  "iteration_id"
+    t.datetime "date_submitted"
+    t.index ["feeling_id"], name: "index_project_evaluations_on_feeling_id", using: :btree
+    t.index ["iteration_id"], name: "index_project_evaluations_on_iteration_id", using: :btree
+    t.index ["project_id"], name: "index_project_evaluations_on_project_id", using: :btree
+    t.index ["user_id"], name: "index_project_evaluations_on_user_id", using: :btree
   end
 
   create_table "projects", force: :cascade do |t|
