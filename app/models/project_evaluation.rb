@@ -12,9 +12,10 @@ class ProjectEvaluation < ApplicationRecord
 	belongs_to :project
 	belongs_to :iteration
 	belongs_to :user
+	belongs_to :feeling
 
 	# Validations
-	validates_presence_of :project_id, :iteration_id, :user_id, :percent_complete, :date_submitted
+	validates_presence_of :project_id, :iteration_id, :feeling_id, :user_id, :percent_complete, :date_submitted
 	validates_inclusion_of :percent_complete, :in => 0..100, message: 'must be between 0 and 100'
 	validate :iteration_belongs_to_the_project
 	validate :iteration_is_active

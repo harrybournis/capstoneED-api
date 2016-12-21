@@ -12,6 +12,7 @@ FactoryGirl.define do
 			project
 		end
 		iteration { FactoryGirl.create(:iteration, assignment: project.assignment, start_date: @now, deadline: @now + 28.days) }
+		association :feeling, factory: :feeling
 		percent_complete 20
 		date_submitted nil
 

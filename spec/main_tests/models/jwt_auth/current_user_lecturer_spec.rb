@@ -226,6 +226,7 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			@project.assignment.end_date = now + 1.month
 			@project.assignment.save
 			@project.assignment.iterations << FactoryGirl.create(:iteration, start_date: now, deadline: now + 28.days)
+			feeling = FactoryGirl.create(:feeling)
 
 			now = DateTime.now
 			assignment = @user.assignments.first
@@ -236,9 +237,9 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			project2 = assignment.projects.last
 			iteration = FactoryGirl.create(:iteration, assignment: assignment, start_date: now, deadline: now + 28.days)
 
-			attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @user.id, iteration_id: iteration.id, project_id: project.id)
+			attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @user.id, iteration_id: iteration.id, project_id: project.id, feeling_id: feeling.id)
 			pe = ProjectEvaluation.create(attr)
-			attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @user.id, iteration_id: iteration.id, project_id: project2.id)
+			attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @user.id, iteration_id: iteration.id, project_id: project2.id, feeling_id: feeling.id)
 			pe = ProjectEvaluation.create(attr)
 
 			FactoryGirl.create(:project_evaluation)

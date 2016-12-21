@@ -14,6 +14,7 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 		@project.assignment.end_date = now + 1.month
 		@project.assignment.save
 		@project.assignment.iterations << FactoryGirl.create(:iteration, start_date: now, deadline: now + 28.days)
+		@feeling = FactoryGirl.create(:feeling)
 	end
 
 	context 'Student' do
@@ -26,7 +27,7 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 		end
 
 		it 'POST create creates new project_evaluation if student is in project' do
-			attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id)
+			attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feeling_id: @feeling.id)
 			post :create, params: attr
 
 			expect(status).to eq(201)
@@ -90,7 +91,7 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 		end
 
 		it 'POST create creates new project_evaluation if lecturer is in project' do
-			attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @lecturer.id, project_id: @project.id, iteration_id: @project.iterations[0].id)
+			attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @lecturer.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feeling_id: @feeling.id)
 			post :create, params: attr
 
 			expect(status).to eq(201)

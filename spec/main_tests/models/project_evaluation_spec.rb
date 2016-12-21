@@ -6,10 +6,12 @@ RSpec.describe ProjectEvaluation, type: :model do
 	it { should belong_to :user }
 	it { should belong_to :project }
 	it { should belong_to :iteration }
+	it { should belong_to :feeling }
 
 	it { should validate_presence_of :user_id }
 	it { should validate_presence_of :project_id }
 	it { should validate_presence_of :iteration_id }
+	it { should validate_presence_of :feeling_id }
 	it { should validate_presence_of :percent_complete }
 
 	it 'works' do
@@ -86,14 +88,15 @@ RSpec.describe ProjectEvaluation, type: :model do
 		assignment = FactoryGirl.create(:assignment, lecturer: user, unit: user.units[0])
 		project = FactoryGirl.create(:project, assignment: assignment, lecturer: user)
 		iteration = FactoryGirl.create(:iteration, assignment: assignment, start_date: now, deadline: now + 2.months)
-		pe = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id)
+		feeling = FactoryGirl.create(:feeling)
+		pe = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
 		expect(pe.save).to be_truthy
 
-		pe2 = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id)
+		pe2 = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
 		expect(pe2.save).to be_truthy
 
 		Timecop.travel(now + 3.days) do
-			pe3 = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id)
+			pe3 = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
 
 			expect(pe3.save).to be_falsy
 			expect(pe3.errors[:iteration_id][0]).to include('limit')
@@ -109,16 +112,17 @@ RSpec.describe ProjectEvaluation, type: :model do
 		assignment = FactoryGirl.create(:assignment, lecturer: user, unit: user.units[0])
 		project = FactoryGirl.create(:project, assignment: assignment, lecturer: user)
 		iteration = FactoryGirl.create(:iteration, assignment: assignment, start_date: now, deadline: now + 2.months)
-		pe = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id)
+		feeling = FactoryGirl.create(:feeling)
+		pe = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
 		expect(pe.save).to be_truthy
 
-		pe2 = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id)
+		pe2 = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
 		expect(pe2.save).to be_truthy
 
 		Timecop.travel(now + 3.days) do
 			user = FactoryGirl.create(:student)
 			project.students << user
-			pe3 = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id)
+			pe3 = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
 
 			expect(pe3.save).to be_truthy
 		end

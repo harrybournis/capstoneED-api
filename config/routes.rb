@@ -55,6 +55,9 @@ Rails.application.routes.draw do
 			get 		'project/:project_id/evaluations',		to: 'project_evaluations#index_with_project'
 			get 		'iteration/:iteration_id/evaluations',to: 'project_evaluations#index_with_iteration'
 			resources :project_evaluations, only: [:create, :update]
+
+			# Feelings
+			resources :feelings, only: [:index]
 		end
 	#end
 
