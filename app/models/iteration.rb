@@ -24,7 +24,7 @@ class Iteration < ApplicationRecord
 	# return whether the iteration is currently happening
 	def active?
 		now = DateTime.now
-		start_date < now && now < deadline
+		start_date <= now && now <= deadline
 	end
 
 	private

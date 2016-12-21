@@ -210,4 +210,41 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			expect(@current_user.extensions[0]).to eq(extension)
 		end
 	end
+
+	describe 'Project Evalutions' do
+		it 'returns the associated Project Evaluations' do
+			@user = get_lecturer_with_units_assignments_projects
+			@request = MockRequest.new(valid = true, @user)
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			@token_id = decoded_token.first['id']
+			@device = decoded_token.first['device']
+			@current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
+
+			@project = @user.projects.first
+			now = DateTime.now
+			@project.assignment.start_date = now
+			@project.assignment.end_date = now + 1.month
+			@project.assignment.save
+			@project.assignment.iterations << FactoryGirl.create(:iteration, start_date: now, deadline: now + 28.days)
+
+			now = DateTime.now
+			assignment = @user.assignments.first
+			assignment.start_date = now
+			assignment.end_date = now + 1.month
+			assignment.save
+			project = assignment.projects.first
+			project2 = assignment.projects.last
+			iteration = FactoryGirl.create(:iteration, assignment: assignment, start_date: now, deadline: now + 28.days)
+
+			attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @user.id, iteration_id: iteration.id, project_id: project.id)
+			pe = ProjectEvaluation.create(attr)
+			attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @user.id, iteration_id: iteration.id, project_id: project2.id)
+			pe = ProjectEvaluation.create(attr)
+
+			FactoryGirl.create(:project_evaluation)
+
+			expect(ProjectEvaluation.all.size).to eq(3)
+			expect(@current_user.project_evaluations.length).to eq(2)
+		end
+	end
 end

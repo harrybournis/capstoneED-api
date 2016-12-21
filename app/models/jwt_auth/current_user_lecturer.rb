@@ -41,6 +41,10 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 		Extension.joins(:project, :assignment).where(['assignments.lecturer_id = ?', @id])
 	end
 
+	def project_evaluations
+		ProjectEvaluation.where(user_id: @id)
+	end
+
 
 	# The associations that the current_user can include in the query
 	#
