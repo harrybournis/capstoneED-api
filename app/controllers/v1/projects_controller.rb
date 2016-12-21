@@ -65,9 +65,15 @@ class V1::ProjectsController < ApplicationController
 
 
 	# POST /projects/enrol
-	# Needs enrollemnt_key in params
+	# Needs enrollemnt_key and id in params
 	def enrol
-		if @project = Project.find_by(enrollment_key: params[:enrollment_key])
+		unless @project = Project.find_by(id: params[:id])
+			render json: format_errors({id: ['does not exist']}), status: :unprocessable_entity
+			return
+		end
+
+		if @project.enrollment_key == params[:enrollment_key]
+		#if @project = Project.find_by(enrollment_key: params[:enrollment_key])
 			if @project.enrol(current_user.load)
 				render json: @project, status: :created
 			else

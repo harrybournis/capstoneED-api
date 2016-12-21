@@ -82,33 +82,43 @@ RSpec.describe V1::ProjectsController, type: :controller do
 			it 'creates a new StudentsProject instance' do
 				project = FactoryGirl.create(:project)
 				expect {
-					post :enrol, params: { enrollment_key: project.enrollment_key }
+					post :enrol, params: { enrollment_key: project.enrollment_key, id: project.id }
 				}.to change { StudentsProject.all.count }.by(1)
 				expect(status).to eq(201)
 				@student.reload
 				expect(@student.projects.include? project).to be_truthy
 			end
 
-			it 'responds with 422 unprocessable_entity if wrong enrollment key' do
+			it 'responds with 422 unprocessable_entity if id does not exist' do
+				project = FactoryGirl.create(:project)
 				expect {
-					post :enrol, params: { enrollment_key: 'invalidkey' }
+					post :enrol, params: { enrollment_key: project.enrollment_key, id: 474774373 }
+				}.to_not change { StudentsProject.all.count }
+				expect(errors['id'].first).to include('exist')
+			end
+
+			it 'responds with 422 unprocessable_entity if wrong enrollment key' do
+				project = FactoryGirl.create(:project)
+				expect {
+					post :enrol, params: { enrollment_key: 'invalidkey', id: project.id }
 				}.to_not change { StudentsProject.all.count }
 				expect(errors['enrollment_key'].first).to eq('is invalid')
 			end
 
 			it 'responds with 403 forbidden if they try to enrol on the same project twice' do
 				expect {
-					post :enrol, params: { enrollment_key: @student.projects.first.enrollment_key }
+					post :enrol, params: { enrollment_key: @student.projects[0].enrollment_key, id: @student.projects[0].id }
 				}.to_not change { StudentsProject.all.count }
 				expect(status).to eq(403)
 				expect(errors['base'].first).to eq('Student can not exist in the same Project twice')
 			end
 
-			it 'responds with 403 forbidden if they try to enrol on two projects for the same project' do
-				project = @student.projects.first.assignment.projects.last
+			it 'responds with 403 forbidden if they try to enrol on two projects for the same assignment' do
+				project = FactoryGirl.create(:project)
+				@student.assignments[0].projects << project
 				expect(@student.projects.include? project).to be_falsy
 				expect {
-					post :enrol, params: { enrollment_key: project.enrollment_key }
+					post :enrol, params: { enrollment_key: project.enrollment_key, id: project.id }
 				}.to_not change { StudentsProject.all.count }
 				expect(status).to eq(403)
 				expect(errors['base'].first).to eq('Student has already enroled in a different Project for this Assignment')
