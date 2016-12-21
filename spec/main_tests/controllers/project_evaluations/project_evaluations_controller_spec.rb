@@ -31,6 +31,7 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 			post :create, params: attr
 
 			expect(status).to eq(201)
+			expect(body['project_evaluation']['feeling']).to eq(@feeling.name)
 		end
 
 		it 'POST returns 422 unprocessable_entity if student does not belong in project' do
