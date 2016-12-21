@@ -27,6 +27,11 @@ class Iteration < ApplicationRecord
 		start_date <= now && now <= deadline
 	end
 
+	# Returns the iteration health (currently static CHANGE)
+	def iteration_health
+		54
+	end
+
 	private
 
 		# start_date validation

@@ -78,7 +78,7 @@ class V1::ProjectsController < ApplicationController
 		end
 	end
 
-	# DELETE /projects/:id/remove_student
+	# DELETE /project/:id/remove_student
 	# Only for Lecturer
 	def remove_student
 		unless params[:student_id]

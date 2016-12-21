@@ -2,6 +2,18 @@ class V1::ProjectEvaluationsController < ApplicationController
 
 	before_action :allow_if_lecturer, only: [:update]
 	before_action :set_project_evaluation_if_associated, only: :update
+	before_action :set_project_if_associated, only: :index_with_project
+	before_action :set_iteration_if_associated, only: :index_with_iteration
+
+	# GET /project/:project_id/evaluations
+	def index_with_project
+		render json: @project, serializer: ProjectStatsSerializer
+	end
+
+	# GET /iteration/:iteration_id/evaluations
+	def index_with_iteration
+		render json: @iteration, serializer: IterationStatsSerializer
+	end
 
 	# POST /project_evaluations
 	def create
@@ -32,6 +44,20 @@ class V1::ProjectEvaluationsController < ApplicationController
     def set_project_evaluation_if_associated
       unless @pe = current_user.project_evaluations.where(id: params[:id])[0]
         render_not_associated_with_current_user('Project Evaluation')
+        return false
+      end
+    end
+
+    def set_project_if_associated
+      unless @project = current_user.projects.where(id: params[:project_id])[0]
+        render_not_associated_with_current_user('Project')
+        return false
+      end
+    end
+
+    def set_iteration_if_associated
+      unless @iteration = current_user.iterations.where(id: params[:iteration_id])[0]
+        render_not_associated_with_current_user('Iteration')
         return false
       end
     end

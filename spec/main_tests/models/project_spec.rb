@@ -50,5 +50,18 @@ RSpec.describe Project, type: :model do
 				expect(project.errors[:enrollment_key]).to be_empty
 				expect(project.enrollment_key).to eq('key')
 			end
+
+			it 'project_health returns the mean of the iterations_health' do
+				assignment = FactoryGirl.create(:assignment)
+				2.times { assignment.iterations << FactoryGirl.create(:iteration) }
+				project = FactoryGirl.create(:project)
+				assignment.projects << project
+
+				iteration1_health = assignment.iterations[0].iteration_health
+				iteration2_health = assignment.iterations[1].iteration_health
+				expected_health = ((iteration1_health + iteration2_health) / 2).round
+
+				expect(project.project_health).to eq(expected_health)
+			end
 	end
 end

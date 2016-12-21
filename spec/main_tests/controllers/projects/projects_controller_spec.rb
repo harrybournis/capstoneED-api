@@ -232,12 +232,14 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		describe 'DELETE remove_student' do
 			it 'removes student from project if Lecturer is owner' do
 				@lecturer.reload
-				@lecturer.projects.first.students << FactoryGirl.create(:student)
-				expect(@lecturer.projects.first.students.length).to eq(2)
-				delete :remove_student, params: { id: @lecturer.projects[0].id, student_id: @lecturer.projects[0].students[1] }
+				student = FactoryGirl.create(:student)
+				@lecturer.projects[0].students << student
+
+				expect {
+					delete :remove_student, params: { id: @lecturer.projects[0].id, student_id: student.id }
+				}.to change { @lecturer.projects[0].students.count }.by(-1)
+
 				expect(status).to eq(204)
-				@lecturer.reload
-				expect(@lecturer.projects.first.students.length).to eq(1)
 			end
 
 			it 'responds with 400 if no student_id present in params' do

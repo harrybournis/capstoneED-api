@@ -30,7 +30,7 @@ Rails.application.routes.draw do
 			# Projects
 			get 		'projects',										to: 'projects#index_with_assignment', constraints: -> (request) { request.params[:assignment_id] }
 			post 		'projects/enrol', 						to: 'projects#enrol'
-			delete 	'projects/:id/remove_student',to: 'projects#remove_student'
+			delete 	'project/:id/remove_student',to: 'projects#remove_student'
 			resources :projects do
 				resources :extensions, only: [:create, :update, :destroy]
 			end
@@ -52,6 +52,8 @@ Rails.application.routes.draw do
 			resources :peer_assessments, 	only: [:index, :show, :create]
 
 			# Project Evaluations
+			get 		'project/:project_id/evaluations',		to: 'project_evaluations#index_with_project'
+			get 		'iteration/:iteration_id/evaluations',to: 'project_evaluations#index_with_iteration'
 			resources :project_evaluations, only: [:create, :update]
 		end
 	#end

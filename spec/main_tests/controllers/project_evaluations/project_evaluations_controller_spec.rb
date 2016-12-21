@@ -61,6 +61,23 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 			expect(status).to eq(403)
 			expect(errors['base'][0]).to include('must be Lecturer')
 		end
+
+		it 'GET index_with_project returns project_health, team_health' do
+			FactoryGirl.create(:project_evaluation, user: @student, project_id: @project.id, iteration_id: @project.iterations[0].id)
+			get :index_with_project, params: { project_id: @project.id }
+
+			expect(status).to eq(200)
+			expect(body['project']['project_health']).to eq(@project.project_health)
+			expect(body['project']['team_health']).to eq(@project.team_health)
+		end
+
+		it 'GET index_with_iteration returns iteration_health' do
+			FactoryGirl.create(:project_evaluation, user: @student, project_id: @project.id, iteration_id: @project.iterations[0].id)
+			get :index_with_iteration, params: { iteration_id: @project.iterations[0].id }
+
+			expect(status).to eq(200)
+			expect(body['iteration']['iteration_health']).to eq(@project.iterations[0].iteration_health)
+		end
 	end
 
 	context 'Lecturer' do
