@@ -45,8 +45,4 @@ class ApplicationController < ActionController::API
 		  end
 	  	render json: format_errors({ base: [Rails.env.production? ? 'Operation Failed' : e.message] }), status: 500
 	  end
-
-	  # Object to pass to every Active Model Serializer
-	  # If removed, it defaults to current_user
-	  #serialization_scope :params
 end

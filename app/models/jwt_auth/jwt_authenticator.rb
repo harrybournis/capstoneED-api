@@ -1,17 +1,17 @@
 module JWTAuth::JWTAuthenticator
 
 	# Class Variables
-	@secret			= 'secret' 			## TO be replaced with the application's secret key
-	@algorithm 	= 'HS256'				# available algorithms: https://github.com/jwt/ruby-jwt
+	@secret				= 'secret' 			## TO be replaced with the application's secret key
+	@algorithm 		= 'HS256'				# available algorithms: https://github.com/jwt/ruby-jwt
 	@exp					= 10.minutes		# expiration time for access-token
 	@refresh_exp	= 1.week				# expiration time for refresh-token
-	@leeway			= 0							# grace period after a token has expired.
-	@domain  		= api_host_url	# to be added to the cookies. left blank for developement in order to work with browsers. Change variable in helpers/url_helper.rb
-	@issuer			= @domain			# typically the website url. added to JWT tokens.
+	@leeway				= 0							# grace period after a token has expired.
+	@domain  			= api_host_url	# to be added to the cookies. left blank for developement in order to work with browsers. Change variable in helpers/url_helper.rb
+	@issuer				= @domain				# typically the website url. added to JWT tokens.
 
-	@cookies_secure 		= false # transmit cookies only on https
-	@cookies_httponly 	= true 	# javascript can't read cookies
-	@cookies_samesite	= false	# send cookies only if url in address bar matches the current site
+	@cookies_secure 		= false 	# transmit cookies only on https
+	@cookies_httponly 	= true 		# javascript can't read cookies
+	@cookies_samesite		= false		# send cookies only if url in address bar matches the current site
 
 	###
 	# Called before an authenticated endpoint in before_action in application_controller.
@@ -27,7 +27,13 @@ module JWTAuth::JWTAuthenticator
 		token_params 	= decoded_token.first
 
 		if validated_request.csrf_token == token_params['csrf_token']
-			"JWTAuth::CurrentUser#{token_params['type']}".constantize.new(token_params['id'], token_params['type'], token_params['device'])
+
+			if token_params['type'] == 'Student'
+				JWTAuth::CurrentUserStudent.new(token_params['id'], 'Student', token_params['device'])
+			else
+				JWTAuth::CurrentUserLecturer.new(token_params['id'], 'Lecturer', token_params['device'])
+			end
+
 		else
 			nil
 		end
