@@ -4,32 +4,32 @@ class Docs::V1::Projects < ApplicationController
 	DocHelper = Docs::Helpers::DocHelper
 
 	resource_description do
-	  short 'Projects belong to Units and have many teams of Students'
+	  short 'Projects belong to Assignments, and contain many Students'
 	  name 'Projects'
 	  api_base_url '/v1'
 	  api_version 'v1'
-	  meta attributes: { start_date: 'Date', end_date: 'Date', description: 'String' }
+	  meta attributes: { name: 'String', logo: 'Image', enrollment_key: 'String' }
 	  description <<-EOS
-			Projects belong to Units and have many teams of Students. A Lecturer creates a Project,
-			and Students undertake a projects by spliting themselves into teams. A Projects can have many
-			Iterations, for each of which the Students are expected to complete peer assessments.
+			Projects contain many Students that participate in a Assignment. A Project has an enrollment key,
+			which Student will use to become members of the Project, and by extension, participate in a
+			Assignment. By default, a Project contains a generic name and no logo, but both can be updated
+			by its Student members.
 	  EOS
 	end
 
-	api :GET, '/projects', "Get the current user's Projects"
+	api :GET, '/projects', "Get Projects. Behaves differently for Student/Lecturer."
   meta :authentication? => true
   meta :includes => true
-  param :unit_id, Integer, 'Return all the Projects for a specific Unit.'
-  param :includes, String,	DocHelper.param_includes_text('project_associations')
+  param :assignment_id, Integer, 'Required ONLY if current user is Lecturer. Return all the Projects for the specific Assignment.'
+  param :includes,		String,	DocHelper.param_includes_text('project_associations')
   error code: 400, desc: "Invalid 'includes' parameter."
   error code: 401, desc: 'Authentication failed'
-	error code: 403, desc: 'Current User is not a Lecturer. Only if the params contained a unit_id and current_user is a Student.'
-  error code: 403, desc: 'Current User is not associated with this resource'
-  example DocHelper.format_example(status = 200, nil, body =  "{\n  \"projects\": [\n    {\n      \"id\": 402,\n      \"start_date\": \"2016-08-29\",\n      \"end_date\": \"2016-12-12\",\n      \"description\": \"Eos consectetur quidem enim rerum ad. Similique aut fuga suscipit est. Velit et nesciunt placeat earum quam culpa. Cum aut fuga. A et tenetur.\",\n      \"unit\": {\n        \"id\": 1802,\n        \"name\": \"Advanced high-level contingency\",\n        \"code\": \"B0000DGFW7\",\n        \"semester\": \"Spring\",\n        \"year\": 2017,\n        \"archived_at\": null\n      }\n    },\n    {\n      \"id\": 403,\n      \"start_date\": \"2016-08-29\",\n      \"end_date\": \"2017-08-26\",\n      \"description\": \"Et necessitatibus ex dolor et et. Adipisci explicabo harum molestias et aut consequuntur sit. Debitis nihil dolores. Laudantium ratione eveniet dolor.\",\n      \"unit\": {\n        \"id\": 1802,\n        \"name\": \"Advanced high-level contingency\",\n        \"code\": \"B0000DGFW7\",\n        \"semester\": \"Spring\",\n        \"year\": 2017,\n        \"archived_at\": null\n      }\n    }\n  ]\n}")
+	error code: 403, desc: 'Current User is not a Lecturer. This is due to the params containing a assignment_id while current user is a Student.'
+	error code: 403, desc: 'Current User is not a Student. This is due to the params NOT containing a assignment_id while current user is a Lecturer.'
+  error code: 403, desc: 'This User is not the owner of this resource'
   description <<-EOS
-  	Show all Projects associated with the current user. A Lecturer can pass a unit_id in the params,
-  	and the Projects returned can be scoped to that Unit. The Unit must belong to the current user.
-  	Including a unit_id if current_user is a Student will result in an error.
+  	STUDENT: Returns all the current user's projects. Will return an error if assignment_id is present in the params.
+  	LECTURER: Returns all the Projects for the provided assignment_id. Will return an error if assignment_id is missing from the params.
   EOS
   def index
   end
@@ -38,68 +38,102 @@ class Docs::V1::Projects < ApplicationController
   meta :authentication? => true
   meta :includes => true
   param :id, Integer, 'The id of the Project to be returned', required: true
-  param :includes, String,	DocHelper.param_includes_text('project_associations')
-  error code: 400, desc: "Invalid 'includes' parameter."
+  param :includes,		String,	DocHelper.param_includes_text('project_associations')
+	error code: 400, desc: "Invalid 'includes' parameter."
   error code: 401, desc: 'Authentication failed'
-	error code: 403, desc: 'Current User is not associated with this resource'
-  example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 376,\n    \"start_date\": \"2016-08-29\",\n    \"end_date\": \"2016-10-03\",\n    \"description\": \"Quia dolore labore. Aut molestiae necessitatibus et hic vel ullam et. Nam doloribus eum qui recusandae. Atque eos ullam. Odit est consequatur.\",\n    \"unit\": {\n      \"id\": 1774,\n      \"name\": \"Cloned asymmetric Graphical User Interface\",\n      \"code\": \"B0000DHCZT\",\n      \"semester\": \"Spring\",\n      \"year\": 2017,\n      \"archived_at\": null\n    }\n  }\n}")
+	error code: 403, desc: 'This User is not the owner of this resource'
+  example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 1,\n    \"name\": \"Project 1\",\n    \"logo\": null,\n    \"enrollment_key\": \"b3dcbaebc4b594f3dc145cd6e23b59ce\"\n  }\n}")
 	example DocHelper.format_example(status = 403, nil, body = "{\n  \"errors\": {\n    \"base\": [\n      \"This Project can not be found in the current user's Projects\"\n    ]\n  }\n}")
 	description <<-EOS
-		Returns the Project specified by the id in the params. The user can be either a Lecturer or a
-		student but they in both cases they have to be associated with the Project.
+		Returns project if current user is associated with it.
 	EOS
 	def show
 	end
 
 	api :POST, '/projects', 'Create a new Project resource'
 	meta :authentication? => true
-	param :start_date, Date, 'Date the Project Started', required: true
-	param :end_date, Date, 'Date the Project Ended'
-	param :description, String, 'Project description', required: true
-	param :unit_id, Integer,'The Unit that the Project belongs to', required: true
-	param :teams_attributes, Hash, 'Create Teams for this Project. Format: "teams_attributes": [{ "name": "Team Name", "enrollment_key": "Key" }, { "name": "Team Name 2", "enrollment_key": "Key2" }]. See Examples for more information.'
+	meta :lecturers_only => true
+	param :assignment_id, Integer, "The assignment that the Project is created for", required: true
+	param :name, String, "The name of the project. If not provided it is autogenerated."
+	param :logo, String, "An image of the project logo."
+	param :enrollment_key, String, "The key used by Students to become member of the Project. If not provided it is autogenerated."
 	error code: 401, desc: 'Authentication failed'
-	error code: 403, desc: 'Current User is not a lecturer'
-	error code: 403, desc: 'Current User is not associated with this resource'
+	error code: 403, desc: 'Current User is not a Lecturer'
+	error code: 403, desc: 'This User is not the owner of this resource'
 	error code: 422, desc: 'Invalid Params'
-	example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 1133,\n    \"start_date\": \"2016-08-29\",\n    \"end_date\": \"2016-10-16\",\n    \"description\": \"Excepturi quis non minus dolor qui officia. Aperiam ex dolorum libero atque perferendis molestiae quos. Et est quidem. Veniam deleniti provident sit.\",\n    \"unit\": {\n      \"id\": 2839,\n      \"name\": \"Streamlined object-oriented encoding\",\n      \"code\": \"B000FQ9CTY\",\n      \"semester\": \"Autumn\",\n      \"year\": 2016,\n      \"archived_at\": null\n    }\n  }\n}")
-	example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 10,\n    \"start_date\": \"2016-09-18\",\n    \"end_date\": \"2017-03-22\",\n    \"description\": \"Lorem ipsum dolor sit amet, pri in erant detracto antiopam, duis altera nostrud id eam. Feugait invenire ut vim, novum reprimique reformidans id vis, sit at quis hinc liberavisse. Eam ex sint elaboraret assueverit, sed an equidem reformidans, idque doming ut quo. Ex aperiri labores has, dolorem indoctum hendrerit has cu. At case posidonium pri.\",\n    \"href\": \"/projects/10\",\n    \"teams\": [\n      {\n        \"id\": 2,\n        \"name\": \"New Team2\",\n        \"logo\": null,\n        \"enrollment_key\": \"key2\"\n      },\n      {\n        \"id\": 1,\n        \"name\": \"New Team1\",\n        \"logo\": null,\n        \"enrollment_key\": \"key\"\n      }\n    ]\n  }\n}", request = "{\n  \"description\": \"Lorem ipsum dolor sit amet, pri in erant detracto antiopam, duis altera nostrud id eam. Feugait invenire ut vim, novum reprimique reformidans id vis, sit at quis hinc liberavisse. Eam ex sint elaboraret assueverit, sed an equidem reformidans, idque doming ut quo. Ex aperiri labores has, dolorem indoctum hendrerit has cu. At case posidonium pri.\",\n  \"end_date\": \"2017-03-22\",\n  \"lecturer\": \"18\",\n  \"lecturer_id\": \"18\",\n  \"start_date\": \"2016-09-18\",\n \"unit_id\": \"7\",\n \"teams_attributes\": [\n    {\n      \"enrollment_key\": \"key\",\n      \"name\": \"New Team1\"\n    },\n    {\n      \"enrollment_key\": \"key2\",\n      \"name\": \"New Team2\"\n    }\n  ] \n}")
+	example DocHelper.format_example(status = 201, nil, body = "{\n  \"assignment\": {\n    \"id\": 1133,\n    \"start_date\": \"2016-08-29\",\n    \"end_date\": \"2016-10-16\",\n    \"description\": \"Excepturi quis non minus dolor qui officia. Aperiam ex dolorum libero atque perferendis molestiae quos. Et est quidem. Veniam deleniti provident sit.\",\n    \"unit\": {\n      \"id\": 2839,\n      \"name\": \"Streamlined object-oriented encoding\",\n      \"code\": \"B000FQ9CTY\",\n      \"semester\": \"Autumn\",\n      \"year\": 2016,\n      \"archived_at\": null\n    }\n  }\n}")
 	description <<-EOS
-		Create a new Project. Only Lecturers can create a Project, and it will automatically be
-		associated with the current user. Requires a unit_id, which must be a Unit that belongs to the
-		current user. Can also create multiple Teams through the same request. See examples.
+		Create a new Project for belonging to a specific Assignment. A Project can only be created by the Lecturer
+		that owns the Assignment. If no value is provided for the enrollment_key, it will be autogenerated.
 	EOS
 	def create
 	end
 
 	api :PATCH, '/projects/:id', 'Update a Project resource'
 	meta :authentication? => true
-	param :id, Integer, "The id of the Unit", required: true
-	param :start_date, Date, 'Date the Project Started'
-	param :end_date, Date, 'Date the Project Ended'
-	param :description, String, 'Project description'
-	param :unit_id, Integer,'The Unit that the Project belongs to'
+	param :id, Integer, "The id of the Project", required: true
+	param :name, String, "The name of the project. Can be set by Students."
+	param :logo, String, "An image of the project logo. Can be set by Students."
+	param :enrollment_key, String, "The key used by Students to become member of the Project."
 	error code: 401, desc: 'Authentication failed'
-	error code: 403, desc: 'Current User is not a lecturer'
-	error code: 403, desc: 'Current User is not associated with this resource'
+	error code: 403, desc: 'This User is not the owner of this resource'
 	error code: 422, desc: 'Invalid Params'
-	example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 1134,\n    \"start_date\": \"2016-08-29\",\n    \"end_date\": \"2017-08-29\",\n    \"description\": \"Aspernatur rerum aut. Mollitia quam et. Et magnam atque eaque ducimus magni quia.\",\n    \"unit\": {\n      \"id\": 2845,\n      \"name\": \"Face to face upward-trending workforce\",\n      \"code\": \"B0006DRM02\",\n      \"semester\": \"Autumn\",\n      \"year\": 2017,\n      \"archived_at\": null\n    }\n  }\n}")
+	example DocHelper.format_example(status = 200, nil, body = "{\n  \"project\": {\n    \"id\": 1,\n    \"name\": \"NewProjectName\",\n    \"logo\": \"http://www.images.com/images/4259\",\n    \"enrollment_key\": \"30444bd03c9dddca62691835b45a9d2a\"\n  }\n}")
 	description <<-EOS
-		Update a Project
+		Update a Project. Both the Lecturer that created the Assignment, and the Students that are members can
+		edit the name and the logo of the Project. However, the enrollment key can only be edited by the
+		Lecturer.
 	EOS
 	def update
 	end
 
-	api :DELETE, '/projects/:id', 'Delete Project'
+	api :DELETE, '/projects/:id', 'Delete Assignment'
 	meta :authentication? => true
+	meta :lecturers_only => true
 	param :id, Integer, 'The id of the Project to be deleted', required: true
 	error code: 401, desc: 'Authentication failed'
-	error code: 403, desc: 'Current User is not a lecturer'
-	error code: 403, desc: 'Current User is not associated with this resource'
+	error code: 403, desc: 'Current User is not a Lecturer'
+	error code: 403, desc: 'This User is not the owner of this resource'
 	error code: 422, desc: "Invalid params"
 	description <<-EOS
-		Delete Project resource. It must belong to the current user.
+		Delete Assignment resource. Only the Lecturer that created the associated Assignment can delete a
+		Project.
 	EOS
 	def destroy
+	end
+
+	api :POST, '/projects/enrol', 'Students joins Project with enrolment_key'
+	meta :authentication? => true
+	meta :students_only => true
+	param :enrollment_key, String, 'The enrollment key of the Project.', required: true
+	error code: 401, desc: 'Authentication failed'
+	error code: 403, desc: 'Current User is not a Student'
+	error code: 403, desc: 'Student tried to join same Project twice'
+	error code: 403, desc: 'Student tried to join two Projects in the same Assignment'
+	error code: 422, desc: 'Wrong enrollment key'
+	example DocHelper.format_example(status = 201, nil, body = "{\n  \"project\": {\n    \"id\": 2,\n    \"name\": \"Project 2\",\n    \"logo\": null,\n    \"enrollment_key\": \"e549c159189fbc1916843ca1becace65\"\n  }\n}")
+	example DocHelper.format_example(status = 403, nil, body = "{\n  \"errors\": {\n    \"base\": [\n      \"Student can not exist in the same Project twice\"\n    ]\n  }\n}")
+	description <<-EOS
+		Add a Student in a Project. Needs the enrollment key of the Project. A Student can not belong to
+		two Projects in the same assignment.
+	EOS
+	def enrol
+	end
+
+	api :DELETE, '/projects/:id/remove_student', 'Lecturer removes a Student from a Project'
+	meta :authentication? => true
+	meta :lecturers_only => true
+	param :id, Integer, 'The id of the Project that the student belongs to', required: true
+	param :student_id, Integer, 'The Id of the Student to be removed from the Project', required: true
+	error code: 401, desc: 'Authentication failed'
+	error code: 403, desc: 'Current User is not a Lecturer'
+	error code: 403, desc: 'The current Lecturer is not associated with this Project.'
+	error code: 422, desc: "The student_id does not belong to any Student of this Project."
+	example DocHelper.format_example(status = 204, nil , body = "{\n}" )
+	example DocHelper.format_example(status = 422, nil, body = "{\n  \"errors\": {\n    \"base\": [\n      \"Can't find Student with id 63 in this Project.\"\n    ]\n  }\n}")
+	description <<-EOS
+		A Lecturer can remove a Student from one of the Projects that belong to one of their Assignments.
+	EOS
+	def remove_student_from_project
 	end
 end

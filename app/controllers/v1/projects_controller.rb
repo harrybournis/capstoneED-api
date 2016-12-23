@@ -73,7 +73,6 @@ class V1::ProjectsController < ApplicationController
 		end
 
 		if @project.enrollment_key == params[:enrollment_key]
-		#if @project = Project.find_by(enrollment_key: params[:enrollment_key])
 			if @project.enrol(current_user.load)
 				render json: @project, status: :created
 			else

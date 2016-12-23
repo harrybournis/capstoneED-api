@@ -89,9 +89,9 @@ RSpec.describe ProjectEvaluation, type: :model do
 		project = FactoryGirl.create(:project, assignment: assignment, lecturer: user)
 		iteration = FactoryGirl.create(:iteration, assignment: assignment, start_date: now, deadline: now + 2.months)
 		feeling = FactoryGirl.create(:feeling)
+
 		pe = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
 		expect(pe.save).to be_truthy
-
 		pe2 = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
 		expect(pe2.save).to be_truthy
 
@@ -100,6 +100,30 @@ RSpec.describe ProjectEvaluation, type: :model do
 
 			expect(pe3.save).to be_falsy
 			expect(pe3.errors[:iteration_id][0]).to include('limit')
+		end
+	end
+
+	it 'validates that it is within the limit of project evaluations for a single iteration for a single user accounting for Lecturer' do
+		LIMITLecturer = 2
+		now = DateTime.now
+
+		user = FactoryGirl.create(:lecturer)
+		user.units << FactoryGirl.create(:unit)
+		assignment = FactoryGirl.create(:assignment, lecturer: user, unit: user.units[0])
+		project = FactoryGirl.create(:project, assignment: assignment, lecturer: user)
+		iteration = FactoryGirl.create(:iteration, assignment: assignment, start_date: now, deadline: now + 2.months)
+		feeling = FactoryGirl.create(:feeling)
+
+		pe = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
+		expect(pe.save).to be_truthy
+		pe2 = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
+		expect(pe2.save).to be_truthy
+
+		Timecop.travel(now + 3.days) do
+			different_project = FactoryGirl.create(:project, assignment: assignment, lecturer: user)
+			pe3 = ProjectEvaluation.new(project_id: different_project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
+
+			expect(pe3.save).to be_truthy
 		end
 	end
 
@@ -113,9 +137,9 @@ RSpec.describe ProjectEvaluation, type: :model do
 		project = FactoryGirl.create(:project, assignment: assignment, lecturer: user)
 		iteration = FactoryGirl.create(:iteration, assignment: assignment, start_date: now, deadline: now + 2.months)
 		feeling = FactoryGirl.create(:feeling)
+
 		pe = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
 		expect(pe.save).to be_truthy
-
 		pe2 = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
 		expect(pe2.save).to be_truthy
 

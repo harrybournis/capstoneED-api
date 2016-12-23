@@ -65,8 +65,8 @@ class ProjectEvaluation < ApplicationRecord
 		# checks whether the particular User has submitted more that the allowed number of
 		# ProjectEvaluation for the current Iteration
 		def iteration_limit_of_evaluations_has_not_been_reached_for_user
-			if iteration_id && user_id
-				if iteration.project_evaluations.where(user_id: user_id).length >= NO_OF_EVALUATIONS_PER_ITERATION
+			if iteration_id && user_id && project_id
+				if iteration.project_evaluations.where(user_id: user_id, project_id: project_id).length >= NO_OF_EVALUATIONS_PER_ITERATION
 					errors.add(:iteration_id, "the limit of ProjectEvaluations for this iteration has been reached")
 				end
 			end

@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :project do
-    sequence(:project_name) { |n| "Team #{n}" }
+    sequence(:project_name) { |n| "Project #{n}" }
     sequence(:team_name) { |n| "The xmen#{n}" }
     logo nil
     enrollment_key { SecureRandom.hex }
