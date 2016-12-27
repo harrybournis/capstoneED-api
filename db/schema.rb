@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161221215217) do
+ActiveRecord::Schema.define(version: 20161227192056) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -148,6 +148,7 @@ ActiveRecord::Schema.define(version: 20161221215217) do
   create_table "students_projects", id: false, force: :cascade do |t|
     t.integer "student_id", null: false
     t.integer "project_id", null: false
+    t.string  "nickname"
     t.index ["project_id"], name: "index_students_projects_on_project_id", using: :btree
     t.index ["student_id"], name: "index_students_projects_on_student_id", using: :btree
   end
@@ -188,7 +189,6 @@ ActiveRecord::Schema.define(version: 20161221215217) do
     t.string   "unconfirmed_email"
     t.string   "position"
     t.string   "university"
-    t.string   "nickname"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree

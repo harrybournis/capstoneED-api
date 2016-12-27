@@ -15,7 +15,6 @@ class Student < User
 	has_many 	:peer_assessments_submitted_for, class_name: PeerAssessment, foreign_key: :submitted_for_id
 
 	# Validations
-	validates_presence_of :nickname
 	validates_absence_of :position, :university
 	validates_inclusion_of :type, in: ['Student']
 
