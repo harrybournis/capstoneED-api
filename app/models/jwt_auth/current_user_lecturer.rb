@@ -13,7 +13,12 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 	end
 
 	def projects(options={})
-		Project.joins(:assignment).eager_load(options[:includes]).where(['assignments.lecturer_id = ?', @id])
+		if options[:includes] && options[:includes].include?("students")
+			options[:includes].delete("students")
+			Project.joins(:assignment).eager_load(options[:includes], students_projects: [:student]).where(['assignments.lecturer_id = ?', @id])
+		else
+			Project.joins(:assignment).eager_load(options[:includes]).where(['assignments.lecturer_id = ?', @id])
+		end
 	end
 
 	def questions(options={})

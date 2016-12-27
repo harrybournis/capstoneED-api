@@ -2,7 +2,6 @@ class Student < User
 	# Attributes
 	# first_name 	:string
 	# last_name		:string
-	# nickname		:string
 	# email				:string
 	# provider		:string (email, facebook)
 	# type				:string Student
@@ -24,5 +23,10 @@ class Student < User
 	# returns all the Students that share a Team with self
 	def teammates
 		Student.joins(:projects).where('projects.id' => projects.ids).where.not(id: id).distinct
+	end
+
+	# returns the Student's nickname for the provided project
+	def nickname_for_project_id(project_id)
+		JoinTables::StudentsProject.select(:nickname).where(project_id: project_id, student_id: self.id)[0].nickname
 	end
 end

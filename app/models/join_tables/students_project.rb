@@ -12,7 +12,7 @@ class JoinTables::StudentsProject < ApplicationRecord
 	validates_presence_of :project_id, :student_id
 	validates_uniqueness_of :student_id, scope: :project_id, message: 'can not exist in the same Project twice'
 	validates_uniqueness_of :nickname, scope: :project_id, case_sensitive: false, message: 'has already been taken for this project', allow_nil: true
-	validate :student_id_unique_for_projects_assignment
+	validate :student_id_unique_for_projects_assignment, on: :create
 
 
 	# Instance Methods

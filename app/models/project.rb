@@ -24,4 +24,12 @@ class Project < ApplicationRecord
   validates_uniqueness_of :project_name, scope: :assignment_id, case_sensitive: false
 
   before_validation :generate_enrollment_key
+
+  # Instance Methods
+
+  # Returns an array of StudentMembers POROs that contain all attributes of the student,
+  # plus their nicname for the current project
+  def student_members
+    students_projects.map { |sp| Decorators::StudentMember.new(sp.student, sp) }
+  end
 end

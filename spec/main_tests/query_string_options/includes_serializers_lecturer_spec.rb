@@ -154,7 +154,9 @@ RSpec.describe 'Includes', type: :controller do
 				expect(status).to eq(200)
 				expect(body['project']['enrollment_key']).to be_truthy
 
-				get :show, params: { id: @assignment.projects.first.id, includes: 'students' }
+				@assignment.projects[0].students_projects.offset(1).each { |s| s.nickname = "wolverine#{rand(1000).to_s}"; s.save }
+
+				get :show, params: { id: @assignment.projects[0].id, includes: 'students' }
 				expect(status).to eq(200)
 				expect(body['project']['students'].length).to eq(@assignment.projects.first.students.length)
 			end

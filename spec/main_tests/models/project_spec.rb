@@ -64,5 +64,21 @@ RSpec.describe Project, type: :model do
 
 				expect(project.project_health).to eq(expected_health)
 			end
+
+			it '#student_members returns TeamMember objects with nickname' do
+				assignment = FactoryGirl.create(:assignment)
+				project = FactoryGirl.create(:project, assignment: assignment)
+				student1 = FactoryGirl.create(:student)
+				student2 = FactoryGirl.create(:student)
+
+				project.students << student1
+				project.students << student2
+				student_members = project.student_members
+
+				expect(student_members[0].email).to eq(student1.email)
+				expect(student_members[0].nickname).to eq(student1.nickname_for_project_id(project.id))
+				expect(student_members[1].email).to eq(student2.email)
+				expect(student_members[1].nickname).to eq(student2.nickname_for_project_id(project.id))
+			end
 	end
 end

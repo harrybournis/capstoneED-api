@@ -61,4 +61,19 @@ RSpec.describe Student, type: :model do
 		expect(@user.projects.length).to eq 2
 		expect(@user.teammates.length).to eq 7
 	end
+
+	it 'nickname_for_project_id returns the nickname for the provided project' do
+		student = FactoryGirl.create(:student)
+		project = FactoryGirl.create(:project)
+		project2 = FactoryGirl.create(:project)
+		nickname = "dr dre"
+		nickname2 = "snoop dogg"
+		sp = JoinTables::StudentsProject.new(project_id: project.id, student_id: student.id, nickname: nickname)
+		sp2 = JoinTables::StudentsProject.new(project_id: project2.id, student_id: student.id, nickname: nickname2)
+
+		expect(sp.save).to be_truthy
+		expect(student.nickname_for_project_id(project.id)).to eq(nickname)
+		expect(sp2.save).to be_truthy
+		expect(student.nickname_for_project_id(project2.id)).to eq(nickname2)
+	end
 end

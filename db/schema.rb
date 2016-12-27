@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161227192056) do
+ActiveRecord::Schema.define(version: 20161227225852) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -145,9 +145,9 @@ ActiveRecord::Schema.define(version: 20161227192056) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "students_projects", id: false, force: :cascade do |t|
-    t.integer "student_id", null: false
-    t.integer "project_id", null: false
+  create_table "students_projects", force: :cascade do |t|
+    t.integer "project_id"
+    t.integer "student_id"
     t.string  "nickname"
     t.index ["project_id"], name: "index_students_projects_on_project_id", using: :btree
     t.index ["student_id"], name: "index_students_projects_on_student_id", using: :btree

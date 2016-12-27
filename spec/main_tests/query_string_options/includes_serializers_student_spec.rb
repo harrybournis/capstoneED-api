@@ -48,6 +48,11 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body['projects'].first['assignment']).to_not include('description')
 				expect(body['projects'].first['lecturer']).to include('id')
 			end
+
+			it 'GET without students' do
+				get :index, params: { includes: 'assignment' }
+				#binding.pry
+			end
 		end
 
 		describe 'Unit' do
