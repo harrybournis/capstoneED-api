@@ -2,6 +2,7 @@ class JoinTables::StudentsProject < ApplicationRecord
 	# Attributes
 	# student_id 	:integer
 	# project_id	:integer
+	# nickname		:string
 
 	# Associations
 	belongs_to :student
@@ -10,6 +11,7 @@ class JoinTables::StudentsProject < ApplicationRecord
 	# Validations
 	validates_presence_of :project_id, :student_id
 	validates_uniqueness_of :student_id, scope: :project_id, message: 'can not exist in the same Project twice'
+	validates_uniqueness_of :nickname, scope: :project_id, case_sensitive: false, message: 'has already been taken for this project', allow_nil: true
 	validate :student_id_unique_for_projects_assignment
 
 
