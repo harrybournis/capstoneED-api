@@ -3,6 +3,7 @@ class JoinTables::StudentsProject < ApplicationRecord
 	# student_id 	:integer
 	# project_id	:integer
 	# nickname		:string
+	# logs 				:jsonb 		:date_worked, :date_submitted, :time_worked, :stage, :text
 
 	# Associations
 	belongs_to :student
@@ -23,7 +24,7 @@ class JoinTables::StudentsProject < ApplicationRecord
 	# the format_of_last_log validation fails
 	def add_log(entry)
 		if entry.class == Hash
-			self.logs << entry.merge(date_submitted: DateTime.now.to_i)
+			self.logs << entry.merge("date_submitted" => DateTime.now.to_i.to_s)
 		else
 			self.logs << []
 		end
@@ -42,53 +43,51 @@ class JoinTables::StudentsProject < ApplicationRecord
 		def format_of_last_log
 			return unless self.logs && self.logs_changed? && !self.logs.empty? # validation will only execute if logs has been updated
 
-			entry = logs[0]
+			entry = logs.last
 
 			# Validate Formatting
 			unless entry.class == Hash
-				errors.add(:logs, 'entry is not a Hash')
+				errors.add(:log_entry, 'is not a Hash')
 				return
 			end
 
 			# Validate correct number of parameters and valid hash keys
 			if entry.length == 5
-				unless entry[:date_worked] && entry[:date_submitted] && entry[:time_worked] && entry[:stage] && entry[:text]
-					errors.add(:logs, 'wrong parameter key. Keys should be date_worked, time_worked, stage, text.')
+				unless entry["date_worked"] && entry["date_submitted"] && entry["time_worked"] && entry["stage"] && entry["text"]
+					errors.add(:log_entry, 'wrong parameter key. Keys should be date_worked, time_worked, stage, text.')
 					return
 				end
 			elsif entry.length < 5
-				errors.add(:logs, 'parameter is missing from new entry. Keys should be date_worked, time_worked, stage, text.')
+				errors.add(:log_entry, 'parameter is missing from new entry. Keys should be date_worked, time_worked, stage, text.')
 				return
 			else
-				errors.add(:logs, 'wrong number of parameters. Keys should be date_worked, time_worked, stage, text.')
+				errors.add(:log_entry, 'wrong number of parameters. Keys should be date_worked, time_worked, stage, text.')
 			end
 
 			# Validate that dates are integers
-			unless entry[:date_worked].class == Fixnum # WILL NOT WORK IN RUBY 2.4. USE INTEGER!!!!!!
-				errors.add(:logs, "date_worked must be an integer")
-				return
-			end
+			begin
+				date_worked = Integer(entry["date_worked"])
+				Integer(entry["time_worked"])
 
-			unless entry[:time_worked].class == Fixnum # WILL NOT WORK IN RUBY 2.4. USE INTEGER!!!!!!
-				errors.add(:logs, "time_worked must be an integer")
-				return
-			end
+				# validate that date_worked is not in the future
+				unless date_worked <= DateTime.now.to_i
+					errors.add(:log_entry, "date_worked can't be in the future")
+					return
+				end
 
-			# Validate that date_worked is in the past
-			unless entry[:date_worked] <= DateTime.now.to_i
-				errors.add(:logs, "date_worked can't be in the future")
-				return
+			rescue
+				errors.add(:log_entry, "date_worked and time_worked must be integers")
 			end
 
 			# Validate that stage is a string
-			unless entry[:stage].class == String
-				errors.add(:logs, "stage must be a string")
+			unless entry["stage"].class == String
+				errors.add(:log_entry, "stage must be a string")
 				return
 			end
 
 			# Validate that text is a string
-			unless entry[:text].class == String
-				errors.add(:logs, "text must be a string")
+			unless entry["text"].class == String
+				errors.add(:log_entry, "text must be a string")
 				return
 			end
 		end

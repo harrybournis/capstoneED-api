@@ -77,6 +77,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 				patch :update_nickname, params: { id: @student.projects[0].id, nickname: nickname }
 				expect(status).to eq(200)
 				expect(body['nickname']).to eq(nickname)
+				expect(JoinTables::StudentsProject.where(project_id: @student.projects[0].id, student_id: @student.id)[0].nickname).to eq(nickname)
 			end
 
 			it 'responds with 403 forbidden if student not enrolled in project' do
@@ -93,6 +94,26 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 				patch :update_nickname, params: { id: @student.projects[0].id }
 				expect(status).to eq(422)
 				expect(errors['nickname'][0]).to include("was not provided")
+			end
+		end
+
+		describe 'POST /logs' do
+			it 'responds with 200 if valid' do
+				post :update_logs, params: { id: @student.projects[0].id, log_entry: FactoryGirl.build(:students_project).logs[0].except(:date_submitted) }
+				expect(status).to eq(200)
+				expect(body['log_entry']).to be_truthy
+			end
+
+			it 'responds with 422 if invalid log parameters' do
+				post :update_logs, params: { id: @student.projects[0].id, log_entry: FactoryGirl.build(:students_project).logs[0].except("date_submitted", "time_worked") }
+				expect(status).to eq(422)
+				expect(errors['log_entry'][0]).to include('is missing')
+			end
+
+			it 'responds with 403 if not enrolled in project' do
+				project = FactoryGirl.create(:project)
+				post :update_logs, params: { id: project.id, log_entry: FactoryGirl.attributes_for(:students_project) }
+				expect(status).to eq(403)
 			end
 		end
 	end

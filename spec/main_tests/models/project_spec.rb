@@ -75,10 +75,12 @@ RSpec.describe Project, type: :model do
 				project.students << student2
 				student_members = project.student_members
 
-				expect(student_members[0].email).to eq(student1.email)
-				expect(student_members[0].nickname).to eq(student1.nickname_for_project_id(project.id))
-				expect(student_members[1].email).to eq(student2.email)
-				expect(student_members[1].nickname).to eq(student2.nickname_for_project_id(project.id))
+				student_members.each do |student|
+					if student.id == student1.id
+						expect(student.email).to eq(student1.email)
+						expect(student.nickname).to eq(student1.nickname_for_project_id(project.id))
+					end
+				end
 			end
 	end
 end

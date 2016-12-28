@@ -73,4 +73,9 @@ RSpec.describe 'Routing', type: :routing do
 		expect(delete: "#{url}/v1/project/4/remove_student").to route_to(
 			controller: 'v1/students_projects', action: 'remove_student', id: '4')
 	end
+
+	it 'POST /project/:id/logs routes to students_projects#update_logs' do
+		expect(post: "#{url}/v1/project/3/logs").to route_to(
+			controller: 'v1/students_projects', action: 'update_logs', id: '3')
+	end
 end

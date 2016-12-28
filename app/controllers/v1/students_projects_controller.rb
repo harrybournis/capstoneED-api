@@ -1,10 +1,10 @@
 class V1::StudentsProjectsController < ApplicationController
 
-	before_action :allow_if_student, only: [:enrol, :update_nickname]
+	before_action :allow_if_student, only: [:enrol, :update_nickname, :update_logs]
 	before_action :allow_if_lecturer, only: [:remove_student]
-  before_action :delete_includes_from_params, only: [:remove_student, :update_nickname]
+  before_action :delete_includes_from_params, only: [:remove_student]
   before_action :set_project_if_associated, only: [:remove_student]
-  before_action :set_students_project_if_associated, only: [:update_nickname]
+  before_action :set_students_project_if_associated, only: [:update_nickname, :update_logs]
 
 	# POST /projects/enrol
 	# Needs enrollemnt_key and id in params
@@ -56,6 +56,18 @@ class V1::StudentsProjectsController < ApplicationController
 		end
 	end
 
+	# POST /project/:id/update_logs
+	# Only for Student
+	def update_logs
+		@students_project.add_log(log_params[:log_entry].to_h.to_h) # first .to_h converts paramter to HashWithIndifferentAccess, and second one to Hash
+
+		if @students_project.save
+			render json: { log_entry: @students_project.logs.last }, status: :ok
+		else
+			render json: format_errors(@students_project.errors), status: :unprocessable_entity
+		end
+	end
+
 	private
 
 	  # Sets @project if it is asociated with the current user. Eager loads associations in the params[:includes].
@@ -74,6 +86,10 @@ class V1::StudentsProjectsController < ApplicationController
         render_not_associated_with_current_user('Project')
         return false
       end
+    end
+
+    def log_params
+    	params.permit(log_entry: [:date_worked, :time_worked, :stage, :text])
     end
 
 end
