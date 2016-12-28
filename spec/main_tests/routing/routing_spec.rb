@@ -29,11 +29,6 @@ RSpec.describe 'Routing', type: :routing do
 			controller: 'v1/iterations', action: 'index', assignment_id: '3')
 	end
 
-	it 'DELETE /projects/:id/remove_student routes to projects remove_student' do
-		expect(delete: "#{url}/v1/project/4/remove_student").to route_to(
-			controller: 'v1/projects', action: 'remove_student', id: '4')
-	end
-
 	it 'GET /peer_assessments?pa_form_id routes to index_with_pa_form' do
 		expect(get: "#{url}/v1/peer_assessments?pa_form_id=2").to route_to(
 			controller: 'v1/peer_assessments', action: 'index_with_pa_form', pa_form_id: '2')
@@ -62,5 +57,20 @@ RSpec.describe 'Routing', type: :routing do
 	it 'GET /iteration/:id/evaluations to project_evaluations index with iteration' do
 		expect(get: "#{url}/v1/iteration/3/evaluations").to route_to(
 			controller: 'v1/project_evaluations', action: 'index_with_iteration', iteration_id: '3')
+	end
+
+	it 'GET /project/:id/update_nickname to StudentsProjectsController#update_nickname' do
+		expect(patch: "#{url}/v1/project/3/update_nickname").to route_to(
+			controller: 'v1/students_projects', action: 'update_nickname', id: '3')
+	end
+
+	it 'POST /projects/enrol to StudentsProjectsController#enrol' do
+		expect(post: "#{url}/v1/projects/enrol").to route_to(
+			controller: 'v1/students_projects', action: 'enrol')
+	end
+
+	it 'DELETE /projects/:id/remove_student routes to students_projects#remove_student' do
+		expect(delete: "#{url}/v1/project/4/remove_student").to route_to(
+			controller: 'v1/students_projects', action: 'remove_student', id: '4')
 	end
 end

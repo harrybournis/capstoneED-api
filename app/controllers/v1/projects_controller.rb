@@ -1,12 +1,11 @@
 class V1::ProjectsController < ApplicationController
 
-	before_action :allow_if_lecturer, 		only: [:create, :destroy, :remove_student]
-	before_action :allow_if_student,			only: [:enrol]
+	before_action :allow_if_lecturer, 		only: [:create, :destroy]
 	before_action -> { allow_if_lecturer(index_with_assignment_error_message) }, only: :index_with_assignment
 	before_action -> { allow_if_student(index_error_message) }, only: :index
  	before_action :validate_includes, only: [:index, :index_with_assignment, :show], if: 'params[:includes]'
-  before_action :delete_includes_from_params, only: [:update, :destroy, :remove_student]
-  before_action :set_project_if_associated, only: [:show, :update, :destroy, :remove_student]
+  before_action :delete_includes_from_params, only: [:update, :destroy]
+  before_action :set_project_if_associated, only: [:show, :update, :destroy]
 
 
 	# GET /projects
@@ -60,42 +59,6 @@ class V1::ProjectsController < ApplicationController
 			render json: '', status: :no_content
 		else
 			render json: format_errors(@project.errors), status: :unprocessable_entity
-		end
-	end
-
-
-	# POST /projects/enrol
-	# Needs enrollemnt_key and id in params
-	def enrol
-		unless @project = Project.find_by(id: params[:id])
-			render json: format_errors({id: ['does not exist']}), status: :unprocessable_entity
-			return
-		end
-
-		if @project.enrollment_key == params[:enrollment_key]
-			if @project.enrol(current_user.load)
-				render json: @project, status: :created
-			else
-				render json: format_errors(@project.errors), status: :forbidden
-			end
-		else
-			render json: format_errors({ enrollment_key: ['is invalid'] })
-		end
-	end
-
-	# DELETE /project/:id/remove_student
-	# Only for Lecturer
-	def remove_student
-		unless params[:student_id]
-			render json: format_errors({ student_id: ["can't be blank"] }), status: :bad_request
-			return
-		end
-
-		if student = @project.students.find_by(id: params[:student_id])
-			@project.students.delete(student)
-			render json: '', status: 204
-		else
-			render json: format_errors({ base: ["Can't find Student with id #{params[:student_id]} in this Project."] }), status: :unprocessable_entity
 		end
 	end
 
