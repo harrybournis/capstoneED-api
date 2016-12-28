@@ -2,8 +2,9 @@ class V1::StudentsProjectsController < ApplicationController
 
 	before_action :allow_if_student, only: [:enrol, :update_nickname]
 	before_action :allow_if_lecturer, only: [:remove_student]
-  before_action :delete_includes_from_params, only: [:remove_student]
+  before_action :delete_includes_from_params, only: [:remove_student, :update_nickname]
   before_action :set_project_if_associated, only: [:remove_student]
+  before_action :set_students_project_if_associated, only: [:update_nickname]
 
 	# POST /projects/enrol
 	# Needs enrollemnt_key and id in params
@@ -36,13 +37,23 @@ class V1::StudentsProjectsController < ApplicationController
 			@project.students.delete(student)
 			render json: '', status: 204
 		else
-			render json: format_errors({ base: ["Can't find Student with id #{params[:student_id]} in this Project."] }), status: :unprocessable_entity
+			render json: format_errors({ base: ["Can't find Student with the provided id in this Project."] }), status: :unprocessable_entity
 		end
 	end
 
 	# PATCH /projects/update_nickname
 	# Only for Student
 	def update_nickname
+		unless params[:nickname]
+			render json: format_errors({ nickname: ["was not provided"] }), status: :unprocessable_entity
+			return
+		end
+
+		if @students_project.update(nickname: params[:nickname])
+			render json: { nickname: params[:nickname] }, status: :ok
+		else
+			render json: format_errors(@students_project.errors), status: :unprocessable_entity
+		end
 	end
 
 	private
@@ -51,6 +62,15 @@ class V1::StudentsProjectsController < ApplicationController
     # Renders error if not associated and Halts execution
     def set_project_if_associated
       unless @project = current_user.projects(includes: includes_array).where(id: params[:id])[0]
+        render_not_associated_with_current_user('Project')
+        return false
+      end
+    end
+
+	  # Sets @project if it is asociated with the current user. Eager loads associations in the params[:includes].
+    # Renders error if not associated and Halts execution
+    def set_students_project_if_associated
+      unless @students_project = JoinTables::StudentsProject.where(student_id: current_user.id, project_id: params[:id])[0]
         render_not_associated_with_current_user('Project')
         return false
       end

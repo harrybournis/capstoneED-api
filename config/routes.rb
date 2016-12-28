@@ -28,15 +28,13 @@ Rails.application.routes.draw do
 			resources :assignments,				only: [:index, :show, :create, :update, :destroy]
 
 			# Projects
-			get 		'projects',										to: 'projects#index_with_assignment', constraints: -> (request) { request.params[:assignment_id] }
+			get 		'projects',											to: 'projects#index_with_assignment', constraints: -> (request) { request.params[:assignment_id] }
+			post 		'projects/enrol', 							to: 'students_projects#enrol'
+			patch 	'project/:id/update_nickname', 	to: 'students_projects#update_nickname'
+			delete 	'project/:id/remove_student',		to: 'students_projects#remove_student'
 			resources :projects do
 				resources :extensions, only: [:create, :update, :destroy]
 			end
-
-			# StudentsProjects
-			post 'projects/enrol', to: 'students_projects#enrol'
-			patch 'project/:id/update_nickname', to: 'students_projects#update_nickname'
-			delete 	'project/:id/remove_student',to: 'students_projects#remove_student'
 
 			# Custom Questions
 			resources :questions

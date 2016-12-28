@@ -62,7 +62,7 @@ RSpec.describe Student, type: :model do
 		expect(@user.teammates.length).to eq 7
 	end
 
-	it '#nickname_for_project_id returns the nickname for the provided project' do
+	it '#nickname_for_project_id? returns the nickname for the provided project' do
 		student = FactoryGirl.create(:student)
 		project = FactoryGirl.create(:project)
 		project2 = FactoryGirl.create(:project)

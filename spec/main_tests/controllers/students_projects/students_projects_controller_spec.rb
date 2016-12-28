@@ -69,6 +69,32 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 				expect(errors['base'].first).to eq('Student has already enroled in a different Project for this Assignment')
 			end
 		end
+
+		describe 'PATCH update_nickname' do
+
+			it 'responds with 200 and the new nickname if successfull' do
+				nickname = 'giorgakis'
+				patch :update_nickname, params: { id: @student.projects[0].id, nickname: nickname }
+				expect(status).to eq(200)
+				expect(body['nickname']).to eq(nickname)
+			end
+
+			it 'responds with 403 forbidden if student not enrolled in project' do
+				project = FactoryGirl.create(:project)
+				project.students << FactoryGirl.create(:student)
+
+				patch :update_nickname, params: { id: project.id, nickname: 'nicname' }
+
+				expect(status).to eq(403)
+				expect(errors['base'][0]).to include('not associated')
+			end
+
+			it 'responds with 422 unprocessable_entity if nickname is not in the params' do
+				patch :update_nickname, params: { id: @student.projects[0].id }
+				expect(status).to eq(422)
+				expect(errors['nickname'][0]).to include("was not provided")
+			end
+		end
 	end
 
 	context 'Lecturer' do
@@ -86,6 +112,13 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 				expect {
 					post :enrol, params: { enrollment_key: 'something' }
 				}.to_not change { JoinTables::StudentsProject.all.size }
+				expect(status).to eq(403)
+			end
+		end
+
+		describe 'POST update_nickname' do
+			it 'responds with 403 forbidden if lecturer' do
+				patch :update_nickname, params: { id: @lecturer.projects[0].id, nickname: 'giorgakis' }
 				expect(status).to eq(403)
 			end
 		end
