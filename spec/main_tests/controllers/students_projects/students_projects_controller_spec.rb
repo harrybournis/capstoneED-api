@@ -116,6 +116,28 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 				expect(status).to eq(403)
 			end
 		end
+
+		describe 'GET /logs' do
+			it 'responds with 200 and the students logs' do
+				project = @student.projects[0]
+				sp = JoinTables::StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
+				sp.add_log(FactoryGirl.build(:students_project).logs[0])
+				expect(sp.save).to be_truthy
+				sp.add_log(FactoryGirl.build(:students_project).logs[0])
+				expect(sp.save).to be_truthy
+
+				get :index_logs_student, params: { id: project.id }
+
+				expect(status).to eq(200)
+				expect(body["logs"].length).to eq(2)
+			end
+
+			it 'responds with 403 if the student does not belong to project' do
+				project = FactoryGirl.create(:project)
+				get :index_logs_student, params: {  id: project.id }
+				expect(status).to eq(403)
+			end
+		end
 	end
 
 	context 'Lecturer' do
@@ -177,6 +199,35 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 				expect(errors['base'][0]).to include("Can't find Student")
 				@lecturer.reload
 				expect(@lecturer.projects.first.students.length).to eq(1)
+			end
+		end
+
+		describe 'GET /logs' do
+			it 'responds with 200 and the students logs' do
+				project = @student.projects[0]
+				sp = JoinTables::StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
+				sp.add_log(FactoryGirl.build(:students_project).logs[0])
+				expect(sp.save).to be_truthy
+				sp.add_log(FactoryGirl.build(:students_project).logs[0])
+				expect(sp.save).to be_truthy
+
+				get :index_logs_lecturer, params: { id: project.id, student_id: @student.id }
+
+				expect(status).to eq(200)
+				expect(body["logs"].length).to eq(2)
+			end
+
+			it 'responds with 422 if the student does not belong to project' do
+				project = @lecturer.projects.second
+				get :index_logs_lecturer, params: {  id: project.id, student_id: @student.id }
+				expect(status).to eq(422)
+				expect(errors["student_id"][0]).to include("does not belong to this project")
+			end
+
+			it 'responds with 403 if the project does not belong to the lecturer' do
+				project = FactoryGirl.create(:project)
+				get :index_logs_lecturer, params: {  id: project.id, student_id: @student.id }
+				expect(status).to eq(403)
 			end
 		end
 	end

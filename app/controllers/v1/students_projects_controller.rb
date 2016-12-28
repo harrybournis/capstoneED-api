@@ -1,10 +1,10 @@
 class V1::StudentsProjectsController < ApplicationController
 
-	before_action :allow_if_student, only: [:enrol, :update_nickname, :update_logs]
-	before_action :allow_if_lecturer, only: [:remove_student]
+	before_action :allow_if_student, only: [:enrol, :update_nickname, :update_logs, :index_logs_student]
+	before_action :allow_if_lecturer, only: [:remove_student, :index_logs_lecturer]
   before_action :delete_includes_from_params, only: [:remove_student]
-  before_action :set_project_if_associated, only: [:remove_student]
-  before_action :set_students_project_if_associated, only: [:update_nickname, :update_logs]
+  before_action :set_project_if_associated, only: [:remove_student, :index_logs_lecturer]
+  before_action :set_students_project_if_associated, only: [:update_nickname, :update_logs, :index_logs_student]
 
 	# POST /projects/enrol
 	# Needs enrollemnt_key and id in params
@@ -54,6 +54,24 @@ class V1::StudentsProjectsController < ApplicationController
 		else
 			render json: format_errors(@students_project.errors), status: :unprocessable_entity
 		end
+	end
+
+	# GET /project/:id/logs
+	# Only for Student
+	def index_logs_student
+		render json: { logs: @students_project.logs }, status: :ok
+	end
+
+	# GET /project/:id/logs
+	# Only for lecturer
+	# Needs student_id in params
+	def index_logs_lecturer
+    unless @students_project = JoinTables::StudentsProject.where(student_id: params[:student_id], project_id: params[:id])[0]
+      render json: format_errors({ student_id: ['does not belong to this project'] }), status: :unprocessable_entity
+      return
+    end
+
+    render json: { logs: @students_project.logs }, status: :ok
 	end
 
 	# POST /project/:id/update_logs

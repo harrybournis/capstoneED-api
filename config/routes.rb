@@ -29,8 +29,10 @@ Rails.application.routes.draw do
 
 			# Projects
 			get 		'projects',											to: 'projects#index_with_assignment', constraints: -> (request) { request.params[:assignment_id] }
-			post 		'projects/enrol', 							to: 'students_projects#enrol'
+			get 		'project/:id/logs',							to: 'students_projects#index_logs_lecturer', constraints: -> (request) { request.params[:student_id] }
+			get 		'project/:id/logs',							to: 'students_projects#index_logs_student'
 			post		'project/:id/logs',							to: 'students_projects#update_logs'
+			post 		'projects/enrol', 							to: 'students_projects#enrol'
 			patch 	'project/:id/update_nickname', 	to: 'students_projects#update_nickname'
 			delete 	'project/:id/remove_student',		to: 'students_projects#remove_student'
 			resources :projects do
