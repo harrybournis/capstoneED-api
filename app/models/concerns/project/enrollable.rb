@@ -3,8 +3,8 @@ module Project::Enrollable
 	extend ActiveSupport::Concern
 
   # Add a student to a Team with validations
-  def enrol(student)
-  	enrolment = JoinTables::StudentsProject.new(project: self, student: student)
+  def enrol(student, nickname = nil)
+  	enrolment = JoinTables::StudentsProject.new(project: self, student: student, nickname: nickname)
 
   	if enrolment.save
   		true

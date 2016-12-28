@@ -34,6 +34,18 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 				expect(@student.projects.include? project).to be_truthy
 			end
 
+			it 'creates a new StudentsProject instance with nickname' do
+				project = FactoryGirl.create(:project)
+				nickname = "giorgakis"
+				expect {
+					post :enrol, params: { enrollment_key: project.enrollment_key, id: project.id, nickname: nickname }
+				}.to change { JoinTables::StudentsProject.all.count }.by(1)
+				expect(status).to eq(201)
+				@student.reload
+				expect(@student.projects.include? project).to be_truthy
+				expect(@student.nickname_for_project_id(project.id)).to eq(nickname)
+			end
+
 			it 'responds with 422 unprocessable_entity if id does not exist' do
 				project = FactoryGirl.create(:project)
 				expect {

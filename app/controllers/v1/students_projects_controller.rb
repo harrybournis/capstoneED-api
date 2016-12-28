@@ -15,7 +15,7 @@ class V1::StudentsProjectsController < ApplicationController
 		end
 
 		if @project.enrollment_key == params[:enrollment_key]
-			if @project.enrol(current_user.load)
+			if @project.enrol(current_user.load, params[:nickname])
 				render json: @project, status: :created
 			else
 				render json: format_errors(@project.errors), status: :forbidden
