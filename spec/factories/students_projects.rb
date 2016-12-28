@@ -5,7 +5,7 @@ FactoryGirl.define do
   	nickname { "wolverine#{rand(1000).to_s}" }
 
   	after :build do |obj|
-  		obj.project.students << obj.student
+  		obj.add_log({ date_worked: (DateTime.now - 1.day).to_i, time_worked: 10.hours.to_i, stage: 'Analysis', text: 'Worked on database and use cases' })
   	end
-  end
+	end
 end

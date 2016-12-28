@@ -7,6 +7,10 @@ RSpec.describe JoinTables::StudentsProject, type: :model do
 	it { should belong_to :project }
 	it { should belong_to :student }
 
+	it 'works' do
+		expect(FactoryGirl.create(:students_project)).to be_truthy
+	end
+
 	it 'should validate that the student is not already part of the Project in a different team' do
 		student = FactoryGirl.create(:student)
 		assignment = FactoryGirl.create(:assignment_with_projects)
@@ -36,5 +40,82 @@ RSpec.describe JoinTables::StudentsProject, type: :model do
 		expect(sp3.save).to be_truthy
 		expect(sp4.save).to be_falsy
 		expect(sp2.errors[:nickname][0]).to include('already been taken')
+	end
+
+	it 'creating new record without logs sets logs to an empty array' do
+		student = FactoryGirl.create(:student)
+		project = FactoryGirl.create(:project)
+		sp = JoinTables::StudentsProject.new(nickname: "yo", student_id: student.id, project_id: project.id)
+
+		expect(sp.save).to be_truthy
+		expect(sp.logs.class).to eq(Array)
+		expect(sp.logs).to eq([])
+	end
+
+	context 'validates format of logs' do
+		before :each do
+			student = FactoryGirl.create(:student)
+			project = FactoryGirl.create(:project)
+			@sp = JoinTables::StudentsProject.new(nickname: "yo", student_id: student.id, project_id: project.id)
+			expect(@sp.save).to be_truthy
+		end
+
+		it 'valid' do
+			@sp.add_log({ date_worked: (DateTime.now - 1.day).to_i, date_submitted: DateTime.now.to_i, time_worked: 10.hours.to_i, stage: 'Analysis', text: 'Worked on database and use cases' })
+			expect(@sp.save).to be_truthy
+		end
+
+		it 'invalid, wrong formatting' do
+			@sp.add_log([{ date_worked: (DateTime.now - 1.day).to_i, date_submitted: DateTime.now.to_i, time_worked: 10.hours.to_i, stage: 'Analysis', text: 'Worked on database and use cases' }])
+			expect(@sp.save).to be_falsy
+			expect(@sp.errors[:logs][0]).to include('not a Hash')
+		end
+
+		it 'invalid, missing parameter' do
+			@sp.add_log({  date_submitted: DateTime.now.to_i, time_worked: 10.hours.to_i, stage: 'Analysis', text: 'Worked on database and use cases' })
+			expect(@sp.save).to be_falsy
+			expect(@sp.errors[:logs][0]).to include("missing")
+		end
+
+		it 'invalid, extra parameters' do
+			@sp.add_log({ extra: "invalid", date_worked: (DateTime.now - 1.day).to_i, date_submitted: DateTime.now.to_i, time_worked: 10.hours.to_i, stage: 'Analysis', text: 'Worked on database and use cases' })
+			expect(@sp.save).to be_falsy
+			expect(@sp.errors[:logs][0]).to include("wrong number of parameters")
+		end
+
+		it 'invalid, correct number of paramters, wrong key' do
+			@sp.add_log({ date_wrong_: (DateTime.now - 1.day).to_i, date_submitted: DateTime.now.to_i, time_worked: 10.hours.to_i, stage: 'Analysis', text: 'Worked on database and use cases' })
+			expect(@sp.save).to be_falsy
+			expect(@sp.errors[:logs][0]).to include("wrong parameter key")
+		end
+
+		it 'invalid, date worked is in the future' do
+			@sp.add_log({ date_worked: (DateTime.now + 2.days).to_i, date_submitted: DateTime.now.to_i, time_worked: 10.hours.to_i, stage: 'Analysis', text: 'Worked on database and use cases' })
+			expect(@sp.save).to be_falsy
+			expect(@sp.errors[:logs][0]).to include("date_worked can't be in the future")
+		end
+
+		it 'invalid, wrong datatypes for dates' do
+			@sp.add_log({ date_worked: "3 days", date_submitted: DateTime.now.to_i, time_worked: 10.hours.to_i, stage: 'Analysis', text: 'Worked on database and use cases' })
+			expect(@sp.save).to be_falsy
+			expect(@sp.errors[:logs][0]).to include("date_worked must be an integer")
+
+			@sp.reload
+			@sp.add_log({ date_worked: DateTime.now.to_i, date_submitted: DateTime.now, time_worked: DateTime.now, stage: 'Analysis', text: 'Worked on database and use cases' })
+			expect(@sp.save).to be_falsy
+			expect(@sp.errors[:logs][0]).to include("time_worked must be an integer")
+		end
+
+		it 'invalid, wrong datatypes for stage' do
+			@sp.add_log({ date_worked: DateTime.now.to_i, date_submitted: DateTime.now.to_i, time_worked: 10.hours.to_i, stage: {}, text: 'Worked on database and use cases' })
+			expect(@sp.save).to be_falsy
+			expect(@sp.errors[:logs][0]).to include("stage must be a string")
+		end
+
+		it 'invalid, wrong datatypes for text' do
+			@sp.add_log({ date_worked: DateTime.now.to_i, date_submitted: DateTime.now.to_i, time_worked: 10.hours.to_i, stage: 'Analysis', text: 3 })
+			expect(@sp.save).to be_falsy
+			expect(@sp.errors[:logs][0]).to include("text must be a string")
+		end
 	end
 end

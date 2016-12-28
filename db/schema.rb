@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161227225852) do
+ActiveRecord::Schema.define(version: 20161228153915) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -149,6 +149,8 @@ ActiveRecord::Schema.define(version: 20161227225852) do
     t.integer "project_id"
     t.integer "student_id"
     t.string  "nickname"
+    t.jsonb   "logs",       default: [], null: false
+    t.index ["logs"], name: "index_students_projects_on_logs", using: :gin
     t.index ["project_id"], name: "index_students_projects_on_project_id", using: :btree
     t.index ["student_id"], name: "index_students_projects_on_student_id", using: :btree
   end
