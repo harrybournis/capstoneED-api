@@ -22,7 +22,8 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		end
 
 		describe 'GET index' do
-			it "returns only the student's projects" do
+			it "returns only the student's projects", { docs?: true, lecturer?: false } do |example|
+
 				get :index
 				expect(status).to eq(200)
 				expect(parse_body['projects'].length).to eq(@student.projects.length)
@@ -96,13 +97,15 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		end
 
 		describe 'GET index' do
-			it "responds with 403 forbidden if the params don't indlude assignment_id" do
+			it "responds with 403 forbidden if the params don't indlude assignment_id", { docs?: true } do
 				get :index
 				expect(status).to eq(403)
 				expect(errors['base'].first).to include("Lecturers must provide a 'assignment_id' in the parameters for this route")
 			end
 
-			it 'returns the projects for the provided assignment_id if the project belongs to the current user' do
+			it 'returns the projects for the provided assignment_id if the project belongs to the current user',
+				{ docs?: true, described_action: "index" } do
+
 				assignment = @lecturer.assignments.first
 				get :index_with_assignment, params: { assignment_id: assignment.id }
 				expect(status).to eq(200)

@@ -96,4 +96,13 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 =end
+  config.after(:each, type: :controller) do |example|
+    if example.metadata[:docs?]
+      example.metadata[:request_params]   = request.params
+      example.metadata[:response_body]    = response.body
+      example.metadata[:status]           = response.status
+      example.metadata[:described_action] = request.params["action"] unless example.metadata[:described_action]
+      example.metadata[:lecturer?]        = true if example.metadata[:lecturer?].nil?
+    end
+  end
 end
