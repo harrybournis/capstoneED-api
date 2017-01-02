@@ -44,7 +44,10 @@ class V1::ProjectsController < ApplicationController
 
 	# PATCH /projects/:id
 	def update
-		params.delete(:enrollment_key) if current_user.load.instance_of? Student
+		if project_update_params.empty?
+			render json: format_errors({ base: ["none of the given parameters can be updated by the current user"] }), status: :bad_request
+			return
+		end
 
 		if @project.update(project_update_params)
 			render json: @project, status: :ok
@@ -85,7 +88,11 @@ class V1::ProjectsController < ApplicationController
 		end
 
 		def project_update_params
-			params.permit(:project_name, :team_name, :description, :logo, :enrollment_key)
+			if current_user.type == "Lecturer"
+				params.permit(:project_name, :team_name, :description, :logo, :enrollment_key)
+			else
+				params.permit(:team_name, :logo)
+			end
 		end
 
 		def index_with_assignment_error_message

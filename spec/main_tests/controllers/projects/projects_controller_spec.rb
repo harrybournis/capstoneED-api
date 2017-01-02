@@ -55,10 +55,11 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		describe 'PATCH update' do
 			it 'updates the parameters successfully if student is member of the project' do
 				expect {
-					patch :update, params: { id: Project.first.id, project_name: 'CrazyProject666', logo: 'http://www.images.com/images/4259' }
-				}.to change { Project.first.project_name }
+					patch :update, params: { id: Project.first.id, team_name: 'CrazyProject666', logo: 'http://www.images.com/images/4259' }
+				}.to change { Project.first.team_name }
 				expect(status).to eq(200)
 				expect(parse_body['project']['logo']).to eq('http://www.images.com/images/4259')
+				expect(parse_body['project']['team_name']).to eq('CrazyProject666')
 			end
 
 			it 'responds with 403 if student is not member of the Project' do
@@ -69,11 +70,20 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				expect(status).to eq(403)
 			end
 
-			it 'ignores the enrollment key update' do
+			it 'returns bad request if no permitted parameters and only enrollment key' do
 				expect {
 					patch :update, params: { id: Project.first.id, enrollment_key: 'new_key' }
 				}.to_not change { Project.first.enrollment_key }
-				expect(status).to eq(200)
+				expect(status).to eq(400)
+				expect(errors["base"][0]).to include("none of the given parameters")
+			end
+
+			it 'returns bad request if no permitted parameters and only project_name' do
+				expect {
+					patch :update, params: { id: Project.first.id, project_name: "whatever" }
+				}.to_not change { Project.first.project_name }
+				expect(status).to eq(400)
+				expect(errors["base"][0]).to include("none of the given parameters")
 			end
 		end
 
