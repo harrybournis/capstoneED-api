@@ -56,13 +56,13 @@ class V1::StudentsProjectsController < ApplicationController
 		end
 	end
 
-	# GET /project/:id/logs
+	# GET /projects/:id/logs
 	# Only for Student
 	def index_logs_student
 		render json: { logs: @students_project.logs }, status: :ok
 	end
 
-	# GET /project/:id/logs
+	# GET /projects/:id/logs
 	# Only for lecturer
 	# Needs student_id in params
 	def index_logs_lecturer
@@ -74,10 +74,10 @@ class V1::StudentsProjectsController < ApplicationController
     render json: { logs: @students_project.logs }, status: :ok
 	end
 
-	# POST /project/:id/update_logs
+	# POST /projects/:id/update_logs
 	# Only for Student
 	def update_logs
-		@students_project.add_log(log_params[:log_entry].to_h.to_h) # first .to_h converts paramter to HashWithIndifferentAccess, and second one to Hash
+		@students_project.add_log(log_params.to_h.to_h)
 
 		if @students_project.save
 			render json: { log_entry: @students_project.logs.last }, status: :ok
@@ -97,7 +97,7 @@ class V1::StudentsProjectsController < ApplicationController
       end
     end
 
-	  # Sets @project if it is asociated with the current user. Eager loads associations in the params[:includes].
+	  # Sets @=project if it is asociated with the current user. Eager loads associations in the params[:includes].
     # Renders error if not associated and Halts execution
     def set_students_project_if_associated
       unless @students_project = JoinTables::StudentsProject.where(student_id: current_user.id, project_id: params[:id])[0]
@@ -107,7 +107,7 @@ class V1::StudentsProjectsController < ApplicationController
     end
 
     def log_params
-    	params.permit(log_entry: [:date_worked, :time_worked, :stage, :text])
+    	params.permit(:date_worked, :time_worked, :stage, :text)
     end
 
 end

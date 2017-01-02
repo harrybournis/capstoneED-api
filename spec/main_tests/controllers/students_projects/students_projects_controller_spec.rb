@@ -111,20 +111,20 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 
 		describe 'POST /logs' do
 			it 'responds with 200 if valid' do
-				post :update_logs, params: { id: @student.projects[0].id, log_entry: FactoryGirl.build(:students_project).logs[0].except(:date_submitted) }
+				post :update_logs, params: FactoryGirl.build(:students_project).logs[0].except(:date_submitted).merge(id: @student.projects[0].id)
 				expect(status).to eq(200)
 				expect(body['log_entry']).to be_truthy
 			end
 
 			it 'responds with 422 if invalid log parameters' do
-				post :update_logs, params: { id: @student.projects[0].id, log_entry: FactoryGirl.build(:students_project).logs[0].except("date_submitted", "time_worked") }
+				post :update_logs, params: FactoryGirl.build(:students_project).logs[0].except("date_submitted", "time_worked").merge(id: @student.projects[0].id)
 				expect(status).to eq(422)
 				expect(errors['log_entry'][0]).to include('is missing')
 			end
 
 			it 'responds with 403 if not enrolled in project' do
 				project = FactoryGirl.create(:project)
-				post :update_logs, params: { id: project.id, log_entry: FactoryGirl.attributes_for(:students_project) }
+				post :update_logs, params: FactoryGirl.attributes_for(:students_project).merge(id: project.id)
 				expect(status).to eq(403)
 			end
 		end

@@ -143,14 +143,14 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		end
 
 		describe "POST create" do
-			it 'creates a new project if the current user is lecturer and owner of the project' do
+			it 'creates a new project if the current user is lecturer and owner of the project', { docs?: true } do
 				expect {
 					post :create, params: FactoryGirl.attributes_for(:project, assignment_id: @lecturer.assignments.last.id)
 				}.to change { Project.all.count }.by(1)
 				expect(status).to eq(201)
 			end
 
-			it 'responds with 403 forbidden if not the owner of the assignment' do
+			it 'responds with 403 forbidden if not the owner of the assignment', { docs?: true } do
 				different_assignment = FactoryGirl.create(:assignment)
 				expect {
 					post :create, params: FactoryGirl.attributes_for(:project, assignment_id: different_assignment.id)
