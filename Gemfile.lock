@@ -228,7 +228,6 @@ DEPENDENCIES
   devise (~> 4.2)
   dotenv-rails (~> 2.1, >= 2.1.1)
   factory_girl_rails (~> 4.7)
-  json (~> 2.0, >= 2.0.2)
   jwt (~> 1.5, >= 1.5.4)
   letter_opener (~> 1.4, >= 1.4.1)
   listen (~> 3.0.5)
