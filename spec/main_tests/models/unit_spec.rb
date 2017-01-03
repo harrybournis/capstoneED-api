@@ -27,6 +27,16 @@ RSpec.describe Unit, type: :model do
     expect(Unit.active.count).to eq(3)
   end
 
+  it ".archived returnsl only the archived units" do
+    units = FactoryGirl.create_list(:unit, 4)
+    unit = units.first
+
+    unit.archived_at = Date.today
+    expect(unit.save).to be_truthy
+
+    expect(Unit.archived.count).to eq(1)
+  end
+
   it "#archive sets archived at date" do
     unit = FactoryGirl.create(:unit, )
 

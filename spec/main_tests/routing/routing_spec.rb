@@ -88,4 +88,9 @@ RSpec.describe 'Routing', type: :routing do
 		expect(get: "#{url}/v1/projects/3/logs?student_id=4").to route_to(
 			controller: 'v1/students_projects', action: 'index_logs_lecturer', id: '3', student_id: '4')
 	end
+
+	it 'GET /units/archived routes to units#index_archived' do
+		expect(get: "#{url}/v1/units/archived").to route_to(
+			controller: 'v1/units', action: 'index_archived')
+	end
 end

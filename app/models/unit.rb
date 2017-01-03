@@ -29,7 +29,12 @@ class Unit < ApplicationRecord
 
 	# Returns the Units that have not been archived
 	def self.active
-		Unit.where(archived_at: nil)
+		where(archived_at: nil)
+	end
+
+	# Returns only the archived Units
+	def self.archived
+		where.not(archived_at: nil)
 	end
 
 	# Instance Methods

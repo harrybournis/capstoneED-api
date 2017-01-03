@@ -23,8 +23,59 @@ RSpec.describe V1::UnitsController, type: :controller do
 				unit2 = FactoryGirl.create(:unit)
 
 				get :index
-				expect(response.status).to eq(200)
+				expect(status).to eq(200)
 				expect(parse_body['units'].length).to eq(2)
+			end
+
+			it "returns only the active units" do
+				expect(@user.units.length).to eq(2)
+				unit = @user.units.first
+
+				unit.archived_at = Date.today
+				expect(unit.save).to be_truthy
+
+				get :index
+				expect(status).to eq(200)
+				expect(body['units'].length).to eq(1)
+			end
+		end
+	end
+
+	describe 'GET index archived' do
+
+		context 'valid request' do
+
+			before(:each) do
+				@controller = V1::UnitsController.new
+				@user = FactoryGirl.build(:lecturer_with_units).process_new_record
+				@user.save
+				mock_request = MockRequest.new(valid = true, @user)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+			end
+
+			it "returns only the archived units units" do
+				@user.units << FactoryGirl.create(:unit)
+				expect(@user.units.length).to eq(3)
+				unit = @user.units.first
+				unit2 = @user.units.second
+
+				unit.archived_at = Date.today
+				expect(unit.save).to be_truthy
+				unit2.archived_at = Date.today
+				expect(unit2.save).to be_truthy
+
+				get :index_archived
+				expect(status).to eq(200)
+				expect(body['units'].length).to eq(2)
+			end
+
+			it 'returns 204 no content if no archived units' do
+				expect(@user.units.length).to eq(2)
+				unit = @user.units.first
+
+				get :index_archived
+				expect(status).to eq(204)
 			end
 		end
 	end
@@ -42,21 +93,21 @@ RSpec.describe V1::UnitsController, type: :controller do
 
 		it "returns the unit if if is is one of the lectuer's units" do
 			get :show, params: { id: @user.units.first.id }
-			expect(response.status).to eq(200)
+			expect(status).to eq(200)
 			expect(parse_body['unit']['id']).to eq(@user.units.first.id)
 		end
 
 		it 'responds with 403 if unit does not belong to lecturer' do
 			new_unit = FactoryGirl.create(:unit)
 			get :show, params: { id: new_unit.id }
-			expect(response.status).to eq(403)
-			expect(parse_body['errors']['base'].first).to eq("This Unit is not associated with the current user")
+			expect(status).to eq(403)
+			expect(errors['base'].first).to eq("This Unit is not associated with the current user")
 		end
 
 		it 'responds with 403 if record is not found at all' do
 			get :show, params: { id: '3333df' }
-			expect(response.status).to eq(403)
-			expect(parse_body['errors']['base'].first).to eq("This Unit is not associated with the current user")
+			expect(status).to eq(403)
+			expect(errors['base'].first).to eq("This Unit is not associated with the current user")
 		end
 	end
 
@@ -73,14 +124,14 @@ RSpec.describe V1::UnitsController, type: :controller do
 
 		it 'updates successfully if user is Lecturer and the owner' do
 			patch :update, params: { id: @user.units.first.id, name: 'different', code: 'different' }
-			expect(response.status).to eq(200)
+			expect(status).to eq(200)
 			expect(parse_body['unit']['name']).to eq('different')
 		end
 
 		it 'assigns different department if department_id in params' do
 			department = FactoryGirl.create(:department)
 			patch :update, params: { id: @user.units.first.id, department_id: department.id }
-			expect(response.status).to eq(200)
+			expect(status).to eq(200)
 			@user.reload
 			expect(@user.units.first.department_id).to eq(department.id)
 		end
@@ -89,7 +140,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 			expect {
 				patch :update, params: { id: @user.units.first.id, department_attributes: { name: 'departmentname', university: 'university' } }
 			}.to change { Department.all.count }.by(1)
-			expect(response.status).to eq(200)
+			expect(status).to eq(200)
 			@user.reload
 			expect(@user.units.first.department.name).to eq('departmentname')
 		end
@@ -99,7 +150,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 			expect {
 				patch :update, params: { id: @user.units.first.id, department_id: department.id, department_attributes: { name: 'departmentname', university: 'university' } }
 			}.to_not change { Department.all.count }
-			expect(response.status).to eq(200)
+			expect(status).to eq(200)
 			@user.reload
 			expect(@user.units.first.department.name).to eq(department.name)
 		end
@@ -116,7 +167,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
 			delete :destroy, params: { id: @user.units.first.id }
-			expect(response.status).to eq(204)
+			expect(status).to eq(204)
 		end
 	end
 

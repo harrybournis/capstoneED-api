@@ -1,14 +1,18 @@
 class V1::UnitsController < ApplicationController
 
   before_action :allow_if_lecturer, only: [:create, :update, :destroy]
-  before_action :validate_includes, only: [:index, :show], if: 'params[:includes]'
+  before_action :validate_includes, only: [:index, :index_archived, :show], if: 'params[:includes]'
   before_action :delete_includes_from_params, only: [:update, :destroy]
   before_action :set_unit_if_associated,      only: [:show, :update, :destroy]
 
 
   # GET /units
   def index
-    serialize_collection current_user.units(includes: includes_array), :ok
+    serialize_collection current_user.units(includes: includes_array).active, :ok
+  end
+
+  def index_archived
+    serialize_collection current_user.units(includes: includes_array).archived, :ok
   end
 
   # GET /units/:id

@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 			resources :users,							only: [:create, :update]
 
 			# Units
+			get 		'units/archived', 		to: 'units#index_archived'
 			resources :units, 						only: [:index, :show, :create, :update, :destroy, :options]
 
 			# Departments
