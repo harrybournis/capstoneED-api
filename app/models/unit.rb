@@ -23,4 +23,21 @@ class Unit < ApplicationRecord
 	validates_presence_of :department, message: 'must exist. Either provide a department_id, or deparment_attributes in order to create a new Department'
 	validates_numericality_of :year
 	validates_uniqueness_of :id
+
+	# Class Methods
+	#
+
+	# Returns the Units that have not been archived
+	def self.active
+		Unit.where(archived_at: nil)
+	end
+
+	# Instance Methods
+	#
+
+	# Sets archived_at date to the current date
+	def archive
+		self.archived_at = Date.today
+		return self.save
+	end
 end

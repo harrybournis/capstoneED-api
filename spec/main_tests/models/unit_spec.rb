@@ -16,4 +16,22 @@ RSpec.describe Unit, type: :model do
 
   it { should validate_uniqueness_of(:id) }
   it { should validate_numericality_of(:year) }
+
+  it ".active returns only the non archived units" do
+    units = FactoryGirl.create_list(:unit, 4)
+    unit = units.first
+
+    unit.archived_at = Date.today
+    expect(unit.save).to be_truthy
+
+    expect(Unit.active.count).to eq(3)
+  end
+
+  it "#archive sets archived at date" do
+    unit = FactoryGirl.create(:unit, )
+
+    expect(unit.archived_at).to be_falsy
+    expect(unit.archive).to be_truthy
+    expect(unit.archived_at).to be_truthy
+  end
 end

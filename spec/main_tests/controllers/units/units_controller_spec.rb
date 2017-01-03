@@ -119,4 +119,8 @@ RSpec.describe V1::UnitsController, type: :controller do
 			expect(response.status).to eq(204)
 		end
 	end
+
+	context "Student" do
+
+	end
 end

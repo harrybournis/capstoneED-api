@@ -1,6 +1,6 @@
 class V1::UnitsController < ApplicationController
 
-  before_action :allow_if_lecturer, only: [:create]
+  before_action :allow_if_lecturer, only: [:create, :update, :destroy]
   before_action :validate_includes, only: [:index, :show], if: 'params[:includes]'
   before_action :delete_includes_from_params, only: [:update, :destroy]
   before_action :set_unit_if_associated,      only: [:show, :update, :destroy]
@@ -70,7 +70,7 @@ class V1::UnitsController < ApplicationController
     end
 
     def unit_params
-      params.permit(:id, :name, :code, :semester, :year, :archived_at, :department_id,
+      params.permit(:name, :code, :semester, :year, :department_id,
         department_attributes: [:name, :university])
     end
 end
