@@ -1,9 +1,9 @@
 class V1::UnitsController < ApplicationController
 
-  before_action :allow_if_lecturer, only: [:create, :update, :destroy]
+  before_action :allow_if_lecturer, only: [:create, :update, :archive, :destroy]
   before_action :validate_includes, only: [:index, :index_archived, :show], if: 'params[:includes]'
-  before_action :delete_includes_from_params, only: [:update, :destroy]
-  before_action :set_unit_if_associated,      only: [:show, :update, :destroy]
+  before_action :delete_includes_from_params, only: [:update, :archive, :destroy]
+  before_action :set_unit_if_associated,      only: [:show, :update, :archive, :destroy]
 
 
   # GET /units
@@ -11,6 +11,7 @@ class V1::UnitsController < ApplicationController
     serialize_collection current_user.units(includes: includes_array).active, :ok
   end
 
+  # GET /units/archived
   def index_archived
     serialize_collection current_user.units(includes: includes_array).archived, :ok
   end
@@ -41,6 +42,15 @@ class V1::UnitsController < ApplicationController
     params.delete(:department_attributes) if unit_params[:department_id]
 
     if @unit.update(unit_params)
+      render json: @unit, status: :ok
+    else
+      render json: format_errors(@unit.errors), status: :unprocessable_entity
+    end
+  end
+
+  # PATCH /units/:id/archive
+  def archive
+    if @unit.archive
       render json: @unit, status: :ok
     else
       render json: format_errors(@unit.errors), status: :unprocessable_entity

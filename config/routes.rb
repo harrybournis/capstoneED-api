@@ -19,6 +19,7 @@ Rails.application.routes.draw do
 
 			# Units
 			get 		'units/archived', 		to: 'units#index_archived'
+			patch		'units/:id/archive',			to: 'units#archive'
 			resources :units, 						only: [:index, :show, :create, :update, :destroy, :options]
 
 			# Departments

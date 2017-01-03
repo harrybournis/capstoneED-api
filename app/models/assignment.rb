@@ -2,7 +2,7 @@ class Assignment < ApplicationRecord
   # Attributes
   # start_date  :date
   # end_date    :date
-  # description :text
+  # name        :string
   # unit_id     :integer
   # lecturer_id :integer
 

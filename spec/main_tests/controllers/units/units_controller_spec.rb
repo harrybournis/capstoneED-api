@@ -17,7 +17,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 			end
 
-			it "returns only the current user's units" do
+			it "returns only the current user's units", { docs?: true } do
 				expect(@user.units.length).to eq(2)
 				unit1 = FactoryGirl.create(:unit)
 				unit2 = FactoryGirl.create(:unit)
@@ -54,7 +54,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 			end
 
-			it "returns only the archived units units" do
+			it "returns only the archived units units", { docs?: true } do
 				@user.units << FactoryGirl.create(:unit)
 				expect(@user.units.length).to eq(3)
 				unit = @user.units.first
@@ -70,7 +70,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 				expect(body['units'].length).to eq(2)
 			end
 
-			it 'returns 204 no content if no archived units' do
+			it 'returns 204 no content if no archived units', { docs?: true } do
 				expect(@user.units.length).to eq(2)
 				unit = @user.units.first
 
@@ -91,7 +91,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 		end
 
-		it "returns the unit if if is is one of the lectuer's units" do
+		it "returns the unit if if is is one of the lectuer's units", { docs?: true } do
 			get :show, params: { id: @user.units.first.id }
 			expect(status).to eq(200)
 			expect(parse_body['unit']['id']).to eq(@user.units.first.id)
@@ -122,7 +122,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 		end
 
-		it 'updates successfully if user is Lecturer and the owner' do
+		it 'updates successfully if user is Lecturer and the owner', { docs?: true } do
 			patch :update, params: { id: @user.units.first.id, name: 'different', code: 'different' }
 			expect(status).to eq(200)
 			expect(parse_body['unit']['name']).to eq('different')
@@ -171,7 +171,43 @@ RSpec.describe V1::UnitsController, type: :controller do
 		end
 	end
 
-	context "Student" do
+	describe 'PATCH archive' do
 
+		before(:each) do
+			@controller = V1::UnitsController.new
+			@user = FactoryGirl.build(:lecturer_with_units).process_new_record
+			@user.save
+			mock_request = MockRequest.new(valid = true, @user)
+			request.cookies['access-token'] = mock_request.cookies['access-token']
+			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+		end
+
+		it 'responds with 200 if unit was archived successfully', { docs?: true } do
+			unit = @user.units.first
+
+			patch :archive, params: { id: unit.id }
+
+			expect(status).to eq(200)
+			expect(body['unit']['archived_at']).to be_truthy
+		end
+
+		it 'responds with 422 unprocessable_entity if unit already archived', { docs?: true } do
+			unit = @user.units.first
+			expect(unit.archive).to be_truthy
+
+			patch :archive, params: { id: unit.id }
+
+			expect(status).to eq(422)
+			expect(errors['unit'][0]).to include "has already been archived"
+		end
+
+		it 'responds with 403 forbidden if unit not associated' do
+			unit = FactoryGirl.create(:unit)
+
+			patch :archive, params: { id: unit.id }
+
+			expect(status).to eq(403)
+			expect(errors['base'][0]).to include "not associated"
+		end
 	end
 end

@@ -19,14 +19,14 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 				assignment_irrelevant = FactoryGirl.create(:assignment)
 			end
 
-			it 'responds with 201 created and creates a new Assignment' do
+			it 'responds with 201 created and creates a new Assignment', { docs?: true } do
 				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id)
 				post :create, params: parameters
 				expect(status).to eq(201)
 				expect(Assignment.find(parse_body['assignment']['id']).unit_id).to eq(parameters[:unit_id])
 			end
 
-			it 'accepts nested attributes for projects' do
+			it 'accepts nested attributes for projects', { docs?: true } do
 				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', team_name: 'persons', description: 'dddd', enrollment_key: 'key' }, { project_name: 'New Project2', team_name: 'persons2', description: 'descr', enrollment_key: 'key2' }] )
 				expect {
 					post :create, params: parameters
@@ -34,6 +34,15 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 				expect(status).to eq(201)
 				expect(Assignment.find(parse_body['assignment']['id']).unit_id).to eq(parameters[:unit_id])
 				expect(body['assignment']['projects'].length).to eq(2)
+			end
+
+			it 'shows errors for projects', { docs?: true } do
+				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', description: 'dddd', enrollment_key: 'key' }, { project_name: 'New Project2', team_name: 'persons2', description: 'descr', enrollment_key: 'key2' }] )
+				expect {
+					post :create, params: parameters
+				}.to change { Project.count }.by(0)
+				expect(status).to eq(422)
+				expect(errors['projects.team_name'][0]).to include "can't be blank"
 			end
 		end
 
@@ -56,7 +65,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 				@assignment_irrelevant = FactoryGirl.create(:assignment)
 			end
 
-			it 'updates params if current user is the owner' do
+			it 'updates params if current user is the owner', { docs?: true } do
 				date = Date.today + 1.year
 				patch :update, params: { id: @user.assignments[0].id, end_date: date }
 				expect(status).to eq(200)

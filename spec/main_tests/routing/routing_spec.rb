@@ -93,4 +93,9 @@ RSpec.describe 'Routing', type: :routing do
 		expect(get: "#{url}/v1/units/archived").to route_to(
 			controller: 'v1/units', action: 'index_archived')
 	end
+
+	it 'PATCH /units/:id/archive routes to units#archive' do
+		expect(patch: "#{url}/v1/units/4/archive").to route_to(
+			controller: 'v1/units', action: 'archive', id: "4")
+	end
 end

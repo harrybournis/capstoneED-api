@@ -38,10 +38,32 @@ RSpec.describe Unit, type: :model do
   end
 
   it "#archive sets archived at date" do
-    unit = FactoryGirl.create(:unit, )
+    unit = FactoryGirl.create(:unit)
 
     expect(unit.archived_at).to be_falsy
     expect(unit.archive).to be_truthy
     expect(unit.archived_at).to be_truthy
+  end
+
+  it "#archive leads to error if unit has already been archived" do
+    unit = FactoryGirl.create(:unit)
+    unit.archived_at = Date.today
+    expect(unit.save).to be_truthy
+    expect(unit.archived?).to be_truthy
+    unit.reload
+
+    expect(unit.archive).to be_falsy
+    expect(unit.errors[:unit][0]).to include 'has already been archived'
+  end
+
+  it '#archived? returns whether a unit is archived' do
+    unit = FactoryGirl.create(:unit)
+
+    expect(unit.archived?).to be_falsy
+
+    unit.archive
+    unit.reload
+
+    expect(unit.archived?).to be_truthy
   end
 end

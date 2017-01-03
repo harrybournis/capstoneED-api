@@ -30,7 +30,7 @@ RSpec.describe V1::IterationsController, type: :controller do
 
 
 
-		it 'GET index needs a assignment_id and it must be associated with current_user' do
+		it 'GET index needs a assignment_id and it must be associated with current_user', { docs?: true } do
 			assignment = @user.assignments[1]
 			get :index, params: { assignment_id: assignment.id }
 			expect(status).to eq(200)
@@ -51,7 +51,7 @@ RSpec.describe V1::IterationsController, type: :controller do
 			expect(body['iterations'].length).to eq(Assignment.third.iterations.length)
 		end
 
-		it 'GET show iteration needs the assignment to be associated with current_user' do
+		it 'GET show iteration needs the assignment to be associated with current_user', { docs?: true } do
 			get :show, params: { id: @user.assignments[1].iterations[0].id }
 			expect(status).to eq(200)
 			expect(body['iteration']['name']).to eq(@user.assignments[1].iterations[0].name)
@@ -71,19 +71,19 @@ RSpec.describe V1::IterationsController, type: :controller do
 			expect(body['iteration']['name']).to eq(Assignment.third.iterations[0].name)
 		end
 
-		it 'POST create current user must be associated with the assignment' do
+		it 'POST create current user must be associated with the assignment', { docs?: true } do
 			post :create, params: { assignment_id: @user.assignments[0].id, name: 'name', start_date: DateTime.now + 1.week, deadline: DateTime.now + 3.months }
 			expect(status).to eq(201)
 			expect(body['iteration']['name']).to eq('name')
 		end
 
-		it 'POST create accepts params for pa_form' do
+		it 'POST create accepts params for pa_form', { docs?: true } do
 			post :create, params: { assignment_id: @user.assignments[0].id, name: 'name', start_date: DateTime.now + 1.week, deadline: DateTime.now + 3.months, pa_form_attributes: { questions: ['Who is it?', 'Human?', 'Hello?', 'Favorite Power Ranger?'], start_offset: 0, end_offset: 5.days.to_i } }
 			expect(status).to eq(201)
 			expect(body['iteration']['pa_form']['questions']).to eq([{"question_id"=>1, "text"=>"Who is it?"}, {"question_id"=>2, "text"=>"Human?"}, {"question_id"=>3, "text"=>"Hello?"}, {"question_id"=>4, "text"=>"Favorite Power Ranger?"}])
 		end
 
-		it 'PATCH update current user must be associated with the project' do
+		it 'PATCH update current user must be associated with the project', { docs?: true } do
 			patch :update, params: { id: @user.assignments[1].iterations[0], name: 'different' }
 			expect(status).to eq(200)
 			expect(body['iteration']['name']).to eq('different')
@@ -132,7 +132,7 @@ RSpec.describe V1::IterationsController, type: :controller do
 
 	context 'Invalid' do
 
-		it 'GET index should respond with 404 not found if assignment_id is missing' do
+		it 'GET index should respond with 400 forbidden if assignment_id is missing' do
 			assignment = @user.assignments[1]
 			get :index
 			expect(status).to eq(400)

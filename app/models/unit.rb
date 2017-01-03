@@ -42,7 +42,16 @@ class Unit < ApplicationRecord
 
 	# Sets archived_at date to the current date
 	def archive
-		self.archived_at = Date.today
-		return self.save
+		if self.archived?
+			errors.add(:unit, 'has already been archived. It cannot be archived twice.')
+			return false
+		else
+			self.archived_at = Date.today
+			return self.save
+		end
+	end
+
+	def archived?
+		!self.archived_at.nil?
 	end
 end

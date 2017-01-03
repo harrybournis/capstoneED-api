@@ -20,13 +20,13 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 		end
 
-		it 'returns all the assignments for the current user if no unit_id is provided' do
+		it 'returns all the assignments for the current user if no unit_id is provided', { docs?: true } do
 			get :index
 			expect(response.status).to eq(200)
 			expect(parse_body['assignments'].length).to eq(3)
 		end
 
-		it 'returns all the assignments for the current unit if unit_id is provided and belongs to current user' do
+		it 'returns all the assignments for the current unit if unit_id is provided and belongs to current user', { docs?: true } do
 			get :index_with_unit, params: { unit_id: @user.units.first.id }
 			expect(response.status).to eq(200)
 			expect(parse_body['assignments'].length).to eq(2)
@@ -73,7 +73,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 			end
 
-			it 'returns assignment if it belongs to current_user' do
+			it 'returns assignment if it belongs to current_user', { docs?: true } do
 				get :show, params: { id: @assignment3.id, includes: 'unit' }
 				expect(response.status).to eq(200)
 				expect(parse_body['assignment']['id']).to eq(@assignment3.id)
