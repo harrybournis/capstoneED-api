@@ -21,7 +21,7 @@ class V1::StudentsProjectsController < ApplicationController
 				render json: format_errors(@project.errors), status: :forbidden
 			end
 		else
-			render json: format_errors({ enrollment_key: ['is invalid'] })
+			render json: format_errors({ enrollment_key: ['is invalid'] }), status: :unprocessable_entity
 		end
 	end
 

@@ -34,7 +34,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 				expect(@student.projects.include? project).to be_truthy
 			end
 
-			it 'creates a new StudentsProject instance with nickname' do
+			it 'creates a new StudentsProject instance with nickname', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
 				project = FactoryGirl.create(:project)
 				nickname = "giorgakis"
 				expect {
@@ -54,11 +54,12 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 				expect(errors['id'].first).to include('exist')
 			end
 
-			it 'responds with 422 unprocessable_entity if wrong enrollment key' do
+			it 'responds with 422 unprocessable_entity if wrong enrollment key', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
 				project = FactoryGirl.create(:project)
 				expect {
 					post :enrol, params: { enrollment_key: 'invalidkey', id: project.id }
 				}.to_not change { JoinTables::StudentsProject.all.count }
+				expect(status).to eq(422)
 				expect(errors['enrollment_key'].first).to eq('is invalid')
 			end
 
@@ -84,7 +85,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 
 		describe 'PATCH update_nickname' do
 
-			it 'responds with 200 and the new nickname if successfull' do
+			it 'responds with 200 and the new nickname if successfull', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
 				nickname = 'giorgakis'
 				patch :update_nickname, params: { id: @student.projects[0].id, nickname: nickname }
 				expect(status).to eq(200)
@@ -110,13 +111,13 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 		end
 
 		describe 'POST /logs' do
-			it 'responds with 200 if valid' do
+			it 'responds with 200 if valid', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
 				post :update_logs, params: FactoryGirl.build(:students_project).logs[0].except(:date_submitted).merge(id: @student.projects[0].id)
 				expect(status).to eq(200)
 				expect(body['log_entry']).to be_truthy
 			end
 
-			it 'responds with 422 if invalid log parameters' do
+			it 'responds with 422 if invalid log parameters', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
 				post :update_logs, params: FactoryGirl.build(:students_project).logs[0].except("date_submitted", "time_worked").merge(id: @student.projects[0].id)
 				expect(status).to eq(422)
 				expect(errors['log_entry'][0]).to include('is missing')
@@ -130,7 +131,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 		end
 
 		describe 'GET /logs' do
-			it 'responds with 200 and the students logs' do
+			it 'responds with 200 and the students logs', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
 				project = @student.projects[0]
 				sp = JoinTables::StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
 				sp.add_log(FactoryGirl.build(:students_project).logs[0])
@@ -184,7 +185,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 				@controller = V1::StudentsProjectsController.new
 			end
 
-			it 'removes student from project if Lecturer is owner' do
+			it 'removes student from project if Lecturer is owner', { docs?: true, controller_class: "V1::ProjectsController" } do
 				@lecturer.reload
 				student = FactoryGirl.create(:student)
 				@lecturer.projects[0].students << student
@@ -215,7 +216,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 		end
 
 		describe 'GET /logs' do
-			it 'responds with 200 and the students logs' do
+			it 'responds with 200 and the students logs', { docs?: true, controller_class: "V1::ProjectsController" } do
 				project = @student.projects[0]
 				sp = JoinTables::StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
 				sp.add_log(FactoryGirl.build(:students_project).logs[0])

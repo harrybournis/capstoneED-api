@@ -98,6 +98,7 @@ RSpec.configure do |config|
 =end
   config.after(:each, type: :controller) do |example|
     if example.metadata[:docs?]
+      example.metadata[:controller_class] = controller.class.to_s unless example.metadata[:controller_class]
       example.metadata[:request_params]   = request.params.except(:controller, :action).to_json
       example.metadata[:response_body]    = response.body
       example.metadata[:status]           = response.status

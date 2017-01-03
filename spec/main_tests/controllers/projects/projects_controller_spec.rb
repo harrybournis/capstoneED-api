@@ -53,7 +53,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		end
 
 		describe 'PATCH update' do
-			it 'updates the parameters successfully if student is member of the project' do
+			it 'updates the parameters successfully if student is member of the project', { docs?: true, lecturer?: false } do
 				expect {
 					patch :update, params: { id: Project.first.id, team_name: 'CrazyProject666', logo: 'http://www.images.com/images/4259' }
 				}.to change { Project.first.team_name }
@@ -78,7 +78,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				expect(errors["base"][0]).to include("none of the given parameters")
 			end
 
-			it 'returns bad request if no permitted parameters and only project_name' do
+			it 'returns bad request if no permitted parameters and only project_name', { docs?: true, lecturer?: false } do
 				expect {
 					patch :update, params: { id: Project.first.id, project_name: "whatever" }
 				}.to_not change { Project.first.project_name }
@@ -169,7 +169,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				expect(parse_body['project']['logo']).to eq('http://www.images.com/images/4259')
 			end
 
-			it 'changes the enrollment_key successfully' do
+			it 'changes the enrollment_key successfully', { docs?: true } do
 				expect {
 					patch :update, params: { id: Project.first.id, enrollment_key: 'new_key' }
 				}.to change { Project.first.enrollment_key }

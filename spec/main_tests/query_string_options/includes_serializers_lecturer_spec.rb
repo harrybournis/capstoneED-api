@@ -149,7 +149,7 @@ RSpec.describe 'Includes', type: :controller do
 				@controller = V1::ProjectsController.new
 			end
 
-			it 'GET show contains students' do
+			it 'GET show contains students', { docs?: true } do
 				get :show, params: { id: @assignment.projects.first.id }
 				expect(status).to eq(200)
 				expect(body['project']['enrollment_key']).to be_truthy

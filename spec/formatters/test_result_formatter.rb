@@ -38,14 +38,14 @@ class TestResultFormatter
   	def create_docs_example example
   		metadata = example.metadata
 
-  		unless metadata[:described_class] && metadata[:described_action] && metadata[:status] &&
+  		unless metadata[:controller_class] && metadata[:described_action] && metadata[:status] &&
   			!metadata[:lecturer?].nil? && metadata[:request_params] && metadata[:response_body]
   			error = "Error: Missing metadata from example: #{example.full_description}, ( #{example.file_path} )"
   			@output << "\n\n #{error} \n\n"
   			raise error
   		end
 
-  		resource 	= metadata[:described_class].to_s # e.g Project
+  		resource 	= metadata[:controller_class].to_s # e.g Project
   		action 		= metadata[:described_action]			# e.g. create_project
   		status		= metadata[:status]
   		lecturer  = metadata[:lecturer?]
@@ -60,6 +60,8 @@ class TestResultFormatter
   	def export_results
   		root_path = "./doc_examples"
   		FileUtils.rm_rf(root_path) if File.exists?(root_path) # clear directory
+
+      @output << "\n Found #{@export_results.length} examples"
 
   		@export_results.each_with_index do |e, index|
   			directory_name = "#{root_path}/#{e.resource}/#{e.lecturer_or_student}/#{e.action}/#{e.success_or_error}"

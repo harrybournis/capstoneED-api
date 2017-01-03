@@ -1,0 +1,1 @@
+{"resource":"V1::ProjectsController","action":"update","status":400,"description":"returns bad request if no permitted parameters and only project_name","error":true,"lecturer":false,"request_params":"{\"project_name\":\"whatever\",\"id\":\"1\"}","response_body":"{\"errors\":{\"base\":[\"none of the given parameters can be updated by the current user\"]}}"}
