@@ -21,6 +21,7 @@ gem 'puma', '~> 3.6'
 gem 'rack-cors', '~> 0.4.0'
 
 # json serialization
+gem 'json', '~> 2.0', '>= 2.0.2'
 gem 'active_model_serializers', '~> 0.10.2'
 
 # Authentication
