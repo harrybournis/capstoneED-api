@@ -62,11 +62,11 @@ class TestResultFormatter
   		FileUtils.rm_rf(root_path) if File.exists?(root_path) # clear directory
 
   		@export_results.each_with_index do |e, index|
-  			directory_name = "#{root_path}/#{e.lecturer_or_student}/#{e.resource}"
+  			directory_name = "#{root_path}/#{e.resource}/#{e.lecturer_or_student}/#{e.action}/#{e.success_or_error}"
 
   			FileUtils.makedirs(directory_name) unless File.exists?(directory_name) # create directory
 
-				File.open("#{directory_name}/#{e.action}.json", "a") do |f|
+				File.open("#{directory_name}/#{e.status}_#{index}.json", "a") do |f|
 					f.write(e.to_json + "\n")
 				end
 

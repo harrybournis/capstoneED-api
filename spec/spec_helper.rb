@@ -98,7 +98,7 @@ RSpec.configure do |config|
 =end
   config.after(:each, type: :controller) do |example|
     if example.metadata[:docs?]
-      example.metadata[:request_params]   = request.params
+      example.metadata[:request_params]   = request.params.except(:controller, :action).to_json
       example.metadata[:response_body]    = response.body
       example.metadata[:status]           = response.status
       example.metadata[:described_action] = request.params["action"] unless example.metadata[:described_action]
