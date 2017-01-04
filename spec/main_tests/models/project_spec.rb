@@ -12,6 +12,7 @@ RSpec.describe Project, type: :model do
 			it { should have_one(:lecturer).through(:assignment) }
 			it { should have_one :extension }
 			it { should have_many :project_evaluations }
+			it { should have_many :peer_assessments }
 
 			it { should validate_presence_of :project_name }
 			it { should validate_presence_of :assignment }

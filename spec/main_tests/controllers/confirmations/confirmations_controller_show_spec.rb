@@ -13,7 +13,7 @@ RSpec.describe 'ConfirmationsController /show', type: :controller do
 
   context 'valid request' do
 
-    it "confirms user's account" do
+    it "confirms user's account", { docs?: true } do
       expect(@user.confirmed?).to eq(false)
       get :show, params: { confirmation_token: @user.confirmation_token }
       expect(@controller.params).to include('confirmation_token')
@@ -31,7 +31,7 @@ RSpec.describe 'ConfirmationsController /show', type: :controller do
   end
 
   context 'invalid request' do
-    it 'user remains unconfirmed if wrong confirmation_token' do
+    it 'user remains unconfirmed if wrong confirmation_token', { docs?: true } do
       expect(@user.confirmed?).to eq(false)
       get :show, params: { confirmation_token: "#{@user.confirmation_token}dljkafdjklfdakjldfsaldfas" }
       expect(@controller.params).to include('confirmation_token')

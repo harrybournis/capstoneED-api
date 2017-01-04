@@ -17,6 +17,7 @@ class Project < ApplicationRecord
   has_one     :lecturer,  through: :assignment
   has_one     :extension
   has_many    :project_evaluations
+  has_many    :peer_assessments
 
   # Validations
   validates_presence_of 	:project_name, :team_name, :assignment, :description

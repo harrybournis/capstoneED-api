@@ -13,7 +13,7 @@ RSpec.describe 'ConfirmationsController /create', type: :controller do
 
   context 'valid request' do
 
-    it 'sends an email with confirmation instructions' do
+    it 'sends an email with confirmation instructions', { docs?: true } do
       expect(@user.confirmed?).to be_falsy
       post :create, params: { email: @user.email }
       expect(response.status).to eq(204)
@@ -23,7 +23,7 @@ RSpec.describe 'ConfirmationsController /create', type: :controller do
   end
 
   context 'invalid request' do
-    it 'responds with 422 unprocessable_entity if user already confirmed' do
+    it 'responds with 422 unprocessable_entity if user already confirmed', { docs?: true}  do
       @user.confirm
       expect(@user.confirmed?).to be_truthy
       post :create, params: { email: @user.email }

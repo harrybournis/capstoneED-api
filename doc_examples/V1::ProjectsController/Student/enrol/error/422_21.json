@@ -1,1 +1,0 @@
-{"resource":"V1::ProjectsController","action":"enrol","status":422,"description":"responds with 422 unprocessable_entity if wrong enrollment key","error":true,"lecturer":false,"request_params":"{\"enrollment_key\":\"invalidkey\",\"id\":\"16\"}","response_body":"{\"errors\":{\"enrollment_key\":[\"is invalid\"]}}"}

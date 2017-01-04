@@ -12,6 +12,7 @@ class Iteration < ApplicationRecord
 	has_many :students_projects, through: :projects
 	has_many :extensions, through: :pa_form
 	has_many :project_evaluations
+	has_many :peer_assessments, through: :pa_form
 
 	accepts_nested_attributes_for :pa_form
 

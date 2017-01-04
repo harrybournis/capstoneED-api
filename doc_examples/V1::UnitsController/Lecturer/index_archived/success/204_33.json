@@ -1,1 +1,0 @@
-{"resource":"V1::UnitsController","action":"index_archived","status":204,"description":"returns 204 no content if no archived units","error":false,"lecturer":true,"request_params":"{}","response_body":""}

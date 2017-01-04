@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161228153915) do
+ActiveRecord::Schema.define(version: 20170104161851) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -89,7 +89,9 @@ ActiveRecord::Schema.define(version: 20161228153915) do
     t.jsonb    "answers"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
+    t.integer  "project_id"
     t.index ["pa_form_id"], name: "index_peer_assessments_on_pa_form_id", using: :btree
+    t.index ["project_id"], name: "index_peer_assessments_on_project_id", using: :btree
     t.index ["submitted_by_id"], name: "index_peer_assessments_on_submitted_by_id", using: :btree
     t.index ["submitted_for_id"], name: "index_peer_assessments_on_submitted_for_id", using: :btree
   end

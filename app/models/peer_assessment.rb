@@ -10,12 +10,13 @@ class PeerAssessment < ApplicationRecord
 	belongs_to :pa_form, class_name: PAForm
 	belongs_to :submitted_by, class_name: Student, foreign_key: :submitted_by_id
 	belongs_to :submitted_for, class_name: Student, foreign_key: :submitted_for_id
+	belongs_to :project
 	has_one :iteration, through: :pa_form
 	has_one :assignment, through: :iteration
 	has_one :lecturer, through: :assignment
 
 	# Validations
-	validates_presence_of :pa_form_id, :submitted_for_id, :submitted_by_id, :answers
+	validates_presence_of :pa_form_id, :submitted_for_id, :submitted_by_id, :answers, :project_id
 	validates_uniqueness_of :pa_form, scope: [:submitted_for_id, :submitted_by_id], message: 'has already been completed for this student'
 	validate :submitted_for_is_in_the_same_team
 	validate :pa_form_is_from_project_that_student_belongs_to
@@ -23,8 +24,32 @@ class PeerAssessment < ApplicationRecord
 	validate :submit_is_before_deadline
 	validate :submit_is_after_start_date
 
+	# Callbacks
+	before_validation :add_project_id
+
+	# Class Methods
+	#
+
+	# Performs a query with the provided parameters in the hash
+	# Accepted values: pa_form_di, submitted_by_id, submitted_for_id, project_id, iteration_id
+	def self.api_query(hash)
+		query = {}
+		query.merge!(pa_form_id: hash['pa_form_id']) 							if hash['pa_form_id']
+		query.merge!(submitted_by_id: hash['submitted_by_id']) 		if hash['submitted_by_id']
+		query.merge!(submitted_for_id: hash['submitted_for_id'])	if hash['submitted_for_id']
+		query.merge!(project_id: hash['project_id'])							if hash['project_id']
+
+		if hash['iteration_id']
+			query.merge!(deliverables: { iteration_id: hash['iteration_id']})
+			return joins(:pa_form).where(query)
+		end
+
+		return [] if query.empty?
+		where(query)
+	end
 
 	# Instance Methods
+	#
 
 	# Assigns the current time as date_submitted
 	def submit
@@ -40,7 +65,16 @@ class PeerAssessment < ApplicationRecord
 		return date_submitted.present?
 	end
 
+
 	private
+
+		# Adds the project_id from the associated pa_form
+		def add_project_id
+			if !self.persisted? && submitted_for_id
+					temp = submitted_for.projects.select(:id).where(assignment_id: pa_form.assignment.id)
+					self.project_id = temp[0].id unless temp.empty?
+			end
+		end
 
 		# answers validation
 		def format_of_answers

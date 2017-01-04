@@ -1,1 +1,0 @@
-{"resource":"V1::ProjectsController","action":"index","status":403,"description":"responds with 403 forbidden if the params don't indlude assignment_id","error":true,"lecturer":true,"request_params":"{}","response_body":"{\"errors\":{\"base\":[\"You must be Student to access this resource. Lecturers must provide a 'assignment_id' in the parameters for this route.\"]}}"}

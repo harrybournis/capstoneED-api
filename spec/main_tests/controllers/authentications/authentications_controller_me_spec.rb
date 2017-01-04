@@ -47,6 +47,24 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
 				expect(JSON.parse(response.body)['user']['type']).to eq('Student')
 			end
 
+			it 'generate for docs lecturer', { docs?: true } do
+				mock_request = MockRequest.new(valid = true, FactoryGirl.create(:lecturer_confirmed))
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+				get :me
+				expect(status).to eq(200)
+			end
+
+			it 'generate for docs student', { docs?: true, lecturer?: false } do
+				mock_request = MockRequest.new(valid = true, FactoryGirl.create(:student_confirmed))
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+				get :me
+				expect(status).to eq(200)
+			end
+
 		end
 
 	end

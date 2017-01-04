@@ -11,10 +11,13 @@ Rails.application.routes.draw do
 			post		'refresh', 	to: 'authentications#refresh'
 
 			# Users
-			devise_for :users, skip: [:sessions], skip_helpers: true, controllers: {
-				confirmations: 'v1/confirmations',
-				passwords: 		 'v1/passwords'
-			}
+			devise_for :users, skip: [:sessions, :passwords, :confirmations], skip_helpers: true
+			# Passwords
+			post 'request_reset_password', 	to: 'passwords#create'
+			patch 'reset_password', 				to: 'passwords#update'
+			# Confirmation
+			post 'resend_confirmation_email', to: 'confirmations#create'
+			get 'confirm_account', 					to: 'confirmations#show', as: 'confirmation'
 			resources :users,							only: [:create, :update]
 
 			# Units
@@ -52,9 +55,6 @@ Rails.application.routes.draw do
 			resources :pa_forms, 					only: [:index, :show, :create]
 
 			# Peer Assessments
-			get 		'peer_assessments',		to: 'peer_assessments#index_with_submitted_for', constraints: -> (request) { request.params[:pa_form_id] && request.params[:submitted_for_id] }
-			get 		'peer_assessments',		to: 'peer_assessments#index_with_submitted_by', constraints: -> (request) { request.params[:pa_form_id] && request.params[:submitted_by_id] }
-			get 		'peer_assessments',		to: 'peer_assessments#index_with_pa_form', constraints: -> (request) { request.params[:pa_form_id] }
 			resources :peer_assessments, 	only: [:index, :show, :create]
 
 			# Project Evaluations

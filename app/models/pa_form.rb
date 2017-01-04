@@ -2,8 +2,8 @@ class PAForm < Deliverable
 	# Attributes
 	# iteration_id 	:integer
 	# questions 		:jsonb { question_id => question_text }
-	# start_date 		:datetime
-	# deadline 			:datetime
+	# start_offset 	:datetime (start_date)
+	# end_offset 		:datetime (deadline)
 
 	# Associations
 	belongs_to 	:iteration

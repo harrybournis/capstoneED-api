@@ -104,6 +104,7 @@ RSpec.configure do |config|
       example.metadata[:status]           = response.status
       example.metadata[:described_action] = request.params["action"] unless example.metadata[:described_action]
       example.metadata[:lecturer?]        = true if example.metadata[:lecturer?].nil?
+      example.metadata[:response_headers] = response.headers
     end
   end
 end

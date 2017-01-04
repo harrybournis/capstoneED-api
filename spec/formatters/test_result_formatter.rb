@@ -39,7 +39,8 @@ class TestResultFormatter
   		metadata = example.metadata
 
   		unless metadata[:controller_class] && metadata[:described_action] && metadata[:status] &&
-  			!metadata[:lecturer?].nil? && metadata[:request_params] && metadata[:response_body]
+  			!metadata[:lecturer?].nil? && metadata[:request_params] && metadata[:response_body] &&
+         metadata[:response_headers]
   			error = "Error: Missing metadata from example: #{example.full_description}, ( #{example.file_path} )"
   			@output << "\n\n #{error} \n\n"
   			raise error
@@ -51,9 +52,10 @@ class TestResultFormatter
   		lecturer  = metadata[:lecturer?]
   		request 	= metadata[:request_params]
   		response 	= metadata[:response_body]
+      resp_headers = metadata[:response_headers]
 
 			@export_results << ExportTestResult.new(resource, action, status, example.description,
-			 !@@SUCCESS_STATUSES.include?(status), lecturer, request, response)
+			 !@@SUCCESS_STATUSES.include?(status), lecturer, request, response, resp_headers)
   	end
 
   	# write the results to files
@@ -79,7 +81,7 @@ end
 
 # class stucture that holds each resutl
 class ExportTestResult
-	def initialize resource, action, status, description, error, lecturer, request_params, response_body
+	def initialize resource, action, status, description, error, lecturer, request_params, response_body, response_headers
 		@resource = resource
 		@action = action
 		@status = status
@@ -87,10 +89,12 @@ class ExportTestResult
 		@error = error
 		@lecturer = lecturer
 		@request_params = request_params
-		@response_body = response_body
+    @response_body = response_body.include?("<html>") ? CGI::escapeHTML(response_body) : response_body
+		@response_headers = response_headers
 	end
 
-	attr_reader :resource, :action, :status, :description, :error, :lecturer, :request_params, :response_body
+	attr_reader :resource, :action, :status, :description, :error, :lecturer, :request_params, :response_body,
+     :response_headers
 
 	def error?
 		@error

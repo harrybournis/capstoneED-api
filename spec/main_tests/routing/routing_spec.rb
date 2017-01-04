@@ -4,6 +4,27 @@ RSpec.describe 'Routing', type: :routing do
 
 	let(:url) { 'http://example.com' }
 
+	# Password
+	it 'POST /request_reset_password routes to passwords#create' do
+		expect(post: "#{url}/v1/request_reset_password").to route_to(
+			controller: 'v1/passwords', action: 'create')
+	end
+
+	it 'PATCH /reset_password routes to passwords#update' do
+		expect(patch: "#{url}/v1/reset_password").to route_to(
+			controller: 'v1/passwords', action: 'update')
+	end
+
+	it 'POST /resend_confirmation_email to confirmations#create' do
+		expect(post: "#{url}/v1/resend_confirmation_email").to route_to(
+			controller: 'v1/confirmations', action: 'create')
+	end
+
+	it 'GET /confirm_account to confirmations#show' do
+		expect(get: "#{url}/v1/confirm_account").to route_to(
+			controller: 'v1/confirmations', action: 'show')
+	end
+
 	it 'GET /assignments?unit_id=3 routes to index_with_unit' do
 		expect(get: "#{url}/v1/assignments?unit_id=3").to route_to(
 			controller: 'v1/assignments', action: 'index_with_unit', unit_id: "3")
@@ -29,22 +50,37 @@ RSpec.describe 'Routing', type: :routing do
 			controller: 'v1/iterations', action: 'index', assignment_id: '3')
 	end
 
-	it 'GET /peer_assessments?pa_form_id routes to index_with_pa_form' do
+	it 'GET /peer_assessments?pa_form_id routes to index' do
 		expect(get: "#{url}/v1/peer_assessments?pa_form_id=2").to route_to(
-			controller: 'v1/peer_assessments', action: 'index_with_pa_form', pa_form_id: '2')
+			controller: 'v1/peer_assessments', action: 'index', pa_form_id: '2')
 	end
 
-	it 'GET /peer_assessments?submitted_for_id routes to index_with_submitted_for' do
+	it 'GET /peer_assessments?submitted_for_id routes to index' do
 		expect(get: "#{url}/v1/peer_assessments?pa_form_id=1&submitted_for_id=2").to route_to(
-			controller: 'v1/peer_assessments', action: 'index_with_submitted_for', submitted_for_id: '2', pa_form_id: '1')
+			controller: 'v1/peer_assessments', action: 'index', submitted_for_id: '2', pa_form_id: '1')
 	end
 
-	it 'GET /peer_assessments?submitted_for_id routes to index_with_submitted_for' do
+	it 'GET /peer_assessments?submitted_for_id routes to index' do
 		expect(get: "#{url}/v1/peer_assessments?pa_form_id=1&submitted_by_id=2").to route_to(
-			controller: 'v1/peer_assessments', action: 'index_with_submitted_by', submitted_by_id: '2', pa_form_id: '1')
+			controller: 'v1/peer_assessments', action: 'index', submitted_by_id: '2', pa_form_id: '1')
 	end
 
-	it 'GET /peer_assessments routes to index' do
+	it 'GET /peer_assessments?pa_form_id routes to index' do
+		expect(get: "#{url}/v1/peer_assessments?pa_form_id=2").to route_to(
+			controller: 'v1/peer_assessments', action: 'index', pa_form_id: '2')
+	end
+
+	it 'GET /peer_assessments?project_id routes to index' do
+		expect(get: "#{url}/v1/peer_assessments?project_id=2").to route_to(
+			controller: 'v1/peer_assessments', action: 'index', project_id: '2')
+	end
+
+	it 'GET /peer_assessments?iteration_id routes to index' do
+		expect(get: "#{url}/v1/peer_assessments?iteration_id=2").to route_to(
+			controller: 'v1/peer_assessments', action: 'index', iteration_id: '2')
+	end
+
+	it 'GET /peer_assessments routes to index_error' do
 		expect(get: "#{url}/v1/peer_assessments").to route_to(
 			controller: 'v1/peer_assessments', action: 'index')
 	end

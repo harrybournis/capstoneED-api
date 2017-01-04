@@ -18,7 +18,7 @@ RSpec.describe 'V1::LecturersController PUT /update', type: :controller do
 	context 'valid request' do
 
 		describe 'PUT update' do
-			it "replaces user's first_name with the first_name in the params" do
+			it "replaces user's first_name with the first_name in the params", { docs?: true } do
 				old_name = @lecturer.first_name
 				expect {
 					put :update, params: { id: @lecturer.id, first_name: 'different' }
@@ -43,7 +43,7 @@ RSpec.describe 'V1::LecturersController PUT /update', type: :controller do
 				expect(res_body['user']['first_name']).to eq('different')
 			end
 
-			it 'requires the old password to update the password' do
+			it 'requires the old password to update the password', { docs?: true } do
 				put :update, params: { id: @lecturer.id, password: 'qwertyuiop',
 					password_confirmation: 'qwertyuiop', current_password: '12345678'  }
 				@lecturer.reload
@@ -93,7 +93,7 @@ RSpec.describe 'V1::LecturersController PUT /update', type: :controller do
 				expect(@lecturer.first_name).to_not eq('first')
 			end
 
-			it 'returns 403 forbidden if the user to be updated is not the current user' do
+			it 'returns 403 forbidden if the user to be updated is not the current user', { docs?: true } do
 				different_user = FactoryGirl.create(:lecturer)
 				old_name = different_user.first_name
 				put :update, params: { id: different_user.id, first_name: 'change_their_name' }
@@ -127,7 +127,7 @@ RSpec.describe 'V1::LecturersController PUT /update', type: :controller do
 				expect(res_body['errors']['password_confirmation']).to include("doesn't match Password")
 			end
 
-			it 'returns 422 unprocessable_entity if old password is invalid' do
+			it 'returns 422 unprocessable_entity if old password is invalid', { docs?: true } do
 				put :update, params: { id: @lecturer.id, password: 'qwertyuiop',
 					password_confirmation: 'qwertyuiop', current_password: 'wrong_password'  }
 				@lecturer.reload

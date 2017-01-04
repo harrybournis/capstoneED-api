@@ -17,7 +17,7 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 			expect(assigns(:user).valid_password?('12345678')).to be_truthy
 		end
 
-		it 'response contains the user' do
+		it 'response contains the user', { docs?: true } do
 			@user.confirm
 			post :sign_in_email, params: { email: @user.email, password: '12345678' }
 			expect(parse_body).to include('user')
@@ -69,7 +69,7 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 			expect(User.find_by_email('wrong@emaildoesnotexist.com')).to be_falsy
 		end
 
-		it 'email exists, password does not match with email' do
+		it 'email exists, password does not match with email', { docs?: true } do
 			@user.confirm
 			post :sign_in_email, params: { email: @user.email, password: 'wrongpassword' }
 			expect(response.status).to eq(401)
@@ -84,7 +84,7 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 			expect(User.find_by_email(@user.email).confirmed_at).to be_falsy
 		end
 
-		it 'remember_me is not 0 or 1' do
+		it 'remember_me is not 0 or 1', { docs?: true } do
 			post :sign_in_email, params: { email: @user.email, password: '12345678', remember_me: 'true' }
 			expect(response.status).to eq(401)
 			expect(parse_body['errors']['base'].first).to eq("remember_me must be either '0' or '1'. Received value: true")
@@ -103,7 +103,7 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
 			expect(cookies['refresh-token']).to be_falsy
 		end
 
-		it 'returns 401 if valid request but user is unconfirmed' do
+		it 'returns 401 if valid request but user is unconfirmed', { docs?: true } do
 			post :sign_in_email, params: { email: @user.email, password: '12345678' }
 			expect(response.status).to eq(401)
 			expect(parse_body['errors']['email'].first).to eq('is unconfirmed')

@@ -1,1 +1,0 @@
-{"resource":"V1::UnitsController","action":"archive","status":422,"description":"responds with 422 unprocessable_entity if unit already archived","error":true,"lecturer":true,"request_params":"{\"id\":\"31\"}","response_body":"{\"errors\":{\"unit\":[\"has already been archived. It cannot be archived twice.\"]}}"}

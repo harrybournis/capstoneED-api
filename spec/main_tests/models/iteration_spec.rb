@@ -13,6 +13,7 @@ RSpec.describe Iteration, type: :model do
 	it { should have_one(:pa_form).dependent(:destroy) }
 	it { should have_many(:extensions) }
 	it { should have_many :project_evaluations }
+	it { should have_many(:peer_assessments).through(:pa_form) }
 
 	it '#active? returns whether the iteration is currently going on' do
 		now = DateTime.now
