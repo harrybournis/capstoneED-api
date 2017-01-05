@@ -11,10 +11,10 @@ class Unit < ApplicationRecord
 	# Associations
 	belongs_to :lecturer
 	belongs_to :department
-	has_many :projects
-  has_many :teams, through: :projects
-  has_many :students_teams, through: :teams
-  has_many :students, through: :students_teams
+	has_many :assignments
+  has_many :projects, through: :assignments
+  has_many :students_projects, through: :projects
+  has_many :students, through: :students_projects
 
 	accepts_nested_attributes_for :department
 
@@ -23,4 +23,35 @@ class Unit < ApplicationRecord
 	validates_presence_of :department, message: 'must exist. Either provide a department_id, or deparment_attributes in order to create a new Department'
 	validates_numericality_of :year
 	validates_uniqueness_of :id
+
+	# Class Methods
+	#
+
+	# Returns the Units that have not been archived
+	def self.active
+		where(archived_at: nil)
+	end
+
+	# Returns only the archived Units
+	def self.archived
+		where.not(archived_at: nil)
+	end
+
+	# Instance Methods
+	#
+
+	# Sets archived_at date to the current date
+	def archive
+		if self.archived?
+			errors.add(:unit, 'has already been archived. It cannot be archived twice.')
+			return false
+		else
+			self.archived_at = Date.today
+			return self.save
+		end
+	end
+
+	def archived?
+		!self.archived_at.nil?
+	end
 end

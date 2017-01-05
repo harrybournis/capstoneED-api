@@ -1,15 +1,20 @@
 class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 
-	def projects(options={})
-		Project.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
+	def assignments(options={})
+		Assignment.joins(:students_projects).where(['students_projects.student_id = ?', @id]).eager_load(options[:includes]).distinct
 	end
 
 	def units(options={})
-		Unit.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
+		Unit.joins(:students_projects).where(['students_projects.student_id = ?', @id]).eager_load(options[:includes]).distinct
 	end
 
-	def teams(options={})
-		Team.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes])
+	def projects(options={})
+		if options[:includes] && options[:includes].include?("students")
+			options[:includes].delete("students")
+			Project.joins(:students_projects).where(['students_projects.student_id = ?', @id]).eager_load(options[:includes], students_projects: [:student] )
+		else
+			Project.joins(:students_projects).where(['students_projects.student_id = ?', @id]).eager_load(options[:includes])
+		end
 	end
 
 	def iterations(options={})
@@ -18,15 +23,15 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 		else
 			includes = 'pa_form'
 		end
-		Iteration.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(includes).distinct
+		Iteration.joins(:students_projects).where(['students_projects.student_id = ?', @id]).eager_load(includes).distinct
 	end
 
 	def pa_forms(options={})
-		PAForm.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
+		PAForm.joins(:students_projects).where(['students_projects.student_id = ?', @id]).eager_load(options[:includes]).distinct
 	end
 
 	def pa_forms_active(options={})
-		PAForm.active.joins(:students_teams).where(['students_teams.student_id = ?', @id]).eager_load(options[:includes]).distinct
+		PAForm.active.joins(:students_projects).where(['students_projects.student_id = ?', @id]).eager_load(options[:includes]).distinct
 	end
 
 	def peer_assessments(options={})
@@ -42,22 +47,22 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 	end
 
 	def extensions
-		Extension.joins(:students_teams).where(['students_teams.student_id = ?', @id])
+		Extension.joins(:students_projects).where(['students_projects.student_id = ?', @id])
 	end
 
 	# The associations that the current_user can include in the query
 	#
 	# ##
-	def project_associations
-		%w(lecturer unit teams iterations students pa_forms)
+	def assignment_associations
+		%w(lecturer unit projects iterations students pa_forms)
 	end
 
 	def unit_associations
 	  %w(lecturer department)
 	end
 
-	def team_associations
-		%w(project students lecturer)
+	def project_associations
+		%w(assignment students lecturer)
 	end
 
 	def iteration_associations

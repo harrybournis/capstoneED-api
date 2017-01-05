@@ -45,39 +45,46 @@ module AssociationIncludable
 
 	# Used instead of the render method in the controllers, in the index and show actions.
 	# It provides an abstraction in the controller, while initializing the correct Serializer
-	# depending on the received parameters. Serializes a single object.
+	# depending on the received parameters. Alternatively, a serializer can be specified through
+	# the optional third parameter. Serializes a single object.
 	#
 	# @param [Object] resource 	The resource to be rendered in json
 	# @param [Symbol]	status		The status of the response
-	def serialize_object(resource, status)
+	def serialize_object(resource, status, serializer = nil)
+		klass = serializer ? serializer : "#{resource.class}Serializer"
+
 		if params[:includes]
 			if params[:compact]
-				render 	json: resource, include: sanitize_includes, serializer: "IncludesCompact::#{resource.class.to_s}Serializer".constantize, status: status
+				render 	json: resource, include: sanitize_includes, serializer: "IncludesCompact::#{klass}".constantize, status: status
 			else
-				render  json: resource, include: sanitize_includes, serializer: "Includes::#{resource.class.to_s}Serializer".constantize,  status: status
+				render  json: resource, include: sanitize_includes, serializer: "Includes::#{klass}".constantize,  status: status
 			end
 		else
-			render json: resource, serializer: "#{resource.class.to_s}Serializer".constantize, status: status
+			render json: resource, serializer: "#{klass}".constantize, status: status
 		end
 	end
 
 
 	# Used instead of the render method in the controllers, in the index and show actions.
 	# It provides an abstraction in the controller, while initializing the correct Serializer
-	# depending on the received parameters. Serializes an Array.
+	# depending on the received parameters. Alternatively, a serializer can be specified through
+	# the optional third parameter. Serializes an Array.
 	#
 	# @param [Array] 	resource 	The resources to be rendered in json
 	# @param [Symbol] status 		The status of the response that will be rendered
-	def serialize_collection(resources, status)
+	# @param [class] serializer Optional. A serializer can be specified
+	def serialize_collection(resources, status, serializer = nil)
 		return [] unless resources.length > 0
+		klass = serializer ? serializer.to_s : "#{resources[0].class.to_s}Serializer"
+
 		if params[:includes]
 			if params[:compact]
-				render 	json: resources, include: sanitize_includes, each_serializer: "IncludesCompact::#{resources[0].class.to_s}Serializer".constantize, status: status
+				render 	json: resources, include: sanitize_includes, each_serializer: "IncludesCompact::#{klass}".constantize, status: status
 			else
-				render  json: resources, include: sanitize_includes, each_serializer: "Includes::#{resources[0].class.to_s}Serializer".constantize,  status: status
+				render  json: resources, include: sanitize_includes, each_serializer: "Includes::#{klass}".constantize,  status: status
 			end
 		else
-			render json: resources, each_serializer: "#{resources[0].class.to_s}Serializer".constantize, status: status
+			render json: resources, each_serializer: "#{klass}".constantize, status: status
 		end
 	end
 end

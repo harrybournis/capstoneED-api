@@ -10,23 +10,23 @@ RSpec.describe 'Includes', type: :controller do
 			@lecturer.save
 			@lecturer.confirm
 			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-			@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @lecturer)
-			3.times { @project.teams.first.students << FactoryGirl.build(:student) }
-			expect(@project.teams.length).to eq(2)
-			expect(@project.teams.first.students.length).to eq(3)
+			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @lecturer)
+			3.times { @assignment.projects.first.students << FactoryGirl.build(:student) }
+			expect(@assignment.projects.length).to eq(2)
+			expect(@assignment.projects.first.students.length).to eq(3)
 
 			@unit2 = FactoryGirl.create(:unit, lecturer: @lecturer)
-			@project2 = FactoryGirl.create(:project_with_teams, unit: @unit2, lecturer: @lecturer)
-			3.times { @project2.teams.first.students << FactoryGirl.build(:student) }
-			expect(@project2.teams.length).to eq(2)
-			expect(@project2.teams.first.students.length).to eq(3)
+			@assignment2 = FactoryGirl.create(:assignment_with_projects, unit: @unit2, lecturer: @lecturer)
+			3.times { @assignment2.projects.first.students << FactoryGirl.build(:student) }
+			expect(@assignment2.projects.length).to eq(2)
+			expect(@assignment2.projects.first.students.length).to eq(3)
 
 			@student = FactoryGirl.build(:student_with_password).process_new_record
 			@student.save
 			@student.confirm
 
-			@project.teams[0].students << @student
-			@project2.teams[0].students << @student
+			@assignment.projects[0].students << @student
+			@assignment2.projects[0].students << @student
 		end
 
 		before(:each) do
@@ -35,32 +35,32 @@ RSpec.describe 'Includes', type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 		end
 
-		describe 'Projects' do
+		describe 'Assignments' do
 
 			before(:each) do
-				@controller = V1::ProjectsController.new
+				@controller = V1::AssignmentsController.new
 			end
 
 			context 'Valid' do
 
-				it 'makes only one query for teams and unit' do
+				it 'makes only one query for projects and unit' do
 					expect {
-						get :show, params: { id: @project.id }
+						get :show, params: { id: @assignment.id }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200) #1
 
 					expect {
-						get :show, params: { id: @project.id, includes: 'teams,unit' }
+						get :show, params: { id: @assignment.id, includes: 'projects,unit' }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200) #2
 
 					expect {
-						get :show, params: { id: @project.id, includes: 'teams', compact: true }
+						get :show, params: { id: @assignment.id, includes: 'projects', compact: true }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200)
 
 					expect {
-						get :index, params: { includes: 'teams,unit' }
+						get :index, params: { includes: 'projects,unit' }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200)
 				end
@@ -69,19 +69,19 @@ RSpec.describe 'Includes', type: :controller do
 			context 'Invalid' do
 				it 'projects should render errors for invalid includes params' do
 					expect {
-						get :show, params: { id: @project.id, includes: 'teams,unit,lecturer,banana' }
+						get :show, params: { id: @assignment.id, includes: 'projects,unit,lecturer,banana' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400) #1
 					expect(body['errors']['base'].first).to include("Invalid 'includes' parameter")
 
 					expect {
-						get :show, params: { id: @project.id, includes: 'teams,unit,lecturer,banana,manyother,wrong_params,$@^&withsymbols,*,**' }
+						get :show, params: { id: @assignment.id, includes: 'projects,unit,lecturer,banana,manyother,wrong_params,$@^&withsymbols,*,**' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400) #1
 					expect(body['errors']['base'].first).to include("Invalid 'includes' parameter")
 
 					expect {
-						get :show, params: { id: @project.id, includes: '*,**' }
+						get :show, params: { id: @assignment.id, includes: '*,**' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400) #1
 					expect(body['errors']['base'].first).to include("Invalid 'includes' parameter")
@@ -122,42 +122,42 @@ RSpec.describe 'Includes', type: :controller do
 			end
 		end
 
-		describe 'Teams' do
+		describe 'Projects' do
 			before(:each) do
-				@controller = V1::TeamsController.new
+				@controller = V1::ProjectsController.new
 			end
 
 			context 'Valid' do
-				it 'index_with_project makes two query for project and students (+1 for only_if lecturer)' do
+				it 'index_with_project makes two query for assignment and students (+1 for only_if lecturer)' do
 					expect {
-						get :index, params: { includes: 'project' }
+						get :index, params: { includes: 'assignment' }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200)
 				end
 
 				it 'show makes one query for project and students (+1 for only_if lecturer)' do
-					team = @student.teams[0]
+					project = @student.projects[0]
 					expect {
-						get :show, params: { id: team.id, includes: 'project,students' }
+						get :show, params: { id: project.id, includes: 'assignment,students' }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200)
 				end
 			end
 
 			context 'Invalid' do
-				it 'teams responds with 400 for unsupported associations in includes' do
+				it 'projects responds with 400 for unsupported associations in includes' do
 					expect {
-						get :index, params: { includes: 'department,projects,students' }
+						get :index, params: { includes: 'department,assignments,students' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400)
-					expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Team resource for Student user accepts only: project, students, lecturer. Received: department,projects,students.")
+					expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Project resource for Student user accepts only: assignment, students, lecturer. Received: department,assignments,students.")
 
-					team = @lecturer.teams[0]
+					project = @lecturer.projects[0]
 					expect {
-						get :show, params: { id: team.id, includes: 'department,projects,students' }
+						get :show, params: { id: project.id, includes: 'department,assignments,students' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400)
-					expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Team resource for Student user accepts only: project, students, lecturer. Received: department,projects,students.")
+					expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Project resource for Student user accepts only: assignment, students, lecturer. Received: department,assignments,students.")
 				end
 			end
 		end

@@ -10,10 +10,10 @@ RSpec.describe 'Includes', type: :controller do
 			@lecturer.save
 			@lecturer.confirm
 			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-			@project = FactoryGirl.create(:project_with_teams, unit: @unit, lecturer: @lecturer)
-			3.times { @project.teams.first.students << FactoryGirl.build(:student) }
-			expect(@project.teams.length).to eq(2)
-			expect(@project.teams.first.students.length).to eq(3)
+			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @lecturer)
+			3.times { @assignment.projects.first.students << FactoryGirl.build(:student) }
+			expect(@assignment.projects.length).to eq(2)
+			expect(@assignment.projects.first.students.length).to eq(3)
 		end
 
 		before(:each) do
@@ -22,59 +22,59 @@ RSpec.describe 'Includes', type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 		end
 
-		describe 'Projects' do
+		describe 'Assignments' do
 
 			before(:each) do
-				@controller = V1::ProjectsController.new
+				@controller = V1::AssignmentsController.new
 			end
 
 			it 'returns only the specified resource in includes' do
-				get :show, params: { id: @project.id }
-				body_project = body['project']
+				get :show, params: { id: @assignment.id }
+				body_assignment = body['assignment']
 				expect(response.status).to eq(200) #1
-				expect(body_project).to include('description', 'start_date')
-				expect(body_project['teams']).to be_falsy
-				expect(body_project['teams']).to be_falsy
+				expect(body_assignment).to include('end_date', 'start_date')
+				expect(body_assignment['projects']).to be_falsy
+				expect(body_assignment['projects']).to be_falsy
 
-				get :show, params: { id: @project.id, includes: 'teams'}
-				body_project = body['project']
+				get :show, params: { id: @assignment.id, includes: 'projects'}
+				body_assignment = body['assignment']
 				expect(response.status).to eq(200) #2
-				expect(body_project['teams']).to be_truthy
-				expect(body_project['unit']).to be_falsy
+				expect(body_assignment['projects']).to be_truthy
+				expect(body_assignment['unit']).to be_falsy
 
-				get :show, params: { id: @project.id, includes: 'teams,unit'}
-				body_project = body['project']
+				get :show, params: { id: @assignment.id, includes: 'projects,unit'}
+				body_assignment = body['assignment']
 				expect(response.status).to eq(200) #3
-				expect(body_project['teams']).to be_truthy
-				expect(body_project['unit']).to be_truthy
+				expect(body_assignment['projects']).to be_truthy
+				expect(body_assignment['unit']).to be_truthy
 			end
 
 			it 'returns the resource full but only the associations ids if ?compact=true' do
-				get :show, params: { id: @project.id }
-				body_project = body['project']
+				get :show, params: { id: @assignment.id }
+				body_assignment = body['assignment']
 				expect(response.status).to eq(200)
-				expect(body_project).to include('description', 'start_date')
-				expect(body_project['teams']).to be_falsy
-				expect(body_project['unit']).to be_falsy
+				expect(body_assignment).to include('end_date', 'start_date')
+				expect(body_assignment['projects']).to be_falsy
+				expect(body_assignment['unit']).to be_falsy
 
-				get :show, params: { id: @project.id, includes: 'teams', compact: true}
-				body_project = body['project']
+				get :show, params: { id: @assignment.id, includes: 'projects', compact: true}
+				body_assignment = body['assignment']
 				expect(response.status).to eq(200)
-				expect(body_project['teams']).to be_truthy
-				expect(body_project['teams'].first).to_not include('name', 'enrollment_key')
-				expect(body_project['unit']).to be_falsy
+				expect(body_assignment['projects']).to be_truthy
+				expect(body_assignment['projects'].first).to_not include('project_name', 'enrollment_key')
+				expect(body_assignment['unit']).to be_falsy
 
-				get :show, params: { id: @project.id, includes: 'teams,unit'}
-				body_project = body['project']
+				get :show, params: { id: @assignment.id, includes: 'projects,unit'}
+				body_assignment = body['assignment']
 				expect(response.status).to eq(200)
-				expect(body_project['teams']).to be_truthy
-				expect(body_project['teams'].first).to include('name', 'enrollment_key')
-				expect(body_project['unit']).to be_truthy
-				expect(body_project['unit']).to include('code', 'semester')
+				expect(body_assignment['projects']).to be_truthy
+				expect(body_assignment['projects'].first).to include('project_name', 'enrollment_key')
+				expect(body_assignment['unit']).to be_truthy
+				expect(body_assignment['unit']).to include('code', 'semester')
 			end
 
 			it 'is invalid if * is in the includes' do
-				get :show, params: { id: @project.id, includes: 'teams,*' }
+				get :show, params: { id: @assignment.id, includes: 'projects,*' }
 				expect(status).to eq(400)
 				expect(body['errors']['base'][0]).to include("Invalid 'includes' parameter")
 			end
@@ -82,12 +82,12 @@ RSpec.describe 'Includes', type: :controller do
 			it 'works for index' do
 				get :index, params: { includes: 'unit' }
 				expect(response.status).to eq(200)
-				expect(body['projects'].first['unit']).to be_truthy
-				expect(body['projects'].first['teams']).to be_falsy
+				expect(body['assignments'].first['unit']).to be_truthy
+				expect(body['assignments'].first['projects']).to be_falsy
 			end
 
 			it 'renders empty array if no collection is empty' do
-				@unit.projects.destroy_all
+				@unit.assignments.destroy_all
 				expect(@unit.projects.empty?).to be_truthy
 				get :index, params: { unit_id: @unit.id, includes: 'lecturer' }
 				expect(response.status).to eq(204)
@@ -95,33 +95,33 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'renders no associations if includes emtpy string?' do
-				get :show, params: { id: @project.id, includes: "" }
-				expect(body['project']['unit']).to be_falsy
-				expect(body['project']['teams']).to be_falsy
+				get :show, params: { id: @assignment.id, includes: "" }
+				expect(body['assignment']['unit']).to be_falsy
+				expect(body['assignment']['projects']).to be_falsy
 			end
 
 			it 'includes iterations' do
-				3.times { FactoryGirl.create(:iteration, project_id: @project.id) }
+				3.times { FactoryGirl.create(:iteration, assignment_id: @assignment.id) }
 				expect {
-					get :show, params: { id: @project.id, includes: 'iterations,students' }
+					get :show, params: { id: @assignment.id, includes: 'iterations,students' }
 				}.to make_database_queries(count: 1)
 				expect(status).to eq(200)
-				expect(body['project']['iterations'].length).to eq(@project.iterations.length)
-				expect(body['project']['iterations'][0]['name']).to eq(Iteration.find(body['project']['iterations'][0]['id']).name)
-				expect(body['project']['students'].length).to eq(@project.students.length)
+				expect(body['assignment']['iterations'].length).to eq(@assignment.iterations.length)
+				expect(body['assignment']['iterations'][0]['name']).to eq(Iteration.find(body['assignment']['iterations'][0]['id']).name)
+				expect(body['assignment']['students'].length).to eq(@assignment.students.length)
 			end
 
 			it 'includes pa_forms' do
-				iteration1 = FactoryGirl.create(:iteration, project_id: @project.id)
-				iteration2 = FactoryGirl.create(:iteration, project_id: @project.id)
+				iteration1 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+				iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration1)
 				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 
 				expect {
-					get :show, params: { id: @project.id, includes: 'iterations' }
+					get :show, params: { id: @assignment.id, includes: 'iterations' }
 				}.to make_database_queries(count: 1)
 				expect(status).to eq(200)
-				expect(body['project'])
+				expect(body['assignment'])
 			end
 		end
 
@@ -130,44 +130,49 @@ RSpec.describe 'Includes', type: :controller do
 				@controller = V1::UnitsController.new
 			end
 
-			it 'GET show contains projects' do
+			it 'GET show contains assignments' do
 				get :show, params: { id: @unit.id }
-				expect(body['unit']['projects']).to be_falsy
+				expect(body['unit']['assignments']).to be_falsy
 
-				get :show, params: { id: @unit.id, includes: 'projects' }
-				expect(body['unit']['projects']).to be_truthy
+				get :show, params: { id: @unit.id, includes: 'assignments' }
+				expect(body['unit']['assignments']).to be_truthy
 			end
 
-			it 'GET index contains the projects compact' do
-				get :index, params: { includes: 'projects', compact: true }
-				expect(body['units'].first['projects'].first).to_not include('description')
+			it 'GET index contains the assignments compact' do
+				get :index, params: { includes: 'assignments', compact: true }
+				expect(body['units'].first['assignments'].first).to_not include('description')
 			end
 		end
 
-		describe 'Teams' do
+		describe 'Projects' do
 			before(:each) do
-				@controller = V1::TeamsController.new
+				@controller = V1::ProjectsController.new
 			end
 
-			it 'GET show contains students' do
-				get :show, params: { id: @project.teams.first.id }
+			it 'GET show contains students', { docs?: true } do
+				get :show, params: { id: @assignment.projects.first.id }
 				expect(status).to eq(200)
-				expect(body['team']['enrollment_key']).to be_truthy
+				expect(body['project']['enrollment_key']).to be_truthy
 
-				get :show, params: { id: @project.teams.first.id, includes: 'students' }
+				@assignment.projects[0].students_projects.offset(1).each { |s| s.nickname = "wolverine#{rand(1000).to_s}"; s.save }
+
+				get :show, params: { id: @assignment.projects[0].id, includes: 'students' }
 				expect(status).to eq(200)
-				expect(body['team']['students'].length).to eq(@project.teams.first.students.length)
+				expect(body['project']['students'].length).to eq(@assignment.projects.first.students.length)
 			end
 
 			it 'GET index contains students and project compact' do
-				get :index_with_project, params: { project_id: @project.id, includes: 'students,project', compact: true }
+				get :index_with_assignment, params: { assignment_id: @assignment.id, includes: 'students,assignment', compact: true }
 				expect(status).to eq(200)
-				team = body['teams'].first
-				expect(team['students'].first['email']).to be_falsy
-				expect(team['students'].first['provider']).to be_falsy
-				expect(team['project']).to_not include('description')
-				expect(team['project']['id']).to eq(@project.id)
-				expect(team['lecturer']).to be_falsy
+				body['projects'].each do |project|
+					unless project["students"].empty?
+						expect(project['students'].first['first_name']).to be_falsy
+						expect(project['students'].first['provider']).to be_falsy
+						expect(project['assignment']).to_not include('description')
+						expect(project['assignment']['id']).to eq(@assignment.id)
+						expect(project['lecturer']).to be_falsy
+					end
+				end
 			end
 		end
 
@@ -177,19 +182,19 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'GET index includes pa_form' do
-				iteration = FactoryGirl.create(:iteration, project_id: @project.id)
-				iteration2 = FactoryGirl.create(:iteration, project_id: @project.id)
+				iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+				iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 
-				get :index, params: { project_id: @project.id }
+				get :index, params: { assignment_id: @assignment.id }
 				expect(status).to eq(200)
 				expect(body['iterations'].length).to eq(2)
 				expect(body['iterations'][1]['pa_form']['questions']).to eq(pa_form2.questions)
 			end
 
 			it 'GET show includes pa_form' do
-				iteration = FactoryGirl.create(:iteration, project_id: @project.id)
+				iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 
 					get :show, params: { id: iteration.id }
@@ -200,7 +205,7 @@ RSpec.describe 'Includes', type: :controller do
 
 		describe 'Peer Assessment' do
 			before do
-				@iteration = FactoryGirl.create(:iteration, project: @project)
+				@iteration = FactoryGirl.create(:iteration, assignment: @assignment)
 				@pa_form  = FactoryGirl.create(:pa_form, iteration: @iteration)
 				@peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form)
 				@controller = V1::PeerAssessmentsController.new

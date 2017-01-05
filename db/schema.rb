@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161108174440) do
+ActiveRecord::Schema.define(version: 20170104161851) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,18 @@ ActiveRecord::Schema.define(version: 20161108174440) do
     t.integer  "user_id"
     t.string   "device"
     t.index ["user_id"], name: "index_active_tokens_on_user_id", using: :btree
+  end
+
+  create_table "assignments", force: :cascade do |t|
+    t.date     "start_date"
+    t.date     "end_date"
+    t.integer  "unit_id"
+    t.integer  "lecturer_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.string   "name"
+    t.index ["lecturer_id"], name: "index_assignments_on_lecturer_id", using: :btree
+    t.index ["unit_id"], name: "index_assignments_on_unit_id", using: :btree
   end
 
   create_table "deliverables", force: :cascade do |t|
@@ -44,23 +56,29 @@ ActiveRecord::Schema.define(version: 20161108174440) do
   end
 
   create_table "extensions", force: :cascade do |t|
-    t.integer  "team_id"
+    t.integer  "project_id"
     t.integer  "deliverable_id"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
     t.integer  "extra_time"
     t.index ["deliverable_id"], name: "index_extensions_on_deliverable_id", using: :btree
-    t.index ["team_id"], name: "index_extensions_on_team_id", using: :btree
+    t.index ["project_id"], name: "index_extensions_on_project_id", using: :btree
+  end
+
+  create_table "feelings", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "iterations", force: :cascade do |t|
     t.string   "name"
     t.datetime "start_date"
     t.datetime "deadline"
-    t.integer  "project_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["project_id"], name: "index_iterations_on_project_id", using: :btree
+    t.integer  "assignment_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.index ["assignment_id"], name: "index_iterations_on_assignment_id", using: :btree
   end
 
   create_table "peer_assessments", force: :cascade do |t|
@@ -71,21 +89,38 @@ ActiveRecord::Schema.define(version: 20161108174440) do
     t.jsonb    "answers"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
+    t.integer  "project_id"
     t.index ["pa_form_id"], name: "index_peer_assessments_on_pa_form_id", using: :btree
+    t.index ["project_id"], name: "index_peer_assessments_on_project_id", using: :btree
     t.index ["submitted_by_id"], name: "index_peer_assessments_on_submitted_by_id", using: :btree
     t.index ["submitted_for_id"], name: "index_peer_assessments_on_submitted_for_id", using: :btree
   end
 
+  create_table "project_evaluations", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "project_id"
+    t.integer  "feeling_id"
+    t.integer  "percent_complete"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.integer  "iteration_id"
+    t.datetime "date_submitted"
+    t.index ["feeling_id"], name: "index_project_evaluations_on_feeling_id", using: :btree
+    t.index ["iteration_id"], name: "index_project_evaluations_on_iteration_id", using: :btree
+    t.index ["project_id"], name: "index_project_evaluations_on_project_id", using: :btree
+    t.index ["user_id"], name: "index_project_evaluations_on_user_id", using: :btree
+  end
+
   create_table "projects", force: :cascade do |t|
-    t.date     "start_date"
-    t.date     "end_date"
-    t.text     "description"
-    t.integer  "unit_id"
-    t.integer  "lecturer_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-    t.index ["lecturer_id"], name: "index_projects_on_lecturer_id", using: :btree
-    t.index ["unit_id"], name: "index_projects_on_unit_id", using: :btree
+    t.string   "project_name"
+    t.string   "logo"
+    t.string   "enrollment_key"
+    t.integer  "assignment_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+    t.string   "team_name"
+    t.string   "description"
+    t.index ["assignment_id"], name: "index_projects_on_assignment_id", using: :btree
   end
 
   create_table "questions", force: :cascade do |t|
@@ -112,21 +147,14 @@ ActiveRecord::Schema.define(version: 20161108174440) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "students_teams", id: false, force: :cascade do |t|
-    t.integer "student_id", null: false
-    t.integer "team_id",    null: false
-    t.index ["student_id"], name: "index_students_teams_on_student_id", using: :btree
-    t.index ["team_id"], name: "index_students_teams_on_team_id", using: :btree
-  end
-
-  create_table "teams", force: :cascade do |t|
-    t.string   "name"
-    t.string   "logo"
-    t.string   "enrollment_key"
-    t.integer  "project_id"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-    t.index ["project_id"], name: "index_teams_on_project_id", using: :btree
+  create_table "students_projects", force: :cascade do |t|
+    t.integer "project_id"
+    t.integer "student_id"
+    t.string  "nickname"
+    t.jsonb   "logs",       default: [], null: false
+    t.index ["logs"], name: "index_students_projects_on_logs", using: :gin
+    t.index ["project_id"], name: "index_students_projects_on_project_id", using: :btree
+    t.index ["student_id"], name: "index_students_projects_on_student_id", using: :btree
   end
 
   create_table "units", force: :cascade do |t|
@@ -165,12 +193,11 @@ ActiveRecord::Schema.define(version: 20161108174440) do
     t.string   "unconfirmed_email"
     t.string   "position"
     t.string   "university"
-    t.string   "nickname"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   end
 
-  add_foreign_key "projects", "units"
-  add_foreign_key "teams", "projects"
+  add_foreign_key "assignments", "units"
+  add_foreign_key "projects", "assignments"
 end

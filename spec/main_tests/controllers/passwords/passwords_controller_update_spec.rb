@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'helpers/mock_request.rb'
 include JWTAuth::JWTAuthenticator
 
-RSpec.describe 'ConfirmationsController /show', type: :controller do
+RSpec.describe 'PasswordsController /show', type: :controller do
 
   before(:each) do
     @controller = V1::PasswordsController.new
@@ -20,7 +20,7 @@ RSpec.describe 'ConfirmationsController /show', type: :controller do
 
   context 'valid request' do
 
-    it "resets user's password" do
+    it "resets user's password", { docs?: true, controller_class: V1::AuthenticationsController } do
     	old_password = @user.encrypted_password
     	expect(@user.valid_password?('abcdefgh')).to be_falsy
       post :update, params: { reset_password_token: @token, password: 'password1', password_confirmation: 'password1' }
@@ -35,14 +35,14 @@ RSpec.describe 'ConfirmationsController /show', type: :controller do
   end
 
   context 'invalid request' do
-    it 'password remains the same if wrong password_reset_token' do
+    it 'password remains the same if wrong password_reset_token', { docs?: true, controller_class: V1::AuthenticationsController } do
       post :update, params: { reset_password_token: 'randomsdfalkjfdljfsadljfdsaklfdsalk', password: 'abcdefgh', password_confirmation: 'abcdefgh' }
       @user.reload
       expect(response.status).to eq(422)
       expect(@user.valid_password?('abcdefgh')).to be_falsy
     end
 
-    it '400 bad request if no password_reset_token in params' do
+    it '400 bad request if no password_reset_token in params', { docs?: true, controller_class: V1::AuthenticationsController } do
       post :update, params: { password: 'abcdefgh', password_confirmation: 'abcdefgh' }
       @user.reload
       expect(response.status).to eq(400)

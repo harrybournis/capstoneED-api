@@ -7,13 +7,12 @@ RSpec.describe 'PasswordsController /create', type: :controller do
   before(:each) do
     @controller = V1::PasswordsController.new
     request.env['devise.mapping'] = Devise.mappings[:v1_user]
-    @user = FactoryGirl.build(:user_with_password).process_new_record
-    @user.save
+    @user = FactoryGirl.create(:lecturer_confirmed)
   end
 
   context 'valid request' do
 
-    it 'sends an email with password reset instructions' do
+    it 'sends an email with password reset instructions', { docs?: true, controller_class: V1::AuthenticationsController } do
       expect(@user.reset_password_token).to be_falsy
       post :create, params: { email: @user.email }
       expect(response.status).to eq(204)
@@ -34,7 +33,7 @@ RSpec.describe 'PasswordsController /create', type: :controller do
       expect(response.status).to eq(403)
     end
 
-    it 'responds with 422 unprocessable_entity if email is not included' do
+    it 'responds with 422 unprocessable_entity if email is not included', { docs?: true, controller_class: V1::AuthenticationsController }  do
       expect(@user.reset_password_token).to be_falsy
       post :create
       expect(response.status).to eq(422)

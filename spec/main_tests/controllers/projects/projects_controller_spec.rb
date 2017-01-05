@@ -1,146 +1,198 @@
 require 'rails_helper'
+include JWTAuth::JWTAuthenticator
 
 RSpec.describe V1::ProjectsController, type: :controller do
 
-	describe 'GET index' do
+	before(:all) do
+		@lecturer = get_lecturer_with_units_assignments_projects
+		@student = FactoryGirl.create(:student_with_password).process_new_record
+		@student.save
+		@student.confirm
+		@lecturer.projects.first.students << @student
+		@lecturer.projects.last.students 	<< @student
+	end
 
-		before(:all) do
-			@controller = V1::ProjectsController.new
-			@user = FactoryGirl.build(:lecturer_with_units).process_new_record
-			@user.save
-			project1 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
-			project2 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
-			project3 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.last)
-			project_irrelevant = FactoryGirl.create(:project)
-		end
+	context 'Student' do
 
 		before(:each) do
-			mock_request = MockRequest.new(valid = true, @user)
+			@controller = V1::ProjectsController.new
+			mock_request = MockRequest.new(valid = true, @student)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 		end
 
-		it 'returns all the projects for the current user if no unit_id is provided' do
-			get :index
-			expect(response.status).to eq(200)
-			expect(parse_body['projects'].length).to eq(3)
-		end
+		describe 'GET index' do
+			it "returns only the student's projects", { docs?: true, lecturer?: false } do |example|
 
-		it 'returns all the projects for the current unit if unit_id is provided and belongs to current user' do
-			get :index_with_unit, params: { unit_id: @user.units.first.id }
-			expect(response.status).to eq(200)
-			expect(parse_body['projects'].length).to eq(2)
-		end
-
-		it 'responds with 403 forbidden if unit is does not belong to current user' do
-			unit = FactoryGirl.create(:unit)
-			get :index_with_unit, params: { unit_id: unit.id }
-			expect(response.status).to eq(403)
-		end
-
-		it 'responds with 403 forbidden if the user is a student and unit_id is present in the params' do
-			@user = FactoryGirl.build(:student_with_password).process_new_record
-			@user.save
-			unit = FactoryGirl.create(:unit)
-			mock_request = MockRequest.new(valid = true, @user)
-			request.cookies['access-token'] = mock_request.cookies['access-token']
-			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-
-			get :index_with_unit, params: { unit_id: unit.id }
-			expect(status).to eq(403)
-			expect(body['errors']['base'][0]).to include('You must be Lecturer to access this resource')
-		end
-	end
-
-	describe 'GET show' do
-
-		context 'lecturer' do
-
-			before(:all) do
-				@controller = V1::ProjectsController.new
-				@user_w = FactoryGirl.build(:lecturer_with_units).process_new_record
-				@user_w.save
-				@user_w.confirm
-				@project1 = FactoryGirl.create(:project, lecturer: @user_w, unit: @user_w.units.first)
-				@project2 = FactoryGirl.create(:project, lecturer: @user_w, unit: @user_w.units.first)
-				@project3 = FactoryGirl.create(:project, lecturer: @user_w, unit: @user_w.units.last)
-				@project_irrelevant = FactoryGirl.create(:project)
-			end
-
-			before(:each) do
-				mock_request = MockRequest.new(valid = true, @user_w)
-				request.cookies['access-token'] = mock_request.cookies['access-token']
-				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			end
-
-			it 'returns project if it belongs to current_user' do
-				get :show, params: { id: @project3.id, includes: 'unit' }
-				expect(response.status).to eq(200)
-				expect(parse_body['project']['id']).to eq(@project3.id)
-			end
-
-			it 'responds with 403 forbidden if th unit_id does not belong to current user' do
-				get :show, params: { id: @project_irrelevant }
-				expect(response.status).to eq(403)
-				expect(parse_body['errors']['base'].first).to eq("This Project is not associated with the current user")
-			end
-		end
-	end
-
-	describe 'DELETE destroy' do
-
-		context 'lecturer' do
-
-			before(:all) do
-				@controller = V1::ProjectsController.new
-				@user = FactoryGirl.build(:lecturer_with_units).process_new_record
-				@user.save
-				@project1 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
-				@project2 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.first)
-				@project3 = FactoryGirl.create(:project, lecturer: @user, unit: @user.units.last)
-				@project_irrelevant = FactoryGirl.create(:project)
-			end
-
-			before(:each) do
-				mock_request = MockRequest.new(valid = true, @user)
-				request.cookies['access-token'] = mock_request.cookies['access-token']
-				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			end
-
-			it 'returns project if it belongs to current_user' do
-				expect {
-					delete :destroy, params: { id: @project3.id }
-				}.to change { Project.all.length }.by(-1)
-				expect(response.status).to eq(204)
-			end
-
-			it 'responds with 403 forbidden if th unit_id does not belong to current user' do
-				expect {
-					delete :destroy, params: { id: @project_irrelevant }
-				}.to_not change { Project.all.length }
-				expect(response.status).to eq(403)
-				expect(parse_body['errors']['base'].first).to eq("This Project is not associated with the current user")
+				get :index
+				expect(status).to eq(200)
+				expect(parse_body['projects'].length).to eq(@student.projects.length)
+				expect(@student.projects.length).to_not eq(Project.all.length)
 			end
 		end
 
-		context 'student' do
-			it 'only the lecturer who created the project can destroy it' do
-				@controller = V1::ProjectsController.new
-				@user = FactoryGirl.build(:student_with_password).process_new_record
-				@user.save
-				mock_request = MockRequest.new(valid = true, @user)
-				request.cookies['access-token'] = mock_request.cookies['access-token']
-				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
-				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
+		describe "GET show" do
+			it 'returns the Project if the it belongs to the current_user' do
+				get :show, params: { id: @student.projects.first.id }
+				expect(status).to eq(200)
+				expect(@student.projects.find(parse_body['project']['id'])).to be_truthy
+
 				project = FactoryGirl.create(:project)
-
-				expect{
-					delete :destroy, params: { id: project.id }
-				}.to_not change { Project.all.length }
-				expect(response.status).to eq(403)
-				expect(parse_body['errors']['base'].first).to include("You must be Lecturer to access this resource")
+				get :show, params: { id: project.id }
+				expect(status).to eq(403)
 			end
 		end
+
+		describe 'POST create' do
+			it 'responds with 403 forbidden is user is student' do
+				expect {
+					post :create, params: FactoryGirl.attributes_for(:project, assignment_id: Assignment.first.id)
+				}.to_not change { Project.all.count }
+				expect(status).to eq(403)
+			end
+		end
+
+		describe 'PATCH update' do
+			it 'updates the parameters successfully if student is member of the project', { docs?: true, lecturer?: false } do
+				expect {
+					patch :update, params: { id: Project.first.id, team_name: 'CrazyProject666', logo: 'http://www.images.com/images/4259' }
+				}.to change { Project.first.team_name }
+				expect(status).to eq(200)
+				expect(parse_body['project']['logo']).to eq('http://www.images.com/images/4259')
+				expect(parse_body['project']['team_name']).to eq('CrazyProject666')
+			end
+
+			it 'responds with 403 if student is not member of the Project' do
+				project = FactoryGirl.create(:project)
+				expect {
+					patch :update, params: { id: project.id, project_name: 'Something' }
+				}.to_not change { Project.first.project_name }
+				expect(status).to eq(403)
+			end
+
+			it 'returns bad request if no permitted parameters and only enrollment key' do
+				expect {
+					patch :update, params: { id: Project.first.id, enrollment_key: 'new_key' }
+				}.to_not change { Project.first.enrollment_key }
+				expect(status).to eq(400)
+				expect(errors["base"][0]).to include("none of the given parameters")
+			end
+
+			it 'returns bad request if no permitted parameters and only project_name', { docs?: true, lecturer?: false } do
+				expect {
+					patch :update, params: { id: Project.first.id, project_name: "whatever" }
+				}.to_not change { Project.first.project_name }
+				expect(status).to eq(400)
+				expect(errors["base"][0]).to include("none of the given parameters")
+			end
+		end
+
+		describe 'DELETE destroy' do
+			it 'responds with 403 forbidden if current_user is not a lecturer' do
+				expect {
+					delete :destroy, params: { id: @student.projects.first }
+				}.to_not change { Project.all.count }
+				expect(status).to eq(403)
+			end
+		end
+	end
+
+	context 'Lecturer' do
+
+		before(:each) do
+			@controller = V1::ProjectsController.new
+			mock_request = MockRequest.new(valid = true, @lecturer)
+			request.cookies['access-token'] = mock_request.cookies['access-token']
+			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+		end
+
+		describe 'GET index' do
+			it "responds with 403 forbidden if the params don't indlude assignment_id", { docs?: true } do
+				get :index
+				expect(status).to eq(403)
+				expect(errors['base'].first).to include("Lecturers must provide a 'assignment_id' in the parameters for this route")
+			end
+
+			it 'returns the projects for the provided assignment_id if the project belongs to the current user',
+				{ docs?: true, described_action: "index" } do
+
+				assignment = @lecturer.assignments.first
+				get :index_with_assignment, params: { assignment_id: assignment.id }
+				expect(status).to eq(200)
+				expect(parse_body['projects'].length).to eq(assignment.projects.length)
+			end
+
+			it 'responds with 403 forbidden if project does not belong to current user' do
+				assignment = FactoryGirl.create(:assignment)
+				get :index, params: { assignment_id: assignment.id }
+				expect(status).to eq(403)
+				expect(errors['base'].first).to include("Lecturers must provide a 'assignment_id' in the parameters for this route.")
+			end
+		end
+
+		describe 'GET show' do
+			it 'returns the Project if the it belongs to the current_user' do
+				get :show, params: { id: @lecturer.projects.first.id }
+				expect(status).to eq(200)
+				expect(@lecturer.projects.find(parse_body['project']['id'])).to be_truthy
+
+				project = FactoryGirl.create(:project)
+				get :show, params: { id: project.id }
+				expect(status).to eq(403)
+			end
+		end
+
+		describe "POST create" do
+			it 'creates a new project if the current user is lecturer and owner of the project', { docs?: true } do
+				expect {
+					post :create, params: FactoryGirl.attributes_for(:project, assignment_id: @lecturer.assignments.last.id)
+				}.to change { Project.all.count }.by(1)
+				expect(status).to eq(201)
+			end
+
+			it 'responds with 403 forbidden if not the owner of the assignment', { docs?: true } do
+				different_assignment = FactoryGirl.create(:assignment)
+				expect {
+					post :create, params: FactoryGirl.attributes_for(:project, assignment_id: different_assignment.id)
+				}.to_not change { Project.all.count }
+				expect(status).to eq(403)
+				expect(errors['base'].first).to eq("This Assignment is not associated with the current user")
+			end
+		end
+
+		describe 'PATCH update' do
+			it 'updates the parameters successfully if Lecturer owns the project' do
+				expect {
+					patch :update, params: { id: @lecturer.projects.first.id, project_name: 'CrazyProject666', logo: 'http://www.images.com/images/4259' }
+				}.to change { Project.first.project_name }
+				expect(status).to eq(200)
+				expect(parse_body['project']['logo']).to eq('http://www.images.com/images/4259')
+			end
+
+			it 'changes the enrollment_key successfully', { docs?: true } do
+				expect {
+					patch :update, params: { id: Project.first.id, enrollment_key: 'new_key' }
+				}.to change { Project.first.enrollment_key }
+				expect(status).to eq(200)
+			end
+		end
+
+		describe 'DELETE destroy' do
+			it 'destroys the project if the Lecturer is the onwer' do
+				expect {
+					delete :destroy, params: { id: @lecturer.projects.first.id }
+				}.to change { Project.all.size }
+				expect(status).to eq(204)
+			end
+
+			it 'responds with 403 if current user is a Lecturer but not the onwer of the Project' do
+				project = FactoryGirl.create(:project)
+				expect {
+					delete :destroy, params: { id: project.id }
+				}.to_not change { Project.all.size }
+				expect(status).to eq(403)
+			end
+		end
+
 	end
 end

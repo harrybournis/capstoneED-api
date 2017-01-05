@@ -6,8 +6,8 @@ RSpec.describe Lecturer, type: :model do
 		subject(:lecturer) { FactoryGirl.build(:lecturer) }
 
 		it { should have_many(:units) }
-		it { should have_many(:projects) }
-		it { should have_many(:teams).through(:projects) }
+		it { should have_many(:assignments) }
+		it { should have_many(:projects).through(:assignments) }
 		it { should have_many(:questions).dependent(:destroy) }
 
 		it { should validate_presence_of(:first_name) }
@@ -15,8 +15,6 @@ RSpec.describe Lecturer, type: :model do
 		it { should validate_presence_of(:email) }
 		it { should validate_presence_of(:university) }
   	it { should validate_presence_of(:position) }
-
-  	it { should validate_absence_of :nickname }
 
   	it { should validate_uniqueness_of(:id) }
 		it { should validate_uniqueness_of(:email).case_insensitive }

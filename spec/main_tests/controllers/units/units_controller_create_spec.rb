@@ -20,7 +20,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 			end
 
-			it 'creates a department with nested attributes' do
+			it 'creates a department with nested attributes', { docs?: true } do
 				parameters = FactoryGirl.attributes_for(:unit).merge(department_attributes: { name: 'departmentname', university: 'university' })
 				expect {
 					post :create, params: parameters
@@ -30,7 +30,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 				expect(Unit.last.lecturer).to eq(@user)
 			end
 
-			it 'assigns an already created department' do
+			it 'assigns an already created department', { docs?: true } do
 				department = FactoryGirl.create(:department)
 				parameters = FactoryGirl.attributes_for(:unit, department_id: department.id)
 				expect {
@@ -79,7 +79,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 				expect(parse_body['errors']['base'].first).to include('You must be Lecturer to access this resource')
 			end
 
-			it 'errors in nested attributes' do
+			it 'errors in nested attributes', { docs?: true } do
 				@controller = V1::UnitsController.new
 				@user = FactoryGirl.build(:lecturer_with_password).process_new_record
 				@user.save

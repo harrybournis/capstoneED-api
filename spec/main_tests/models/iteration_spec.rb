@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'timecop'
 
 RSpec.describe Iteration, type: :model do
 	subject(:iteration) { FactoryGirl.create(:iteration) }
@@ -6,11 +7,23 @@ RSpec.describe Iteration, type: :model do
 	it { should validate_presence_of(:name) }
 	it { should validate_presence_of(:start_date) }
 	it { should validate_presence_of(:deadline) }
-	it { should validate_presence_of(:project_id) }
+	it { should validate_presence_of(:assignment_id) }
 
-	it { should belong_to(:project) }
+	it { should belong_to(:assignment) }
 	it { should have_one(:pa_form).dependent(:destroy) }
 	it { should have_many(:extensions) }
+	it { should have_many :project_evaluations }
+	it { should have_many(:peer_assessments).through(:pa_form) }
+
+	it '#active? returns whether the iteration is currently going on' do
+		now = DateTime.now
+		iteration = FactoryGirl.create(:iteration, start_date: now, deadline: now + 3.days)
+		expect(iteration.active?).to be_truthy
+
+		Timecop.travel(DateTime.now + 1.year) do
+			expect(iteration.active?).to be_falsy
+		end
+	end
 
 	it 'validates that start_date is not in the past' do
 		iteration  = FactoryGirl.build(:iteration, start_date: DateTime.yesterday)

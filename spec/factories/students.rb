@@ -2,7 +2,6 @@ FactoryGirl.define do
   factory :student do
     first_name 	      { "Jonathan#{rand(1000).to_s}" }
   	last_name 	      { "Burgerhuman#{rand(1000).to_s}" }
-    nickname          { "Jonathan_burgerhuman_#{rand(1000).to_s}" }
     email             { "jonathan#{rand(1000).to_s}burgerhuman#{rand(1000).to_s}@gmail.com" }
     provider          { 'test' }
     type              { 'Student' }

@@ -1,0 +1,1 @@
+{"resource":"V1::AuthenticationsController","action":"create","status":204,"description":"sends an email with password reset instructions","error":false,"lecturer":true,"request_params":"{\"email\":\"alfredo689_jump688@gmail.com\"}","response_body":"","response_headers":{"X-Frame-Options":"SAMEORIGIN","X-XSS-Protection":"1; mode=block","X-Content-Type-Options":"nosniff"}}

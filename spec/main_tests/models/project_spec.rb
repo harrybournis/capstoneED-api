@@ -5,38 +5,83 @@ RSpec.describe Project, type: :model do
 		describe 'validations' do
 			subject(:project) { FactoryGirl.build(:project) }
 
-			it { should belong_to(:lecturer) }
-			it { should belong_to(:unit) }
-			it { should have_many(:teams).dependent(:destroy) }
-			it { should have_many(:students_teams).through(:teams) }
-			it { should have_many(:students).through(:students_teams) }
-			it { should have_many(:iterations).dependent :destroy }
-			it { should have_many(:pa_forms).through(:iterations) }
+			it { should have_many(:students).through(:students_projects).dependent(:delete_all) }
+			it { should have_many(:students_projects) }
+			it { should have_many(:iterations).through(:assignment) }
+			it { should belong_to(:assignment) }
+			it { should have_one(:lecturer).through(:assignment) }
+			it { should have_one :extension }
+			it { should have_many :project_evaluations }
+			it { should have_many :peer_assessments }
 
-			it { should validate_presence_of(:start_date) }
-			it { should validate_presence_of(:end_date) }
-			it { should validate_presence_of(:unit_id) }
-			it { should validate_presence_of(:lecturer_id) }
+			it { should validate_presence_of :project_name }
+			it { should validate_presence_of :assignment }
+			it { should validate_presence_of :team_name }
+			it { should validate_presence_of :description }
 
 			it { should validate_uniqueness_of(:id) }
+			it { should validate_uniqueness_of(:enrollment_key) }
+			it { should validate_uniqueness_of(:project_name).scoped_to(:assignment_id).case_insensitive }
 
-			it 'should validate that unit_id belongs to lecturer_id' do
-				project.unit = FactoryGirl.create(:unit)
-				expect(project.lecturer.units).to_not include(project.unit)
-				expect(project.valid?).to be_falsy
-				expect(project.errors[:unit].first).to eq("does not belong in the Lecturer's list of Units")
-
-				project.lecturer.units << project.unit
-				expect(project.lecturer.units).to include(project.unit)
-				expect(project.valid?).to be_truthy
+			it 'destroys StudentTeams on destroy' do
+				assignment = FactoryGirl.create(:assignment_with_projects)
+				@project = assignment.projects.first
+				2.times { @project.students << FactoryGirl.create(:student) }
+				students_count = Student.all.size
+				expect(JoinTables::StudentsProject.all.count).to eq(2)
+				expect { Project.destroy(@project.id) }.to change { JoinTables::StudentsProject.all.count }.by(-2)
+				expect(Student.all.size).to eq(students_count)
 			end
 
-			it 'desroying a project should destroy its all teams' do
-				project = FactoryGirl.create(:project_with_teams)
-				expect(project.teams.length).to eq(2)
-				expect {
-					project.destroy
-				}.to change { Team.all.count }.by(-2)
+			it 'autogenerates enrollment key if not provided by user' do
+				assignment = FactoryGirl.create(:assignment)
+				attributes = FactoryGirl.attributes_for(:project).except(:enrollment_key).merge(assignment_id: assignment.id)
+				project = Project.new(attributes)
+				project.valid?
+				expect(project.errors[:enrollment_key]).to be_empty
+				expect(project.save).to be_truthy
+				project = Project.create(FactoryGirl.attributes_for(:project).except(:enrollment_key).merge(assignment_id: assignment.id))
+				expect(project).to be_truthy
+			end
+
+			it 'does not autogenerate key if provided' do
+				assignment = FactoryGirl.create(:assignment)
+				attributes = FactoryGirl.attributes_for(:project).merge(assignment_id: assignment.id, enrollment_key: 'key')
+				project = Project.new(attributes)
+				project.valid?
+				expect(project.errors[:enrollment_key]).to be_empty
+				expect(project.enrollment_key).to eq('key')
+			end
+
+			it 'project_health returns the mean of the iterations_health' do
+				assignment = FactoryGirl.create(:assignment)
+				2.times { assignment.iterations << FactoryGirl.create(:iteration) }
+				project = FactoryGirl.create(:project)
+				assignment.projects << project
+
+				iteration1_health = assignment.iterations[0].iteration_health
+				iteration2_health = assignment.iterations[1].iteration_health
+				expected_health = ((iteration1_health + iteration2_health) / 2).round
+
+				expect(project.project_health).to eq(expected_health)
+			end
+
+			it '#student_members returns TeamMember objects with nickname' do
+				assignment = FactoryGirl.create(:assignment)
+				project = FactoryGirl.create(:project, assignment: assignment)
+				student1 = FactoryGirl.create(:student)
+				student2 = FactoryGirl.create(:student)
+
+				project.students << student1
+				project.students << student2
+				student_members = project.student_members
+
+				student_members.each do |student|
+					if student.id == student1.id
+						expect(student.email).to eq(student1.email)
+						expect(student.nickname).to eq(student1.nickname_for_project_id(project.id))
+					end
+				end
 			end
 	end
 end

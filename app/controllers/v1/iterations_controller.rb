@@ -1,16 +1,16 @@
 class V1::IterationsController < ApplicationController
 
-	before_action :validate_project_id_present, 							only: [:index]
-	before_action :validate_project_belongs_to_current_user, 	only: [:index, :create]
-	before_action :allow_if_lecturer, 												only: :create
+	before_action :validate_assignment_id_present, 							only: [:index]
+	before_action :validate_assignment_belongs_to_current_user, only: [:index, :create]
+	before_action :allow_if_lecturer, 													only: :create
  	before_action :validate_includes, only: [:index, :show], if: 'params[:includes]'
-  before_action :set_iteration_if_associated, 							only: [:show, :update, :destroy]
+  before_action :set_iteration_if_associated, 								only: [:show, :update, :destroy]
 
 
 	# GET /iterations?project_id=
 	# Needs project_id in params
 	def index
-		if (@iterations = current_user.iterations(includes: params[:includes]).where(project_id: params[:project_id])).empty?
+		if (@iterations = current_user.iterations(includes: params[:includes]).where(assignment_id: params[:assignment_id])).empty?
       render_not_associated_with_current_user('Iteration')
       return false
     end
@@ -61,16 +61,16 @@ class V1::IterationsController < ApplicationController
       end
     end
 
-    def validate_project_id_present
-			unless params[:project_id]
-				render json: format_errors({ base: ['This Endpoint requires a project_id in the params'] }), status: :bad_request
+    def validate_assignment_id_present
+			unless params[:assignment_id]
+				render json: format_errors({ base: ['This Endpoint requires a assignment_id in the params'] }), status: :bad_request
 				return
 			end
     end
 
-    def validate_project_belongs_to_current_user
-			unless current_user.projects.find_by( id: params[:project_id])
-				render json: format_errors({ project_id: ["is not one of current user's projects"] }), status: :forbidden
+    def validate_assignment_belongs_to_current_user
+			unless current_user.assignments.find_by( id: params[:assignment_id])
+				render json: format_errors({ assignment_id: ["is not one of current user's assignments"] }), status: :forbidden
 				return
 			end
     end
@@ -81,7 +81,7 @@ class V1::IterationsController < ApplicationController
     end
 
     def iteration_params
-    	params.permit(:name, :start_date, :deadline, :project_id, pa_form_attributes: [:start_offset, :end_offset, questions: []])
+    	params.permit(:name, :start_date, :deadline, :assignment_id, pa_form_attributes: [:start_offset, :end_offset, questions: []])
     end
 
     def iteration_update_params

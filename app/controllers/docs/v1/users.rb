@@ -83,8 +83,7 @@ class Docs::V1::Users < ApplicationController
 	example DocHelper.format_example(status = 422, nil, body = "{\n  \"errors\": {\n    \"email\": [\n      \"was already confirmed, please try signing in\"\n    ]\n  }\n}")
 	example DocHelper.format_example(status = 422, nil, body = "{\n  \"errors\": {\n    \"email\": [\n      \"can't be blank\"\n    ]\n  }\n}")
 	description <<-EOS
-		Resends a confirmation email to the email provided in the params. The email must be a valid email
-		in the system.
+P
 	EOS
 	def resend_confirmation_email
 	end

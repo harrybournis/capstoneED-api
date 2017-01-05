@@ -10,5 +10,5 @@ class Department < ApplicationRecord
 	#Validations
 	validates_presence_of :name, :university
 	validates_uniqueness_of :id
-	validates :name, uniqueness: { scope: :university, message: 'this department already exists for this University', case_sensitive: false }
+	#validates :name, uniqueness: { scope: :university, message: 'this department already exists for this University', case_sensitive: false }
 end

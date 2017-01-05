@@ -1,7 +1,3 @@
 class ProjectSerializer < Base::BaseSerializer
-  attributes :start_date, :end_date, :description
-
-  attribute :href do
-  	"/projects/#{object.id}"
-  end
+  attributes :id, :project_name, :team_name, :description, :logo, :enrollment_key
 end

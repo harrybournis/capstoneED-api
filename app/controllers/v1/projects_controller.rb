@@ -1,70 +1,72 @@
 class V1::ProjectsController < ApplicationController
 
-  before_action :allow_if_lecturer, only: [:index_with_unit, :create, :update, :destroy]
-  before_action :validate_includes, only: [:index, :index_with_unit, :show], if: 'params[:includes]'
+	before_action :allow_if_lecturer, 		only: [:create, :destroy]
+	before_action -> { allow_if_lecturer(index_with_assignment_error_message) }, only: :index_with_assignment
+	before_action -> { allow_if_student(index_error_message) }, only: :index
+ 	before_action :validate_includes, only: [:index, :index_with_assignment, :show], if: 'params[:includes]'
   before_action :delete_includes_from_params, only: [:update, :destroy]
   before_action :set_project_if_associated, only: [:show, :update, :destroy]
 
 
-  # GET /projects
-  def index
-    serialize_collection current_user.projects(includes: includes_array), :ok
-  end
+	# GET /projects
+	# Only for Students
+	def index
+		serialize_collection current_user.projects(includes: includes_array), :ok
+	end
 
-  # GET /projects?unit_id=4
-  # Only Lecturers
-  # Get the projects of the specified unit_id. Unit must belong to Lecturer.
-  def index_with_unit
-    if (@projects = current_user.projects(includes: params[:includes]).where(unit_id: params[:unit_id])).empty?
-      render_not_associated_with_current_user('Unit')
+	# GET /projects?assignment_id=
+	# Only for Lecturers
+	def index_with_assignment
+		@projects = current_user.projects(includes: includes_array).where(['assignments.id = ?', params[:assignment_id]])
+		serialize_collection @projects, :ok
+	end
+
+	# GET /projects/:id
+	def show
+		serialize_object @project, :ok
+	end
+
+	# POST /projects
+	def create
+    unless @project = current_user.assignments.where(id: params[:assignment_id])[0]
+      render_not_associated_with_current_user('Assignment')
       return false
     end
-    serialize_collection @projects, :ok
-  end
 
-  # GET /projects/:id
-  def show
-    serialize_object @project, :ok
-  end
+		project = Project.new(project_params)
 
-  # POST /projects
-  # Only Lecturers
-  def create
-    @project = Project.new(project_params.merge(lecturer_id: current_user.id))
+		if project.save
+			render json: project, status: :created
+		else
+			render json: format_errors(project.errors), status: :unprocessable_entity
+		end
+	end
 
-    if @project.save
-      if params[:teams_attributes]
-        render json: @project, serializer: Includes::ProjectSerializer, include: 'teams', status: :created
-      else
-        render json: @project, status: :created
-      end
-    else
-      render json: format_errors(@project.errors), status: :unprocessable_entity
-    end
-  end
+	# PATCH /projects/:id
+	def update
+		if project_update_params.empty?
+			render json: format_errors({ base: ["none of the given parameters can be updated by the current user"] }), status: :bad_request
+			return
+		end
 
-  # PATCH /projects/:id
-  # Only Lecturers
-  def update
-    if @project.update(project_params)
-      render json: @project, status: :ok
-    else
-      render json: @project.errors, status: :unprocessable_entity
-    end
-  end
+		if @project.update(project_update_params)
+			render json: @project, status: :ok
+		else
+			render json: format_errors(@project.errors), status: :unprocessable_entity
+		end
+	end
 
-  # DELETE /projects/:id
-  # Only Lecturers
-  def destroy
-    if @project.destroy
-      render json: '', status: :no_content
-    else
-      render json: format_errors(@project.errors), status: :unprocessable_entity
-    end
-  end
+	# DELETE /projects/:id
+	def destroy
+		if @project.destroy
+			render json: '', status: :no_content
+		else
+			render json: format_errors(@project.errors), status: :unprocessable_entity
+		end
+	end
 
 
-  private
+	private
 
     # Sets @project if it is asociated with the current user. Eager loads associations in the params[:includes].
     # Renders error if not associated and Halts execution
@@ -80,8 +82,24 @@ class V1::ProjectsController < ApplicationController
       Project
     end
 
-    def project_params
-      params.permit(:id, :start_date, :end_date, :description, :unit_id,
-        teams_attributes: [:name, :enrollment_key, :logo])
-    end
+    # Strong Params
+		def project_params
+			params.permit(:project_name, :team_name, :description, :logo, :enrollment_key, :student_id, :assignment_id)
+		end
+
+		def project_update_params
+			if current_user.type == "Lecturer"
+				params.permit(:project_name, :team_name, :description, :logo, :enrollment_key)
+			else
+				params.permit(:team_name, :logo)
+			end
+		end
+
+		def index_with_assignment_error_message
+			"Students can not access this route with a 'assignment_id' in the parameters. Retry without it."
+		end
+
+		def index_error_message
+			"Lecturers must provide a 'assignment_id' in the parameters for this route."
+		end
 end

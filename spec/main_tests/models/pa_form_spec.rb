@@ -6,7 +6,7 @@ RSpec.describe PAForm, type: :model do
 
 	it { should belong_to :iteration }
 	it { should have_many :peer_assessments }
-	it { should have_many(:extensions) }
+	it { should have_many :extensions }
 	it { should validate_presence_of :iteration }
 	it { should validate_presence_of :start_offset }
 	it { should validate_presence_of :end_offset }
@@ -85,18 +85,18 @@ RSpec.describe PAForm, type: :model do
 		start = 1.day.to_i
 		finish = 4.days.to_i
 		pa_form = FactoryGirl.create(:pa_form, start_offset: start, end_offset: finish)
-		team = FactoryGirl.create(:team)
-		extension  = FactoryGirl.create(:extension, deliverable_id: pa_form.id, team_id: team.id)
-		expect(pa_form.deadline_with_extension_for_team(team)).to eq(Time.at(pa_form.iteration.deadline.to_i + finish + extension.extra_time).to_datetime)
+		project = FactoryGirl.create(:project)
+		extension  = FactoryGirl.create(:extension, deliverable_id: pa_form.id, project_id: project.id)
+		expect(pa_form.deadline_with_extension_for_project(project)).to eq(Time.at(pa_form.iteration.deadline.to_i + finish + extension.extra_time).to_datetime)
 	end
 
 	it 'return only deadline if iteration does not exist' do
 		start = 1.day.to_i
 		finish = 4.days.to_i
 		pa_form = FactoryGirl.create(:pa_form, start_offset: start, end_offset: finish)
-		team = FactoryGirl.create(:team)
+		project = FactoryGirl.create(:project)
 		wrong_pa = FactoryGirl.create(:pa_form)
-		extension  = FactoryGirl.create(:extension, deliverable_id: wrong_pa.id, team_id: team.id)
-		expect(pa_form.deadline_with_extension_for_team(team)).to eq(Time.at(pa_form.iteration.deadline.to_i + finish).to_datetime)
+		extension  = FactoryGirl.create(:extension, deliverable_id: wrong_pa.id, project_id: project.id)
+		expect(pa_form.deadline_with_extension_for_project(project)).to eq(Time.at(pa_form.iteration.deadline.to_i + finish).to_datetime)
 	end
 end

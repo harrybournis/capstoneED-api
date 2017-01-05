@@ -1,7 +1,7 @@
 class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 
-	def projects(options={})
-		Project.eager_load(options[:includes]).where(lecturer_id: @id)
+	def assignments(options={})
+		Assignment.eager_load(options[:includes]).where(lecturer_id: @id)
 	end
 
 	def units(options={})
@@ -12,8 +12,13 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 		Department.joins(:units).where(['units.lecturer_id = ?', @id])
 	end
 
-	def teams(options={})
-		Team.joins(:project).eager_load(options[:includes]).where(['projects.lecturer_id = ?', @id])
+	def projects(options={})
+		if options[:includes] && options[:includes].include?("students")
+			options[:includes].delete("students")
+			Project.joins(:assignment).eager_load(options[:includes], students_projects: [:student]).where(['assignments.lecturer_id = ?', @id])
+		else
+			Project.joins(:assignment).eager_load(options[:includes]).where(['assignments.lecturer_id = ?', @id])
+		end
 	end
 
 	def questions(options={})
@@ -26,35 +31,39 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 		else
 			includes = 'pa_form'
 		end
-		Iteration.joins(:project).eager_load(includes).where(['projects.lecturer_id = ?', @id])
+		Iteration.joins(:assignment).eager_load(includes).where(['assignments.lecturer_id = ?', @id])
 	end
 
 	def pa_forms(options={})
-		PAForm.joins(:iteration, :project).eager_load(options[:includes]).where(['projects.lecturer_id = ?', @id])
+		PAForm.joins(:iteration, :assignment).eager_load(options[:includes]).where(['assignments.lecturer_id = ?', @id])
 	end
 
 	def peer_assessments(options={})
-		PeerAssessment.joins(:project).eager_load(options[:includes]).where(['projects.lecturer_id = ?', @id])
+		PeerAssessment.joins(:assignment).eager_load(options[:includes]).where(['assignments.lecturer_id = ?', @id])
 	end
 
 	def extensions
-		Extension.joins(:team, :project).where(['projects.lecturer_id = ?', @id])
+		Extension.joins(:project, :assignment).where(['assignments.lecturer_id = ?', @id])
+	end
+
+	def project_evaluations
+		ProjectEvaluation.where(user_id: @id)
 	end
 
 
 	# The associations that the current_user can include in the query
 	#
 	# ##
-	def project_associations
-   	%w(lecturer unit teams students iterations pa_forms)
+	def assignment_associations
+   	%w(lecturer unit projects students iterations pa_forms)
 	end
 
 	def unit_associations
-	  %w(lecturer projects department)
+	  %w(lecturer assignments department)
 	end
 
-	def team_associations
-		%w(project students)
+	def project_associations
+		%w(assignment students)
 	end
 
 	def iteration_associations

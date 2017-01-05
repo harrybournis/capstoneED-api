@@ -28,7 +28,7 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_out', type: :controller
 			expect(response.status).to eq(204)
 		end
 
-		it 'returns 204 no content' do
+		it 'returns 204 no content', { docs?: true } do
 			post :sign_out
 			expect(response.status).to eq(204)
 		end

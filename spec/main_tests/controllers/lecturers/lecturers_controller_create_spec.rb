@@ -15,7 +15,7 @@ RSpec.describe 'V1::LecturersController POST /create', type: :controller do
 		end
 
 		describe 'POST create' do
-			it 'creates a new user and save them in the database' do
+			it 'creates a new user and save them in the database', { docs?: true } do
 				expect {
 					post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
 				}. to change { Lecturer.count }
@@ -58,28 +58,28 @@ RSpec.describe 'V1::LecturersController POST /create', type: :controller do
 
 	context 'invalid request' do
 
-		describe 'POST create' do
+		describe 'POST create', { docs?: true } do
 			it 'returns 400 bad request if the request is not formatted right' do
 				post :create, params: { 'user' => { 'email' => 'email@email.com', 'password' => '12345678', 'password_confirmation' => '12345678', type: 'Lecturer' } }
 				expect(status).to eq(422)
 				expect(errors['type'][0]).to include('must be either Student or Lecturer')
 			end
 
-			it 'returns 422 unprocessable_entity if email error' do
+			it 'returns 422 unprocessable_entity if email error', { docs?: true } do
 				post :create, params: { 'email' => 'emailemail.com', 'password' => '12345678', 'password_confirmation' => '12345678', 'first_name' => 'Rixardos', 'last_name' => 'Arlekinos', type: 'Lecturer' }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation')
 				expect(status).to eq(422)
 				expect(errors['email'].first).to eq('is invalid')
 			end
 
-			it 'returns 422 unprocessable_entity if passwords dont match' do
+			it 'returns 422 unprocessable_entity if passwords dont match', { docs?: true } do
 				post :create, params: { 'email' => 'email@email.com', 'password' => 'asdfasdf', 'password_confirmation' => '12345678', 'first_name' => 'Rixardos', 'last_name' => 'Arlekinos', type: 'Lecturer' }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation')
 				expect(status).to eq(422)
 				expect(errors['password_confirmation'].first).to eq("doesn't match Password")
 			end
 
-			it 'returns 422 unprocessable_entity if password too short' do
+			it 'returns 422 unprocessable_entity if password too short', { docs?: true } do
 				post :create, params: { 'email' => 'emailmail.com', 'password' => '1234', 'password_confirmation' => '1234',  'last_name' => 'Arlekinos', type: 'Lecturer' }
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation')
 				expect(status).to eq(422)

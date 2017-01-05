@@ -1,0 +1,1 @@
+{"resource":"V1::ExtensionsController","action":"destroy","status":204,"description":"deletes extension","error":false,"lecturer":true,"request_params":"{\"id\":\"4\",\"project_id\":\"3\"}","response_body":"","response_headers":{"X-Frame-Options":"SAMEORIGIN","X-XSS-Protection":"1; mode=block","X-Content-Type-Options":"nosniff"}}

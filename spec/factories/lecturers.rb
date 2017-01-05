@@ -29,12 +29,12 @@ FactoryGirl.define do
       units { [FactoryGirl.create(:unit), FactoryGirl.create(:unit)] }
     end
 
-    factory :lecturer_with_units_projects_teams do
+    factory :lecturer_with_units_assignments_projects do
       provider 'email'
       password '12345678'
       password_confirmation '12345678'
       units     { [FactoryGirl.create(:unit), FactoryGirl.create(:unit)] }
-      projects  { [FactoryGirl.create(:project_with_teams), FactoryGirl.create(:project_with_teams)] }
+      assignments  { [FactoryGirl.create(:assignment_with_projects), FactoryGirl.create(:assignment_with_projects)] }
     end
   end
 end

@@ -4,11 +4,11 @@ class PAFormSerializer < Base::BaseSerializer
 	attribute :extensions, if: :extension_condition
 
 	def extension_until
-		object.deadline_with_extension_for_team(@extension.team)
+		object.deadline_with_extension_for_project(@extension.project)
 	end
 
 	def extension_until_condition
-		scope.type == 'Student' && @extension = Extension.where(deliverable_id: object.id, team_id: scope.teams.ids)[0]
+		scope.type == 'Student' && @extension = Extension.where(deliverable_id: object.id, project_id: scope.projects.ids)[0]
 	end
 
 	def extension_condition
