@@ -1,8 +1,7 @@
 class Extension < ApplicationRecord
 	# Attributes
 	# extra_time 			:integer
-	# form_id					:integer
-	# deliverable_id	:integer
+	# deliverable_id	:integer (alias: pa_form_id)
 	# project_id			:integer
 
 	# Validations
@@ -15,10 +14,5 @@ class Extension < ApplicationRecord
 	has_one :assignment, through: :project
 	has_many :students_projects, through: :project
 
-
-	# Instance Methods
-
-	# extra_time
-	# 172800 2 days in integer
-	# Time.at(DateTime.now.to_i + 172800).to_datetime
+	alias_attribute :pa_form_id, :deliverable_id
 end

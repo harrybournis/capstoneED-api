@@ -5,7 +5,7 @@ class V1::ExtensionsController < ApplicationController
 
 	# POST /extensions
 	def create
-		unless current_user.pa_forms.where(id: params[:deliverable_id]).any? && current_user.projects.where(id: params[:project_id]).any?
+		unless current_user.pa_forms.where(id: params[:pa_form_id]).any? && current_user.projects.where(id: params[:project_id]).any?
 			render_not_associated_with_current_user('PAForm or Project')
 			return false
 		end
@@ -30,7 +30,7 @@ class V1::ExtensionsController < ApplicationController
 
 	def destroy
 		if @extension.destroy
-			render json: :none, status: :no_content
+			render json: '', status: :no_content
 		else
 			render json: format_errors(@extension.errors), status: :unprocessable_entity
 		end
@@ -49,7 +49,7 @@ class V1::ExtensionsController < ApplicationController
     end
 
 		def extension_params
-			params.permit(:project_id, :deliverable_id, :extra_time)
+			params.permit(:project_id, :pa_form_id, :extra_time)
 		end
 
 		def update_extension_params

@@ -1,1 +1,0 @@
-{"resource":"V1::ProjectsController","action":"remove_student","status":204,"description":"removes student from project if Lecturer is owner","error":false,"lecturer":true,"request_params":"{\"student_id\":\"80\",\"id\":\"1\"}","response_body":"","response_headers":{"X-Frame-Options":"SAMEORIGIN","X-XSS-Protection":"1; mode=block","X-Content-Type-Options":"nosniff"}}

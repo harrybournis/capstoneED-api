@@ -11,7 +11,7 @@ RSpec.describe V1::FeelingsController, type: :controller do
 		request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 	end
 
-	it 'index returns all feelings' do
+	it 'index returns all feelings', { docs?: true } do
 		FactoryGirl.create_list(:feeling, 3)
 		get :index
 

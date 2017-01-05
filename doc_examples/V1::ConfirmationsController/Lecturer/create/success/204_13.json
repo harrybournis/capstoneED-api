@@ -1,1 +1,0 @@
-{"resource":"V1::ConfirmationsController","action":"create","status":204,"description":"sends an email with confirmation instructions","error":false,"lecturer":true,"request_params":"{\"email\":\"alfredo101_jump833@gmail.com\"}","response_body":"","response_headers":{"X-Frame-Options":"SAMEORIGIN","X-XSS-Protection":"1; mode=block","X-Content-Type-Options":"nosniff"}}

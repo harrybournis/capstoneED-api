@@ -57,7 +57,7 @@ class V1::ProjectEvaluationsController < ApplicationController
 
     def set_iteration_if_associated
       unless @iteration = current_user.iterations.where(id: params[:iteration_id])[0]
-        render_not_associated_with_current_user('Iteration')
+        render_not_associated_with_current_useppir('Iteration')
         return false
       end
     end
@@ -72,6 +72,6 @@ class V1::ProjectEvaluationsController < ApplicationController
 		end
 
 		def update_project_evaluation_params
-			params.permit(:id, :feeling_id, :percent_complete)
+			params.permit(:feeling_id, :percent_complete)
 		end
 end
