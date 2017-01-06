@@ -29,9 +29,6 @@ gem 'jwt', '~> 1.5', '>= 1.5.4'
 gem 'devise', '~> 4.2'
 gem 'oauth2', '~> 1.2'
 
-# Documentation
-gem 'apipie-rails', '~> 0.3.6'
-
 # Logging
 gem 'lograge', '~> 0.4.1'
 
