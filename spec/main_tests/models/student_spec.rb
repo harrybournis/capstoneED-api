@@ -47,13 +47,11 @@ RSpec.describe Student, type: :model do
 		@user = FactoryGirl.create(:student_confirmed)
 
 		project1 = FactoryGirl.create(:project)
-		project2 = FactoryGirl.create(:project)
 		project3 = FactoryGirl.create(:project)
 		teammate = FactoryGirl.create(:student_confirmed)
 		3.times { project1.students << FactoryGirl.create(:student_confirmed) }
 		project1.students << @user
 		project1.students << teammate
-		3.times { project2.students << FactoryGirl.create(:student_confirmed) }
 		3.times { project3.students << FactoryGirl.create(:student_confirmed) }
 		project3.students << @user
 		project3.students << teammate
