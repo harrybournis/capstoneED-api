@@ -16,12 +16,20 @@ RSpec.describe Project, type: :model do
 
 			it { should validate_presence_of :project_name }
 			it { should validate_presence_of :assignment }
-			it { should validate_presence_of :team_name }
 			it { should validate_presence_of :description }
 
 			it { should validate_uniqueness_of(:id) }
 			it { should validate_uniqueness_of(:enrollment_key) }
 			it { should validate_uniqueness_of(:project_name).scoped_to(:assignment_id).case_insensitive }
+
+			it 'validates presence of team_name' do
+				project = create :project
+				expect(project.save).to be_truthy
+
+				project.team_name = nil
+				expect(project.save).to be_falsy
+				expect(project.errors[:team_name][0]).to eq "can't be blank"
+			end
 
 			it 'destroys StudentTeams on destroy' do
 				assignment = FactoryGirl.create(:assignment_with_projects)
@@ -83,5 +91,50 @@ RSpec.describe Project, type: :model do
 					end
 				end
 			end
+
+			describe 'autogenerates team_name' do
+				it 'if none was given during creation' do
+					assignment = create :assignment
+					attributes = attributes_for(:project).except(:team_name).merge!(assignment_id: assignment.id)
+					expect(attributes[:team_name]).to be_falsy
+
+					project = Project.new(attributes)
+
+					expect(project.save).to be_truthy
+					expect(project.team_name).to eq("Team 1")
+				end
+
+				it 'assigns the number of the projects in the Assignment' do
+					# create first project, which will be called 'Team 1'
+					assignment = create :assignment
+					attributes = attributes_for(:project).except(:team_name).merge!(assignment_id: assignment.id)
+
+					project = Project.new(attributes)
+
+					expect(project.save).to be_truthy
+					expect(assignment.projects.count).to eq(1)
+					expect(project.team_name).to eq("Team 1")
+
+					# create second project, which will be called 'Team 2'
+					attributes = attributes_for(:project).except(:team_name).merge!(assignment_id: assignment.id)
+
+					project = Project.new(attributes)
+
+					expect(project.save).to be_truthy
+					expect(assignment.projects.count).to eq(2)
+					expect(project.team_name).to eq("Team 2")
+
+					# create third project, which will be called 'Team 3'
+					assignment.reload
+					attributes = attributes_for(:project).except(:team_name).merge!(assignment_id: assignment.id)
+
+					project = Project.new(attributes)
+
+					expect(project.save).to be_truthy
+					expect(assignment.projects.count).to eq(3)
+					expect(project.team_name).to eq("Team 3")
+				end
+			end
+
 	end
 end

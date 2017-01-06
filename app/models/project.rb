@@ -20,11 +20,11 @@ class Project < ApplicationRecord
   has_many    :peer_assessments
 
   # Validations
-  validates_presence_of 	:project_name, :team_name, :assignment, :description
+  validates_presence_of 	:project_name, :assignment, :team_name, :description
   validates_uniqueness_of :id, :enrollment_key
   validates_uniqueness_of :project_name, scope: :assignment_id, case_sensitive: false
 
-  before_validation :generate_enrollment_key
+  before_validation :generate_enrollment_key, :generate_team_name
 
   # Instance Methods
 

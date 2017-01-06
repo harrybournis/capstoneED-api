@@ -39,5 +39,18 @@ RSpec.describe Assignment, type: :model do
 					assignment.destroy
 				}.to change { Project.all.count }.by(-2)
 			end
+
+			it 'project_counter returns the number of projects if persisted, or returns 0' do
+				assignment = create :assignment
+				expect(assignment.projects.count).to eq(0)
+				expect(assignment.project_counter).to eq(0)
+
+				project = create :project, assignment: assignment
+				assignment.reload
+				expect(assignment.project_counter).to eq(1)
+
+				assignment = build :assignment
+				expect(assignment.project_counter).to eq(0)
+			end
 	end
 end

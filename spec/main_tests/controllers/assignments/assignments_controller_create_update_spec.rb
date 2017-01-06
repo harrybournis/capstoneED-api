@@ -36,13 +36,29 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 				expect(body['assignment']['projects'].length).to eq(2)
 			end
 
+			it 'accepts nested attributes for projects without team_names, and names them accordingly' do
+				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', description: 'dddd', enrollment_key: 'key' }, { project_name: 'New Project2', description: 'descr', enrollment_key: 'key2' }] )
+				expect {
+					post :create, params: parameters
+				}.to change { Project.count }.by(2)
+
+				expect(status).to eq(201)
+				body['assignment']['projects'].each do |project|
+					if project['project_name'] == "New Project1"
+						expect(project['team_name']).to eq('Team 1')
+					elsif project['project_name'] == "New Project2"
+						expect(project['team_name']).to eq('Team 2')
+					end
+				end
+			end
+
 			it 'shows errors for projects', { docs?: true } do
-				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', description: 'dddd', enrollment_key: 'key' }, { project_name: 'New Project2', team_name: 'persons2', description: 'descr', enrollment_key: 'key2' }] )
+				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', description: 'dddd', enrollment_key: 'key' }, { team_name: 'persons2', description: 'descr', enrollment_key: 'key2' }] )
 				expect {
 					post :create, params: parameters
 				}.to change { Project.count }.by(0)
 				expect(status).to eq(422)
-				expect(errors['projects.team_name'][0]).to include "can't be blank"
+				expect(errors['projects.project_name'][0]).to include "can't be blank"
 			end
 		end
 
