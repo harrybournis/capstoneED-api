@@ -42,3 +42,6 @@ bower.json
 .byebug_history
 
 .DS_Store
+
+# ignore the doc_examples folder since they can be generated
+/doc_examples
