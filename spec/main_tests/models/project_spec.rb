@@ -109,6 +109,8 @@ RSpec.describe Project, type: :model do
 						expect(student.nickname).to eq(student1.nickname_for_project_id(project.id))
 					end
 				end
+				project.reload
+				expect(student_members.length).to eq(project.students.length)
 			end
 
 			describe 'autogenerates team_name' do

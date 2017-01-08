@@ -58,6 +58,19 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				expect(body['project']['nickname']).to be_truthy
 				expect(body['project']['nickname']).to eq @student.nickname_for_project_id @student.projects[0].id
 			end
+
+			it 'includes students maybe why' do
+				project = @student.projects.first
+				create :students_project, student: create(:student), project: project
+				expect(project.students.count).to eq 2
+				project.reload
+
+				get :show, params: { id: project.id, includes: 'students' }
+
+				expect(status).to eq(200)
+				project.reload
+				expect(body['project']['students'].length).to eq project.students.count
+			end
 		end
 
 		describe 'POST create' do

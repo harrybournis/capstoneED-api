@@ -29,6 +29,7 @@ class TestResultFormatter
   def dump_summary notification
   	export_results unless @export_results.empty?
 
+    @output << "\n\n Found #{@export_results.length} examples"
 		@output << "\n\nFinished in #{RSpec::Core::Formatters::Helpers.format_duration(notification.duration)}."
   end
 
@@ -62,8 +63,6 @@ class TestResultFormatter
   	def export_results
   		root_path = "./doc_examples"
   		FileUtils.rm_rf(root_path) if File.exists?(root_path) # clear directory
-
-      @output << "\n Found #{@export_results.length} examples"
 
   		@export_results.each_with_index do |e, index|
   			directory_name = "#{root_path}/#{e.resource}/#{e.lecturer_or_student}/#{e.action}/#{e.success_or_error}"

@@ -3,6 +3,7 @@ class Includes::ProjectStudentSerializer < ProjectStudentSerializer
 	has_one			:lecturer
 
 	has_many :students, serializer: Decorators::StudentMemberSerializer do
+		object.reload
 		object.student_members
 	end
 end

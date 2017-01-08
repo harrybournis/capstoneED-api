@@ -40,13 +40,25 @@ RSpec.describe 'Includes', type: :controller do
 				@controller = V1::ProjectsController.new
 			end
 
-			it 'GET index can include lecturer' do
+			it 'GET index can include lecturer', { docs?: true, lecturer?: false } do
 				get :index, params: { includes: 'students,assignment,lecturer', compact: true }
 				expect(status).to eq(200)
 				expect(body['projects'].first['students'].first).to_not include('email', 'provider')
 				expect(body['projects'].length).to eq(2)
 				expect(body['projects'].first['assignment']).to_not include('description')
 				expect(body['projects'].first['lecturer']).to include('id')
+			end
+
+			it 'GET show includes students', { docs?: true, lecturer?: false } do
+				project = @assignment.projects[0]
+				project.reload
+				expect(project.students.count).to eq(4)
+
+				get :show, params: { id: project.id, includes: 'students' }
+
+				expect(status).to eq(200)
+				expect(body['project']['nickname']).to be_truthy
+				expect(body['project']['students'].length).to eq project.students.count
 			end
 
 			it 'Includes::ProjectStudentSerializer returns the nickname too' do
