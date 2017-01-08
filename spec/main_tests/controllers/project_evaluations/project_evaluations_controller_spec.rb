@@ -8,7 +8,7 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 		@lecturer = get_lecturer_with_units_assignments_projects
 		@student = FactoryGirl.create(:student)
 		@project = @lecturer.projects.first
-		@project.students << @student
+		create :students_project, student: @student, project: @project
 		now = DateTime.now
 		@project.assignment.start_date = now
 		@project.assignment.end_date = now + 1.month

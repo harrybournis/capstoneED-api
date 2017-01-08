@@ -53,7 +53,7 @@ RSpec.describe Project, type: :model do
 			it 'destroys StudentTeams on destroy' do
 				assignment = FactoryGirl.create(:assignment_with_projects)
 				@project = assignment.projects.first
-				2.times { @project.students << FactoryGirl.create(:student) }
+				2.times { create :students_project, student: create(:student), project: @project }#@project.students << FactoryGirl.create(:student) }
 				students_count = Student.all.size
 				expect(JoinTables::StudentsProject.all.count).to eq(2)
 				expect { Project.destroy(@project.id) }.to change { JoinTables::StudentsProject.all.count }.by(-2)
@@ -99,8 +99,8 @@ RSpec.describe Project, type: :model do
 				student1 = FactoryGirl.create(:student)
 				student2 = FactoryGirl.create(:student)
 
-				project.students << student1
-				project.students << student2
+				create :students_project, student: student1, project: project
+				create :students_project, student: student2, project: project
 				student_members = project.student_members
 
 				student_members.each do |student|

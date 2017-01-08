@@ -30,7 +30,8 @@ RSpec.describe ProjectEvaluation, type: :model do
 
 		pe = FactoryGirl.build(:project_evaluation, iteration_id: iteration.id)
 		pe.project = project
-		pe.project.students << pe.user
+		#pe.project.students << pe.user
+		create :students_project, student: pe.user, project: pe.project
 		expect(pe.save).to be_truthy
 	end
 
@@ -72,7 +73,8 @@ RSpec.describe ProjectEvaluation, type: :model do
 		Timecop.travel(now + 1.days) do
 			pe = FactoryGirl.build(:project_evaluation)
 			pe.project = project
-			pe.project.students << pe.user
+			#pe.project.students << pe.user
+			create :students_project, student: pe.user, project: pe.project
 			pe.iteration = iteration
 
 			expect(pe.save).to be_truthy
@@ -145,7 +147,8 @@ RSpec.describe ProjectEvaluation, type: :model do
 
 		Timecop.travel(now + 3.days) do
 			user = FactoryGirl.create(:student)
-			project.students << user
+			#project.students << user
+			create :students_project, student: user, project: project
 			pe3 = ProjectEvaluation.new(project_id: project.id, iteration_id: iteration.id, percent_complete: 14, user_id: user.id, feeling_id: feeling.id)
 
 			expect(pe3.save).to be_truthy

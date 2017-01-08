@@ -9,8 +9,10 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 		@student = FactoryGirl.create(:student_with_password).process_new_record
 		@student.save
 		@student.confirm
-		@lecturer.projects.first.students << @student
-		@lecturer.projects.last.students 	<< @student
+		#@lecturer.projects.first.students << @student
+		#@lecturer.projects.last.students 	<< @student
+		create :students_project, student: @student, project: @lecturer.projects.first
+		create :students_project, student: @student, project: @lecturer.projects.last
 	end
 
 	context 'Student' do
@@ -23,16 +25,6 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 		end
 
 		describe 'POST enrol' do
-
-			it 'creates a new StudentsProject instance' do
-				project = FactoryGirl.create(:project)
-				expect {
-					post :enrol, params: { enrollment_key: project.enrollment_key, id: project.id }
-				}.to change { JoinTables::StudentsProject.all.count }.by(1)
-				expect(status).to eq(201)
-				@student.reload
-				expect(@student.projects.include? project).to be_truthy
-			end
 
 			it 'creates a new StudentsProject instance with nickname', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
 				project = FactoryGirl.create(:project)
@@ -65,7 +57,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 
 			it 'responds with 403 forbidden if they try to enrol on the same project twice' do
 				expect {
-					post :enrol, params: { enrollment_key: @student.projects[0].enrollment_key, id: @student.projects[0].id }
+					post :enrol, params: { enrollment_key: @student.projects[0].enrollment_key, id: @student.projects[0].id, nickname: 'batman' }
 				}.to_not change { JoinTables::StudentsProject.all.count }
 				expect(status).to eq(403)
 				expect(errors['base'].first).to eq('Student can not exist in the same Project twice')
@@ -76,7 +68,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 				@student.assignments[0].projects << project
 				expect(@student.projects.include? project).to be_falsy
 				expect {
-					post :enrol, params: { enrollment_key: project.enrollment_key, id: project.id }
+					post :enrol, params: { enrollment_key: project.enrollment_key, id: project.id, nickname: 'batman' }
 				}.to_not change { JoinTables::StudentsProject.all.count }
 				expect(status).to eq(403)
 				expect(errors['base'].first).to eq('Student has already enroled in a different Project for this Assignment')
@@ -95,7 +87,8 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 
 			it 'responds with 403 forbidden if student not enrolled in project' do
 				project = FactoryGirl.create(:project)
-				project.students << FactoryGirl.create(:student)
+				#project.students << FactoryGirl.create(:student)
+				create :students_project, student: create(:student), project: project
 
 				patch :update_nickname, params: { id: project.id, nickname: 'nicname' }
 
@@ -134,6 +127,8 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 			it 'responds with 200 and the students logs', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
 				project = @student.projects[0]
 				sp = JoinTables::StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
+				sp.logs = []
+				expect(sp.save).to be_truthy
 				sp.add_log(FactoryGirl.build(:students_project).logs[0])
 				expect(sp.save).to be_truthy
 				sp.add_log(FactoryGirl.build(:students_project).logs[0])
@@ -188,7 +183,8 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 			it 'removes student from project if Lecturer is owner', { docs?: true, controller_class: "V1::ProjectsController" } do
 				@lecturer.reload
 				student = FactoryGirl.create(:student)
-				@lecturer.projects[0].students << student
+				#@lecturer.projects[0].students << student
+				create :students_project, student: student, project: @lecturer.projects[0]
 
 				expect {
 					delete :remove_student, params: { id: @lecturer.projects[0].id, student_id: student.id }
@@ -206,7 +202,8 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 			it 'responds with 422 if student_id does not belong in project' do
 				project = FactoryGirl.create(:project)
 				other_student = FactoryGirl.create(:student)
-				project.students << other_student
+				#project.students << other_student
+				create :students_project, student: other_student, project: project
 				delete :remove_student, params: { id: @lecturer.projects[0].id, student_id: other_student.id }
 				expect(status).to eq(422)
 				expect(errors['base'][0]).to include("Can't find Student")
@@ -219,6 +216,8 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 			it 'responds with 200 and the students logs', { docs?: true, controller_class: "V1::ProjectsController" } do
 				project = @student.projects[0]
 				sp = JoinTables::StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
+				sp.logs = []
+				expect(sp.save).to be_truthy
 				sp.add_log(FactoryGirl.build(:students_project).logs[0])
 				expect(sp.save).to be_truthy
 				sp.add_log(FactoryGirl.build(:students_project).logs[0])

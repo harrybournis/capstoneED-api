@@ -14,7 +14,7 @@ RSpec.describe JoinTables::StudentsProject, type: :model do
 	it 'should validate that the student is not already part of the Project in a different team' do
 		student = FactoryGirl.create(:student)
 		assignment = FactoryGirl.create(:assignment_with_projects)
-		assignment.projects.first.students << student
+		create :students_project, student: student, project: assignment.projects[0]
 
 		students_project = JoinTables::StudentsProject.new(student_id: student.id, project_id: assignment.projects.last.id)
 		expect(students_project.valid?).to be_falsy

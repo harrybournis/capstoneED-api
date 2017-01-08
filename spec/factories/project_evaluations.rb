@@ -8,7 +8,7 @@ FactoryGirl.define do
 			unit = FactoryGirl.create(:unit, lecturer: lec)
 			assignment = FactoryGirl.create(:assignment, lecturer: lec, start_date: @now, end_date: @now + 1.month )
 			project = FactoryGirl.create(:project, assignment: assignment)
-			project.students << user
+			create :students_project, student: user, project: project
 			project
 		end
 		iteration { FactoryGirl.create(:iteration, assignment: project.assignment, start_date: @now, deadline: @now + 28.days) }

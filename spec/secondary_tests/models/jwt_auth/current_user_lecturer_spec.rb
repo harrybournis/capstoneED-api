@@ -16,7 +16,7 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 
 			@unit = FactoryGirl.create(:unit, lecturer: @user)
 			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @user)
-			3.times { @assignment.projects.first.students << FactoryGirl.build(:student) }
+			3.times { create :students_project, student: create(:student), project: @assignment.projects[0] }#@assignment.projects.first.students << FactoryGirl.build(:student) }
 		end
 
 		it 'loads the correct assignments' do
@@ -75,7 +75,7 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			@other_unit = FactoryGirl.create(:unit)
 			@unit = FactoryGirl.create(:unit, lecturer: @user)
 			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @user.units[0], lecturer: @user)
-			3.times { @assignment.projects.first.students << FactoryGirl.build(:student) }
+			3.times { create :students_project, student: create(:student), project: @assignment.projects[0] }#@assignment.projects.first.students << FactoryGirl.build(:student) }
 		end
 
 		it 'loads the correct units' do
@@ -178,9 +178,12 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			student = FactoryGirl.create(:student_confirmed)
 			student2 = FactoryGirl.create(:student_confirmed)
 			student3 = FactoryGirl.create(:student_confirmed)
-			project.students << student
-			project.students << student2
-			project.students << student3
+			#project.students << student
+			#project.students << student2
+			#project.students << student3
+			create :students_project, student: student, project: project
+			create :students_project, student: student2, project: project
+			create :students_project, student: student3, project: project
 			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student, submitted_for: student2)
 			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student, submitted_for: student3)
 			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student2, submitted_for: student)

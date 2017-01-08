@@ -18,15 +18,15 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			@assignment = FactoryGirl.create(:assignment)
 			@project = FactoryGirl.create(:project, assignment: @assignment)
 			@iteration = FactoryGirl.create(:iteration, assignment: @assignment)
-			@project.students << @student_for
-			@project.students << @student
-			@project.students << FactoryGirl.create(:student_confirmed)
+			create :students_project, student: @student_for, project: @project
+			create :students_project, student: @student, project: @project
+			create :students_project, student: create(:student_confirmed), project: @project
 			@pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
 
 			@irrelevant_team = FactoryGirl.create(:project)
 			@irrelevant_student = FactoryGirl.create(:student_confirmed)
-			4.times { @irrelevant_team.students << FactoryGirl.create(:student_confirmed) }
-			@irrelevant_team.students << @irrelevant_student
+			4.times {  create :students_project, student: create(:student_confirmed), project: @irrelevant_team } #@irrelevant_team.students << FactoryGirl.create(:student_confirmed) }
+			create :students_project, student: @irrelevant_student, project: @irrelevant_team
 		end
 
 		describe 'POST create' do
@@ -71,11 +71,11 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			@student4 = FactoryGirl.create(:student_confirmed)
 			@student5 = FactoryGirl.create(:student_confirmed)
 			@project = FactoryGirl.create(:project, assignment: @assignment)
-			@project.students << @student
-			@project.students << @student2
-			@project.students << @student3
-			@project.students << @student4
-			@project.students << @student5
+			create :students_project, student: @student, project: @project
+			create :students_project, student: @student2, project: @project
+			create :students_project, student: @student3, project: @project
+			create :students_project, student: @student4, project: @project
+			create :students_project, student: @student5, project: @project
 
 			Timecop.travel(@iteration.start_date + 1.minute) do
 				@peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)

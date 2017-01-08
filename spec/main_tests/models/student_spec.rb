@@ -36,7 +36,8 @@ RSpec.describe Student, type: :model do
 		assignment = FactoryGirl.create(:assignment_with_projects)
 		@project = assignment.projects.first
 		student = FactoryGirl.create(:student)
-		@project.students << student
+		#@project.students << student
+		create :students_project, student: student, project: @project
 		team_count = Project.all.size
 		expect(JoinTables::StudentsProject.all.count).to eq(1)
 		expect { student.destroy }.to change { JoinTables::StudentsProject.all.count }.by(-1)
@@ -49,12 +50,12 @@ RSpec.describe Student, type: :model do
 		project1 = FactoryGirl.create(:project)
 		project3 = FactoryGirl.create(:project)
 		teammate = FactoryGirl.create(:student_confirmed)
-		3.times { project1.students << FactoryGirl.create(:student_confirmed) }
-		project1.students << @user
-		project1.students << teammate
-		3.times { project3.students << FactoryGirl.create(:student_confirmed) }
-		project3.students << @user
-		project3.students << teammate
+		3.times { create :students_project, student: create(:student_confirmed), project: project1 }#project1.students << FactoryGirl.create(:student_confirmed) }
+		create :students_project, student: @user, project: project1
+		create :students_project, student: teammate, project: project1
+		3.times { create :students_project, student: create(:student_confirmed), project: project3 } #project3.students << FactoryGirl.create(:student_confirmed) }
+		create :students_project, student: @user, project: project3
+		create :students_project, student: teammate, project: project3
 
 		expect(@user.projects.length).to eq 2
 		expect(@user.teammates.length).to eq 7
@@ -78,8 +79,6 @@ RSpec.describe Student, type: :model do
 	it '#nickname_for_project_id returns nil if student is not in the project' do
 		student = FactoryGirl.create(:student)
 		project = FactoryGirl.create(:project)
-		#sp = JoinTables::StudentsProject.new(project_id: project.id, student_id: student.id)
-		#sp2 = JoinTables::StudentsProject.new(project_id: project2.id, student_id: student.id, nickname: nickname2)
 
 		expect(student.nickname_for_project_id(project.id)).to eq(nil)
 	end

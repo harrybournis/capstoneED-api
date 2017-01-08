@@ -5,9 +5,6 @@ RSpec.describe V1::IterationsController, type: :controller do
 		before(:all) do
 			@controller = V1::IterationsController.new
 			@user = FactoryGirl.create(:lecturer)
-			# mock_request = MockRequest.new(valid = true, @user)
-			# request.cookies['access-token'] = mock_request.cookies['access-token']
-			# request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
 			@unit = FactoryGirl.create(:unit, lecturer_id: @user.id)
 			2.times { FactoryGirl.create(:assignment_with_projects, unit_id: @unit.id, lecturer_id: @user.id)}
@@ -44,7 +41,7 @@ RSpec.describe V1::IterationsController, type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
 			Assignment.third.projects << FactoryGirl.create(:project)
-			Assignment.third.projects.first.students << @user
+			create :students_project, student: @user, project: Assignment.third.projects.first
 
 			get :index, params: { assignment_id: Assignment.third.id }
 			expect(status).to eq(200)
@@ -64,7 +61,7 @@ RSpec.describe V1::IterationsController, type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
 			Assignment.third.projects << FactoryGirl.create(:project)
-			Assignment.third.projects.first.students << @user
+			create :students_project, student: @user, project: Assignment.third.projects.first
 
 			get :show, params: { id: Assignment.third.iterations[0].id }
 			expect(status).to eq(200)
@@ -109,7 +106,7 @@ RSpec.describe V1::IterationsController, type: :controller do
 			@student.save
 			@student.confirm
 			@project = FactoryGirl.create(:project, assignment_id: @assignment.id)
-			@project.students << @student
+			create :students_project, student: @student, project: @project
 			extension = FactoryGirl.create(:extension, project_id: @project.id, deliverable_id: pa_form1.id)
 			extension2 = FactoryGirl.create(:extension, project_id: @project.id, deliverable_id: pa_form2.id)
 

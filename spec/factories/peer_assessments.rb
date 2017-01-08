@@ -8,8 +8,8 @@ FactoryGirl.define do
 
     after :build do |obj|
     	project = FactoryGirl.create(:project, assignment: obj.pa_form.assignment)
-      project.students << obj.submitted_by unless obj.submitted_by.teammates.include? obj.submitted_for
-      project.students << obj.submitted_for unless obj.submitted_for.teammates.include? obj.submitted_by
+      create(:students_project, student: obj.submitted_by, project: project) unless obj.submitted_by.teammates.include? obj.submitted_for
+      create(:students_project, student: obj.submitted_for, project: project) unless obj.submitted_for.teammates.include? obj.submitted_by
     end
 
 		factory :peer_assessment_unsubmitted do

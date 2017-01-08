@@ -11,7 +11,7 @@ RSpec.describe 'Includes', type: :controller do
 			@lecturer.confirm
 			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
 			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @lecturer)
-			3.times { @assignment.projects.first.students << FactoryGirl.build(:student) }
+			3.times { create :students_project, student: create(:student), project: @assignment.projects[0] }
 			expect(@assignment.projects.length).to eq(2)
 			expect(@assignment.projects.first.students.length).to eq(3)
 		end

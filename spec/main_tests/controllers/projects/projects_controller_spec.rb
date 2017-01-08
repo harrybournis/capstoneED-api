@@ -8,8 +8,8 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		@student = FactoryGirl.create(:student_with_password).process_new_record
 		@student.save
 		@student.confirm
-		@lecturer.projects.first.students << @student
-		@lecturer.projects.last.students 	<< @student
+		create :students_project, student: @student, project: @lecturer.projects.first
+		create :students_project, student: @student, project: @lecturer.projects.last
 	end
 
 	context 'Student' do

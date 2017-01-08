@@ -17,8 +17,9 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			lecturer = FactoryGirl.create(:lecturer)
 			@unit = FactoryGirl.create(:unit, lecturer: lecturer)
 			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: lecturer)
-			3.times { @assignment.projects.first.students << FactoryGirl.build(:student) }
-			Project.first.students << @user
+			3.times { create :students_project, student: create(:student), project: @assignment.projects[0] } #@assignment.projects.first.students << FactoryGirl.build(:student) }
+			#Project.first.students << @user
+			create :students_project, student: @user, project: Project.first
 			expect(@user.assignments.length).to eq(1)
 		end
 
@@ -81,7 +82,8 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			@device = decoded_token.first['device']
 			@current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
-			@assignment.projects.first.students << @user
+			#@assignment.projects.first.students << @user
+			create :students_project, student: @user, project: @assignment.projects[0]
 		end
 
 		it 'loads the correct units' do
@@ -125,7 +127,8 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			@unit = FactoryGirl.create(:unit, lecturer: @user)
 			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @user)
 			@project = FactoryGirl.create(:project, assignment_id: @assignment.id)
-			@project.students << @student
+			#@project.students << @student
+			create :students_project, student: @student, project: @project
 		end
 
 		it 'returns correct pa_forms' do
@@ -182,10 +185,14 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			student2 = FactoryGirl.create(:student_confirmed)
 			student3 = FactoryGirl.create(:student_confirmed)
 			project = FactoryGirl.create(:project, assignment: assignment)
-			project.students << @user
-			project.students << student
-			project.students << student2
-			project.students << student3
+			#project.students << @user
+			#project.students << student
+			#project.students << student2
+			#project.students << student3
+			create :students_project, student: @user, project: project
+			create :students_project, student: student, project: project
+			create :students_project, student: student2, project: project
+			create :students_project, student: student3, project: project
 			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student)
 			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student2)
 			peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student3)
@@ -214,7 +221,8 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			@unit = FactoryGirl.create(:unit, lecturer: @user)
 			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @user)
 			@team = FactoryGirl.create(:project, assignment_id: @assignment.id)
-			@team.students << @student
+			#@team.students << @student
+			create :students_project, student: @student, project: @team
 		end
 
 		it 'returns the associated extensions' do

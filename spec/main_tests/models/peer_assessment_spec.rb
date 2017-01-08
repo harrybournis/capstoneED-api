@@ -20,8 +20,8 @@ RSpec.describe PeerAssessment, type: :model do
 		@student_for = FactoryGirl.create(:student_confirmed)
 		@pa_form  = FactoryGirl.create(:pa_form)
 		@project = FactoryGirl.create(:project, assignment: @pa_form.assignment)
-		@project.students << @student_by
-		@project.students << @student_for
+		create :students_project, student: @student_by, project: @project
+		create :students_project, student: @student_for, project: @project
 	end
 
 	it 'works' do
@@ -122,7 +122,7 @@ RSpec.describe PeerAssessment, type: :model do
 		it 'submitted_for is not in the same Project as user' do
 			irrelevant_project = FactoryGirl.create(:project)
 			irrelevant_student = FactoryGirl.create(:student_confirmed)
-			irrelevant_project.students << irrelevant_student
+			create :students_project, student: irrelevant_student, project: irrelevant_project
 
 			peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: irrelevant_student,
 				answers: [{ question_id: 1, answer: 'answ' }])
@@ -158,12 +158,12 @@ RSpec.describe PeerAssessment, type: :model do
 		before :all do
 			@pa_form2  = FactoryGirl.create(:pa_form)
 			@project2 = FactoryGirl.create(:project, assignment: @pa_form2.assignment)
-			@project2.students << @student_by
-			@project2.students << @student_for
+			create :students_project, student: @student_by, project: @project2
+			create :students_project, student: @student_for, project: @project2
 			@student_by2 = FactoryGirl.create(:student_confirmed)
 			@student_for2 = FactoryGirl.create(:student_confirmed)
-			@project.students << @student_by2
-			@project.students << @student_for2
+			create :students_project, student: @student_by2, project: @project
+			create :students_project, student: @student_for2, project: @project
 
 			pa = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
 				answers: [{ question_id: 1, answer: 'answ' }])

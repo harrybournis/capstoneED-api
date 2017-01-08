@@ -11,13 +11,13 @@ RSpec.describe 'Includes', type: :controller do
 			@lecturer.confirm
 			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
 			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @lecturer)
-			3.times { @assignment.projects.first.students << FactoryGirl.build(:student) }
+			3.times { create :students_project, student: create(:student), project: @assignment.projects[0] }
 			expect(@assignment.projects.length).to eq(2)
 			expect(@assignment.projects.first.students.length).to eq(3)
 
 			@unit2 = FactoryGirl.create(:unit, lecturer: @lecturer)
 			@assignment2 = FactoryGirl.create(:assignment_with_projects, unit: @unit2, lecturer: @lecturer)
-			3.times { @assignment2.projects.first.students << FactoryGirl.build(:student) }
+			3.times { create :students_project, student: create(:student), project: @assignment2.projects[0] }
 			expect(@assignment2.projects.length).to eq(2)
 			expect(@assignment2.projects.first.students.length).to eq(3)
 
@@ -25,8 +25,10 @@ RSpec.describe 'Includes', type: :controller do
 			@student.save
 			@student.confirm
 
-			@assignment.projects[0].students << @student
-			@assignment2.projects[0].students << @student
+			#@assignment.projects[0].students << @student
+			#@assignment2.projects[0].students << @student
+			create :students_project, student: @student, project: @assignment.projects[0]
+			create :students_project, student: @student, project: @assignment2.projects[0]
 		end
 
 		before(:each) do

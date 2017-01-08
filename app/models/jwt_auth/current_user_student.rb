@@ -36,7 +36,7 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 			options[:includes].delete("students")
 			Project.joins(:students_projects).where(['students_projects.student_id = ?', @id]).eager_load(options[:includes], students_projects: [:student] )
 		else
-			Project.joins(:students_projects).where(['students_projects.student_id = ?', @id]).eager_load(options[:includes])
+			Project.joins(:students_projects).where(['students_projects.student_id = ?', @id]).eager_load(options[:includes])#, students_projects: [:student])
 		end
 	end
 
@@ -89,7 +89,8 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 	end
 
 	def iteration_associations
-		[]
+		#[]
+		%w(pa_form)
 	end
 
 	def pa_form_associations
