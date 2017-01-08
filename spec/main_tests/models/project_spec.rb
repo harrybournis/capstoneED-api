@@ -22,6 +22,25 @@ RSpec.describe Project, type: :model do
 			it { should validate_uniqueness_of(:enrollment_key) }
 			it { should validate_uniqueness_of(:project_name).scoped_to(:assignment_id).case_insensitive }
 
+			it 'vaidates uniqueness of team_name for assignment' do
+				project = build :project
+				expect(project.save).to be_truthy
+
+				# different assignment, same team_name. should be correct
+				project2 = build :project, team_name: project.team_name
+				expect(project2.save).to be_truthy
+
+				# same assignment, same team_name, should be false
+				project3 = build :project, assignment: project.assignment, team_name: project.team_name
+				expect(project3.save).to be_falsy
+				expect(project3.errors[:team_name][0]).to include('taken')
+
+				# same assignment, same team_name all capitals, should be false
+				project4 = build :project, assignment: project.assignment, team_name: project.team_name.upcase
+				expect(project4.save).to be_falsy
+				expect(project4.errors[:team_name][0]).to include('taken')
+			end
+
 			it 'validates presence of team_name' do
 				project = create :project
 				expect(project.save).to be_truthy

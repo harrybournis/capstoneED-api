@@ -23,6 +23,7 @@ class Project < ApplicationRecord
   validates_presence_of 	:project_name, :assignment, :team_name, :description
   validates_uniqueness_of :id, :enrollment_key
   validates_uniqueness_of :project_name, scope: :assignment_id, case_sensitive: false
+  validates_uniqueness_of :team_name, scope: :assignment_id, case_sensitive: false
 
   before_validation :generate_enrollment_key, :generate_team_name
 

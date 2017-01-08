@@ -125,10 +125,10 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 
 			old_exp = token.exp
 			expect(@decoded_token4.first['exp'] >= token.exp.to_i).to_not be_truthy
-			post :refresh
+			expect {
+				post :refresh
+			}.to_not change { token.exp }
 			expect(response.status).to eq(401)
-			token.reload
-			expect(token.exp).to eq(old_exp)
 		end
 	end
 end
