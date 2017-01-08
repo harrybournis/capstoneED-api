@@ -1,5 +1,28 @@
 class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 
+	# Helper method to avoid checking the type
+	# Returns false
+	def lecturer?
+		false
+	end
+
+	# Helper method to avoid checking the type
+	# Returns true
+	def student?
+		true
+	end
+
+	def nickname_for_project_id project_id
+		nickname = JoinTables::StudentsProject.select(:nickname).where(project_id: project_id, student_id: @id)[0].nickname
+		nickname ? nickname : load.full_name
+	rescue
+		nil
+	end
+
+
+	# Override associations
+	#
+
 	def assignments(options={})
 		Assignment.joins(:students_projects).where(['students_projects.student_id = ?', @id]).eager_load(options[:includes]).distinct
 	end
@@ -54,7 +77,7 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 	#
 	# ##
 	def assignment_associations
-		%w(lecturer unit projects iterations students pa_forms)
+		%w(lecturer unit iterations)
 	end
 
 	def unit_associations

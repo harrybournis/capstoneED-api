@@ -43,24 +43,19 @@ RSpec.describe 'Includes', type: :controller do
 
 			context 'Valid' do
 
-				it 'makes only one query for projects and unit' do
+				it 'makes only one query for iterations and unit' do
 					expect {
 						get :show, params: { id: @assignment.id }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200) #1
 
 					expect {
-						get :show, params: { id: @assignment.id, includes: 'projects,unit' }
+						get :show, params: { id: @assignment.id, includes: 'iterations,unit' }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200) #2
 
 					expect {
-						get :show, params: { id: @assignment.id, includes: 'projects', compact: true }
-					}.to make_database_queries(count: 1)
-					expect(status).to eq(200)
-
-					expect {
-						get :index, params: { includes: 'projects,unit' }
+						get :show, params: { id: @assignment.id, includes: 'iterations', compact: true }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200)
 				end

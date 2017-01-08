@@ -23,11 +23,20 @@ RSpec.describe V1::ProjectsController, type: :controller do
 
 		describe 'GET index' do
 			it "returns only the student's projects", { docs?: true, lecturer?: false } do |example|
-
 				get :index
 				expect(status).to eq(200)
 				expect(parse_body['projects'].length).to eq(@student.projects.length)
 				expect(@student.projects.length).to_not eq(Project.all.length)
+			end
+
+			it "returns the student's nickname for all projects" do
+				get :index
+
+				expect(status).to eq(200)
+				body['projects'].each do |project|
+					expect(project['nickname']).to be_truthy
+					expect(project['nickname']).to eq @student.nickname_for_project_id project['id']
+				end
 			end
 		end
 
@@ -40,6 +49,14 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				project = FactoryGirl.create(:project)
 				get :show, params: { id: project.id }
 				expect(status).to eq(403)
+			end
+
+			it "returns the student's nickname for the project" do
+				get :show, params: { id: @student.projects.first.id }
+
+				expect(status).to eq(200)
+				expect(body['project']['nickname']).to be_truthy
+				expect(body['project']['nickname']).to eq @student.nickname_for_project_id @student.projects[0].id
 			end
 		end
 

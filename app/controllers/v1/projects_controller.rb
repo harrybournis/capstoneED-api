@@ -11,7 +11,7 @@ class V1::ProjectsController < ApplicationController
 	# GET /projects
 	# Only for Students
 	def index
-		serialize_collection current_user.projects(includes: includes_array), :ok
+		serialize_collection current_user.projects(includes: includes_array), :ok, ProjectStudentSerializer
 	end
 
 	# GET /projects?assignment_id=
@@ -23,7 +23,11 @@ class V1::ProjectsController < ApplicationController
 
 	# GET /projects/:id
 	def show
-		serialize_object @project, :ok
+		if current_user.student?
+			serialize_object @project, :ok, ProjectStudentSerializer
+		else
+			serialize_object @project, :ok
+		end
 	end
 
 	# POST /projects

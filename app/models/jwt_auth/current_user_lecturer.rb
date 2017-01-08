@@ -1,5 +1,21 @@
 class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 
+	# Helper method to avoid checking the type
+	# Returns true
+	def lecturer?
+		true
+	end
+
+	# Helper method to avoid checking the type
+	# Returns false
+	def student?
+		false
+	end
+
+
+	# Override associations
+	#
+
 	def assignments(options={})
 		Assignment.eager_load(options[:includes]).where(lecturer_id: @id)
 	end
