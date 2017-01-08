@@ -30,6 +30,7 @@ class JoinTables::StudentsProject < ApplicationRecord
 		end
 	end
 
+
 	private
 
 		# student_id validation

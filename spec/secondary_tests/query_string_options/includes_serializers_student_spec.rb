@@ -25,8 +25,6 @@ RSpec.describe 'Includes', type: :controller do
 			@student.save
 			@student.confirm
 
-			#@assignment.projects[0].students << @student
-			#@assignment2.projects[0].students << @student
 			create :students_project, student: @student, project: @assignment.projects[0]
 			create :students_project, student: @student, project: @assignment2.projects[0]
 		end
@@ -51,9 +49,11 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body['projects'].first['lecturer']).to include('id')
 			end
 
-			it 'GET without students' do
+			it 'Includes::ProjectStudentSerializer returns the nickname too' do
 				get :index, params: { includes: 'assignment' }
-				#binding.pry
+
+				expect(status).to eq 200
+				expect(body['projects'][0]['nickname']).to be_truthy
 			end
 		end
 

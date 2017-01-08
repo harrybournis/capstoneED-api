@@ -8,7 +8,9 @@ class PAFormSerializer < Base::BaseSerializer
 	end
 
 	def extension_until_condition
-		scope.type == 'Student' && @extension = Extension.where(deliverable_id: object.id, project_id: scope.projects.ids)[0]
+		#scope.type == 'Student' && @extension = Extension.where(deliverable_id: object.id, project_id: scope.projects.ids)[0]
+		scope.type == 'Student' && @extension =
+			Extension.where(deliverable_id: object.id, project_id: Project.joins(:students_projects).select(:id).where(['students_projects.student_id = ?', scope.id]))[0]
 	end
 
 	def extension_condition

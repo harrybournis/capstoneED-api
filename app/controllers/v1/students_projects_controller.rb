@@ -7,21 +7,17 @@ class V1::StudentsProjectsController < ApplicationController
   before_action :set_students_project_if_associated, only: [:update_nickname, :update_logs, :index_logs_student]
 
 	# POST /projects/enrol
-	# Needs enrollemnt_key and id in params
+	# Needs enrollment_key and id in params
 	def enrol
 		unless @project = Project.find_by(id: params[:id])
 			render json: format_errors({id: ['does not exist']}), status: :unprocessable_entity
 			return
 		end
 
-		if @project.enrollment_key == params[:enrollment_key]
-			if @project.enrol(current_user.load, params[:nickname])
-				render json: @project, status: :created
-			else
-				render json: format_errors(@project.errors), status: :forbidden
-			end
+		if @project.enrol(current_user.load, params[:enrollment_key], params[:nickname])
+			render json: @project, serializer: ProjectStudentSerializer, status: :created
 		else
-			render json: format_errors({ enrollment_key: ['is invalid'] }), status: :unprocessable_entity
+			render json: format_errors(@project.errors), status: :forbidden
 		end
 	end
 

@@ -2,14 +2,19 @@ module Project::Enrollable
 
 	extend ActiveSupport::Concern
 
-  # Add a student to a Team with validations
-  def enrol(student, nickname = nil)
+  # Add a student to a Project with validations
+  def enrol(student, key, nickname)
+    unless key == enrollment_key
+      errors.add(:enrollment_key, "is invalid")
+      return false
+    end
+
   	enrolment = JoinTables::StudentsProject.new(project: self, student: student, nickname: nickname)
 
   	if enrolment.save
   		true
   	else
-			enrolment.errors.full_messages.each { |error| errors[:base] << error }
+			enrolment.errors.messages.each { |attr, message| errors.add attr, message[0] }
 			false
 		end
   end

@@ -33,25 +33,37 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 					post :enrol, params: { enrollment_key: project.enrollment_key, id: project.id, nickname: nickname }
 				}.to change { JoinTables::StudentsProject.all.count }.by(1)
 				expect(status).to eq(201)
+				expect(body['project']['nickname']).to be_truthy
 				@student.reload
 				expect(@student.projects.include? project).to be_truthy
-				expect(@student.nickname_for_project_id(project.id)).to eq(nickname)
+				expect(@student.nickname_for_project_id(project.id)).to eq(body['project']['nickname'])
+			end
+
+			it 'responds with 403 unprocessable_entity if no nickname', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
+				project = FactoryGirl.create(:project)
+				nickname = "giorgakis"
+				expect {
+					post :enrol, params: { enrollment_key: project.enrollment_key, id: project.id }
+				}.to change { JoinTables::StudentsProject.all.count }.by(0)
+				expect(status).to eq(403)
+				expect(errors['nickname'][0]).to include 'blank'
 			end
 
 			it 'responds with 422 unprocessable_entity if id does not exist' do
 				project = FactoryGirl.create(:project)
 				expect {
-					post :enrol, params: { enrollment_key: project.enrollment_key, id: 474774373 }
+					post :enrol, params: { enrollment_key: project.enrollment_key, id: 474774373, nickname: 'batman' }
 				}.to_not change { JoinTables::StudentsProject.all.count }
+				expect(status).to eq(422)
 				expect(errors['id'].first).to include('exist')
 			end
 
-			it 'responds with 422 unprocessable_entity if wrong enrollment key', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
+			it 'responds with 403 unprocessable_entity if wrong enrollment key', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
 				project = FactoryGirl.create(:project)
 				expect {
-					post :enrol, params: { enrollment_key: 'invalidkey', id: project.id }
+					post :enrol, params: { enrollment_key: 'invalidkey', id: project.id, nickname: 'batman' }
 				}.to_not change { JoinTables::StudentsProject.all.count }
-				expect(status).to eq(422)
+				expect(status).to eq(403)
 				expect(errors['enrollment_key'].first).to eq('is invalid')
 			end
 
@@ -60,7 +72,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 					post :enrol, params: { enrollment_key: @student.projects[0].enrollment_key, id: @student.projects[0].id, nickname: 'batman' }
 				}.to_not change { JoinTables::StudentsProject.all.count }
 				expect(status).to eq(403)
-				expect(errors['base'].first).to eq('Student can not exist in the same Project twice')
+				expect(errors['student_id'].first).to eq('can not exist in the same Project twice')
 			end
 
 			it 'responds with 403 forbidden if they try to enrol on two projects for the same assignment' do
@@ -71,7 +83,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 					post :enrol, params: { enrollment_key: project.enrollment_key, id: project.id, nickname: 'batman' }
 				}.to_not change { JoinTables::StudentsProject.all.count }
 				expect(status).to eq(403)
-				expect(errors['base'].first).to eq('Student has already enroled in a different Project for this Assignment')
+				expect(errors['student_id'].first).to include('already enroled')
 			end
 		end
 
