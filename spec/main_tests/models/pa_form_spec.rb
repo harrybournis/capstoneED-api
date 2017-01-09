@@ -26,6 +26,33 @@ RSpec.describe PAForm, type: :model do
 		expect(pa_form.questions[1]).to eq({ 'question_id' => 2, 'text' => "2nd" })
 	end
 
+	it 'translates the start_date and deadline to start_offset and deadline' do
+		pa = PAForm.new attributes_for(:pa_form).except(:start_offset, :end_offset).merge!(start_date: DateTime.now + 2.day, deadline: DateTime.now + 4.days, iteration_id: create(:iteration).id)
+
+		expect(pa.save).to be_truthy
+	end
+
+	it '#start_date= sets start_offset' do
+		pa = PAForm.new attributes_for(:pa_form).except(:start_offset).merge! iteration_id: create(:iteration).id
+		expect(pa.start_offset).to be_falsy
+		start_date = pa.iteration.deadline + pa.end_offset - 1.day
+
+		pa.start_date = start_date
+		expect(pa.save).to be_truthy
+		expect(pa.start_offset).to be_truthy
+		expect(pa.start_offset).to eq start_date.to_i - pa.iteration.deadline.to_i
+	end
+
+	it '#deadline= sets end_offset' do
+		pa = PAForm.new attributes_for(:pa_form).except(:end_offset).merge! iteration_id: create(:iteration).id
+		expect(pa.end_offset).to be_falsy
+		deadline = pa.iteration.deadline + pa.start_offset + 1.day
+
+		pa.deadline = deadline
+		expect(pa.save).to be_truthy
+		expect(pa.end_offset).to be_truthy
+		expect(pa.end_offset).to eq deadline.to_i - pa.iteration.deadline.to_i
+	end
 
 	it '#store_questions formats questions in the correct form' do
 		questions = ['What?', 'Who?', 'When?', 'Where?']

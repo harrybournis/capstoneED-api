@@ -2,8 +2,8 @@ class PAForm < Deliverable
 	# Attributes
 	# iteration_id 	:integer
 	# questions 		:jsonb { question_id => question_text }
-	# start_offset 	:datetime (start_date)
-	# end_offset 		:datetime (deadline)
+	# start_offset 	:integer (start_date)
+	# end_offset 		:integer (deadline)
 
 	# Associations
 	belongs_to 	:iteration
@@ -19,6 +19,8 @@ class PAForm < Deliverable
 	validate 								:start_date_is_in_the_future
 	validate 								:deadline_is_after_start_date
 
+	before_validation :set_start_offset_end_offset
+
 
 	# Class Methods
 
@@ -30,6 +32,8 @@ class PAForm < Deliverable
 
 	# Instance Methods
 
+	# Get the start date of the PAForm. It is calculated form the iteration's
+	# deadline.
 	def start_date
 		if iteration.present?
 			Time.at(iteration.deadline.to_i + start_offset.to_i).to_datetime
@@ -38,6 +42,8 @@ class PAForm < Deliverable
 		end
 	end
 
+	# Get the deadline of the PAForm. It is calculated form the iteration's
+	# deadline.
 	def deadline
 		if iteration.present?
 			Time.at(iteration.deadline.to_i + end_offset.to_i).to_datetime
@@ -46,12 +52,19 @@ class PAForm < Deliverable
 		end
 	end
 
-	def start_date=(value)
-		#self.start_offset = value.to_i
+	# Get the start_date_validate variable, that will be used to calculate the start offset
+	# before saving.
+	def start_date= value
+		@start_date_validate = value.to_datetime.to_i
+	rescue
 		nil
 	end
 
-	def deadline=(value)
+	# Get the deadline_validate variable, that will be used to calculate the start offset
+	# before saving.
+	def deadline= value
+		@deadline_validate = value.to_datetime.to_i
+	rescue
 		nil
 	end
 
@@ -94,7 +107,17 @@ class PAForm < Deliverable
 		end
 	end
 
+
 	private
+
+		# If translates the values of start_date and deadline to start_offset and end_offset.
+		# Run before validations
+		def set_start_offset_end_offset
+			if iteration.present?
+				self.end_offset 	= @deadline_validate - iteration.deadline.to_i if @deadline_validate
+				self.start_offset = @start_date_validate - iteration.deadline.to_i if @start_date_validate
+			end
+		end
 
 		# Validation of the questions format
 		#

@@ -28,8 +28,7 @@ class Student < User
 	# returns the Student's nickname for the provided project
 	# Returns the full_name if no nickname is found
 	def nickname_for_project_id(project_id)
-		nickname  = JoinTables::StudentsProject.select(:nickname).where(project_id: project_id, student_id: self.id)[0].nickname
-		nickname ? nickname : full_name
+		JoinTables::StudentsProject.select(:nickname).where(project_id: project_id, student_id: self.id)[0].nickname
 	rescue
 		nil
 	end

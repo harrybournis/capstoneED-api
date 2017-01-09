@@ -13,8 +13,7 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
 	end
 
 	def nickname_for_project_id project_id
-		nickname = JoinTables::StudentsProject.select(:nickname).where(project_id: project_id, student_id: @id)[0].nickname
-		nickname ? nickname : load.full_name
+		JoinTables::StudentsProject.select(:nickname).where(project_id: project_id, student_id: @id)[0].nickname
 	rescue
 		nil
 	end
