@@ -3,7 +3,7 @@ class V1::AssignmentsController < ApplicationController
   before_action :allow_if_lecturer, only: [:index_with_unit, :create, :update, :destroy]
   before_action :validate_includes, only: [:index, :index_with_unit, :show], if: 'params[:includes]'
   before_action :delete_includes_from_params, only: [:update, :destroy]
-  before_action :set_project_if_associated, only: [:show, :update, :destroy]
+  before_action :set_assignment_if_associated, only: [:show, :update, :destroy]
 
 
   # GET /assignments
@@ -15,10 +15,12 @@ class V1::AssignmentsController < ApplicationController
   # Only Lecturers
   # Get the assignments of the specified unit_id. Unit must belong to Lecturer.
   def index_with_unit
-    if (@assignments = current_user.assignments(includes: params[:includes]).where(unit_id: params[:unit_id])).empty?
-      render_not_associated_with_current_user('Unit')
+    unless Unit.exists?(id: params[:unit_id], lecturer_id: current_user.id)
+      render_not_associated_with_current_user 'Unit'
       return false
     end
+
+    @assignments = current_user.assignments(includes: params[:includes]).where(unit_id: params[:unit_id])
     serialize_collection @assignments, :ok
   end
 
@@ -68,7 +70,7 @@ class V1::AssignmentsController < ApplicationController
 
     # Sets @assignment if it is asociated with the current user. Eager loads associations in the params[:includes].
     # Renders error if not associated and Halts execution
-    def set_project_if_associated
+    def set_assignment_if_associated
       unless @assignment = current_user.assignments(includes: includes_array).where(id: params[:id])[0]
         render_not_associated_with_current_user('Assignment')
         return false

@@ -50,6 +50,27 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 			expect(status).to eq(403)
 			expect(body['errors']['base'][0]).to include('You must be Lecturer to access this resource')
 		end
+
+		it 'responds with 204 if no assignments' do
+			lecturer = create :lecturer_confirmed
+			mock_request = MockRequest.new(valid = true, lecturer)
+			request.cookies['access-token'] = mock_request.cookies['access-token']
+			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+			get :index
+
+			expect(status).to eq 204
+		end
+
+		it 'retruns 204 if the unit has not assignments' do
+			unit = create :unit, lecturer: @user
+			expect(unit.assignments.count).to eq(0)
+			expect(unit.lecturer).to eq @user
+
+			get :index_with_unit, params: { unit_id: unit.id }
+
+			expect(status).to eq(204)
+		end
 	end
 
 	describe 'GET show' do
