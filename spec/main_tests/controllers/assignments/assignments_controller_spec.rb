@@ -32,12 +32,6 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 			expect(parse_body['assignments'].length).to eq(2)
 		end
 
-		it 'responds with 403 forbidden if unit is does not belong to current user' do
-			unit = FactoryGirl.create(:unit)
-			get :index_with_unit, params: { unit_id: unit.id }
-			expect(response.status).to eq(403)
-		end
-
 		it 'responds with 403 forbidden if the user is a student and unit_id is present in the params' do
 			@user = FactoryGirl.build(:student_with_password).process_new_record
 			@user.save
@@ -51,7 +45,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 			expect(body['errors']['base'][0]).to include('You must be Lecturer to access this resource')
 		end
 
-		it 'responds with 204 if no assignments' do
+		it 'index responds with 204 if no assignments' do
 			lecturer = create :lecturer_confirmed
 			mock_request = MockRequest.new(valid = true, lecturer)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -62,7 +56,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 			expect(status).to eq 204
 		end
 
-		it 'retruns 204 if the unit has not assignments' do
+		it 'index_with_unit retruns 204 if the unit has not assignments' do
 			unit = create :unit, lecturer: @user
 			expect(unit.assignments.count).to eq(0)
 			expect(unit.lecturer).to eq @user
@@ -70,6 +64,17 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 			get :index_with_unit, params: { unit_id: unit.id }
 
 			expect(status).to eq(204)
+		end
+
+		it 'index_with_unit returns 204 if the unit does not belong to lecturer' do
+			unit = create :unit
+			assignment = create :assignment, unit: unit, lecturer: unit.lecturer
+			expect(unit.assignments.count).to eq 1
+			expect(unit.lecturer_id).to_not eq @user.id
+
+			get :index_with_unit, params: { unit_id: unit.id }
+
+			expect(status).to eq 204
 		end
 	end
 

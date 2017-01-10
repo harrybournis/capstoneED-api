@@ -5,7 +5,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 
 	before(:all) do
 		@lecturer = get_lecturer_with_units_assignments_projects
-		@student = FactoryGirl.create(:student_with_password).process_new_record
+		@student = create(:student_with_password).process_new_record
 		@student.save
 		@student.confirm
 		create :students_project, student: @student, project: @lecturer.projects.first
@@ -46,7 +46,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				expect(status).to eq(200)
 				expect(@student.projects.find(parse_body['project']['id'])).to be_truthy
 
-				project = FactoryGirl.create(:project)
+				project = create(:project)
 				get :show, params: { id: project.id }
 				expect(status).to eq(403)
 			end
@@ -76,7 +76,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		describe 'POST create' do
 			it 'responds with 403 forbidden is user is student' do
 				expect {
-					post :create, params: FactoryGirl.attributes_for(:project, assignment_id: Assignment.first.id)
+					post :create, params: attributes_for(:project, assignment_id: Assignment.first.id)
 				}.to_not change { Project.all.count }
 				expect(status).to eq(403)
 			end
@@ -93,7 +93,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 			end
 
 			it 'responds with 403 if student is not member of the Project' do
-				project = FactoryGirl.create(:project)
+				project = create(:project)
 				expect {
 					patch :update, params: { id: project.id, project_name: 'Something' }
 				}.to_not change { Project.first.project_name }
@@ -152,9 +152,31 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				expect(parse_body['projects'].length).to eq(assignment.projects.length)
 			end
 
-			it 'responds with 403 forbidden if project does not belong to current user' do
-				assignment = FactoryGirl.create(:assignment)
-				get :index, params: { assignment_id: assignment.id }
+			it 'returns 204 if the assignment has no Projects' do
+				unit = create :unit, lecturer: @lecturer
+				assignment = create :assignment, lecturer: @lecturer
+				expect(assignment.projects.count).to eq 0
+				expect(assignment.lecturer).to eq @lecturer
+
+				get :index_with_assignment, params: { assignment_id: assignment.id }
+
+				expect(status).to eq(204)
+			end
+
+			it 'returns 204 the assignment does not belong to the user' do
+				unit = create :unit
+				assignment = create :assignment, lecturer: unit.lecturer
+				expect(assignment.projects.count).to eq 0
+				expect(assignment.lecturer).to_not eq @lecturer
+
+				get :index_with_assignment, params: { assignment_id: assignment.id }
+
+				expect(status).to eq(204)
+			end
+
+			it 'responds with 403 forbidden if no assignment_id in the params' do
+				assignment = create(:assignment)
+				get :index
 				expect(status).to eq(403)
 				expect(errors['base'].first).to include("Lecturers must provide a 'assignment_id' in the parameters for this route.")
 			end
@@ -166,7 +188,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				expect(status).to eq(200)
 				expect(@lecturer.projects.find(parse_body['project']['id'])).to be_truthy
 
-				project = FactoryGirl.create(:project)
+				project = create(:project)
 				get :show, params: { id: project.id }
 				expect(status).to eq(403)
 			end
@@ -175,15 +197,15 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		describe "POST create" do
 			it 'creates a new project if the current user is lecturer and owner of the project', { docs?: true } do
 				expect {
-					post :create, params: FactoryGirl.attributes_for(:project, assignment_id: @lecturer.assignments.last.id)
+					post :create, params: attributes_for(:project, assignment_id: @lecturer.assignments.last.id)
 				}.to change { Project.all.count }.by(1)
 				expect(status).to eq(201)
 			end
 
 			it 'responds with 403 forbidden if not the owner of the assignment', { docs?: true } do
-				different_assignment = FactoryGirl.create(:assignment)
+				different_assignment = create(:assignment)
 				expect {
-					post :create, params: FactoryGirl.attributes_for(:project, assignment_id: different_assignment.id)
+					post :create, params: attributes_for(:project, assignment_id: different_assignment.id)
 				}.to_not change { Project.all.count }
 				expect(status).to eq(403)
 				expect(errors['base'].first).to eq("This Assignment is not associated with the current user")
@@ -216,7 +238,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 			end
 
 			it 'responds with 403 if current user is a Lecturer but not the onwer of the Project' do
-				project = FactoryGirl.create(:project)
+				project = create(:project)
 				expect {
 					delete :destroy, params: { id: project.id }
 				}.to_not change { Project.all.size }
