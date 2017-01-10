@@ -9,8 +9,6 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 		@student = FactoryGirl.create(:student_with_password).process_new_record
 		@student.save
 		@student.confirm
-		#@lecturer.projects.first.students << @student
-		#@lecturer.projects.last.students 	<< @student
 		create :students_project, student: @student, project: @lecturer.projects.first
 		create :students_project, student: @student, project: @lecturer.projects.last
 	end
@@ -239,6 +237,24 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 
 				expect(status).to eq(200)
 				expect(body["logs"].length).to eq(2)
+			end
+
+			it 'responds with 200 if no logs' do
+				assignment = create :assignment, lecturer: @lecturer
+				expect(assignment.valid?).to be_truthy
+				project = create :project, assignment: assignment
+				expect(project.valid?).to be_truthy
+				sp = build :students_project, project: project, student: @student
+				sp.logs = []
+				expect(sp.save).to be_truthy
+				expect(sp.logs).to eq []
+				@student.reload
+				expect(@student.projects.include?(sp.project)).to be_truthy
+
+				get :index_logs_lecturer, params: { id: sp.project.id, student_id: @student.id }
+
+				expect(status).to eq 200
+				expect(body['logs']).to eq []
 			end
 
 			it 'responds with 422 if the student does not belong to project' do

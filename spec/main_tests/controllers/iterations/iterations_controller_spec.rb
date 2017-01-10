@@ -48,6 +48,26 @@ RSpec.describe V1::IterationsController, type: :controller do
 			expect(body['iterations'].length).to eq(Assignment.third.iterations.length)
 		end
 
+		it 'GET index returns 204 if no iterations for the assignment_id' do
+			assignment = create :assignment, lecturer: @user
+			expect(assignment.iterations.count).to eq 0
+			expect(assignment.lecturer).to eq @user
+
+			get :index, params: { assignment_id: assignment.id }
+
+			expect(status).to eq 204
+		end
+
+		it 'GET index returns 204 if assignment id does not belong to current user' do
+			assignment = create :assignment
+			expect(assignment.iterations.count).to eq 0
+			expect(assignment.lecturer).to_not eq @user
+
+			get :index, params: { assignment_id: assignment.id }
+
+			expect(status).to eq 204
+		end
+
 		it 'GET show iteration needs the assignment to be associated with current_user', { docs?: true } do
 			get :show, params: { id: @user.assignments[1].iterations[0].id }
 			expect(status).to eq(200)
@@ -134,12 +154,6 @@ RSpec.describe V1::IterationsController, type: :controller do
 			get :index
 			expect(status).to eq(400)
 			expect(errors['base'][0]).to include('This Endpoint requires a assignment_id in the params')
-		end
-
-		it 'GET index should respond with 403 forbidden is assignment_id is not one of current users projects' do
-			get :index, params: { assignment_id: @irrelevant_assignment.id }
-			expect(status).to eq(403)
-			expect(errors['assignment_id'][0]).to include("is not one of current user's assignments")
 		end
 
 		it 'GET show responds with 403 forbidden if user is not associated with iteration assignment' do

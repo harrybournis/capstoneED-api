@@ -1,7 +1,5 @@
 class V1::IterationsController < ApplicationController
 
-	before_action :validate_assignment_id_present, 							only: [:index]
-	before_action :validate_assignment_belongs_to_current_user, only: [:index, :create]
 	before_action :allow_if_lecturer, 													only: :create
  	before_action :validate_includes, only: [:index, :show], if: 'params[:includes]'
   before_action :set_iteration_if_associated, 								only: [:show, :update, :destroy]
@@ -10,10 +8,12 @@ class V1::IterationsController < ApplicationController
 	# GET /iterations?project_id=
 	# Needs project_id in params
 	def index
-		if (@iterations = current_user.iterations(includes: params[:includes]).where(assignment_id: params[:assignment_id])).empty?
-      render_not_associated_with_current_user('Iteration')
-      return false
-    end
+		unless params[:assignment_id]
+			render json: format_errors({ base: ['This Endpoint requires a assignment_id in the params'] }), status: :bad_request
+			return
+		end
+
+    @iterations = current_user.iterations(includes: params[:includes]).where(assignment_id: params[:assignment_id])
     serialize_collection @iterations, :ok
 	end
 
@@ -25,6 +25,11 @@ class V1::IterationsController < ApplicationController
 	# POST /iterations
 	# Only for Lecturers
 	def create
+		unless current_user.assignments.find_by( id: params[:assignment_id])
+			render json: format_errors({ assignment_id: ["is not one of current user's assignments"] }), status: :forbidden
+			return
+		end
+
 		@iteration = Iteration.create(iteration_params)
 
 		if @iteration.save
@@ -59,20 +64,6 @@ class V1::IterationsController < ApplicationController
         render_not_associated_with_current_user('Iteration')
         return false
       end
-    end
-
-    def validate_assignment_id_present
-			unless params[:assignment_id]
-				render json: format_errors({ base: ['This Endpoint requires a assignment_id in the params'] }), status: :bad_request
-				return
-			end
-    end
-
-    def validate_assignment_belongs_to_current_user
-			unless current_user.assignments.find_by( id: params[:assignment_id])
-				render json: format_errors({ assignment_id: ["is not one of current user's assignments"] }), status: :forbidden
-				return
-			end
     end
 
     # The class of the resource that the controller handles
