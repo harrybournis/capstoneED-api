@@ -140,7 +140,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 			it "responds with 403 forbidden if the params don't indlude assignment_id", { docs?: true } do
 				get :index
 				expect(status).to eq(403)
-				expect(errors['base'].first).to include("Lecturers must provide a 'assignment_id' in the parameters for this route")
+				expect(errors['base'].first).to include("Lecturers must provide")
 			end
 
 			it 'returns the projects for the provided assignment_id if the project belongs to the current user',
@@ -150,6 +150,18 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				get :index_with_assignment, params: { assignment_id: assignment.id }
 				expect(status).to eq(200)
 				expect(parse_body['projects'].length).to eq(assignment.projects.length)
+			end
+
+			it 'returns the projects for the provided unit_id if the project belongs to the current user',
+				{ docs?: true, described_action: "index" } do
+
+				unit = @lecturer.assignments.first.unit
+				expect(unit.projects).to_not be_empty
+
+				get :index_with_unit, params: { unit_id: unit.id }
+
+				expect(status).to eq(200)
+				expect(parse_body['projects'].length).to eq(unit.projects.length)
 			end
 
 			it 'returns 204 if the assignment has no Projects' do
@@ -178,7 +190,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				assignment = create(:assignment)
 				get :index
 				expect(status).to eq(403)
-				expect(errors['base'].first).to include("Lecturers must provide a 'assignment_id' in the parameters for this route.")
+				expect(errors['base'].first).to include("Lecturers must provide")
 			end
 		end
 

@@ -40,6 +40,11 @@ RSpec.describe 'Routing', type: :routing do
 			controller: 'v1/projects', action: 'index_with_assignment', assignment_id: '3')
 	end
 
+	it 'GET /projects?unit_id=3 routes to index_with_assignment' do
+		expect(get: "#{url}/v1/projects?unit_id=3").to route_to(
+			controller: 'v1/projects', action: 'index_with_unit', unit_id: '3')
+	end
+
 	it 'GET /projects? routes to normal projects index' do
 		expect(get: "#{url}/v1/projects").to route_to(
 			controller: 'v1/projects', action: 'index')

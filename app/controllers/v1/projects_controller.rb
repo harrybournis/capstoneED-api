@@ -2,8 +2,9 @@ class V1::ProjectsController < ApplicationController
 
 	before_action :allow_if_lecturer, 		only: [:create, :destroy]
 	before_action -> { allow_if_lecturer(index_with_assignment_error_message) }, only: :index_with_assignment
+	before_action -> { allow_if_lecturer(index_with_unit_error_message) }, only: :index_with_unit
 	before_action -> { allow_if_student(index_error_message) }, only: :index
- 	before_action :validate_includes, only: [:index, :index_with_assignment, :show], if: 'params[:includes]'
+ 	before_action :validate_includes, only: [:index, :index_with_assignment, :index_with_unit, :show], if: 'params[:includes]'
   before_action :delete_includes_from_params, only: [:update, :destroy]
   before_action :set_project_if_associated, only: [:show, :update, :destroy]
 
@@ -18,6 +19,13 @@ class V1::ProjectsController < ApplicationController
 	# Only for Lecturers
 	def index_with_assignment
 		@projects = current_user.projects(includes: includes_array).where(['assignments.id = ?', params[:assignment_id]])
+		serialize_collection @projects, :ok
+	end
+
+	# GET /projects?unit_id=
+	# Only for Lecturers
+	def index_with_unit
+		@projects = current_user.projects(includes: includes_array).where(['projects.unit_id = ?', params[:unit_id]])
 		serialize_collection @projects, :ok
 	end
 
@@ -103,7 +111,11 @@ class V1::ProjectsController < ApplicationController
 			"Students can not access this route with a 'assignment_id' in the parameters. Retry without it."
 		end
 
+		def index_with_unit_error_message
+			"Students can not access this route with a 'unit_id' in the parameters. Retry without it."
+		end
+
 		def index_error_message
-			"Lecturers must provide a 'assignment_id' in the parameters for this route."
+			"Lecturers must provide a 'assignment_id' or a 'unit_id' in the parameters for this route."
 		end
 end
