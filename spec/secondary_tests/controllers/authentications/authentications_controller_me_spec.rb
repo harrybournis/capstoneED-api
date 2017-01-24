@@ -65,6 +65,27 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
 				expect(status).to eq(200)
 			end
 
+			it "lecturer contains the user's avatar_url" do
+				lec = FactoryGirl.create(:lecturer_confirmed)
+				mock_request = MockRequest.new(valid = true, lec)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+				get :me
+
+				expect(body['user']['avatar_url']).to eq lec.avatar_url
+			end
+
+			it "student contains the user's avatar_url" do
+				student = FactoryGirl.create(:student_confirmed)
+				mock_request = MockRequest.new(valid = true, student)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+				get :me
+
+				expect(body['user']['avatar_url']).to eq student.avatar_url
+			end
 		end
 
 	end
@@ -99,6 +120,7 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
 				get :me
 				expect(response.status).to eq(401)
 			end
+
 
 		end
 	end

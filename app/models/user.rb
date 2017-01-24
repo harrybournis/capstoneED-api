@@ -23,6 +23,11 @@ class User < ApplicationRecord
 		"#{first_name} #{last_name}"
 	end
 
+	#!! PLACEHOLDER IMAGE
+	def avatar_url
+		"http://i.pravatar.cc/100"
+	end
+
 	# Override provider setter to not allow editing of the provider after creation
 	def provider=(value)
 		if self.persisted?

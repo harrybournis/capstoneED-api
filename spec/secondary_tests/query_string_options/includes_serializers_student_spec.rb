@@ -58,6 +58,7 @@ RSpec.describe 'Includes', type: :controller do
 
 				expect(status).to eq(200)
 				expect(body['project']['nickname']).to be_truthy
+				expect(body['project']['students'][0]['avatar_url']).to be_truthy
 				expect(body['project']['students'].length).to eq project.students.count
 			end
 

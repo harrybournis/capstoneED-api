@@ -10,8 +10,9 @@ class Decorators::StudentMember
 		@email = student.email
 		@provider = student.provider
 		@type = "Student"
+		@avatar_url = student.avatar_url
 		@nickname = students_project.nickname if students_project.nickname
 	end
 
-	attr_accessor :id, :first_name, :last_name, :email, :provider, :type, :nickname
+	attr_accessor :id, :first_name, :last_name, :email, :provider, :type, :nickname, :avatar_url
 end
