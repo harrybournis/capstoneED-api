@@ -13,6 +13,7 @@ RSpec.describe Project, type: :model do
 			it { should have_one :extension }
 			it { should have_many :project_evaluations }
 			it { should have_many :peer_assessments }
+			it { should belong_to :unit }
 
 			it { should validate_presence_of :project_name }
 			it { should validate_presence_of :assignment }
@@ -60,6 +61,16 @@ RSpec.describe Project, type: :model do
 				expect(Student.all.size).to eq(students_count)
 			end
 
+			it 'before saving gets the unit_id from the assignment' do
+				assignment = create :assignment
+				project = Project.new(attributes_for(:project, assignment_id: assignment.id).except(:unit_id))
+				expect(project.unit_id).to be_falsy
+
+				expect(project.save).to be_truthy
+
+				expect(project.unit).to eq project.assignment.unit
+			end
+
 			it 'autogenerates enrollment key if not provided by user' do
 				assignment = FactoryGirl.create(:assignment)
 				attributes = FactoryGirl.attributes_for(:project).except(:enrollment_key).merge(assignment_id: assignment.id)
@@ -67,8 +78,6 @@ RSpec.describe Project, type: :model do
 				project.valid?
 				expect(project.errors[:enrollment_key]).to be_empty
 				expect(project.save).to be_truthy
-				project = Project.create(FactoryGirl.attributes_for(:project).except(:enrollment_key).merge(assignment_id: assignment.id))
-				expect(project).to be_truthy
 			end
 
 			it 'does not autogenerate key if provided' do

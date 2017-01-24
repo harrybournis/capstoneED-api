@@ -16,7 +16,7 @@ RSpec.describe "Seeder" do
 		@unit3 = create(:unit, lecturer: @lecturer1, department: department)
 		now = DateTime.now
 		@assignment = create(:assignment, lecturer: @lecturer1, unit: @unit1)
-		4.times { create(:project, assignment_id: @assignment.id) }
+		4.times { create(:project, assignment: @assignment) }
 		@iteration1 = create(:iteration, assignment_id: @assignment.id, start_date: now, deadline: now + 1.month)
 		@iteration2 = create(:iteration, assignment_id: @assignment.id, start_date: now + 1.month, deadline: now + 2.months)
 		@iteration3 = create(:iteration, assignment_id: @assignment.id, start_date: now + 2.month, deadline: now + 3.months)
@@ -66,7 +66,7 @@ RSpec.describe "Seeder" do
 		@unit3 = create(:unit, lecturer: @lecturer2, department: department)
 		now = DateTime.now
 		@assignment = create(:assignment, lecturer: @lecturer2, unit: @unit1)
-		4.times { create(:project, assignment_id: @assignment.id) }
+		4.times { create(:project, assignment: @assignment) }
 		@iteration1 = create(:iteration, assignment_id: @assignment.id, start_date: now, deadline: now + 1.month)
 		@iteration2 = create(:iteration, assignment_id: @assignment.id, start_date: now + 1.month, deadline: now + 2.months)
 		@iteration3 = create(:iteration, assignment_id: @assignment.id, start_date: now + 2.month, deadline: now + 3.months)

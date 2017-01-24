@@ -40,12 +40,12 @@ RSpec.describe V1::IterationsController, type: :controller do
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-			Assignment.third.projects << FactoryGirl.create(:project)
-			create :students_project, student: @user, project: Assignment.third.projects.first
+			Assignment.first.projects << FactoryGirl.create(:project)
+			create :students_project, student: @user, project: Assignment.first.projects.first
 
-			get :index, params: { assignment_id: Assignment.third.id }
+			get :index, params: { assignment_id: Assignment.first.id }
 			expect(status).to eq(200)
-			expect(body['iterations'].length).to eq(Assignment.third.iterations.length)
+			expect(body['iterations'].length).to eq(Assignment.first.iterations.length)
 		end
 
 		it 'GET index returns 204 if no iterations for the assignment_id' do
@@ -80,12 +80,12 @@ RSpec.describe V1::IterationsController, type: :controller do
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-			Assignment.third.projects << FactoryGirl.create(:project)
-			create :students_project, student: @user, project: Assignment.third.projects.first
+			Assignment.first.projects << FactoryGirl.create(:project)
+			create :students_project, student: @user, project: Assignment.first.projects.first
 
-			get :show, params: { id: Assignment.third.iterations[0].id }
+			get :show, params: { id: Assignment.first.iterations[0].id }
 			expect(status).to eq(200)
-			expect(body['iteration']['name']).to eq(Assignment.third.iterations[0].name)
+			expect(body['iteration']['name']).to eq(Assignment.first.iterations[0].name)
 		end
 
 		it 'POST create current user must be associated with the assignment', { docs?: true } do
@@ -164,7 +164,10 @@ RSpec.describe V1::IterationsController, type: :controller do
 		end
 
 		it 'POST create responds with 403 if assignment_id is not associated with current_user' do
-			post :create, params: { assignment_id: Assignment.first.id, name: 'name', start_date: DateTime.now + 1.week, deadline: DateTime.now + 3.months }
+			irrelevant_assignment = create :assignment
+
+			post :create, params: { assignment_id: irrelevant_assignment.id, name: 'name', start_date: DateTime.now + 1.week, deadline: DateTime.now + 3.months }
+
 			expect(status).to eq(403)
 			expect(errors['assignment_id'][0]).to eq("is not one of current user's assignments")
 		end

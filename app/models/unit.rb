@@ -12,7 +12,7 @@ class Unit < ApplicationRecord
 	belongs_to :lecturer
 	belongs_to :department
 	has_many :assignments
-  has_many :projects, through: :assignments
+  has_many :projects
   has_many :students_projects, through: :projects
   has_many :students, through: :students_projects
 

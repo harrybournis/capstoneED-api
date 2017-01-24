@@ -9,7 +9,9 @@ FactoryGirl.define do
     name        { "Assignment #{100*rand()}" }
 
     factory :assignment_with_projects do
-    	projects { Array.new(2){ |i| FactoryGirl.create(:project) } }
+        after :create do |assignment|
+            2.times { assignment.projects << FactoryGirl.create(:project, assignment: assignment) }
+        end
     end
   end
 end

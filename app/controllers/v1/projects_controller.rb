@@ -32,7 +32,7 @@ class V1::ProjectsController < ApplicationController
 
 	# POST /projects
 	def create
-    unless @project = current_user.assignments.where(id: params[:assignment_id])[0]
+    unless assignment = current_user.assignments.where(id: params[:assignment_id])[0]
       render_not_associated_with_current_user('Assignment')
       return false
     end
