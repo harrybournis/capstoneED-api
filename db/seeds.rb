@@ -11,7 +11,7 @@ department2 = FactoryGirl.create(:department, name: 'English Studies')
 @unit3 = FactoryGirl.create(:unit, lecturer: @lecturer1, department: department)
 now = DateTime.now
 @assignment = FactoryGirl.create(:assignment, lecturer: @lecturer1, unit: @unit1)
-4.times { FactoryGirl.create(:project, assignment_id: @assignment.id) }
+4.times { FactoryGirl.create(:project, assignment: @assignment) }
 @iteration1 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now, deadline: now + 1.month)
 @iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 1.month, deadline: now + 2.months)
 @iteration3 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 2.month, deadline: now + 3.months)
@@ -34,7 +34,8 @@ FactoryGirl.create(:question, lecturer_id: @lecturer1.id)
 		@student.save
 		@student.confirm
 
-		@assignment.projects[i].students << @student
+		#@assignment.projects[i].students << @student
+		FactoryGirl.create :students_project, student: @student, project: @assignment.projects[i]
 	end
 end
 
@@ -60,7 +61,7 @@ end
 @unit3 = FactoryGirl.create(:unit, lecturer: @lecturer2, department: department)
 now = DateTime.now
 @assignment = FactoryGirl.create(:assignment, lecturer: @lecturer2, unit: @unit1)
-4.times { FactoryGirl.create(:project, assignment_id: @assignment.id) }
+4.times { FactoryGirl.create(:project, assignment: @assignment) }
 @iteration1 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now, deadline: now + 1.month)
 @iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 1.month, deadline: now + 2.months)
 @iteration3 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 2.month, deadline: now + 3.months)
@@ -83,7 +84,8 @@ FactoryGirl.create(:question, lecturer_id: @lecturer2.id)
 		@student.save
 		@student.confirm
 
-		@assignment.projects[i].students << @student
+		#@assignment.projects[i].students << @student
+		FactoryGirl.create :students_project, student: @student, project: @assignment.projects[i]
 	end
 end
 
