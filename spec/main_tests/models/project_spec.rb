@@ -122,6 +122,35 @@ RSpec.describe Project, type: :model do
 				expect(student_members.length).to eq(project.students.length)
 			end
 
+			describe '.active ' do
+
+				before :each do
+					lecturer = create :lecturer
+					@unit = create :unit, lecturer: lecturer
+					@assignment = create :assignment, unit: @unit, lecturer: lecturer, start_date: DateTime.now, end_date: DateTime.now + 10.days
+					3.times { create(:project, unit: @unit, assignment: @assignment) }
+					expect(@assignment.projects.count).to eq(3)
+					expect(Project.count).to eq(3)
+				end
+
+				it 'returns the active projects if unit is not archived' do
+					expect(Project.active.count).to eq(3)
+					expect(@unit.archive).to be_truthy
+					expect(@unit.archived_at).to be_truthy
+					expect(Project.active.count).to eq(0)
+				end
+
+				it 'returns the active projects if assignment end date has not passed' do
+					expect(Project.active.count).to eq(3)
+
+					Timecop.travel(DateTime.now + 20.days) do
+						expect(@unit.archived?).to be_falsy
+						expect(Project.active.count).to eq(0)
+					end
+				end
+			end
+
+
 			describe 'autogenerates team_name' do
 				it 'if none was given during creation' do
 					assignment = create :assignment
@@ -165,6 +194,5 @@ RSpec.describe Project, type: :model do
 					expect(project.team_name).to eq("Team 3")
 				end
 			end
-
 	end
 end

@@ -143,6 +143,13 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				expect(errors['base'].first).to include("Lecturers must provide")
 			end
 
+			it 'returns the lecturers active projects' do
+				get :index
+
+				expect(status).to eq(200)
+				expect(body['projects'].length).to eq(@lecturer.projects)
+			end
+
 			it 'returns the projects for the provided assignment_id if the project belongs to the current user',
 				{ docs?: true, described_action: "index" } do
 

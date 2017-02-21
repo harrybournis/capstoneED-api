@@ -29,6 +29,11 @@ class Project < ApplicationRecord
 
   before_validation :generate_enrollment_key, :generate_team_name, :get_unit_from_assignment
 
+  # Class Methods
+  def self.active
+    joins(:assignment,:unit).where(['units.archived_at is null and assignments.end_date >= ?', DateTime.now])
+  end
+
   # Instance Methods
 
   # Returns an array of StudentMembers POROs that contain all attributes of the student,
