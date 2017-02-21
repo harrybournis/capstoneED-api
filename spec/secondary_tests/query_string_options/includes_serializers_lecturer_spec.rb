@@ -61,14 +61,14 @@ RSpec.describe 'Includes', type: :controller do
 				body_assignment = body['assignment']
 				expect(response.status).to eq(200)
 				expect(body_assignment['projects']).to be_truthy
-				expect(body_assignment['projects'].first).to_not include('project_name', 'enrollment_key')
+				expect(body_assignment['projects'].first.keys.size).to be < 6
 				expect(body_assignment['unit']).to be_falsy
 
 				get :show, params: { id: @assignment.id, includes: 'projects,unit'}
 				body_assignment = body['assignment']
 				expect(response.status).to eq(200)
 				expect(body_assignment['projects']).to be_truthy
-				expect(body_assignment['projects'].first).to include('project_name', 'enrollment_key')
+				expect(body_assignment['projects'].first.keys.size).to be > 6
 				expect(body_assignment['unit']).to be_truthy
 				expect(body_assignment['unit']).to include('code', 'semester')
 			end
@@ -141,6 +141,9 @@ RSpec.describe 'Includes', type: :controller do
 			it 'GET index contains the assignments compact' do
 				get :index, params: { includes: 'assignments', compact: true }
 				expect(body['units'].first['assignments'].first).to_not include('description')
+				expect(body['units'].first['assignments'].first.length).to eq(2)
+				expect(body['units'].first['assignments'].first.keys).to include('id')
+				expect(body['units'].first['assignments'].first.keys).to include('name')
 			end
 		end
 
@@ -173,6 +176,19 @@ RSpec.describe 'Includes', type: :controller do
 						expect(project['lecturer']).to be_falsy
 					end
 				end
+			end
+
+			it 'GET index compact contains unit with name and id only' do
+				get :index, params: { includes: 'unit,assignment', compact: true }
+				expect(status).to eq(200)
+
+				expect(body['projects'][0]['unit'].length).to eq(2)
+				expect(body['projects'][0]['unit'].keys).to include('name')
+				expect(body['projects'][0]['unit'].keys).to include('id')
+
+				expect(body['projects'][0]['assignment'].length).to eq(2)
+				expect(body['projects'][0]['assignment'].keys).to include('name')
+				expect(body['projects'][0]['assignment'].keys).to include('id')
 			end
 		end
 

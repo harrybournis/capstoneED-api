@@ -79,7 +79,7 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
 	end
 
 	def project_associations
-		%w(assignment students)
+		%w(assignment students unit)
 	end
 
 	def iteration_associations

@@ -12,7 +12,11 @@ class V1::ProjectsController < ApplicationController
 	# GET /projects
 	# Only for Students
 	def index
-		serialize_collection current_user.projects(includes: includes_array).active, :ok, ProjectStudentSerializer
+		if current_user.student?
+			serialize_collection current_user.projects(includes: includes_array).active, :ok, ProjectStudentSerializer
+		else
+			serialize_collection current_user.projects(includes: includes_array).active, :ok
+		end
 	end
 
 	# GET /projects?assignment_id=

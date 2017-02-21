@@ -134,6 +134,13 @@ RSpec.describe 'Includes', type: :controller do
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200)
 				end
+
+				it 'index makes one query for includes unit and assignment compact' do
+					expect {
+						get :index, params: { includes: 'unit,assignment', compact: true }
+					}.to make_database_queries(count: 1)
+					expect(status).to eq(200)
+				end
 			end
 
 			context 'Invalid' do
@@ -142,14 +149,14 @@ RSpec.describe 'Includes', type: :controller do
 						get :index_with_assignment, params: { includes: 'department,projects,students' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400)
-					expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Project resource for Lecturer user accepts only: assignment, students. Received: department,projects,students.")
+					expect(body['errors']['base'][0]).to include("Received: department,projects,students.")
 
 					project = @lecturer.projects[0]
 					expect {
 						get :show, params: { id: project.id, includes: 'department,projects,students' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400)
-					expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Project resource for Lecturer user accepts only: assignment, students. Received: department,projects,students.")
+					expect(body['errors']['base'][0]).to include("Received: department,projects,students.")
 				end
 			end
 		end
