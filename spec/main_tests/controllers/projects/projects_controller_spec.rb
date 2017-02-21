@@ -137,17 +137,30 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		end
 
 		describe 'GET index' do
-			it "responds with 403 forbidden if the params don't indlude assignment_id", { docs?: true } do
-				get :index
-				expect(status).to eq(403)
-				expect(errors['base'].first).to include("Lecturers must provide")
-			end
+			# it "responds with 403 forbidden if the params don't indlude assignment_id", { docs?: true } do
+			# 	get :index
+			# 	expect(status).to eq(403)
+			# 	expect(errors['base'].first).to include("Lecturers must provide")
+			# end
 
-			it 'returns the lecturers active projects' do
+			it 'returns the lecturers active projects', { docs?: true } do
+				expect(@lecturer.units.first.archive).to be_truthy
+				create :project
+
 				get :index
 
 				expect(status).to eq(200)
-				expect(body['projects'].length).to eq(@lecturer.projects)
+				expect(body['projects'].length).to eq(@lecturer.projects.active.count)
+			end
+
+			it 'returns 204 if no active projects', { docs?: true } do
+				@lecturer.units.each { |unit| unit.archive unless unit.reload.archived? }
+				@lecturer.units.each { |unit| expect(unit.reload.archived?).to be_truthy }
+				expect(@lecturer.projects.active.count).to eq(0)
+
+				get :index
+
+				expect(status).to eq(204)
 			end
 
 			it 'returns the projects for the provided assignment_id if the project belongs to the current user',
@@ -193,12 +206,12 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				expect(status).to eq(204)
 			end
 
-			it 'responds with 403 forbidden if no assignment_id in the params' do
-				assignment = create(:assignment)
-				get :index
-				expect(status).to eq(403)
-				expect(errors['base'].first).to include("Lecturers must provide")
-			end
+			# it 'responds with 403 forbidden if no assignment_id in the params' do
+			# 	assignment = create(:assignment)
+			# 	get :index
+			# 	expect(status).to eq(403)
+			# 	expect(errors['base'].first).to include("Lecturers must provide")
+			# end
 		end
 
 		describe 'GET show' do

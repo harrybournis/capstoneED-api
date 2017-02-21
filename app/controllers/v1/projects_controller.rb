@@ -3,7 +3,7 @@ class V1::ProjectsController < ApplicationController
 	before_action :allow_if_lecturer, 		only: [:create, :destroy]
 	before_action -> { allow_if_lecturer(index_with_assignment_error_message) }, only: :index_with_assignment
 	before_action -> { allow_if_lecturer(index_with_unit_error_message) }, only: :index_with_unit
-	before_action -> { allow_if_student(index_error_message) }, only: :index
+	#before_action -> { allow_if_student(index_error_message) }, only: :index
  	before_action :validate_includes, only: [:index, :index_with_assignment, :index_with_unit, :show], if: 'params[:includes]'
   before_action :delete_includes_from_params, only: [:update, :destroy]
   before_action :set_project_if_associated, only: [:show, :update, :destroy]
@@ -12,7 +12,7 @@ class V1::ProjectsController < ApplicationController
 	# GET /projects
 	# Only for Students
 	def index
-		serialize_collection current_user.projects(includes: includes_array), :ok, ProjectStudentSerializer
+		serialize_collection current_user.projects(includes: includes_array).active, :ok, ProjectStudentSerializer
 	end
 
 	# GET /projects?assignment_id=
