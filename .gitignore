@@ -45,3 +45,9 @@ bower.json
 
 # ignore the doc_examples folder since they can be generated
 /doc_examples
+
+# ignores to work with vagrant
+/config/database.yml
+/config/environments/development.rb
+Vagrantfile
+/.vagrant
