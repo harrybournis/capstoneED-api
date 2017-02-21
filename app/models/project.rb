@@ -4,6 +4,7 @@ class Project < ApplicationRecord
   # team_name       :string
   # enrollment_key  :string
   # logo            :string
+  # description     :string
   # assignment_id   :integer
   # unit_id         :integer
 
@@ -22,7 +23,7 @@ class Project < ApplicationRecord
   has_many    :peer_assessments
 
   # Validations
-  validates_presence_of 	:project_name, :assignment, :team_name, :description, :unit, :assignment
+  validates_presence_of 	:project_name, :assignment, :team_name, :unit, :assignment
   validates_uniqueness_of :id, :enrollment_key
   validates_uniqueness_of :project_name, scope: :assignment_id, case_sensitive: false
   validates_uniqueness_of :team_name, scope: :assignment_id, case_sensitive: false
