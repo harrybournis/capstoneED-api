@@ -4,8 +4,9 @@
 # the maximum value specified for Puma. Default is set to 5 threads for minimum
 # and maximum, this matches the default thread size of Active Record.
 #
-threads_count = ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i
-threads threads_count, threads_count
+min_threads = ENV.fetch("RAILS_MIN_THREADS") { 5 }.to_i
+max_threads = ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i
+threads min_threads, max_threads
 
 # Specifies the `port` that Puma will listen on to receive requests, default is 3000.
 #
@@ -21,7 +22,7 @@ environment ENV.fetch("RAILS_ENV") { "development" }
 # Workers do not work on JRuby or Windows (both of which do not support
 # processes).
 #
-# workers ENV.fetch("WEB_CONCURRENCY") { 2 }
+workers ENV.fetch("WEB_CONCURRENCY") { 0 }
 
 # Use the `preload_app!` method when specifying a `workers` number.
 # This directive tells Puma to first boot the application and load code
@@ -30,7 +31,10 @@ environment ENV.fetch("RAILS_ENV") { "development" }
 # you need to make sure to reconnect any threads in the `on_worker_boot`
 # block.
 #
-# preload_app!
+should_preload = ENV.fetch("APP_PRELOAD").downcase == "true"
+if should_preload
+    preload_app!
+end
 
 # The code in the `on_worker_boot` will be called if you are using
 # clustered mode by specifying a number of `workers`. After each worker
