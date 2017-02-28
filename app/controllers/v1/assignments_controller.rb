@@ -1,10 +1,12 @@
+## Assignments Controller
 class V1::AssignmentsController < ApplicationController
-
-  before_action :allow_if_lecturer, only: [:index_with_unit, :create, :update, :destroy]
-  before_action :validate_includes, only: [:index, :index_with_unit, :show], if: 'params[:includes]'
+  before_action :allow_if_lecturer,
+                only: [:index_with_unit, :create, :update, :destroy]
+  before_action :validate_includes,
+                only: [:index, :index_with_unit, :show],
+                if: 'params[:includes]'
   before_action :delete_includes_from_params, only: [:update, :destroy]
   before_action :set_assignment_if_associated, only: [:show, :update, :destroy]
-
 
   # GET /assignments
   def index
@@ -15,7 +17,8 @@ class V1::AssignmentsController < ApplicationController
   # Only Lecturers
   # Get the assignments of the specified unit_id. Unit must belong to Lecturer.
   def index_with_unit
-    @assignments = current_user.assignments(includes: params[:includes]).where(unit_id: params[:unit_id])
+    @assignments = current_user.assignments(includes: params[:includes])
+                               .where(unit_id: params[:unit_id])
     serialize_collection @assignments, :ok
   end
 
@@ -31,12 +34,16 @@ class V1::AssignmentsController < ApplicationController
 
     if @assignment.save
       if params[:projects_attributes]
-        render json: @assignment, serializer: Includes::AssignmentSerializer, include: 'projects', status: :created
+        render json: @assignment,
+               serializer: Includes::AssignmentSerializer,
+               include: 'projects',
+               status: :created
       else
         render json: @assignment, status: :created
       end
     else
-      render json: format_errors(@assignment.errors), status: :unprocessable_entity
+      render json: format_errors(@assignment.errors),
+             status: :unprocessable_entity
     end
   end
 
@@ -56,29 +63,35 @@ class V1::AssignmentsController < ApplicationController
     if @assignment.destroy
       render json: '', status: :no_content
     else
-      render json: format_errors(@assignment.errors), status: :unprocessable_entity
+      render json: format_errors(@assignment.errors),
+             status: :unprocessable_entity
     end
   end
 
-
   private
 
-    # Sets @assignment if it is asociated with the current user. Eager loads associations in the params[:includes].
-    # Renders error if not associated and Halts execution
-    def set_assignment_if_associated
-      unless @assignment = current_user.assignments(includes: includes_array).where(id: params[:id])[0]
-        render_not_associated_with_current_user('Assignment')
-        return false
-      end
+  # Sets @assignment if it is asociated with the current user. Eager loads
+  # associations in the params[:includes]. Renders error if not associated
+  # and Halts execution.
+  def set_assignment_if_associated
+    unless @assignment = current_user.assignments(includes: includes_array)
+                                     .where(id: params[:id])[0]
+      render_not_associated_with_current_user('Assignment')
+      false
     end
+  end
 
-    # The class of the resource that the controller handles
-    def controller_resource
-      Assignment
-    end
+  # The class of the resource that the controller handles
+  def controller_resource
+    Assignment
+  end
 
-    def assignment_params
-      params.permit(:name, :start_date, :end_date, :unit_id,
-        projects_attributes: [:project_name, :team_name, :description, :enrollment_key, :logo])
-    end
+  def assignment_params
+    params.permit(:name, :start_date, :end_date, :unit_id,
+      projects_attributes: [:project_name,
+                            :team_name,
+                            :description,
+                            :enrollment_key,
+                            :logo])
+  end
 end

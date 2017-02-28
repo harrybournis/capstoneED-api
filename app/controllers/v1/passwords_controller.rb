@@ -1,3 +1,4 @@
+## Passwords Controller
 class V1::PasswordsController < Devise::PasswordsController
   # Render the #edit only if coming from a reset password email link
   skip_before_action :authenticate_user_jwt
@@ -20,7 +21,6 @@ class V1::PasswordsController < Devise::PasswordsController
         return
       end
 
-
       @user = User.send_reset_password_instructions(password_params)
 
       if successfully_sent?(@user)
@@ -29,7 +29,8 @@ class V1::PasswordsController < Devise::PasswordsController
         render json: format_errors(@user.errors), status: :unprocessable_entity
       end
     else
-      render json: format_errors({ email: ['is invalid'] }), status: :unprocessable_entity
+      render json: format_errors({ email: ['is invalid'] }),
+             status: :unprocessable_entity
     end
   end
 
@@ -44,7 +45,8 @@ class V1::PasswordsController < Devise::PasswordsController
   # requires reset_password_token, password, password_confirmation in params
   def update
     if params[:reset_password_token].blank?
-      render json: format_errors({ reset_password_token: ["can't be blank"] }), status: :bad_request
+      render json: format_errors(reset_password_token: ["can't be blank"]),
+             status: :bad_request
       return
     end
 
@@ -57,10 +59,11 @@ class V1::PasswordsController < Devise::PasswordsController
     end
   end
 
-protected
+  protected
 
   def password_params
-    params.permit(:email, :reset_password_token, :password, :password_confirmation)
+    params.permit(:email, :reset_password_token,
+                  :password, :password_confirmation)
   end
 
   # Helper for use after calling send_*_instructions methods on a resource.
@@ -69,13 +72,12 @@ protected
   #
   # OVERRIDE: Removed updating the flash
   def successfully_sent?(resource)
-    notice = if Devise.paranoid
-      resource.errors.clear
-      :send_paranoid_instructions
-    elsif resource.errors.empty?
-      :send_instructions
-    end
-
+    notice =  if Devise.paranoid
+                resource.errors.clear
+                :send_paranoid_instructions
+              elsif resource.errors.empty?
+                :send_instructions
+              end
     return true if notice
   end
 end

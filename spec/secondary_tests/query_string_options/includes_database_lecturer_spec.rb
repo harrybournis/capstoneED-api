@@ -120,7 +120,7 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			context 'Valid' do
-				it 'index_with_project makes two query for project and students (+1 for only_if lecturer)' do
+				it 'index_with_assignment makes two query for project and students (+1 for only_if lecturer)' do
 					expect {
 						get :index_with_assignment, params: { includes: 'assignment', assignment_id: @lecturer.assignments[0].id }
 					}.to make_database_queries(count: 2)

@@ -1,7 +1,6 @@
+## Confirmations Controller
 class V1::ConfirmationsController < Devise::ConfirmationsController
-
-  skip_before_action  :authenticate_user_jwt
-
+  skip_before_action :authenticate_user_jwt
 
   # GET /resource/confirmation/new
   def new
@@ -16,7 +15,8 @@ class V1::ConfirmationsController < Devise::ConfirmationsController
     if successfully_sent?(@unconfirmed_user)
       render json: '', status: :no_content
     else
-      render json: format_errors(@unconfirmed_user.errors), status: :unprocessable_entity
+      render json: format_errors(@unconfirmed_user.errors),
+             status: :unprocessable_entity
     end
   end
 
@@ -45,14 +45,12 @@ class V1::ConfirmationsController < Devise::ConfirmationsController
   #
   # OVERRIDE: Removed updating the flash
   def successfully_sent?(resource)
-    notice = if Devise.paranoid
-      resource.errors.clear
-      :send_paranoid_instructions
-    elsif resource.errors.empty?
-      :send_instructions
-    end
-
+    notice =  if Devise.paranoid
+                resource.errors.clear
+                :send_paranoid_instructions
+              elsif resource.errors.empty?
+                :send_instructions
+              end
     return true if notice
   end
-
 end

@@ -1,19 +1,24 @@
+## Units Controller
 class V1::UnitsController < ApplicationController
-
   before_action :allow_if_lecturer, only: [:create, :update, :archive, :destroy]
-  before_action :validate_includes, only: [:index, :index_archived, :show], if: 'params[:includes]'
-  before_action :delete_includes_from_params, only: [:update, :archive, :destroy]
-  before_action :set_unit_if_associated,      only: [:show, :update, :archive, :destroy]
-
+  before_action :validate_includes,
+                only: [:index, :index_archived, :show],
+                if: 'params[:includes]'
+  before_action :delete_includes_from_params,
+                only: [:update, :archive, :destroy]
+  before_action :set_unit_if_associated,
+                only: [:show, :update, :archive, :destroy]
 
   # GET /units
   def index
-    serialize_collection current_user.units(includes: includes_array).active, :ok
+    serialize_collection current_user.units(includes: includes_array).active,
+                         :ok
   end
 
   # GET /units/archived
   def index_archived
-    serialize_collection current_user.units(includes: includes_array).archived, :ok
+    serialize_collection current_user.units(includes: includes_array).archived,
+                         :ok
   end
 
   # GET /units/:id
@@ -66,25 +71,26 @@ class V1::UnitsController < ApplicationController
     end
   end
 
-
   private
 
-    # Sets @unit if it is asociated with the current user. Eager loads associations in the params[:includes].
-    # Renders error if not associated and Halts execution
-    def set_unit_if_associated
-      unless @unit = current_user.units(includes: includes_array).where(id: params[:id])[0]
-        render_not_associated_with_current_user('Unit')
-        return false
-      end
+  # Sets @unit if it is asociated with the current user.
+  # Eager loads associations in the params[:includes].
+  # Renders error if not associated and Halts execution
+  def set_unit_if_associated
+    unless @unit = current_user.units(includes: includes_array)
+                               .where(id: params[:id])[0]
+      render_not_associated_with_current_user('Unit')
+      false
     end
+  end
 
-    # The class of the resource that the controller handles
-    def controller_resource
-      Unit
-    end
+  # The class of the resource that the controller handles
+  def controller_resource
+    Unit
+  end
 
-    def unit_params
-      params.permit(:name, :code, :semester, :year, :department_id,
-        department_attributes: [:name, :university])
-    end
+  def unit_params
+    params.permit(:name, :code, :semester, :year, :department_id,
+                  department_attributes: [:name, :university])
+  end
 end
