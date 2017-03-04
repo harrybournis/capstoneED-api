@@ -11,5 +11,15 @@ FactoryGirl.define do
     factory :project_with_logo do
     	logo "https://robohash.org/sitsequiquia.png?size=300x300"
     end
+
+    factory :project_seeder do
+        project_name do
+            ["#{Faker::Hacker.verb.capitalize} #{Faker::Hacker.adjective} #{Faker::Pokemon.name} #{Faker::Hacker.noun}",
+                "#{Faker::Hacker.adjective.capitalize} #{Faker::Food.ingredient}"].sample
+        end
+        team_name { Faker::Team.creature.capitalize }
+        logo "https://robohash.org/sitsequiquia.png?size=300x300"
+        description { Faker::TwinPeaks.quote }
+    end
   end
 end
