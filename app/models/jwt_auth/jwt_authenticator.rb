@@ -3,17 +3,16 @@ module JWTAuth
   #  authenticate using JWTs. Public methods are 'authenticate',
   #  'sign_in' and 'refresh'.
   module JWTAuthenticator
-    # Class Variables
-    @secret       = 'secret'      ## Replace with secret
-    @algorithm    = 'HS256'       # available algorithms: https://github.com/jwt/ruby-jwt
-    @exp          = 1.minutes     # expiration time for access-token
-    @refresh_exp  = 1.week        # expiration time for refresh-token
-    @leeway       = 0             # grace period after a token has expired.
-    @domain       = api_host_url  # to be added to the cookies. left blank for developement in order to work with browsers. Change variable in helpers/url_helper.rb
-    @issuer       = @domain       # typically the website url. added to JWT tokens.
+    @secret       = 'secret'.freeze ## Replace with secret
+    @algorithm    = 'HS256'.freeze  # available algorithms: https://github.com/jwt/ruby-jwt
+    @exp          = 1.minutes       # expiration time for access-token
+    @refresh_exp  = 1.week          # expiration time for refresh-token
+    @leeway       = 0               # grace period after a token has expired.
+    @domain       = api_host_url    # to be added to the cookies. left blank for developement in order to work with browsers. Change variable in helpers/url_helper.rb
+    @issuer       = @domain         # typically the website url. added to JWT tokens.
 
-    @cookies_secure     = false   # transmit cookies only on https
-    @cookies_httponly   = true    # javascript can't read cookies
+    @cookies_secure     = false     # transmit cookies only on https
+    @cookies_httponly   = true      # javascript can't read cookies
     @cookies_samesite   = false   # send cookies only if url in address bar matches the current site
 
     ###

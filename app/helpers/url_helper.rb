@@ -17,9 +17,9 @@ module UrlHelper
   # Left empty for development
   def api_host_url
     if Rails.env.development? || Rails.env.test?
-      ''
+      ''.freeze
     else
-      'http://capstoned-api.herokuapp.com'
+      'http://capstoned-api.herokuapp.com'.freeze
     end
   end
 
