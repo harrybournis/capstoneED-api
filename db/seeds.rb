@@ -27,11 +27,17 @@ FactoryGirl.create(:question, lecturer_id: @lecturer1.id)
 4.times do |i|
   5.times do
     @student = FactoryGirl.create(:student_confirmed_seeder)
+    @student.confirm
 
     #@assignment.projects[i].students << @student
     FactoryGirl.create :students_project_seeder, student: @student, project: @assignment.projects[i]
   end
 end
+
+stu = @assignment.projects[0].students[0]
+stu.skip_confirmation_notification!
+stu.update(email: 'giorgos@bar.com')
+stu.confirm
 
 @assignment.projects.each do |project|
   project.students.each do |student|
@@ -71,6 +77,7 @@ FactoryGirl.create(:question, lecturer_id: @lecturer2.id)
 4.times do |i|
   5.times do
     @student = FactoryGirl.create(:student_confirmed_seeder)
+    @student.confirm
 
     #@assignment.projects[i].students << @student
     FactoryGirl.create :students_project_seeder, student: @student, project: @assignment.projects[i]

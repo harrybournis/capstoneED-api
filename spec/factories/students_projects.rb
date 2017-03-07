@@ -9,7 +9,7 @@ FactoryGirl.define do
   	end
 
     factory :students_project_seeder do
-      nickname { [Faker::LordOfTheRings.character, Faker::StarWars.character, Faker::Zelda.character, Faker::HarryPotter.character, "#{Faker::Cat.name} #{Faker::Space.galaxy}"].sample }
+      nickname { [Faker::LordOfTheRings.character, Faker::StarWars.character, Faker::Zelda.character, Faker::HarryPotter.character, "#{Faker::Cat.name} #{Faker::Space.galaxy}"].sample + "#{rand(100).to_s}" }
     end
 	end
 end
