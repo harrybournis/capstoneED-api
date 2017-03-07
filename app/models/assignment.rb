@@ -27,6 +27,12 @@ class Assignment < ApplicationRecord
 
   attr_writer :project_counter
 
+  # Returns the currently active Assignments
+  def self.active
+    where('start_date <= :date_now and end_date >= :date_now',
+          date_now: Date.today)
+  end
+
   # return the number of projects. If it has not persisted, return 0
   def project_counter
     persisted? ? projects.count : @project_counter

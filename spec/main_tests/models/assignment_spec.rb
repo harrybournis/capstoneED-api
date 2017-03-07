@@ -21,6 +21,15 @@ RSpec.describe Assignment, type: :model do
 
 			it { should validate_uniqueness_of(:id) }
 
+			it '.active returns only active assignments' do
+				assignment1 = create :assignment, start_date: Date.today - 3.days, end_date: Date.today + 1.month
+				assignment2 = create :assignment, start_date: Date.today + 1.year, end_date: Date.today + 2.years
+
+				expect(Assignment.count).to eq(2)
+				expect(Assignment.active.count).to eq(1)
+				expect(Assignment.active.first).to eq assignment1
+			end
+
 			it 'should validate that unit_id belongs to lecturer_id' do
 				assignment.unit = FactoryGirl.create(:unit)
 				expect(assignment.lecturer.units).to_not include(assignment.unit)
