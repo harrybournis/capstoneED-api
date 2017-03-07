@@ -107,14 +107,14 @@ RSpec.describe 'Includes', type: :controller do
 						get :index, params: { includes: 'students,project' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400)
-					expect(body['errors']['base'][0]).to include("Invalid 'includes' parameter. Unit resource for Student user accepts only: lecturer, department. Received: students,project.")
+					expect(body['errors']['base'][0]).to include("Invalid 'includes' parameter")
 
 					unit = @lecturer.units[0]
 					expect {
 						get :show, params: { id: unit.id, includes: 'students,project' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400)
-					expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Unit resource for Student user accepts only: lecturer, department. Received: students,project.")
+					expect(body['errors']['base'][0]).to include("Invalid 'includes' parameter")
 				end
 			end
 		end
@@ -147,14 +147,14 @@ RSpec.describe 'Includes', type: :controller do
 						get :index, params: { includes: 'department,assignments,students' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400)
-					expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Project resource for Student user accepts only: assignment, students, lecturer. Received: department,assignments,students.")
+					expect(body['errors']['base'][0]).to include("Invalid 'includes' parameter")
 
 					project = @lecturer.projects[0]
 					expect {
 						get :show, params: { id: project.id, includes: 'department,assignments,students' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400)
-					expect(body['errors']['base'][0]).to eq("Invalid 'includes' parameter. Project resource for Student user accepts only: assignment, students, lecturer. Received: department,assignments,students.")
+					expect(body['errors']['base'][0]).to include("Invalid 'includes' parameter")
 				end
 			end
 		end

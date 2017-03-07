@@ -106,11 +106,11 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
   end
 
   def unit_associations
-    %w(lecturer department).freeze
+    %w(lecturer assignments department).freeze
   end
 
   def project_associations
-    %w(assignment students lecturer).freeze
+    %w(assignment unit students lecturer).freeze
   end
 
   def iteration_associations

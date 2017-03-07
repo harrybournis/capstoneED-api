@@ -78,7 +78,7 @@ RSpec.describe 'Includes', type: :controller do
 			it 'GET index can not include projects' do
 				get :show, params: { id: @unit.id, includes: 'projects'}
 				expect(response.status).to eq(400)
-				expect(body['errors']['base'].first).to include("Invalid 'includes' parameter. Unit resource for Student user accepts only: lecturer, department. Received: projects.")
+				expect(body['errors']['base'].first).to include("Invalid 'includes' parameter")
 			end
 		end
 
