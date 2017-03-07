@@ -141,7 +141,7 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 		end
 	end
 
-	describe 'PAForms' do
+	describe 'PaForms' do
 		it 'returns correct pa_forms' do
 			@user = FactoryGirl.create(:lecturer)
 			@request = MockRequest.new(valid = true, @user)

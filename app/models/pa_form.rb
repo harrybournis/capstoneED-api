@@ -1,5 +1,5 @@
 ## A Lecturer creates a PAForm to assess students for each iteration
-class PAForm < Deliverable
+class PaForm < Deliverable
   # Attributes
   # iteration_id  :integer
   # questions     :jsonb { question_id => question_text }

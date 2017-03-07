@@ -1,3 +1,3 @@
-class Includes::PAFormSerializer < PAFormSerializer
+class Includes::PaFormSerializer < PAFormSerializer
 	belongs_to :iteration
 end

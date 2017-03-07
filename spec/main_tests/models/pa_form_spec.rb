@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe PAForm, type: :model do
+RSpec.describe PaForm, type: :model do
 
 	subject(:pa_form) { FactoryGirl.build(:pa_form) }
 
@@ -13,27 +13,27 @@ RSpec.describe PAForm, type: :model do
 
 	it 'validates presence of questions' do
 		iteration = FactoryGirl.create(:iteration)
-		pa_form = PAForm.create(iteration_id: iteration.id)
+		pa_form = PaForm.create(iteration_id: iteration.id)
 		expect(pa_form.save).to be_falsy
 		expect(pa_form.errors['questions'][0]).to eq("can't be blank")
 	end
 
 	it 'jsonb keeps questions order intact' do
 		iteration = FactoryGirl.create(:iteration)
-		pa_form = PAForm.create(iteration_id: iteration.id,
+		pa_form = PaForm.create(iteration_id: iteration.id,
 			questions: ["1st", "2nd" ,"3rd" ], start_offset: iteration.start_date, end_offset: iteration.deadline)
 		pa_form.reload
 		expect(pa_form.questions[1]).to eq({ 'question_id' => 2, 'text' => "2nd" })
 	end
 
 	it 'translates the start_date and deadline to start_offset and deadline' do
-		pa = PAForm.new attributes_for(:pa_form).except(:start_offset, :end_offset).merge!(start_date: DateTime.now + 2.day, deadline: DateTime.now + 4.days, iteration_id: create(:iteration).id)
+		pa = PaForm.new attributes_for(:pa_form).except(:start_offset, :end_offset).merge!(start_date: DateTime.now + 2.day, deadline: DateTime.now + 4.days, iteration_id: create(:iteration).id)
 
 		expect(pa.save).to be_truthy
 	end
 
 	it '#start_date= sets start_offset' do
-		pa = PAForm.new attributes_for(:pa_form).except(:start_offset).merge! iteration_id: create(:iteration).id
+		pa = PaForm.new attributes_for(:pa_form).except(:start_offset).merge! iteration_id: create(:iteration).id
 		expect(pa.start_offset).to be_falsy
 		start_date = pa.iteration.deadline + pa.end_offset - 1.day
 
@@ -44,7 +44,7 @@ RSpec.describe PAForm, type: :model do
 	end
 
 	it '#deadline= sets end_offset' do
-		pa = PAForm.new attributes_for(:pa_form).except(:end_offset).merge! iteration_id: create(:iteration).id
+		pa = PaForm.new attributes_for(:pa_form).except(:end_offset).merge! iteration_id: create(:iteration).id
 		expect(pa.end_offset).to be_falsy
 		deadline = pa.iteration.deadline + pa.start_offset + 1.day
 
@@ -56,7 +56,7 @@ RSpec.describe PAForm, type: :model do
 
 	it '#store_questions formats questions in the correct form' do
 		questions = ['What?', 'Who?', 'When?', 'Where?']
-		pa_form = PAForm.new(iteration_id: 1, questions: questions)
+		pa_form = PaForm.new(iteration_id: 1, questions: questions)
 
 		expect(pa_form.questions).to eq([
 			{ 'question_id' => 1, 'text' => 'What?' }, { 'question_id' => 2, 'text' => 'Who?' }, { 'question_id' => 3, 'text' => 'When?' }, { 'question_id' => 4, 'text' => 'Where?' }])
@@ -64,21 +64,21 @@ RSpec.describe PAForm, type: :model do
 
 	it 'validates the format of the questions' do
 		iteration = FactoryGirl.create(:iteration)
-		pa_form = PAForm.new(iteration_id: iteration.id,
+		pa_form = PaForm.new(iteration_id: iteration.id,
 			questions: [{ 'question_id' => 1, 'text' => "1st" }, { 'question_id' => 2, 'text' => "2nd" }, { 'question_id' => 3, 'text' => "3rd" }])
 		expect(pa_form.save).to be_falsy
 
-		pa_form = PAForm.new(iteration_id: iteration.id,
+		pa_form = PaForm.new(iteration_id: iteration.id,
 			questions: { 'questions_id' => 1, 'text' => "1st" })
 		expect(pa_form.save).to be_falsy
 		expect(pa_form.errors[:questions].first).to include("can't be blank")
 
-		pa_form = PAForm.new(iteration_id: iteration.id,
+		pa_form = PaForm.new(iteration_id: iteration.id,
 			questions: [])
 		expect(pa_form.save).to be_falsy
 		expect(pa_form.errors[:questions].first).to include("can't be blank")
 
-		pa_form = PAForm.new(iteration_id: iteration.id, questions: ['dkd', 4])
+		pa_form = PaForm.new(iteration_id: iteration.id, questions: ['dkd', 4])
 		expect(pa_form.save).to be_falsy
 		expect(pa_form.errors['questions'][0]).to include("can't be blank")
 	end
@@ -89,22 +89,22 @@ RSpec.describe PAForm, type: :model do
 		iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days)
 		FactoryGirl.create(:pa_form, iteration: iteration1)
 		FactoryGirl.create(:pa_form, iteration: iteration2)
-		expect(PAForm.all.length).to eq 2
+		expect(PaForm.all.length).to eq 2
 
 		Timecop.travel(now + 3.days + 1.minute) do
-			expect(PAForm.active.length).to eq 1
+			expect(PaForm.active.length).to eq 1
 		end
 
 		Timecop.travel(now + 4.days + 1.minute) do
-			expect(PAForm.active.length).to eq 2
+			expect(PaForm.active.length).to eq 2
 		end
 
 		Timecop.travel(now + 5.days + 1.minute) do
-			expect(PAForm.active.length).to eq 1
+			expect(PaForm.active.length).to eq 1
 		end
 
 		Timecop.travel(now + 6.days + 1.minute) do
-			expect(PAForm.active.length).to eq 0
+			expect(PaForm.active.length).to eq 0
 		end
 	end
 

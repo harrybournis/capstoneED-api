@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :pa_form, class: PAForm do
+  factory :pa_form do
     questions {  ['What do you typically have for breakfast?',
                   'Can you solve sudoko puzzles?',
                   'Have you ever been professionally photographed?',

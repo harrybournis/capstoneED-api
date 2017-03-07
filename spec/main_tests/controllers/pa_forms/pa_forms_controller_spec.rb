@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe V1::PAFormsController, type: :controller do
+RSpec.describe V1::PaFormsController, type: :controller do
 
 	before(:all) do
 		@lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
@@ -13,7 +13,7 @@ RSpec.describe V1::PAFormsController, type: :controller do
 
 	describe 'Lecturer' do
 		before(:each) do
-			@controller = V1::PAFormsController.new
+			@controller = V1::PaFormsController.new
 			mock_request = MockRequest.new(valid = true, @lecturer)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
@@ -85,7 +85,7 @@ RSpec.describe V1::PAFormsController, type: :controller do
 	describe 'Student' do
 
 		before(:each) do
-			@controller = V1::PAFormsController.new
+			@controller = V1::PaFormsController.new
 			@student = FactoryGirl.build(:student_with_password).process_new_record
 			@student.save
 			@student.confirm
@@ -103,7 +103,7 @@ RSpec.describe V1::PAFormsController, type: :controller do
 			FactoryGirl.create(:pa_form, iteration: iteration1)
 			FactoryGirl.create(:pa_form, iteration: iteration2)
 			irrelevant = FactoryGirl.create(:pa_form)
-			expect(PAForm.all.length).to eq 3
+			expect(PaForm.all.length).to eq 3
 
 			Timecop.travel(now + 6.days + 1.minute) do
 				mock_request = MockRequest.new(valid = true, @student)
@@ -146,7 +146,7 @@ RSpec.describe V1::PAFormsController, type: :controller do
 			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 			irrelevant = FactoryGirl.create(:pa_form, iteration: iteration3)
 			extension = FactoryGirl.create(:extension, project_id: @project.id, deliverable_id: pa_form2.id)
-			expect(PAForm.all.length).to eq 4
+			expect(PaForm.all.length).to eq 4
 
 			Timecop.travel(now + 5.days + 1.minute) do
 				mock_request = MockRequest.new(valid = true, @student)

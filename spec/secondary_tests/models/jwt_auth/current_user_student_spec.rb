@@ -113,7 +113,7 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 		end
 	end
 
-	describe 'PAForms' do
+	describe 'PaForms' do
 
 		before do
 			@user = FactoryGirl.create(:lecturer)
@@ -147,7 +147,7 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			FactoryGirl.create(:pa_form, iteration: iteration1)
 			FactoryGirl.create(:pa_form, iteration: iteration2)
 			irrelevant = FactoryGirl.create(:pa_form)
-			expect(PAForm.all.length).to eq 3
+			expect(PaForm.all.length).to eq 3
 
 			Timecop.travel(now + 3.days + 1.minute) do
 				expect(@current_user.pa_forms_active.length).to eq 1

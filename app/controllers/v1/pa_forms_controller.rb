@@ -23,7 +23,7 @@ class V1::PaFormsController < ApplicationController
       return
     end
 
-    @pa_form = PAForm.new(pa_form_params)
+    @pa_form = PaForm.new(pa_form_params)
 
     if @pa_form.save
       render json: @pa_form, status: :created
@@ -67,7 +67,7 @@ class V1::PaFormsController < ApplicationController
 
   # The class of the resource that the controller handles
   def controller_resource
-    PAForm
+    PaForm
   end
 
   def pa_form_params

@@ -12,7 +12,7 @@ class Extension < ApplicationRecord
                           message: 'already exists for this project_id'
 
   # Associations
-  belongs_to :pa_form, class_name: PAForm, foreign_key: :deliverable_id
+  belongs_to :pa_form, foreign_key: :deliverable_id
   belongs_to :project
   has_one :assignment, through: :project
   has_many :students_projects, through: :project

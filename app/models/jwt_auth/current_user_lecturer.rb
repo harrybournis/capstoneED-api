@@ -58,7 +58,7 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
   end
 
   def pa_forms(options = {})
-    PAForm.joins(:iteration, :assignment)
+    PaForm.joins(:iteration, :assignment)
           .eager_load(options[:includes])
           .where(['assignments.lecturer_id = ?', @id])
   end

@@ -64,14 +64,14 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
   end
 
   def pa_forms(options = {})
-    PAForm.joins(:students_projects)
+    PaForm.joins(:students_projects)
           .where(['students_projects.student_id = ?', @id])
           .eager_load(options[:includes])
           .distinct
   end
 
   def pa_forms_active(options = {})
-    PAForm.active
+    PaForm.active
           .joins(:students_projects)
           .where(['students_projects.student_id = ?', @id])
           .eager_load(options[:includes])

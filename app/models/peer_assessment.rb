@@ -8,7 +8,7 @@ class PeerAssessment < ApplicationRecord
   # answers           :jsonb    { question_id => answer }
 
   # Associations
-  belongs_to :pa_form, class_name: PAForm
+  belongs_to :pa_form
   belongs_to :submitted_by, class_name: Student, foreign_key: :submitted_by_id
   belongs_to :submitted_for, class_name: Student, foreign_key: :submitted_for_id
   belongs_to :project

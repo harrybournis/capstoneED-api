@@ -9,7 +9,6 @@ class Iteration < ApplicationRecord
   # Associations
   belongs_to :assignment
   has_one :pa_form,
-          class_name: PAForm,
           inverse_of: :iteration,
           dependent: :destroy
   has_many :projects, through: :assignment
