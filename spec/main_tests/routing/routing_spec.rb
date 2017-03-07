@@ -113,6 +113,12 @@ RSpec.describe 'Routing', type: :routing do
 			controller: 'v1/project_evaluations', action: 'index_with_iteration', iteration_id: '3')
 	end
 
+	# pa form
+	it 'GET /v1/pa_forms to PAFormController#index' do
+		expect(get: "#{url}/v1/pa_forms").to route_to(
+					 controller: 'v1/pa_forms', action: 'index')
+	end
+
 	# peer assessments
 
 	it 'GET /peer_assessments?pa_form_id routes to index' do

@@ -1,5 +1,5 @@
 ## PAForms Controller
-class V1::PAFormsController < ApplicationController
+class V1::PaFormsController < ApplicationController
   before_action :allow_if_lecturer, only: [:create, :update, :destroy]
   before_action :allow_if_student, only:  [:index]
   before_action :validate_includes,
