@@ -33,6 +33,7 @@ gem 'oauth2', '~> 1.2'
 gem 'lograge', '~> 0.4.1'
 
 gem 'factory_girl_rails', '~> 4.7'
+gem 'timecop', '~> 0.8.1'
 
 # Generate Fake Data
 gem 'faker', '~> 1.7', '>= 1.7.3'
@@ -69,7 +70,6 @@ group :test do
   gem 'db-query-matchers', '~> 0.6.0'
   gem 'pry-byebug', '~> 3.4'
   gem 'database_cleaner', '~> 1.5', '>= 1.5.3'
-  gem 'timecop', '~> 0.8.1'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

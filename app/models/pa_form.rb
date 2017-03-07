@@ -28,6 +28,13 @@ class PaForm < Deliverable
                               iterations.deadline > :now", now: DateTime.now)
   end
 
+  # Returns true if the current time is after the form's start_date, and
+  # before the form's deadline
+  def active?
+    now = DateTime.now
+    now >= start_date && now <= deadline
+  end
+
   # Get the start date of the PAForm. It is calculated form the iteration's
   # deadline.
   def start_date
