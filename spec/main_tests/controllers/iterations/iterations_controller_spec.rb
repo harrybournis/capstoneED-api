@@ -95,9 +95,11 @@ RSpec.describe V1::IterationsController, type: :controller do
 		end
 
 		it 'POST create accepts params for pa_form', { docs?: true } do
-			post :create, params: { assignment_id: @user.assignments[0].id, name: 'name', start_date: DateTime.now + 1.week, deadline: DateTime.now + 3.months, pa_form_attributes: { questions: ['Who is it?', 'Human?', 'Hello?', 'Favorite Power Ranger?'], start_offset: 0, end_offset: 5.days.to_i } }
+			attributes = attributes_for(:pa_form)
+			questions = attributes[:questions]
+			post :create, params: { assignment_id: @user.assignments[0].id, name: 'name', start_date: DateTime.now + 1.week, deadline: DateTime.now + 3.months, pa_form_attributes: attributes }
 			expect(status).to eq(201)
-			expect(body['iteration']['pa_form']['questions']).to eq([{"question_id"=>1, "text"=>"Who is it?"}, {"question_id"=>2, "text"=>"Human?"}, {"question_id"=>3, "text"=>"Hello?"}, {"question_id"=>4, "text"=>"Favorite Power Ranger?"}])
+			expect(body['iteration']['pa_form']['questions']).to eq(PaForm.find(body['iteration']['pa_form']['id']).questions)
 		end
 
 		it 'PATCH update current user must be associated with the project', { docs?: true } do

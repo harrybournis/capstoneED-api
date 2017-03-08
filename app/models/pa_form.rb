@@ -71,18 +71,16 @@ class PaForm < Deliverable
   # @param  [Array]   questions_param The questions of the PAform as an
   #                   Array in the order they are supposed to appear.
   def questions=(questions_param)
-    if questions_param.is_a?(Array) && questions_param.any?
-      jsonb_array = []
+    super nil ; return unless questions_param.is_a?(Array) && questions_param.any?
+    jsonb_array = []
 
-      questions_param.each_with_index do |elem, i|
-        super nil ; return unless elem.is_a? String
-        jsonb_array << { 'question_id' => i + 1, 'text' => elem }
-      end
-
-      super jsonb_array
-    else
-      super nil
+    questions_param.each_with_index do |elem, i|
+      super nil ; return unless elem['text'].present? && elem['type_id'].present?
+      jsonb_array << { 'question_id' => i + 1,
+                       'text' => elem['text'],
+                       'type_id' => elem['type_id'] }
     end
+    super jsonb_array
   end
 
   # return the deadline plus the extension time if there is one for
@@ -123,8 +121,14 @@ class PaForm < Deliverable
     end
 
     questions.each do |q|
-      unless q.length == 2 && q['question_id'].present? && q['text'].present?
-        errors.add(:questions, "missing required parameters. Only 'question_id' and 'text' are accepted, and they must BOTH be present for each question.")
+      unless q.length == 3 && q['question_id'].present? &&
+                              q['text'].present? &&
+                              q['type_id'].present?
+        errors.add(:questions, "missing required parameters. Only 'question_id', 'text' and 'type_id' are accepted, and all three must be present for each question.")
+        break
+      end
+      unless QuestionType.exists?(id: q['type_id'])
+        errors.add :questions, "type_id does not match any QuestionType in the database"
         break
       end
     end

@@ -34,10 +34,21 @@ RSpec.describe V1::PaFormsController, type: :controller do
 		end
 
 		it 'POST create responds with 201 if correct params', { docs?: true } do
-			post :create, params: { iteration_id: @iteration.id, questions: ['Who is it?', 'Human?', 'Hello?', 'Favorite Power Ranger?'], start_date: @iteration.deadline + 1.day.to_i, deadline: @iteration.deadline + 3.days.to_i }
+			type1 = create :question_type
+			type2 = create :question_type
+			post :create, params: { iteration_id: @iteration.id,
+															questions: [{ 'question_id' => 1, 'text' => 'Who is it?', 'type_id' => type2.id },
+																					{ 'question_id' => 2, 'text' => 'Human?', 'type_id' => type2.id },
+																					{ 'question_id' => 3, 'text' => 'Hello?', 'type_id' => type1.id },
+																					{ 'question_id' => 4, 'text' => 'Favorite Power Ranger?', 'type_id' => type2.id }],
+															start_date: @iteration.deadline + 1.day.to_i,
+															deadline: @iteration.deadline + 3.days.to_i }
 
 			expect(status).to eq(201)
-			expect(body['pa_form']['questions']).to eq([{ "question_id" => 1, "text" => 'Who is it?' }, { "question_id" => 2, "text" => 'Human?' }, { "question_id" => 3, "text" => 'Hello?' }, { "question_id" => 4, "text" => 'Favorite Power Ranger?' }])
+			expect(body['pa_form']['questions']).to eq([{ "question_id" => 1, "text" => 'Who is it?', 'type_id' => "#{type2.id}" },
+																									{ "question_id" => 2, "text" => 'Human?', 'type_id' => "#{type2.id}" },
+																									{ "question_id" => 3, "text" => 'Hello?', 'type_id' => "#{type1.id}" },
+																									{ "question_id" => 4, "text" => 'Favorite Power Ranger?', 'type_id' => "#{type2.id}" }])
 		end
 
 		it 'POST create responds with 422 unprocessable entity if questions not in correct form', { docs?: true } do
