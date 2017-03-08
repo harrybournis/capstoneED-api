@@ -71,10 +71,15 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
   end
 
   def pa_forms_active(options = {})
+    includes =  if options[:includes]
+                  options[:includes]
+                else
+                  [:projects, :students_projects]
+                end
     PaForm.active
-          .joins(:students_projects)
+          .joins(:projects, :students_projects)
+          .eager_load(includes)
           .where(['students_projects.student_id = ?', @id])
-          .eager_load(options[:includes])
           .distinct
   end
 
