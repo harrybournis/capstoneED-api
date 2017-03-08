@@ -60,6 +60,7 @@ class V1::ProjectsController < ApplicationController
     end
 
     project = Project.new(project_params)
+                     .generate_random_color
 
     if project.save
       render json: project, status: :created
@@ -120,7 +121,7 @@ class V1::ProjectsController < ApplicationController
       params.permit(:project_name, :team_name, :description,
                     :logo, :enrollment_key)
     else
-      params.permit(:team_name, :logo)
+      params.permit(:logo)
     end
   end
 

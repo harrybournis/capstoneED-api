@@ -85,11 +85,10 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		describe 'PATCH update' do
 			it 'updates the parameters successfully if student is member of the project', { docs?: true, lecturer?: false } do
 				expect {
-					patch :update, params: { id: Project.first.id, team_name: 'CrazyProject666', logo: 'http://www.images.com/images/4259' }
-				}.to change { Project.first.team_name }
+					patch :update, params: { id: Project.first.id, logo: 'http://www.images.com/images/4259' }
+				}.to change { Project.first.logo }
 				expect(status).to eq(200)
 				expect(parse_body['project']['logo']).to eq('http://www.images.com/images/4259')
-				expect(parse_body['project']['team_name']).to eq('CrazyProject666')
 			end
 
 			it 'responds with 403 if student is not member of the Project' do
@@ -205,13 +204,6 @@ RSpec.describe V1::ProjectsController, type: :controller do
 
 				expect(status).to eq(204)
 			end
-
-			# it 'responds with 403 forbidden if no assignment_id in the params' do
-			# 	assignment = create(:assignment)
-			# 	get :index
-			# 	expect(status).to eq(403)
-			# 	expect(errors['base'].first).to include("Lecturers must provide")
-			# end
 		end
 
 		describe 'GET show' do
@@ -229,7 +221,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 		describe "POST create" do
 			it 'creates a new project if the current user is lecturer and owner of the project', { docs?: true } do
 				expect {
-					post :create, params: attributes_for(:project, assignment_id: @lecturer.assignments.last.id)
+					post :create, params: attributes_for(:project, assignment_id: @lecturer.assignments.last.id).except(:color)
 				}.to change { Project.all.count }.by(1)
 				expect(status).to eq(201)
 			end
@@ -241,6 +233,14 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				}.to_not change { Project.all.count }
 				expect(status).to eq(403)
 				expect(errors['base'].first).to eq("This Assignment is not associated with the current user")
+			end
+
+			it 'generates a random color for the project' do
+				expect {
+					post :create, params: attributes_for(:project, assignment_id: @lecturer.assignments.last.id)
+				}.to change { Project.all.count }.by(1)
+				expect(status).to eq(201)
+				expect(body['project']['color']).to be_truthy
 			end
 		end
 

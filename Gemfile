@@ -38,6 +38,9 @@ gem 'timecop', '~> 0.8.1'
 # Generate Fake Data
 gem 'faker', '~> 1.7', '>= 1.7.3'
 
+# Generate Random Colors
+gem 'color-generator', '~> 0.0.4'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri

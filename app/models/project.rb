@@ -8,11 +8,13 @@ class Project < ApplicationRecord
   # enrollment_key  :string
   # logo            :string
   # description     :string
+  # color           :string
   # assignment_id   :integer
   # unit_id         :integer
 
   include Project::Evaluatable,
-          Project::Enrollable
+          Project::Enrollable,
+          Project::Colorable
 
   # Associations
   belongs_to  :assignment, inverse_of: :projects

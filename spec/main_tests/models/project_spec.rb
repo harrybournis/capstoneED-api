@@ -193,5 +193,15 @@ RSpec.describe Project, type: :model do
 					expect(project.team_name).to eq("Team 3")
 				end
 			end
+
+			it '#generate_random_color color generates a new color' do
+				project = create :project
+				orig_color = project.color
+
+				project.generate_random_color
+
+				expect(project.color).to_not eq orig_color
+				expect(project.save).to be_truthy
+			end
 	end
 end

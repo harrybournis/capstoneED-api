@@ -54,6 +54,7 @@ GEM
     case_transform (0.2)
       activesupport
     coderay (1.1.1)
+    color-generator (0.0.4)
     concurrent-ruby (1.0.5)
     database_cleaner (1.5.3)
     db-query-matchers (0.6.0)
@@ -224,6 +225,7 @@ DEPENDENCIES
   awesome_print (~> 1.7)
   benchmark-ips (~> 2.7, >= 2.7.1)
   byebug
+  color-generator (~> 0.0.4)
   database_cleaner (~> 1.5, >= 1.5.3)
   db-query-matchers (~> 0.6.0)
   devise (~> 4.2)
