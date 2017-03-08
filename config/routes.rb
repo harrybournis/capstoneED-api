@@ -61,6 +61,9 @@ Rails.application.routes.draw do
 
     # Feelings
     resources :feelings, only: [:index]
+
+    # Question Types
+    resources :question_types, only: [:index]
   end
 
   ## To be removed
