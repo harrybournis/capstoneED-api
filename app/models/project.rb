@@ -51,13 +51,21 @@ class Project < ApplicationRecord
                                      DateTime.now])
   end
 
-  # Instance Methods
-
   # Returns an array of StudentMembers POROs that contain all attributes of
   # the student,
   # plus their nicname for the current project
   def student_members
     students_projects.map { |sp| Decorators::StudentMember.new(sp.student, sp) }
+  end
+
+  # Returns the sum of the students' points
+  def total_points
+    students_projects.select(:points).sum :points
+  end
+
+  # Returs the average of all students' points
+  def average_points
+    students_projects.select(:points).average :points
   end
 
   private

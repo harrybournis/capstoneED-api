@@ -61,7 +61,7 @@ RSpec.describe Student, type: :model do
 		expect(@user.teammates.length).to eq 7
 	end
 
-	it '#nickname_for_project_id? returns the nickname for the provided project' do
+	it '#nickname_for_project_id returns the nickname for the provided project' do
 		student = FactoryGirl.create(:student)
 		project = FactoryGirl.create(:project)
 		project2 = FactoryGirl.create(:project)
@@ -81,5 +81,29 @@ RSpec.describe Student, type: :model do
 		project = FactoryGirl.create(:project)
 
 		expect(student.nickname_for_project_id(project.id)).to eq(nil)
+	end
+
+	it '#points_for_project_id returns the nickname for the provided project' do
+		student = FactoryGirl.create(:student)
+		project = FactoryGirl.create(:project)
+		project2 = FactoryGirl.create(:project)
+		nickname = "dr dre"
+		nickname2 = "snoop dogg"
+		points1 = 30
+		points2 = 50
+		sp = JoinTables::StudentsProject.new(project_id: project.id, student_id: student.id, nickname: nickname, points: points1)
+		sp2 = JoinTables::StudentsProject.new(project_id: project2.id, student_id: student.id, nickname: nickname2, points: points2)
+
+		expect(sp.save).to be_truthy
+		expect(student.points_for_project_id(project.id)).to eq(points1)
+		expect(sp2.save).to be_truthy
+		expect(student.points_for_project_id(project2.id)).to eq(points2)
+	end
+
+	it '#points_for_project_id returns nil if student is not in the project' do
+		student = FactoryGirl.create(:student)
+		project = FactoryGirl.create(:project)
+
+		expect(student.points_for_project_id(project.id)).to eq(nil)
 	end
 end

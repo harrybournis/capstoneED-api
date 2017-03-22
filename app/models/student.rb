@@ -29,11 +29,21 @@ class Student < User
   end
 
   # returns the Student's nickname for the provided project
-  # Returns the full_name if no nickname is found
+  # Returns nil if no nickname is found
   def nickname_for_project_id(project_id)
     JoinTables::StudentsProject.select(:nickname)
                                .where(project_id: project_id, student_id: id)[0]
                                .nickname
+  rescue
+    nil
+  end
+
+  # returns the student's points for the provided project
+  # Returns nil if the project is not found
+  def points_for_project_id(project_id)
+    JoinTables::StudentsProject.select(:points)
+                               .where(project_id: project_id, student_id: id)[0]
+                               .points
   rescue
     nil
   end

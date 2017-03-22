@@ -52,6 +52,15 @@ RSpec.describe JoinTables::StudentsProject, type: :model do
 		expect(sp.logs).to eq([])
 	end
 
+	it 'sets points to 0 when first created' do
+		student = FactoryGirl.create(:student)
+		project = FactoryGirl.create(:project)
+		sp = JoinTables::StudentsProject.new(nickname: "yo", student_id: student.id, project_id: project.id)
+
+		expect(sp.save).to be_truthy
+		expect(sp.points).to eq 0
+	end
+
 	context 'validates format of logs' do
 		before :each do
 			student = FactoryGirl.create(:student)

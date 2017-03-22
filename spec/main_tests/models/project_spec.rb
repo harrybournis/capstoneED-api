@@ -203,5 +203,34 @@ RSpec.describe Project, type: :model do
 				expect(project.color).to_not eq orig_color
 				expect(project.save).to be_truthy
 			end
+
+			it '#total_points returns the total points of all students in project' do
+				project = create :project
+				student1 = create :student
+				student2 = create :student
+				points1 = 40
+				points2 = 55
+
+				sp1 = create :students_project, student: student1, project: project, points: points1
+				sp2 = create :students_project, student: student2, project: project, points: points2
+				expect(project.students.count).to eq(2)
+
+				expect(project.total_points).to eq(sp1.points + sp2.points)
+			end
+
+			it '#average_points returns the average points of all students in project' do
+				project = create :project
+				student1 = create :student
+				student2 = create :student
+				points1 = 40
+				points2 = 55
+
+				sp1 = create :students_project, student: student1, project: project, points: points1
+				sp2 = create :students_project, student: student2, project: project, points: points2
+				expect(project.students.count).to eq(2)
+
+				a = [sp1.points, sp2.points]
+				expect(project.average_points).to eq a.reduce(:+) / a.size.to_f
+			end
 	end
 end

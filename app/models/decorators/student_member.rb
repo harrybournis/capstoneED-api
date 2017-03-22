@@ -13,9 +13,10 @@ module Decorators
       @type = 'Student'
       @avatar_url = student.avatar_url
       @nickname = students_project.nickname if students_project.nickname
+      @points = students_project.points     if students_project.points
     end
 
-    attr_accessor :id, :first_name, :last_name, :email,
-                  :provider, :type, :nickname, :avatar_url
+    attr_accessor :id, :first_name, :last_name, :email, :provider, :type,
+                  :avatar_url, :nickname, :points
   end
 end
