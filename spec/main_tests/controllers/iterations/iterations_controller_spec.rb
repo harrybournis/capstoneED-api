@@ -25,8 +25,6 @@ RSpec.describe V1::IterationsController, type: :controller do
 
 	context 'Valid' do
 
-
-
 		it 'GET index needs a assignment_id and it must be associated with current_user', { docs?: true } do
 			assignment = @user.assignments[1]
 			assignment.iterations.each do |iteration|
