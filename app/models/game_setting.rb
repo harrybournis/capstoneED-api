@@ -17,10 +17,10 @@ class GameSetting < ApplicationRecord
   # points_project_evaluation_first_of_team :integer
   # points_project_evaluation_first_of_assignment :integer
 
-  belongs_to :assignment
+  belongs_to :assignment, inverse_of: :game_setting
 
-  validates :assignment_id,
-            :points_log,
+  validates_presence_of :assignment
+  validates :points_log,
             :points_log_first_of_day,
             :points_log_first_of_team,
             :points_log_first_of_assignment,

@@ -16,8 +16,8 @@ RSpec.describe V1::GameSettingsController, type: :controller do
     request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
   end
 
-  describe 'GET show' do
-    it 'returns game settings if current user is the assignment owner' do
+  describe 'GET index' do
+    it 'returns game settings if current user is the assignment owner', { docs?: true } do
       expect(@assignment.game_setting).to be_truthy
       get :index, params: { assignment_id: @assignment.id }
 
@@ -56,9 +56,9 @@ RSpec.describe V1::GameSettingsController, type: :controller do
       expect(errors['base'][0]).to include('not associated')
     end
 
-    it 'returns 403 if the project does not exist in database' do
+    it 'returns 403 if the assignment not exist in database' do
       wrong_id = 373733
-      expect { GameSetting.find(wrong_id) }.to raise_error ActiveRecord::RecordNotFound
+      expect { Assignment.find(wrong_id) }.to raise_error ActiveRecord::RecordNotFound
 
       get :index, params: { assignment_id: wrong_id }
 
@@ -74,7 +74,7 @@ RSpec.describe V1::GameSettingsController, type: :controller do
       @assignment1 = create :assignment, lecturer: @user
     end
 
-    it 'returns 201 if only assignment_id is provided' do
+    it 'returns 201 if only assignment_id is provided', { docs?: true } do
       post :create, params: { assignment_id: @assignment1.id }
 
       expect(status).to eq 201
@@ -82,7 +82,7 @@ RSpec.describe V1::GameSettingsController, type: :controller do
       expect(body['game_settings']['assignment_id']).to eq @assignment1.id
     end
 
-    it 'returns 201 if all parameters are present and does not have the default values' do
+    it 'returns 201 if all parameters are present and does not have the default values', { docs?: true } do
       parameters = attributes_for(:game_setting).merge({ assignment_id: @assignment1.id })
 
       post :create, params: parameters
@@ -94,7 +94,7 @@ RSpec.describe V1::GameSettingsController, type: :controller do
       expect(body['game_settings'].except('id')).to eq par
     end
 
-    it 'returns 422 if one parameter is not an integer' do
+    it 'returns 422 if one parameter is not an integer', { docs?: true } do
       parameters = attributes_for(:game_setting).merge({ assignment_id: @assignment1.id, points_log: 'wrong' })
 
       post :create, params: parameters
@@ -139,7 +139,7 @@ RSpec.describe V1::GameSettingsController, type: :controller do
 
 
   describe 'PATCH update' do
-    it 'returns 200 and the new assignment if assignment_id belongs to the user and at least one parameter is present' do
+    it 'returns 200 and the new assignment if assignment_id belongs to the user and at least one parameter is present', { docs?: true } do
       points = 90
       parameters = attributes_for(:game_setting).merge({ assignment_id: @assignment.id,
                                                          id: @assignment.game_setting.id,
