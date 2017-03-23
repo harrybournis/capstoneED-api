@@ -26,7 +26,9 @@ Rails.application.routes.draw do
 
     # Assignments
     get 'assignments', to: 'assignments#index_with_unit', constraints: -> (request) { request.params[:unit_id] }
-    resources :assignments, only: [:index, :show, :create, :update, :destroy]
+    resources :assignments, only: [:index, :show, :create, :update, :destroy] do
+      resources :game_settings, only: [:index, :create, :update]
+    end
 
     # Projects
     get     'projects', to: 'projects#index_with_assignment', constraints: -> (request) { request.params[:assignment_id] }

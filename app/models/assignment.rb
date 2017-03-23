@@ -10,6 +10,7 @@ class Assignment < ApplicationRecord
   # Associations
   belongs_to 	:lecturer
   belongs_to 	:unit
+  has_one     :game_setting
   has_many :projects, inverse_of: :assignment, dependent: :destroy
   has_many :students_projects, through: :projects
   has_many :students, through: :students_projects
