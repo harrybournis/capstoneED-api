@@ -64,8 +64,8 @@ RSpec.describe 'Routing', type: :routing do
 	end
 
 	it 'PATCH /v1/assignments/2/game_settings to route to GameSettings#create' do
-		expect(patch: "#{url}/v1/assignments/2/game_settings/4").to route_to(
-					 controller: 'v1/game_settings', action: 'update', assignment_id: "2", id: "4")
+		expect(patch: "#{url}/v1/assignments/2/game_settings").to route_to(
+					 controller: 'v1/game_settings', action: 'update', assignment_id: "2")
 	end
 
 end

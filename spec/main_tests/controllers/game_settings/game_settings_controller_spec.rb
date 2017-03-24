@@ -142,7 +142,6 @@ RSpec.describe V1::GameSettingsController, type: :controller do
     it 'returns 200 and the new assignment if assignment_id belongs to the user and at least one parameter is present', { docs?: true } do
       points = 90
       parameters = attributes_for(:game_setting).merge({ assignment_id: @assignment.id,
-                                                         id: @assignment.game_setting.id,
                                                          points_log: points })
 
       patch :update, params: parameters
@@ -156,7 +155,6 @@ RSpec.describe V1::GameSettingsController, type: :controller do
       assignment_other = create :assignment
       points = 90
       parameters = attributes_for(:game_setting).merge({ assignment_id: assignment_other.id,
-                                                         id: 4,
                                                          points_log: points })
 
       patch :update, params: parameters
@@ -165,18 +163,17 @@ RSpec.describe V1::GameSettingsController, type: :controller do
       expect(errors_base[0]).to include 'not associated'
     end
 
-    it 'returns 403 if the id does not match the id of the assignments game_setting' do
+    it 'returns 422 if assignment does not contain game_settings' do
       points = 90
-      wrong_id = 474373
-      expect(@assignment.game_setting.id).to_not eq wrong_id
-      parameters = attributes_for(:game_setting).merge({ assignment_id: @assignment.id,
-                                                         id: wrong_id,
+      assignment = create :assignment, lecturer: @user
+      expect(assignment.game_setting).to be_falsy
+      parameters = attributes_for(:game_setting).merge({ assignment_id: assignment.id,
                                                          points_log: points })
 
       patch :update, params: parameters
 
-      expect(status).to eq 403
-      expect(errors_base[0]).to include 'does not match'
+      expect(status).to eq 422
+      expect(errors_base[0]).to include 'does not have game settings'
     end
 
     it 'returns 403 if current user is not a lecturer' do
@@ -187,7 +184,7 @@ RSpec.describe V1::GameSettingsController, type: :controller do
       request.cookies['access-token'] = mock_request.cookies['access-token']
       request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-      patch :update, params: { assignment_id: 1, id: 3 }
+      patch :update, params: { assignment_id: 1 }
 
       expect(status).to eq 403
       expect(body['errors']['base'][0]).to include('Lecturer to access')
@@ -195,7 +192,6 @@ RSpec.describe V1::GameSettingsController, type: :controller do
 
     it 'returns 422 if one of the parameters is not an integer' do
       parameters = attributes_for(:game_setting).merge({ assignment_id: @assignment.id,
-                                                         id: @assignment.game_setting.id,
                                                          points_log: 'wrong' })
 
       patch :update, params: parameters
