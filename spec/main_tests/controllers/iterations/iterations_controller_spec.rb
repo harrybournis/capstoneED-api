@@ -25,11 +25,14 @@ RSpec.describe V1::IterationsController, type: :controller do
 
 	context 'Valid' do
 
-
-
 		it 'GET index needs a assignment_id and it must be associated with current_user', { docs?: true } do
 			assignment = @user.assignments[1]
+			assignment.iterations.each do |iteration|
+				create :pa_form, iteration: iteration
+			end
+
 			get :index, params: { assignment_id: assignment.id }
+
 			expect(status).to eq(200)
 			expect(body['iterations'].length).to eq(2)
 		end
@@ -69,7 +72,10 @@ RSpec.describe V1::IterationsController, type: :controller do
 		end
 
 		it 'GET show iteration needs the assignment to be associated with current_user', { docs?: true } do
+			create :pa_form, iteration: @user.assignments[1].iterations[0]
+
 			get :show, params: { id: @user.assignments[1].iterations[0].id }
+
 			expect(status).to eq(200)
 			expect(body['iteration']['name']).to eq(@user.assignments[1].iterations[0].name)
 		end

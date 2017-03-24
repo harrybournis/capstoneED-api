@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170308182804) do
+ActiveRecord::Schema.define(version: 20170322215730) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -69,6 +69,23 @@ ActiveRecord::Schema.define(version: 20170308182804) do
     t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "game_settings", force: :cascade do |t|
+    t.integer "assignment_id"
+    t.integer "points_log"
+    t.integer "points_log_first_of_day"
+    t.integer "points_log_first_of_team"
+    t.integer "points_log_first_of_assignment"
+    t.integer "points_peer_assessment"
+    t.integer "points_peer_assessment_first_of_day"
+    t.integer "points_peer_assessment_first_of_team"
+    t.integer "points_peer_assessment_first_of_assignment"
+    t.integer "points_project_evaluation"
+    t.integer "points_project_evaluation_first_of_day"
+    t.integer "points_project_evaluation_first_of_team"
+    t.integer "points_project_evaluation_first_of_assignment"
+    t.index ["assignment_id"], name: "index_game_settings_on_assignment_id", using: :btree
   end
 
   create_table "iterations", force: :cascade do |t|
@@ -162,6 +179,7 @@ ActiveRecord::Schema.define(version: 20170308182804) do
     t.integer "student_id"
     t.string  "nickname"
     t.jsonb   "logs",       default: [], null: false
+    t.integer "points"
     t.index ["logs"], name: "index_students_projects_on_logs", using: :gin
     t.index ["project_id"], name: "index_students_projects_on_project_id", using: :btree
     t.index ["student_id"], name: "index_students_projects_on_student_id", using: :btree

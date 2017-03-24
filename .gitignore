@@ -51,3 +51,6 @@ bower.json
 /config/environments/development.rb
 Vagrantfile
 /.vagrant
+
+# ignore test coverage results
+/coverage

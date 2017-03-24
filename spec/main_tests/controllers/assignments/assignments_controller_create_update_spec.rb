@@ -36,6 +36,18 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 				expect(body['assignment']['projects'].length).to eq(2)
 			end
 
+			it 'accepts nested attributes for game_settings', { docs?: true } do
+				points = 86
+				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(game_setting_attributes: attributes_for(:game_setting).except(:assignment_id).merge(points_log: points) )
+
+				expect {
+					post :create, params: parameters
+				}.to change { GameSetting.count }.by(1)
+
+				expect(status).to eq(201)
+				expect(Assignment.find(body['assignment']['id']).game_setting.points_log).to eq points
+			end
+
 			it 'accepts nested attributes for projects without team_names, and names them accordingly' do
 				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', description: 'dddd', enrollment_key: 'key' }, { project_name: 'New Project2', description: 'descr', enrollment_key: 'key2' }] )
 				expect {

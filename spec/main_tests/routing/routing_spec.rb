@@ -52,4 +52,20 @@ RSpec.describe 'Routing', type: :routing do
 					 controller: 'v1/question_types', action: 'index')
 	end
 
+	# game settings
+	it 'GET /v1/assignments/2/game_settings to route to GameSettings#index' do
+		expect(get: "#{url}/v1/assignments/2/game_settings").to route_to(
+					 controller: 'v1/game_settings', action: 'index', assignment_id: "2")
+	end
+
+	it 'POST /v1/assignments/2/game_settings to route to GameSettings#create' do
+		expect(post: "#{url}/v1/assignments/2/game_settings").to route_to(
+					 controller: 'v1/game_settings', action: 'create', assignment_id: "2")
+	end
+
+	it 'PATCH /v1/assignments/2/game_settings to route to GameSettings#create' do
+		expect(patch: "#{url}/v1/assignments/2/game_settings").to route_to(
+					 controller: 'v1/game_settings', action: 'update', assignment_id: "2")
+	end
+
 end

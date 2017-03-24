@@ -24,6 +24,8 @@ module JoinTables
     validate :student_id_unique_for_projects_assignment, on: :create
     validate :format_of_last_log
 
+    before_validation :set_points_to_zero
+
     # Add a new log entry. Adds date_submitted field with the current time
     # If the entry is not a Hash, an empty array is added so that
     # the format_of_last_log validation fails
@@ -36,6 +38,11 @@ module JoinTables
     end
 
     private
+
+    # Sets points to zero when it is first created
+    def set_points_to_zero
+      self.points ||= 0
+    end
 
     # student_id validation
     def student_id_unique_for_projects_assignment

@@ -73,6 +73,7 @@ group :test do
   gem 'db-query-matchers', '~> 0.6.0'
   gem 'pry-byebug', '~> 3.4'
   gem 'database_cleaner', '~> 1.5', '>= 1.5.3'
+  gem 'simplecov', '~> 0.14.1' # display test coverage
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
