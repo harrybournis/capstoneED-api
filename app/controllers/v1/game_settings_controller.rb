@@ -68,11 +68,9 @@ class V1::GameSettingsController < ApplicationController
                   :points_log_first_of_team,
                   :points_log_first_of_assignment,
                   :points_peer_assessment,
-                  :points_peer_assessment_first_of_day,
                   :points_peer_assessment_first_of_team,
                   :points_peer_assessment_first_of_assignment,
                   :points_project_evaluation,
-                  :points_project_evaluation_first_of_day,
                   :points_project_evaluation_first_of_team,
                   :points_project_evaluation_first_of_assignment)
   end
