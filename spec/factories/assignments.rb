@@ -6,7 +6,7 @@ FactoryGirl.define do
     unit 		{ lecturer.units.first }
     lecturer_id { lecturer.id }
     unit_id			{ unit.id }
-    name        { "Assignment #{100*rand()}" }
+    name        { "Assignment #{100*rand().to_i}" }
 
     factory :assignment_with_projects do
         after :create do |assignment|
