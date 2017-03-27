@@ -8,7 +8,7 @@ class V1::PaFormsController < ApplicationController
   before_action :set_pa_form_if_associated, only: [:show, :update, :destroy]
 
   def index
-    serialize_collection current_user.pa_forms_active(includes: params[:includes]), :ok
+    serialize_collection current_user.pa_forms_active(includes: includes_array), :ok
   end
 
   # GET /pa_forms/:id
@@ -58,7 +58,7 @@ class V1::PaFormsController < ApplicationController
   # associations in the params[:includes].
   # Renders error if not associated and Halts execution
   def set_pa_form_if_associated
-    unless @pa_form = current_user.pa_forms(includes: params[:includes])
+    unless @pa_form = current_user.pa_forms(includes: includes_array)
                                   .where(id: params[:id])[0]
       render_not_associated_with_current_user('PAForm')
       false

@@ -17,7 +17,7 @@ class V1::AssignmentsController < ApplicationController
   # Only Lecturers
   # Get the assignments of the specified unit_id. Unit must belong to Lecturer.
   def index_with_unit
-    @assignments = current_user.assignments(includes: params[:includes])
+    @assignments = current_user.assignments(includes: includes_array)
                                .where(unit_id: params[:unit_id])
     serialize_collection @assignments, :ok
   end

@@ -2,13 +2,13 @@
 class V1::IterationsController < ApplicationController
   before_action :allow_if_lecturer, only: :create
   before_action :validate_includes,
-                only: [:index, :show],
+                only: [:show],
                 if: 'params[:includes]'
   before_action :set_iteration_if_associated,
                 only: [:show, :update, :destroy]
 
-  # GET /iterations?project_id=
-  # Needs project_id in params
+  # GET /iterations?assignment_id=
+  # Needs assignment_id in params
   def index
     unless params[:assignment_id]
       render json: format_errors({ base: ['This Endpoint requires a assignment_id in the params'] }),
@@ -16,7 +16,7 @@ class V1::IterationsController < ApplicationController
       return
     end
 
-    @iterations = current_user.iterations(includes: params[:includes])
+    @iterations = current_user.iterations(includes: includes_array)
                               .where(assignment_id: params[:assignment_id])
     serialize_collection @iterations, :ok
   end

@@ -93,7 +93,7 @@ RSpec.describe 'Includes', type: :controller do
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 
-				get :index, params: { assignment_id: @assignment.id }
+				get :index, params: { assignment_id: @assignment.id, includes: 'pa_form' }
 				expect(status).to eq(200)
 				expect(body['iterations'].length).to eq(2)
 				expect(body['iterations'][1]['pa_form']).to be_truthy
@@ -103,9 +103,31 @@ RSpec.describe 'Includes', type: :controller do
 				iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 
-				get :show, params: { id: iteration.id }
+				get :show, params: { id: iteration.id, includes: 'pa_form' }
 				expect(status).to eq(200)
 				expect(body['iteration']['pa_form']).to be_truthy
+			end
+		end
+
+		describe 'PaForm' do
+			before :each do
+				@controller = V1::PaFormsController.new
+				iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+				iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
+				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
+			end
+
+			it 'index works with includes' do
+				get :index, params: { includes: 'iteration' }
+
+				expect(status).to eq 204
+			end
+
+			it 'show works with includes' do
+				get :show, params: { id: @assignment.iterations[0].pa_form.id, includes: 'iteration' }
+
+				expect(status).to eq 200
 			end
 		end
 	end

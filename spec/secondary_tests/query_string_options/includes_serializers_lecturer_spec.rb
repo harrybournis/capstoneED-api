@@ -123,6 +123,18 @@ RSpec.describe 'Includes', type: :controller do
 				expect(status).to eq(200)
 				expect(body['assignment'])
 			end
+
+			it 'index_with_unit works with includes' do
+				get :index_with_unit, params: { unit_id: @unit.id, includes: 'unit,iterations' }
+
+				expect(status).to eq(200)
+			end
+
+			it 'index works with includes' do
+				get :index, params: { includes: 'unit,iterations' }
+
+				expect(status).to eq(200)
+			end
 		end
 
 		describe 'Units' do
@@ -203,7 +215,7 @@ RSpec.describe 'Includes', type: :controller do
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 
-				get :index, params: { assignment_id: @assignment.id }
+				get :index, params: { assignment_id: @assignment.id, includes: 'pa_form' }
 				expect(status).to eq(200)
 				expect(body['iterations'].length).to eq(2)
 				expect(body['iterations'][1]['pa_form']).to be_truthy
@@ -225,6 +237,12 @@ RSpec.describe 'Includes', type: :controller do
 				@pa_form  = FactoryGirl.create(:pa_form, iteration: @iteration)
 				@peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form)
 				@controller = V1::PeerAssessmentsController.new
+			end
+
+			it 'index works with includes' do
+				get :index, params: { pa_form_id: @pa_form.id, includes: 'submitted_by,submitted_for' }
+
+				expect(status).to eq(200)
 			end
 
 			it 'GET show includes pa_form submitted_for submitted_by' do
