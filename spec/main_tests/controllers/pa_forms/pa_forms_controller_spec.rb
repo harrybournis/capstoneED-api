@@ -134,6 +134,28 @@ RSpec.describe V1::PaFormsController, type: :controller do
 			end
 		end
 
+		it 'GET index returns the active PAForms with questions types', { docs?: true, lecturer?: false } do
+			now = DateTime.now
+			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
+			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
+			FactoryGirl.create(:pa_form, iteration: iteration1)
+			FactoryGirl.create(:pa_form, iteration: iteration2)
+			irrelevant = FactoryGirl.create(:pa_form)
+			expect(PaForm.all.length).to eq 3
+
+			Timecop.travel(now + 5.days + 1.minute) do
+				mock_request = MockRequest.new(valid = true, @student)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+				get :index
+				expect(status).to eq 200
+				expect(body['pa_forms'].length).to eq(1)
+				body['pa_forms'][0]['questions'].each do |q|
+					expect(q.keys).to include 'question_type'
+				end
+			end
+		end
+
 		it 'GET index contains the project_id' do
 			now = DateTime.now
 			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
@@ -181,7 +203,7 @@ RSpec.describe V1::PaFormsController, type: :controller do
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 				expect {
 					get :index
-				}.to make_database_queries(count: 4)
+				}.to make_database_queries(count: 5)
 				expect(status).to eq 200
 				expect(body['pa_forms'].length).to eq(1)
 				projects = @student.projects

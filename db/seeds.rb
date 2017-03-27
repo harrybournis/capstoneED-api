@@ -1,5 +1,6 @@
-FactoryGirl.create :question_type, category: 'text', friendly_name: 'text'
-FactoryGirl.create :question_type, category: 'number', friendly_name: 'number'
+FactoryGirl.create :question_type, category: 'text', friendly_name: 'Text'
+FactoryGirl.create :question_type, category: 'number', friendly_name: 'Number'
+FactoryGirl.create :question_type, category: 'rank', friendly_name: 'Rank'
 
 # 1st Lecturer
 department = FactoryGirl.create(:department_seeder, name: 'Computer Science')
