@@ -17,7 +17,6 @@ RSpec.describe V1::UsersController, type: :controller do
 
 	it 'creates new student at POST /v1/users' do
 		post :create, params: { type: 'Student', email: 'emailuniquegreat@yahoo.com', password: '12345678', password_confirmation: '12345678', first_name: 'first', last_name: 'last' }
-		expect(body['user']['email']).to eq('emailuniquegreat@yahoo.com')
 		expect(body['user']['type']).to eq('Student')
 		expect(body['user']['last_name']).to eq('last')
 	end

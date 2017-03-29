@@ -1,3 +1,3 @@
 class LecturerSerializer < UserSerializer
-  attributes :position, :university
+  attributes :position, :university, :email
 end

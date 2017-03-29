@@ -157,6 +157,11 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body['units'].first['assignments'].first.keys).to include('id')
 				expect(body['units'].first['assignments'].first.keys).to include('name')
 			end
+
+			it 'GET index contains department compact' do
+				get :index, params: { includes: 'department', compact: true }
+				expect(body['units'][0]['department']).to be_truthy
+			end
 		end
 
 		describe 'Projects' do
@@ -248,8 +253,10 @@ RSpec.describe 'Includes', type: :controller do
 			it 'GET show includes pa_form submitted_for submitted_by' do
 				get :show, params: { id: @peer_assessment.id, includes: 'submitted_by,pa_form,submitted_for' }
 				expect(status).to eq(200)
-				expect(body['peer_assessment']['submitted_for']['email']).to eq(@peer_assessment.submitted_for.email)
-				expect(body['peer_assessment']['submitted_by']['email']).to eq(@peer_assessment.submitted_by.email)
+				expect(body['peer_assessment']['submitted_for']['first_name']).to eq(@peer_assessment.submitted_for.first_name)
+				expect(body['peer_assessment']['submitted_for']['last_name']).to eq(@peer_assessment.submitted_for.last_name)
+				expect(body['peer_assessment']['submitted_by']['first_name']).to eq(@peer_assessment.submitted_by.first_name)
+				expect(body['peer_assessment']['submitted_by']['last_name']).to eq(@peer_assessment.submitted_by.last_name)
 			end
 
 			it 'returns peer assessment if associated including the PAForm' do
