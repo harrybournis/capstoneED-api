@@ -1,0 +1,41 @@
+{
+  "app/serializers/*_serializer.rb": {
+    "command": "serializer",
+    "affinity": "model",
+    "test": "spec/serializers/%s_spec.rb",
+    "related": "app/models/%s.rb",
+    "template": "class %SSerializer < ActiveModel::Serializer\nend"
+  },
+
+  "app/models/*.rb": {
+    "command": "model",
+    "affinity": "model",
+    "alternate": ["spec/main_tests/models/%s_spec.rb"],
+    "related": "db/schema.rb#%p",
+    "template": "class %S\nend"
+  },
+  
+  "spec/main_tests/models/*_spec.rb": {
+    "command":"test",
+    "affinity": "model",
+    "alternate": ["app/models/%s.rb"],
+    "related": "spec/factories/%s.rb",
+    "template": "class %S\nend"
+  },
+  
+  "app/controllers/v1/*_controller.rb": {
+    "command": "controller",
+    "affinity": "controller",
+    "alternate": ["spec/main_tests/controllers/%s/%s_controller_spec.rb"],
+    "related": "db/schema.rb#%p",
+    "template": "class %S\nend"
+  },
+  
+  "spec/main_tests/controllers/*_controller_spec.rb": {
+    "command":"test",
+    "affinity": "controller",
+    "alternate": ["app/controllers/v1/%s_controller.rb"],
+    "related": "spec/factories/%s.rb",
+    "template": "class %S\nend"
+  }
+}
