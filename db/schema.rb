@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170410221318) do
+ActiveRecord::Schema.define(version: 20170410222258) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -140,6 +140,21 @@ ActiveRecord::Schema.define(version: 20170410221318) do
     t.index ["project_id"], name: "index_peer_assessments_on_project_id", using: :btree
     t.index ["submitted_by_id"], name: "index_peer_assessments_on_submitted_by_id", using: :btree
     t.index ["submitted_for_id"], name: "index_peer_assessments_on_submitted_for_id", using: :btree
+  end
+
+  create_table "project_evaluation_points", force: :cascade do |t|
+    t.integer  "points"
+    t.integer  "reason_id"
+    t.integer  "student_id"
+    t.integer  "project_evaluation_id"
+    t.integer  "project_id"
+    t.datetime "date"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+    t.index ["project_evaluation_id"], name: "index_project_evaluation_points_on_project_evaluation_id", using: :btree
+    t.index ["project_id"], name: "index_project_evaluation_points_on_project_id", using: :btree
+    t.index ["reason_id"], name: "index_project_evaluation_points_on_reason_id", using: :btree
+    t.index ["student_id"], name: "index_project_evaluation_points_on_student_id", using: :btree
   end
 
   create_table "project_evaluations", force: :cascade do |t|

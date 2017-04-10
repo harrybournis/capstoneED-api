@@ -14,6 +14,7 @@ class ProjectEvaluation < ApplicationRecord
   belongs_to :iteration
   belongs_to :user
   belongs_to :feeling
+  has_many :project_evaluation_points
 
   # Validations
   validates_presence_of :project_id,
