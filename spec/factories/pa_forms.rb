@@ -27,7 +27,11 @@ FactoryGirl.define do
             'If you were a member of the spice girls, what would your spice handle be?',
             'Have you ever owned a slinky?'
           ].sample(5)
-        type = create :question_type
+        if QuestionType.all.any?
+            type = QuestionType.all.sample
+        else
+            type = create :question_type
+        end
       [].tap do |array|
         qs.each { |q| array << { 'text' => q, 'type_id' => type.id } }
       end

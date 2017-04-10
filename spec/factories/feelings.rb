@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :feeling do
   	sequence(:name) { |n| "Confused#{n}" }
+    value { [0,1].sample }
 
     factory :feeling_seeder do
       sequence(:name) do |n|

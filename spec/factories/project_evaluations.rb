@@ -26,7 +26,7 @@ FactoryGirl.define do
     end
 
     factory :project_evaluation_seeder do
-      association :feeling, factory: :feeling_seeder
+
     end
   end
 end
