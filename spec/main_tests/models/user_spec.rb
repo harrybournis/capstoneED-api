@@ -4,6 +4,18 @@ RSpec.describe User, type: :model do
 
 	it { should have_many(:active_tokens) }
 
+	describe 'devise defaults' do
+		it 'should strip whitespace from password' do
+			user = build :user_with_password, password: ' 12345678 ', password_confirmation: ' 12345678 '
+			expect(user.save).to be_truthy
+			expect(user.valid_password?('12345678')).to be_truthy
+
+			user = build :user_with_password, password: '12345678', password_confirmation: '12345678'
+			expect(user.save).to be_truthy
+			expect(user.valid_password?('12345678')).to be_truthy
+		end
+	end
+
 	describe 'instance methods' do
 
 		it 'full_name is concatenation of first_name and last_name' do
