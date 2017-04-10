@@ -17,6 +17,8 @@ class Student < User
   has_many  :peer_assessments_submitted_for,
             class_name: PeerAssessment,
             foreign_key: :submitted_for_id
+  has_many  :log_points
+  has_many  :peer_assessment_points
 
   # Validations
   validates_absence_of :position, :university
