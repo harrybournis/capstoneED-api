@@ -14,6 +14,7 @@ class GameSetting < ApplicationRecord
   # points_project_evaluation :integer
   # points_project_evaluation_first_of_team :integer
   # points_project_evaluation_first_of_assignment :integer
+  # max_logs_per_day :integer
 
   belongs_to :assignment, inverse_of: :game_setting
 
@@ -28,6 +29,7 @@ class GameSetting < ApplicationRecord
             :points_project_evaluation,
             :points_project_evaluation_first_of_team,
             :points_project_evaluation_first_of_assignment,
+            :max_logs_per_day,
             presence: true, numericality: true
 
   before_validation :set_default_values
@@ -43,6 +45,7 @@ class GameSetting < ApplicationRecord
   POINTS_PROJECT_EVALUATION 										= 50
   POINTS_PROJECT_EVALUATION_FIRST_OF_TEAM    		= 5
   POINTS_PROJECT_EVALUATION_FIRST_OF_ASSIGNMENT = 15
+  MAX_LOGS_PER_DAY                              = 3
 
   private
 
@@ -58,6 +61,7 @@ class GameSetting < ApplicationRecord
     self.points_project_evaluation ||= POINTS_PROJECT_EVALUATION
     self.points_project_evaluation_first_of_team ||= POINTS_PROJECT_EVALUATION_FIRST_OF_TEAM
     self.points_project_evaluation_first_of_assignment ||= POINTS_PROJECT_EVALUATION_FIRST_OF_ASSIGNMENT
+    self.max_logs_per_day ||= MAX_LOGS_PER_DAY
   end
 end
 
@@ -71,3 +75,4 @@ end
     # points_project_evaluation
     # points_project_evaluation_first_of_team
     # points_project_evaluation_first_of_assignment
+    # max_logs_per_day

@@ -72,6 +72,7 @@ class V1::GameSettingsController < ApplicationController
                   :points_peer_assessment_first_of_assignment,
                   :points_project_evaluation,
                   :points_project_evaluation_first_of_team,
-                  :points_project_evaluation_first_of_assignment)
+                  :points_project_evaluation_first_of_assignment,
+                  :max_logs_per_day)
   end
 end
