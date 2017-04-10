@@ -22,7 +22,7 @@ class Unit < ApplicationRecord
   # Validations
   validates_presence_of :name, :code, :semester, :year, :lecturer_id
   validates_presence_of :department,
-                        message: 'must exist. Either provide a department_id, or deparment_attributes in order to create a new Department'
+                        message: I18n.t('errors.models.unit.department_presence')
   validates_numericality_of :year
   validates_uniqueness_of :id
 
@@ -39,7 +39,7 @@ class Unit < ApplicationRecord
   # Sets archived_at date to the current date
   def archive
     if archived?
-      errors.add(:unit, 'has already been archived. It cannot be archived twice.')
+      errors.add(:unit, I18n.t('errors.models.unit.archive'))
       false
     else
       self.archived_at = Date.today

@@ -16,11 +16,11 @@ class ApplicationController < ActionController::API
   # If authentication is successful, a CurrentUser object containing the
   # actual Student or Lecturer object is assigned as current_user
   def authenticate_user_jwt
-    log = log_for_development # only for development
+    log = log_for_development if Rails.env.development? # only for development
 
     unless @current = JWTAuth::JWTAuthenticator.authenticate(request)
       message = 'Authentication Failed '
-      message << log unless log.empty? # only for developement
+      message << log unless log.empty? if Rails.env.development? # only for developement
       render json: format_errors(base: message), status: :unauthorized
     end
   end

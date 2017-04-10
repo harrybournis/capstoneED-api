@@ -21,3 +21,11 @@
 
 en:
   hello: "Hello world"
+  errors:
+    models:
+      unit:
+        archive: 'has already been archived. It cannot be archived twice.'
+        department_presence: 'must exist. Either provide a department_id, or deparment_attributes in order to create a new Department'
+    modules:
+      association_includable:
+        validate_includes: "Invalid 'includes' parameter. %{resource} resource for %{user_type} user accepts only: %{associations}. Received: %{received}."

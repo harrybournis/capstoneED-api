@@ -1,22 +1,51 @@
-##
-# A Project belongs to a Unit and connects contains Students.
-# It is created by a Lecturer
+# The Project is one of the main entities of the System.
+# It is synonymous to 'Team'. A number of Students participate
+# in Project, which belongs to an Assignment. A Project has
+# multiple iterations, through the Assignment, which means that
+# Projects of the same Assignment share Iterations.
+#
+# A Project contains an enrollment_key, which is set by the Lecturer
+# upon creation. In order for a Student to join a Project, they have
+# to supply the Project's 'id' and the 'enrollment_key'.
+#
+# A Project has an 'official' project_name, and also a team_name.
+# Finally, a Project has a logo, and a randomly generated color,
+# both of which aim personalize the experience for the Students.
+#
+# @author [harrybournis]
+#
+# @!attribute project_name
+#   @return [String] The 'official' name of the Project.
+#
+# @!attribute team_name
+#   @return [String] The name of the Team working on the
+#     Project.
+#
+# @!attribute description
+#   @return [String] A short description of the Project. Set by the
+#     Lecturer.
+#
+# @!attribute enrollment_key
+#   @return [String] Set by the Lecturer, it is used by a Student
+#     in combination with the Project's id to enroll in a new Project.
+#
+# @!attribute [r] assignment_id
+#   @return [Integer] The id of the Assignment that the Project belongs to.
+#
+# @!attribute [r] unit_id
+#   @return [Integer] The id of the Unit that the Unit belongs to.
+#
+# @!attribute [r] color
+#   @return [String] A randomly generated HEX color of fixed saturation and lightness.
+#
+# @!attribute logo
+#   @return [String] The URL of the logo of the Project.
+#
 class Project < ApplicationRecord
-  # Attributes
-  # project_name    :string
-  # team_name       :string
-  # enrollment_key  :string
-  # logo            :string
-  # description     :string
-  # color           :string
-  # assignment_id   :integer
-  # unit_id         :integer
-
   include Project::Evaluatable,
           Project::Enrollable,
           Project::Colorable
 
-  # Associations
   belongs_to  :assignment, inverse_of: :projects
   belongs_to  :unit
   has_one     :lecturer, through: :assignment
@@ -28,7 +57,6 @@ class Project < ApplicationRecord
   has_many    :peer_assessments
   has_many    :log_points
 
-  # Validations
   validates_presence_of :project_name,
                         :assignment,
                         :team_name,
@@ -46,31 +74,52 @@ class Project < ApplicationRecord
                     :generate_team_name,
                     :unit_from_assignment
 
-  # Class Methods
+
+  # Queries all the projects that are currently 'active', meaning that
+  # their Assignment's end_date is in the future, and their Unit has not
+  # been archived.
+  #
+  # @return [Project[]] An array of currently active Projects.
+  #
   def self.active
     joins(:assignment, :unit).where(["units.archived_at is null and assignments.end_date >= ?",
                                      DateTime.now])
   end
 
   # Returns an array of StudentMembers POROs that contain all attributes of
-  # the student,
-  # plus their nicname for the current project
+  # the student, plus their nicname for the current Project.
+  #
+  # @return [StudentMember[]] A StudentMember PORO with the nickname for
+  #   the current project.
+  #
   def student_members
     students_projects.map { |sp| Decorators::StudentMember.new(sp.student, sp) }
   end
 
-  # Returns the sum of the students' points
+  # The total points earned by the Students of this Project.
+  #
+  # @return [Integer] The sum of the Students Points.
+  #
   def total_points
     students_projects.select(:points).sum :points
   end
 
-  # Returs the average of all students' points
+  # The average points earned by the Students of this Project.
+  #
+  # @return [Integer] The average of the Students Points.
+  #
   def average_points
     students_projects.select(:points).average :points
   end
 
   private
 
+
+  # Sets the Project's Unit to be equal to the Assignment's Project before
+  # validation to ensure data integrity.
+  #
+  # @private
+  #
   def unit_from_assignment
     self.unit = assignment.unit if assignment && assignment.unit && !persisted?
   end
