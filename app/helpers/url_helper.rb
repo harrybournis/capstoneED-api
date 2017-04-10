@@ -5,10 +5,24 @@ module UrlHelper
   def client_reset_password_url(token)
     if Rails.env.development? || Rails.env.test?
       # add the correct path in the frontend app
-      "https://capstoned-dev.org?reset_password_token=#{token}"
+      #"http://capstoneed-api.org:21992/v1/?reset_password_token=#{token}"
+      "set the url of the client app"
     else
       # add the correct path in the frontend app
-      "http://capstoneed-api.herokuapp.com?reset_password_token=#{token}"
+      #"http://capstoneed-api.herokuapp.com?reset_password_token=#{token}"
+    end
+  end
+
+  # Used @ views/devise/mailer/reset_password_instructions.html.erb
+  # Should be the url of the client application that allows the user
+  #  to reset their password
+  def client_confirm_url(token)
+    if Rails.env.development? || Rails.env.test?
+      # add the correct path in the frontend app
+      "http://capstoneed-api.org:21992/v1/confirm_account?confirmation_token=#{token}"
+    else
+      # add the correct path in the frontend app
+      "http://capstoneed-api.org:21992/v1/confirm_account?confirmation_token=#{token}"
     end
   end
 

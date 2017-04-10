@@ -21,7 +21,7 @@ RSpec.describe 'Routing', type: :routing do
   end
 
   it 'GET /confirm_account to confirmations#show' do
-    expect(get: "#{url}/v1/confirm_account").to route_to(
-      controller: 'v1/confirmations', action: 'show')
+    expect(get: "#{url}/v1/confirm_account?confirmation_token=HHwiAAjkA_ozbwNYzXm5").to route_to(
+      controller: 'v1/confirmations', action: 'show', confirmation_token: "HHwiAAjkA_ozbwNYzXm5")
   end
 end
