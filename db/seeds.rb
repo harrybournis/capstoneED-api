@@ -16,6 +16,12 @@ FactoryGirl.create :question_type, category: 'text', friendly_name: 'Text'
 FactoryGirl.create :question_type, category: 'number', friendly_name: 'Number'
 FactoryGirl.create :question_type, category: 'rank', friendly_name: 'Rank'
 
+# Reasons
+(1..10).to_a.each do |num|
+  Reason.create value: num
+end
+
+
 ### -----------------------
 # Dummy Data
 ### -----------------------

@@ -5,6 +5,7 @@ RSpec.describe LogPoint, type: :model do
   
   it { should belong_to :project }
   it { should belong_to :students_project }
+  it { should belong_to :reason }
 
   it { should validate_presence_of :points }
   it { should validate_presence_of :date }

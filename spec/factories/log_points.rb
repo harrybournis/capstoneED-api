@@ -7,5 +7,12 @@ FactoryGirl.define do
     students_project do 
       create :students_project, project: project
     end
+    reason do |r|
+      if Reason.all.any?
+        Reason.first
+      else
+        create :reason
+      end
+    end
   end
 end
