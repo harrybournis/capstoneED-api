@@ -10,6 +10,7 @@ module JoinTables
     # Associations
     belongs_to :student
     belongs_to :project
+    has_many :log_points
 
     # Validations
     validates_presence_of :project_id, :student_id, :nickname

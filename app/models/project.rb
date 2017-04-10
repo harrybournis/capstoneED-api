@@ -26,6 +26,7 @@ class Project < ApplicationRecord
   has_many    :iterations, through: :assignment
   has_many    :project_evaluations
   has_many    :peer_assessments
+  has_many    :log_points
 
   # Validations
   validates_presence_of :project_name,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170410171219) do
+ActiveRecord::Schema.define(version: 20170410191839) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -96,6 +96,22 @@ ActiveRecord::Schema.define(version: 20170410171219) do
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
     t.index ["assignment_id"], name: "index_iterations_on_assignment_id", using: :btree
+  end
+
+  create_table "log_points", force: :cascade do |t|
+    t.integer  "points"
+    t.integer  "reason_id"
+    t.integer  "student_id"
+    t.integer  "log_id"
+    t.integer  "project_id"
+    t.datetime "date"
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
+    t.integer  "students_project_id"
+    t.index ["log_id"], name: "index_log_points_on_log_id", using: :btree
+    t.index ["project_id"], name: "index_log_points_on_project_id", using: :btree
+    t.index ["reason_id"], name: "index_log_points_on_reason_id", using: :btree
+    t.index ["students_project_id"], name: "index_log_points_on_students_project_id", using: :btree
   end
 
   create_table "peer_assessments", force: :cascade do |t|
