@@ -29,3 +29,6 @@ en:
     modules:
       association_includable:
         validate_includes: "Invalid 'includes' parameter. %{resource} resource for %{user_type} user accepts only: %{associations}. Received: %{received}."
+    points_award:
+      points_award_service:
+        validate_stores: "AwarderStore and PersisterStore keys don't match. Include the same keys for both stores."

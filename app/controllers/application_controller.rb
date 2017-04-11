@@ -5,8 +5,9 @@ class ApplicationController < ActionController::API
           UrlHelper,                  # Change URL's for emails or redirects
           ApiHelper,                  # Common API methods (e.g. render errors)
           CurrentUserable,            # Current User helper methods/validations
-          AssociationIncludable       # Use ?inlcudes= in the params, and
+          AssociationIncludable,      # Use ?inlcudes= in the params, and
                                       # autoload the associated records.
+          PointsAwardable             # Call PointsAwardService
 
   before_action :authenticate_user_jwt
 

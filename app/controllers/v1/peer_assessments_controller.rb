@@ -38,7 +38,18 @@ class V1::PeerAssessmentsController < ApplicationController
     @peer_assessment.submitted_by = current_user.load
 
     if @peer_assessment.save && @peer_assessment.submit # submit it
-      render json: @peer_assessment, status: :created
+
+      points_board = award_points :peer_assessment, @peer_assessment
+
+      if points_board.success?
+        render json: serialize_w_points(@peer_assessment, points_board),
+               status: :created
+      else
+        render json: format_errors(
+                      serialize_w_points(
+                        @peer_assessment, points_board)),
+               status: :created
+      end
     else
       render json: format_errors(@peer_assessment.errors),
              status: :unprocessable_entity
