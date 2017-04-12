@@ -44,6 +44,9 @@ gem 'color-generator', '~> 0.0.4'
 # Validations
 gem 'dry-validation', '~> 0.10.5'
 
+# Chain Services
+gem 'waterfall', '~> 1.0', '>= 1.0.5'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
