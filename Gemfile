@@ -50,6 +50,9 @@ gem 'json-schema', '~> 2.8'
 # Chain Services
 gem 'waterfall', '~> 1.0', '>= 1.0.5'
 
+# Calculate time difference
+gem 'time_difference', '~> 0.5.0'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri

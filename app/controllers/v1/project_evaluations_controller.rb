@@ -17,13 +17,27 @@ class V1::ProjectEvaluationsController < ApplicationController
 
   # POST /project_evaluations
   def create
-    pe = ProjectEvaluation.new(project_evaluations_params)
-    pe.user = current_user.load
+    @pe = ProjectEvaluation.new(project_evaluations_params)
+    @pe.user = current_user.load
 
-    if pe.save
-      render json: pe, status: :created
+    if @pe.save
+      if current_user.student?
+        points_board = award_points(:project_evaluation, @pe)
+
+        if points_board.success?
+          render json: serialize_w_points(@pe, points_board),
+                 status: :created
+        else
+          render json: serialize_w_points(
+                          @pe, points_board),
+                 status: :created
+        end
+
+      else
+        render json: @pe, status: :created
+      end
     else
-      render json: format_errors(pe.errors), status: :unprocessable_entity
+      render json: format_errors(@pe.errors), status: :unprocessable_entity
     end
   end
 

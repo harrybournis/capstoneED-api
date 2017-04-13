@@ -19,7 +19,7 @@ module PointsAward
   # @author [harrybournis]
   #
   class PointsBoard
-    attr_reader :student, :resource, :project_id, :points, :errors
+    attr_reader :student, :resource, :points, :errors
     # Constructor. Takes a Student object which will be awarded the points,
     # and an optional resource.
     #
@@ -33,14 +33,9 @@ module PointsAward
     #
     # @return [AwardPoints::PointsBoard] A new PointsBoard object.
     #
-    def initialize(student, resource = nil, project_id = nil, _options = {})
-      # validate_array_of_hashes(array_of_hashes).tap do |v|
-      #   raise(TypeError, v.errors.to_s) unless v.success?
-      # end
-
+    def initialize(student, resource = nil, _options = {})
       @student = student
       @resource = resource
-      @project_id = project_id
       @persisted = false
       @points = {}
       @errors = {}
@@ -141,7 +136,8 @@ module PointsAward
     # @return [PointsBoard] Returns itself to possibly chain add methods.
     #
     def add(key, hash)
-      raise ArgumentError unless key.is_a?(Symbol)
+      raise ArgumentError, 'Key must be a symbol' unless key.is_a?(Symbol)
+      raise ArgumentError, "Points hash can't be nil" if hash.nil?
       unless (res = validate_points_hash(hash)).success?
         raise ArgumentError, 'Invalid hash fields.'
       end

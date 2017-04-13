@@ -66,7 +66,7 @@ class PeerAssessment < ApplicationRecord
 
   # Adds the project_id from the associated pa_form
   def add_project_id
-    return unless !persisted? && submitted_for_id
+    return unless !persisted? && submitted_for
     temp = submitted_for.projects.select(:id).where(assignment_id: pa_form.assignment.id)
     self.project_id = temp[0].id unless temp.empty?
   end

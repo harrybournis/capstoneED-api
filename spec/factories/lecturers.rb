@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :lecturer do
     first_name 	    { "Alfredo#{rand(1000).to_s}" }
   	last_name 	    { "Jumpveryhigh#{rand(1000).to_s}" }
-  	email           { "alfredo#{rand(1000).to_s}_jump#{rand(1000).to_s}@gmail.com" }
+  	email           { "alfredo#{rand(100000).to_s}_jump#{rand(100000).to_s}@gmail.com" }
     provider 		    { 'test' }
     university 	    { "University of Important Potato" }
     position	      { "Master of Parking" }

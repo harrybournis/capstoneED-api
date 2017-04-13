@@ -11,7 +11,7 @@ module PointsAwardable
   # @return [PointsBoard] The resulting PointsBoard after processing.
   #
   def award_points(key, resource = nil, options = {})
-    PointsAwardService.new(key, current_user.load, resource, options).call
+    PointsAwardService.new(key, current_user, resource, options).call
   end
 
   def serialize_w_points(resource, points_board)

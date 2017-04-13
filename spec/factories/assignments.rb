@@ -13,5 +13,9 @@ FactoryGirl.define do
             2.times { assignment.projects << FactoryGirl.create(:project, assignment: assignment) }
         end
     end
+
+    factory :assignment_with_settings do
+      association :game_setting, factory: :game_setting
+    end
   end
 end

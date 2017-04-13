@@ -37,16 +37,20 @@ RSpec.describe PointsAwardService, type: :model do
     end
 
     it 'call returns a PointsBoard object' do
-      service = PointsAwardService.new(:peer_assessment, create(:student_confirmed))
+      peer_assessment = create(:peer_assessment)
+      game_setting = create :game_setting, assignment: peer_assessment.assignment
+      service = PointsAwardService.new(:peer_assessment, create(:student_confirmed), peer_assessment)
       points_board = service.call
       expect(points_board).to be_a PointsAward::PointsBoard
     end
 
     it 'call returns a PointsBoard object that has persisted' do
-      service = PointsAwardService.new(:peer_assessment, create(:student_confirmed))
+      peer_assessment = create(:peer_assessment)
+      game_setting = create :game_setting, assignment: peer_assessment.assignment
+      service = PointsAwardService.new(:peer_assessment, create(:student_confirmed), peer_assessment)
       points_board = service.call
-      #expect(points_board.persisted?).to be_truthy
-      expect(points_board.errors[:peer_assessment]).to be_truthy
+      expect(points_board.persisted?).to be_truthy
+      expect(points_board.errors[:peer_assessment]).to be_falsy
     end
   end
 end

@@ -16,6 +16,7 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 
 			@student_for = FactoryGirl.create(:student_confirmed)
 			@assignment = FactoryGirl.create(:assignment)
+			@game_setting = create :game_setting, assignment: @assignment
 			@project = FactoryGirl.create(:project, assignment: @assignment)
 			@iteration = FactoryGirl.create(:iteration, assignment: @assignment)
 			create :students_project, student: @student_for, project: @project
@@ -64,6 +65,7 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 		before :all do
 			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
 			@assignment = FactoryGirl.create(:assignment, lecturer: @lecturer, unit: @unit)
+			@game_setting = create :game_setting, assignment: @assignment
 			@iteration = FactoryGirl.create(:iteration, assignment: @assignment)
 			@pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
 			@student2 = FactoryGirl.create(:student_confirmed)

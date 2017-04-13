@@ -16,5 +16,5 @@ RSpec.describe Decorators::Log do
                                 entry[:text])
       expect(log).to be_truthy
     end
-end
+  end
 end

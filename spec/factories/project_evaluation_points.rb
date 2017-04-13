@@ -5,12 +5,6 @@ FactoryGirl.define do
     project { create :project }
     project_evaluation { create :project_evaluation }
     student { project_evaluation.user }
-    reason do |r|
-      if Reason.all.any?
-        Reason.first
-      else
-        create :reason
-      end
-    end
+    reason_id { [1,2,3].sample }
   end
 end

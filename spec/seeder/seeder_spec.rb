@@ -18,11 +18,6 @@ RSpec.describe "Seeder" do
 		FactoryGirl.create :question_type, category: 'number', friendly_name: 'Number'
 		FactoryGirl.create :question_type, category: 'rank', friendly_name: 'Rank'
 
-    # Reasons
-    (1..10).to_a.each do |num|
-      Reason.create value: num
-    end
-
 		# 1st Lecturer
 		department = FactoryGirl.create(:department_seeder, name: 'Computer Science')
 		department2 = FactoryGirl.create(:department_seeder, name: 'English Studies')
@@ -153,9 +148,6 @@ RSpec.describe "Seeder" do
 
 		# question type
 		expect(QuestionType.all.size).to eq 3
-
-    # reasons
-    expect(Reason.all.size).to eq 10 
  	end
 
 end

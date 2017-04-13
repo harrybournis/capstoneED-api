@@ -10,6 +10,7 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 		@project = @lecturer.projects.first
 		create :students_project, student: @student, project: @project
 		now = DateTime.now
+		@game_setting = create :game_setting, assignment: @project.assignment
 		@project.assignment.start_date = now
 		@project.assignment.end_date = now + 1.month
 		@project.assignment.save

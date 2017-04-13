@@ -30,4 +30,12 @@ module TestHelpers
     return @lecturer
   end
 
+  def login_integration(student = nil)
+    student = create :student_confirmed unless student
+    post '/v1/sign_in', params: { email: student.email, password: '12345678' }
+    expect(response.status).to eq(200)
+    csrf = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+    return student, csrf
+  end
+
 end

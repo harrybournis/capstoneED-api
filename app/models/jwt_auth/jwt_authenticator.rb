@@ -31,7 +31,7 @@ module JWTAuth
 
       if validated_request.csrf_token == token_params['csrf_token']
 
-        if token_params['type'] == 'Student'
+        if token_params['type'] == 'Student'.freeze
           JWTAuth::CurrentUserStudent.new(token_params['id'],
                                           'Student'.freeze,
                                           token_params['device'])
