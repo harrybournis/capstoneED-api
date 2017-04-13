@@ -11,9 +11,9 @@ module JWTAuth
     @domain       = api_host_url    # to be added to the cookies. left blank for developement in order to work with browsers. Change variable in helpers/url_helper.rb
     @issuer       = @domain         # typically the website url. added to JWT tokens.
 
-    @cookies_secure     = false     # transmit cookies only on https
+    @cookies_secure     = false     # transmit cookies only on https. Set true for deployment.
     @cookies_httponly   = true      # javascript can't read cookies
-    @cookies_samesite   = false   # send cookies only if url in address bar matches the current site
+    @cookies_samesite   = false     # send cookies only if url in address bar matches the current site
 
     ###
     # Called before an authenticated endpoint in before_action in
