@@ -7,8 +7,7 @@
 #   @return [DateTime] The date that the points were awarded.
 #
 # @!attribute [r] reason_id
-#   @return [Integer] The id of the Reason object containing the reason
-#   for getting points.
+#   @return [Integer] The id of the Reason for getting the points.
 #
 # @!attribute [r] student_id
 #   @return [Integer] The id of the student that receive the points.
@@ -23,7 +22,6 @@
 class LogPoint < ApplicationRecord
   belongs_to :project
   belongs_to :student
-  belongs_to :reason
 
   validates_presence_of :points,
                         :date,

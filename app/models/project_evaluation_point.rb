@@ -10,8 +10,7 @@
 #   @return [Integer] The id of the student that receive the points.
 #
 # @!attribute [r] reason_id
-#   @return [Integer] The id of the Reason object containing the reason
-#   for getting points.
+#   @return [Integer] The id of the Reason for getting the points.
 #
 # @!attribute [r] project_evaluation_id
 #   @return [Integer] The id of the project_evaluation that triggered the
@@ -22,7 +21,6 @@
 #
 class ProjectEvaluationPoint < ApplicationRecord
   belongs_to :project
-  belongs_to :reason
   belongs_to :project_evaluation
   belongs_to :student
 

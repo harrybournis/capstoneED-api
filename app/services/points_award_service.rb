@@ -48,10 +48,20 @@ class PointsAwardService
 
   # Returns the keys from the awarder and persister stores.
   #
-  # @return [String[]] The keys are in String form.
+  # @return [String[]] The keys are Strings.
   #
   def self.keys
     AWARDER_STORE.keys | PERSISTER_STORE.keys
+  end
+
+  # Returns true if the key exists in the awarders/persisters store.
+  #
+  # @param key [Symbol] The key.
+  #
+  # @return [Boolean]
+  #
+  def self.key_exists?(key)
+    AWARDER_STORE[key] || PERSISTER_STORE[key]
   end
 
   # Returns the registered awarders for the provided key.
@@ -76,16 +86,6 @@ class PointsAwardService
   #
   def self.persisters_for_key(key)
     PERSISTER_STORE[key]
-  end
-
-  # Returns true if the key exists in the awarders/persisters store.
-  #
-  # @param key [Symbol] The key.
-  #
-  # @return [Boolean]
-  #
-  def self.key_exists?(key)
-    AWARDER_STORE[key] || PERSISTER_STORE[key]
   end
 
   # Constructor. Needs a key and a student and receives
