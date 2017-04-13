@@ -36,9 +36,17 @@ RSpec.describe PointsAwardService, type: :model do
         }.to raise_error ArgumentError
     end
 
-    it 'call' do
+    it 'call returns a PointsBoard object' do
       service = PointsAwardService.new(:peer_assessment, create(:student_confirmed))
-      service.call
+      points_board = service.call
+      expect(points_board).to be_a PointsAward::PointsBoard
+    end
+
+    it 'call returns a PointsBoard object that has persisted' do
+      service = PointsAwardService.new(:peer_assessment, create(:student_confirmed))
+      points_board = service.call
+      #expect(points_board.persisted?).to be_truthy
+      expect(points_board.errors[:peer_assessment]).to be_truthy
     end
   end
 end

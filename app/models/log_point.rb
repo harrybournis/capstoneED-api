@@ -25,5 +25,10 @@ class LogPoint < ApplicationRecord
   belongs_to :student
   belongs_to :reason
 
-  validates_presence_of :points, :date, :project_id, :student_id, :reason_id
+  validates_presence_of :points,
+                        :date,
+                        :project_id,
+                        :student_id,
+                        :reason_id,
+                        :log_id
 end

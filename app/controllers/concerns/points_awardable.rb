@@ -15,10 +15,11 @@ module PointsAwardable
   end
 
   def serialize_w_points(resource, points_board)
-    if points_board.errors?
-      resource.errors
-    else
-      resource
-    end
+    resource
+    # if points_board.errors?
+    #   resource.errors
+    # else
+    #   resource
+    # end
   end
 end

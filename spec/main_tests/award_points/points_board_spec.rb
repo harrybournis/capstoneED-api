@@ -24,6 +24,11 @@ RSpec.describe PointsAward::PointsBoard, type: :model do
 
       @points_board[2]
     end
+
+    it 'points? returns false if empty ponts hash' do
+      expect(@points_board.points).to be_empty
+      expect(@points_board.points?).to be_falsy
+    end
   end
 
   describe '#add' do

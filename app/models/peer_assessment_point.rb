@@ -26,5 +26,10 @@ class PeerAssessmentPoint < ApplicationRecord
   belongs_to :peer_assessment
   belongs_to :student
 
-  validates_presence_of :points, :date, :project_id, :student_id, :reason_id, :peer_assessment_id
+  validates_presence_of :points,
+                        :date,
+                        :project_id,
+                        :student_id,
+                        :reason_id,
+                        :peer_assessment_id
 end

@@ -45,9 +45,8 @@ class V1::PeerAssessmentsController < ApplicationController
         render json: serialize_w_points(@peer_assessment, points_board),
                status: :created
       else
-        render json: format_errors(
-                      serialize_w_points(
-                        @peer_assessment, points_board)),
+        render json: serialize_w_points(
+                        @peer_assessment, points_board),
                status: :created
       end
     else

@@ -26,5 +26,10 @@ class ProjectEvaluationPoint < ApplicationRecord
   belongs_to :project_evaluation
   belongs_to :student
 
-  validates_presence_of :points, :date, :project_id, :student_id, :reason_id, :project_evaluation_id
+  validates_presence_of :points,
+                        :date,
+                        :project_id,
+                        :student_id,
+                        :reason_id,
+                        :project_evaluation_id
 end

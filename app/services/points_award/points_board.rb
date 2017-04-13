@@ -80,6 +80,14 @@ module PointsAward
       @errors.any?
     end
 
+    # Returns true if there are any points in the points hash.
+    #
+    # @return [Boolean]
+    #
+    def points?
+      @points.any?
+    end
+
     # Sets @persisted to true. Used as a flag after successfully
     # saving the points into permanent storage.
     #
@@ -102,7 +110,7 @@ module PointsAward
     # @return [Boolean]
     #
     def success?
-      @persisted && !errors?
+      !errors?
     end
 
     # Adds new poits to the points hash, using the 'key' param as key.
@@ -138,6 +146,13 @@ module PointsAward
       end
 
       @points[key] ? @points[key] << res.output : @points[key] = [res.output]
+    end
+
+    def add_error(key, string)
+      raise ArgumentError unless key.is_a?(Symbol)
+      raise ArgumentError, 'Error must be a String.' unless string.is_a? String
+
+      @errors[key] ? @errors[key] << string : @errors[key] = [string]
     end
 
     private

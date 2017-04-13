@@ -6,9 +6,9 @@ module JWTAuth
     attr_reader :id, :type, :current_device
 
     def initialize(user_id, type, device)
-      @id             = user_id
-      @type           = type
-      @current_device = device
+      @id             = user_id.freeze
+      @type           = type.freeze
+      @current_device = device.freeze
     end
 
     def load

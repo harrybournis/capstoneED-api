@@ -23,12 +23,14 @@
 # @author [harrybournis]
 #
 class PointsAwardService
+  include Waterfall
+
   # Updating this will specify which awarder will be resolved
   # for each key.
   AWARDER_STORE = {
     peer_assessment: 'PeerAssessmentAwarder',
     project_evaluation: 'ProjectEvaluationAwarder',
-    log: ['LogAwarder', 'OtherAwarder']
+    log: 'LogAwarder'
   }.freeze
 
   # Updating this will specify which perister will be resolved
@@ -120,7 +122,20 @@ class PointsAwardService
   end
 
   def call
-    #binding.pry
+    @awarders.each do |awarder|
+      chain(:awarded)   { awarder.new(@points_board).call }
+        .when_falsy     { outflow[:awarded].points? }
+        .dam            { outflow[:awarded] }
+    end
+
+    @persisters.each do |persister|
+      chain(:persisted) { persister.new(outflow[:awarded]).call }
+        .when_falsy     { outflow[:persisted].persisted? }
+        .dam            { outflow[:persisted] }
+    end
+
+    chain               { return outflow[:persisted]  }
+    on_dam              { return error_pool }
   end
 
   private
