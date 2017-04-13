@@ -37,43 +37,43 @@ RSpec.describe PointsAward::PointsBoard, type: :model do
     end
 
     it 'adds provided hash in the points hash under the provided key and creates an array if it does not already exist' do
-      expect(@points_board.add(:key, { points: 20, reason: 6, resource_id: 1 })).to be_truthy
+      expect(@points_board.add(:key, { points: 20, reason_id: 6, resource_id: 1 })).to be_truthy
       expect(@points_board[:key]).to be_truthy
       expect(@points_board[:key].length).to eq 1
       expect(@points_board[:key].last[:points]).to eq 20
-      expect(@points_board[:key].last[:reason]).to eq 6
+      expect(@points_board[:key].last[:reason_id]).to eq 6
       expect(@points_board[:key].last[:resource_id]).to eq 1
     end
 
     it 'adds provided hash and keeps the previous ones if key already exists' do
-      @points_board.add(:key, { points: 20, reason: 6, resource_id: 1 })
-      expect(@points_board.add(:key, { points: 40, reason: 3, resource_id: 4 })).to be_truthy
+      @points_board.add(:key, { points: 20, reason_id: 6, resource_id: 1 })
+      expect(@points_board.add(:key, { points: 40, reason_id: 3, resource_id: 4 })).to be_truthy
 
       expect(@points_board[:key]).to be_truthy
       expect(@points_board[:key].length).to eq 2
       expect(@points_board[:key].last[:points]).to eq 40
-      expect(@points_board[:key].last[:reason]).to eq 3
+      expect(@points_board[:key].last[:reason_id]).to eq 3
       expect(@points_board[:key].last[:resource_id]).to eq 4
     end
 
     it 'raises an error if the key is not a symbol' do
-      expect { @points_board.add("key", { points: 20, reason: 6, resource_id: 1 })
+      expect { @points_board.add("key", { points: 20, reason_id: 6, resource_id: 1 })
       }.to raise_error ArgumentError
     end
 
     it 'raises an error if the hash is missing points' do
-      expect { @points_board.add(:key, { reason: 6, resource_id: 1 })
+      expect { @points_board.add(:key, { reason_id: 6, resource_id: 1 })
       }.to raise_error ArgumentError, 'Invalid hash fields.'
     end
 
     it 'ignores irrelevant params' do
-      expect { @points_board.add(:key, { points: 20, reason: 6, resource_id: 1, wrong: "33" })
+      expect { @points_board.add(:key, { points: 20, reason_id: 6, resource_id: 1, wrong: "33" })
       }.to_not raise_error #ArguementError, 'Invalid hash fields.'
       expect(@points_board[:key].last.keys).to_not include :wrong
     end
 
     it 'does not raise an error if resource_id is missing' do
-      expect { @points_board.add(:key, { points: 20, reason: 6 })
+      expect { @points_board.add(:key, { points: 20, reason_id: 6 })
       }.to_not raise_error
     end
   end
@@ -128,12 +128,12 @@ RSpec.describe PointsAward::PointsBoard, type: :model do
     	@points2 = 20
     	@points3 = 50
     	@points_board = PointsBoard.new(create(:student))
-      @points_board.add :peer_assessment, { points: @points1, reason: 2, resource_id: 1 }
-      @points_board.add :peer_assessment, { points: @points2, reason: 6, resource_id: 1 }
-      @points_board.add :peer_assessment, { points: @points3, reason: 9, resource_id: 1 }
-      @points_board.add :other, { points: @points1, reason: 2, resource_id: 1 }
-      @points_board.add :other, { points: @points2, reason: 6, resource_id: 1 }
-      @points_board.add :other, { points: @points3, reason: 9, resource_id: 1 }
+      @points_board.add :peer_assessment, { points: @points1, reason_id: 2, resource_id: 1 }
+      @points_board.add :peer_assessment, { points: @points2, reason_id: 6, resource_id: 1 }
+      @points_board.add :peer_assessment, { points: @points3, reason_id: 9, resource_id: 1 }
+      @points_board.add :other, { points: @points1, reason_id: 2, resource_id: 1 }
+      @points_board.add :other, { points: @points2, reason_id: 6, resource_id: 1 }
+      @points_board.add :other, { points: @points3, reason_id: 9, resource_id: 1 }
     end
 
     it 'responds to #total_points' do

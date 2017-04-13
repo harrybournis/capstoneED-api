@@ -7,7 +7,7 @@ module PointsAward::Awarders
     end
 
     def call
-      @points_board.add(:log, { points: 10, reason: 1, resource_id: 6 })
+      @points_board.add(:log, { points: 10, reason_id: 1, resource_id: 6 })
       @points_board
     end
   end

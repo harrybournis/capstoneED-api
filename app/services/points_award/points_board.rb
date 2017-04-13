@@ -5,12 +5,12 @@ module PointsAward
   # and provides a common interface between the various components
   # of the AwardPoints Service. Can return the points in a hash.
   #   {
-  #      peer_assessment: [{ points: 10, reason: 5, resource_id: 4 },
-  #                        { points: 50, reason: 1, resource_id: 6 }],
-  #      log: [{ points: 40, reason: 8, resource_id: 8 },
-  #            { points: 5, reason: 3, resource_id: 2 }],
-  #      project_evaluation: [{ points: 40, reason: 8, resource_id: 8 },
-  #                           { points: 5, reason: 3, resource_id: 2 }]
+  #      peer_assessment: [{ points_id: 10, reason: 5, resource_id: 4 },
+  #                        { points_id: 50, reason: 1, resource_id: 6 }],
+  #      log: [{ points_id: 40, reason: 8, resource_id: 8 },
+  #            { points_id: 5, reason: 3, resource_id: 2 }],
+  #      project_evaluation: [{ points_id: 40, reason: 8, resource_id: 8 },
+  #                           { points_id: 5, reason: 3, resource_id: 2 }]
   #   }
   #
   # It validates the format of the points before adding them to the points hash.
@@ -19,7 +19,7 @@ module PointsAward
   # @author [harrybournis]
   #
   class PointsBoard
-    attr_reader :points, :errors
+    attr_reader :student, :resource, :project_id, :points, :errors
     # Constructor. Takes a Student object which will be awarded the points,
     # and an optional resource.
     #
@@ -33,13 +33,14 @@ module PointsAward
     #
     # @return [AwardPoints::PointsBoard] A new PointsBoard object.
     #
-    def initialize(student, resource = nil, _options = {})
+    def initialize(student, resource = nil, project_id = nil, _options = {})
       # validate_array_of_hashes(array_of_hashes).tap do |v|
       #   raise(TypeError, v.errors.to_s) unless v.success?
       # end
 
       @student = student
       @resource = resource
+      @project_id = project_id
       @persisted = false
       @points = {}
       @errors = {}
@@ -125,17 +126,17 @@ module PointsAward
     # @param hash [Hash] The hash containing the points, the reason and
     #   an optional resource_id.
     # @option points [Integer] The number of points that have been awarded.
-    # @option reason [Integer] The reason for awarding the points. Maps to
+    # @option reason_id [Integer] The reason for awarding the points. Maps to
     #   Reasons model value enum field.
     # @option resource_id [Integer] Optional. The resource (log,
     #   peer assessment, project evaluation) that was created that led
     #   to the Student being awarded points.
     #
     # @example
-    #   @points_board.add(:peer_assessment, { points: 30, reason: 4, resource_id: 7 })
+    #   @points_board.add(:peer_assessment, { points_id: 30, reason_id: 4, resource_id: 7 })
     #
     # @raise [ArgumentError] if the key is not a Symbol, or the hash does
-    #   not contain the values 'points' and 'reason'
+    #   not contain the values 'points' and 'reason_id'
     #
     # @return [PointsBoard] Returns itself to possibly chain add methods.
     #
@@ -162,7 +163,7 @@ module PointsAward
         configure { config.input_processor = :form }
 
         required(:points).value(:int?)
-        required(:reason).value(:int?)
+        required(:reason_id).value(:int?)
         optional(:resource_id).value(:int?)
       end
 
