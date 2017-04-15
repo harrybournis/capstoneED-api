@@ -15,13 +15,14 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
 			@student_for = FactoryGirl.create(:student_confirmed)
+			@student3 = create :student_confirmed
 			@assignment = FactoryGirl.create(:assignment)
 			@game_setting = create :game_setting, assignment: @assignment
 			@project = FactoryGirl.create(:project, assignment: @assignment)
 			@iteration = FactoryGirl.create(:iteration, assignment: @assignment)
 			create :students_project, student: @student_for, project: @project
 			create :students_project, student: @student, project: @project
-			create :students_project, student: create(:student_confirmed), project: @project
+			create :students_project, student: @student3, project: @project
 			@pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
 
 			@irrelevant_team = FactoryGirl.create(:project)
@@ -42,6 +43,30 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 					expect(status).to eq(201)
 					expect(body['peer_assessment']['submitted_by_id']).to eq(@student.id)
 					expect(body['peer_assessment']['answers'][1]['answer']).to eq('I enjoyed the presentations')
+				end
+			end
+
+			it 'creates multiple' do
+				Timecop.travel(@pa_form.start_date + 1.minute) do
+					@controller = V1::PeerAssessmentsController.new
+					mock_request = MockRequest.new(valid = true, @student)
+					request.cookies['access-token'] = mock_request.cookies['access-token']
+					request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+					@params = { peer_assessments: [
+											{ pa_form_id: @pa_form.id, submitted_for_id: @student_for.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] },
+											{ pa_form_id: @pa_form.id, submitted_for_id: @student3.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }
+										] }
+
+					post :create, params:  @params, as: :json
+
+					expect(status).to eq(201)
+					expect(body['peer_assessments'][0]['submitted_by_id']).to eq(@student.id)
+					expect(body['peer_assessments'][0]['submitted_for_id']).to eq(@student_for.id)
+					expect(body['peer_assessments'][0]['answers'][1]['answer']).to eq('I enjoyed the presentations')
+					expect(body['peer_assessments'][1]['submitted_for_id']).to eq(@student3.id)
+					expect(body['peer_assessments'][1]['submitted_by_id']).to eq(@student.id)
+					expect(body['peer_assessments'][1]['answers'][1]['answer']).to eq('I enjoyed the presentations')
 				end
 			end
 

@@ -82,7 +82,7 @@ class V1::StudentsProjectsController < ApplicationController
     render json: { logs: @students_project.logs }, status: :ok
   end
 
-  # POST /projects/:id/update_logs
+  # POST /projects/:id/logs
   # Only for Student
   def update_logs
     @students_project.add_log(log_params.to_h.to_h)

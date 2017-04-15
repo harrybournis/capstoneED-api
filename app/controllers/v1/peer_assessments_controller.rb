@@ -34,24 +34,43 @@ class V1::PeerAssessmentsController < ApplicationController
 
   # POST /peer_assessments
   def create
-    @peer_assessment = PeerAssessment.new(peer_assessment_params)
-    @peer_assessment.submitted_by = current_user.load
+    if params[:peer_assessments] && multiple_params.permitted?
+      @peer_assessments = []
 
-    if @peer_assessment.save && @peer_assessment.submit # submit it
+      params.permit!.to_h[:peer_assessments].each do |param|
+        pa = PeerAssessment.new param
+        pa.submitted_by = current_user.load
 
-      points_board = award_points :peer_assessment, @peer_assessment
-
-      if points_board.success?
-        render json: serialize_w_points(@peer_assessment, points_board),
-               status: :created
-      else
-        render json: serialize_w_points(
-                        @peer_assessment, points_board),
-               status: :created
+        if pa.save
+          @peer_assessments << pa
+        else
+          render json: format_errors(pa.errors),
+                 status: :unprocessable_entity
+          return
+        end
       end
+
+      render json: @peer_assessments, status: :created
     else
-      render json: format_errors(@peer_assessment.errors),
-             status: :unprocessable_entity
+      @peer_assessment = PeerAssessment.new(peer_assessment_params)
+      @peer_assessment.submitted_by = current_user.load
+
+      if @peer_assessment.save && @peer_assessment.submit # submit it
+
+        points_board = award_points :peer_assessment, @peer_assessment
+
+        if points_board.success?
+          render json: serialize_w_points(@peer_assessment, points_board),
+                 status: :created
+        else
+          render json: serialize_w_points(
+                          @peer_assessment, points_board),
+                 status: :created
+        end
+      else
+        render json: format_errors(@peer_assessment.errors),
+               status: :unprocessable_entity
+      end
     end
   end
 
@@ -76,6 +95,11 @@ class V1::PeerAssessmentsController < ApplicationController
   def peer_assessment_params
     params.permit(:pa_form_id, :submitted_for_id,
                   answers: [:question_id, :answer])
+  end
+
+  def multiple_params
+    params.permit(peer_assessments: [:pa_form_id, :submitted_for_id,
+                  answers: [:question_id, :answer]])
   end
 
   def query_params
