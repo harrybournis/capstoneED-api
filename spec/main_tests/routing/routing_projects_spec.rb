@@ -36,21 +36,6 @@ RSpec.describe 'Routing', type: :routing do
       controller: 'v1/students_projects', action: 'remove_student', id: '4')
   end
 
-  it 'POST /projects/:id/logs routes to students_projects#update_logs' do
-    expect(post: "#{url}/v1/projects/3/logs").to route_to(
-      controller: 'v1/students_projects', action: 'update_logs', id: '3')
-  end
-
-  it 'GET /projects/:id/logs routes to students_projects#index_logs_student' do
-    expect(get: "#{url}/v1/projects/3/logs").to route_to(
-      controller: 'v1/students_projects', action: 'index_logs_student', id: '3')
-  end
-
-  it 'GET /projects/:id/logs?student_id=4 routes to students_projects#index_logs_lecturer' do
-    expect(get: "#{url}/v1/projects/3/logs?student_id=4").to route_to(
-      controller: 'v1/students_projects', action: 'index_logs_lecturer', id: '3', student_id: '4')
-  end
-
   it 'GET /project/:id/evaluations to project_evaluations index with project' do
     expect(get: "#{url}/v1/projects/3/evaluations").to route_to(
       controller: 'v1/project_evaluations', action: 'index_with_project', project_id: '3')

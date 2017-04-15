@@ -38,15 +38,17 @@ Rails.application.routes.draw do
     # Projects
     get     'projects', to: 'projects#index_with_assignment', constraints: -> (request) { request.params[:assignment_id] }
     get     'projects', to: 'projects#index_with_unit', constraints: -> (request) { request.params[:unit_id] }
-    get     'projects/:id/logs', to: 'students_projects#index_logs_lecturer', constraints: -> (request) { request.params[:student_id] }
-    get     'projects/:id/logs', to: 'students_projects#index_logs_student'
-    post    'projects/:id/logs', to: 'students_projects#update_logs'
     post    'projects/enrol', to: 'students_projects#enrol'
     patch   'projects/:id/update_nickname', to: 'students_projects#update_nickname'
     delete  'projects/:id/remove_student', to: 'students_projects#remove_student'
     resources :projects do
       resources :extensions, only: [:create, :update, :destroy]
     end
+
+    # Logs
+    get     'projects/:id/logs', to: 'logs#index_lecturer', constraints: -> (request) { request.params[:student_id] }
+    get     'projects/:id/logs', to: 'logs#index_student'
+    post    'projects/:id/logs', to: 'logs#update'
 
     # Custom Questions
     resources :questions
