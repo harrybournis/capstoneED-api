@@ -27,6 +27,5 @@ class LogPoint < ApplicationRecord
                         :date,
                         :project_id,
                         :student_id,
-                        :reason_id,
-                        :log_id
+                        :reason_id
 end

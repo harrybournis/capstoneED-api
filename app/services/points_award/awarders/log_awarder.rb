@@ -3,7 +3,7 @@ module PointsAward::Awarders
     include Waterfall
 
     def initialize(points_board)
-      @points_board = points_board
+      super points_board
     end
 
     def call
