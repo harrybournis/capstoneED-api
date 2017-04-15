@@ -39,7 +39,7 @@
 class Log
   include ActiveModel::Serialization
 
-  attr_reader :id, :project_id, :date_worked, :date_submitted, :time_worked, :stage, :text
+  attr_reader :student_id, :project_id, :date_worked, :date_submitted, :time_worked, :stage, :text
 
   # Constructor. Takes a hash of the log entry, the students_project object
   # and a third optional parameter which indicates whether it is a new
@@ -66,13 +66,13 @@ class Log
   #
   def initialize(entry, students_project, persisted = false)
     @entry = entry
-    @project_id = entry[:project_id]
-    @student_id = entry[:student_id]
-    @date_worked = entry[:date_worked]
-    @date_submitted = entry[:date_submitted]
-    @time_worked = entry[:time_worked]
-    @stage = entry[:stage]
-    @text = entry[:text]
+    @project_id = students_project.project_id
+    @student_id = students_project.student_id
+    @date_worked = entry['date_worked']
+    @date_submitted = entry['date_submitted']
+    @time_worked = entry['time_worked']
+    @stage = entry['stage']
+    @text = entry['text']
     @students_project = students_project
     @persisted = persisted
 
@@ -94,17 +94,19 @@ class Log
       return false
     end
 
+    time_now = DateTime.now.to_i.to_s
     @students_project.logs << if @entry.class == Hash
-                                @entry.merge('date_submitted' => DateTime.now.to_i.to_s)
+                                @entry.merge('date_submitted' => time_now)
                               else
                                 []
                               end
     if @students_project.save
       persisted!
+      @date_submitted = time_now
       return self
     end
 
-    @errors = @students_project.errors.full_messages
+    @errors = @students_project.errors
     false
   end
 

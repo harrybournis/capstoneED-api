@@ -30,12 +30,14 @@ class V1::LogsController < ApplicationController
   # POST /projects/:id/logs
   # Only for Student
   def update
-    @students_project.add_log(log_params.to_h.to_h)
+    #@students_project.add_log(log_params.to_h.to_h)
+    @log = Log.new log_params.to_h.to_h, @students_project
 
-    if @students_project.save
-      render json: { log_entry: @students_project.logs.last }, status: :ok
+    if @log.save
+      @students_project.reload
+      render json: @log, status: :ok
     else
-      render json: format_errors(@students_project.errors),
+      render json: format_errors(@log.errors),
              status: :unprocessable_entity
     end
   end

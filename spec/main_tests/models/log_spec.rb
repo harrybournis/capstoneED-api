@@ -83,8 +83,8 @@ RSpec.describe Log do
 
       expect(log.save).to be_falsy
       expect(log.errors).to be_truthy
-      expect(log.errors.length).to eq 1
-      expect(log.errors[0]).to be_a String
+      expect(log.errors[:log_entry].length).to eq 1
+      expect(log.errors[:log_entry][0]).to be_a String
     end
 
     it '#valid? returns false if unsuccessful save' do
