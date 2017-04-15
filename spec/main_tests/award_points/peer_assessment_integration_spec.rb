@@ -10,12 +10,14 @@ RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
     expect(response.status).to eq(200)
     @csrf = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
 
-    @student_for = FactoryGirl.create(:student_confirmed)
+    @student_for = create :student_confirmed
+    @student3 = create :student_confirmed
     @assignment = FactoryGirl.create(:assignment)
     @game_setting  = create :game_setting, assignment: @assignment
     @project = FactoryGirl.create(:project, assignment: @assignment)
     @iteration = FactoryGirl.create(:iteration, assignment: @assignment)
     create :students_project, student: @student_for, project: @project
+    create :students_project, student: @student3, project: @project
     create :students_project, student: @student, project: @project
     @pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
   end
@@ -33,6 +35,26 @@ RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
         expect(status).to eq 201
         @point = PeerAssessmentPoint.where(student_id: @student.id, peer_assessment_id: body['peer_assessment']['id'], reason_id: Reason[:peer_assessment][:id]).last
         expect(@point.points).to eq @game_setting.points_peer_assessment
+      end
+    end
+
+    it 'gets full points only once (not for every peer assessment) for submitting multiple peer_assessments in time' do
+      Timecop.travel(@pa_form.start_date + 1.minute) do
+        @student, @csrf = login_integration @student
+
+        @params = { peer_assessments: [
+                                        { pa_form_id: @pa_form.id, submitted_for_id: @student_for.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] },
+                                        { pa_form_id: @pa_form.id, submitted_for_id: @student3.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }
+                                      ]
+                  }
+
+        expect {
+          post '/v1/peer_assessments', params: @params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { PeerAssessmentPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment][:id]).count }
+          .by 1
+
+        expect(status).to eq 201
+        expect(body['peer_assessments'].length).to eq 2
       end
     end
 

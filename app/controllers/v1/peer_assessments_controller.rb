@@ -35,14 +35,14 @@ class V1::PeerAssessmentsController < ApplicationController
   # POST /peer_assessments
   def create
     if params[:peer_assessments] && multiple_params.permitted?
-      @peer_assessments = []
+      @pa = []
 
-      params.permit!.to_h[:peer_assessments].each do |param|
+      multiple_params[:peer_assessments].each do |param|
         pa = PeerAssessment.new param
         pa.submitted_by = current_user.load
 
-        if pa.save
-          @peer_assessments << pa
+        if pa.save && pa.submit
+          @pa << pa
         else
           render json: format_errors(pa.errors),
                  status: :unprocessable_entity
@@ -50,27 +50,27 @@ class V1::PeerAssessmentsController < ApplicationController
         end
       end
 
-      render json: @peer_assessments, status: :created
+      @points_board = award_points :peer_assessment, @pa[0]
     else
-      @peer_assessment = PeerAssessment.new(peer_assessment_params)
-      @peer_assessment.submitted_by = current_user.load
+      @pa = PeerAssessment.new(peer_assessment_params)
+      @pa.submitted_by = current_user.load
 
-      if @peer_assessment.save && @peer_assessment.submit # submit it
-
-        points_board = award_points :peer_assessment, @peer_assessment
-
-        if points_board.success?
-          render json: serialize_w_points(@peer_assessment, points_board),
-                 status: :created
-        else
-          render json: serialize_w_points(
-                          @peer_assessment, points_board),
-                 status: :created
-        end
+      if @pa.save && @pa.submit # submit it
+        @points_board = award_points :peer_assessment, @pa
       else
-        render json: format_errors(@peer_assessment.errors),
+        render json: format_errors(@pa.errors),
                status: :unprocessable_entity
+        return
       end
+    end
+
+    if @points_board.success?
+      render json: serialize_w_points(@pa, @points_board),
+             status: :created
+    else
+      render json: serialize_w_points(
+                      @pa, @points_board),
+             status: :created
     end
   end
 

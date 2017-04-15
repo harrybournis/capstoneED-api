@@ -7,13 +7,16 @@ Rails.application.routes.draw do
     post    'refresh',  to: 'authentications#refresh'
 
     # Users
+
     devise_for :users, skip: [:sessions, :passwords, :confirmations], skip_helpers: true
     # Passwords
-    post 'request_reset_password', to: 'passwords#create'
-    patch 'reset_password', to: 'passwords#update'
-    # Confirmation
-    post 'resend_confirmation_email', to: 'confirmations#create'
-    get 'confirm_account', to: 'confirmations#show', as: 'confirmation'
+    devise_scope :v1_user do
+      post 'request_reset_password', to: 'passwords#create'
+      patch 'reset_password', to: 'passwords#update'
+      # Confirmation
+      post 'resend_confirmation_email', to: 'confirmations#create'
+      get 'confirm_account', to: 'confirmations#show', as: 'confirmation'
+    end
     resources :users, only: [:create, :update]
 
     # Units

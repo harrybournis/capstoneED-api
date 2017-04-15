@@ -20,6 +20,13 @@ module TestHelpers
     JSON.parse(response.body)
   end
 
+  def sign_in(user)
+    post '/v1/sign_in', params: { email: user.email, password: '12345678' }
+    expect(status).to eq 200
+
+    JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+  end
+
   def get_lecturer_with_units_assignments_projects
     @lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
     @lecturer.save

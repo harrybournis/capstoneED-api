@@ -5,8 +5,8 @@ module UrlHelper
   def client_reset_password_url(token)
     if Rails.env.development? || Rails.env.test?
       # add the correct path in the frontend app
-      #"http://capstoneed-api.org:21992/v1/?reset_password_token=#{token}"
-      "set the url of the client app"
+      "http://capstoneed-api.org:21992/v1/reset_password?reset_password_token=#{token}"
+      #"set the url of the client app"
     else
       # add the correct path in the frontend app
       #"http://capstoneed-api.herokuapp.com?reset_password_token=#{token}"

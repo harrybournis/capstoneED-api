@@ -24,9 +24,9 @@ class V1::UsersController < ApplicationController
   # PUT '/users/:id'
   # Requires current_password if password is to be updated
   def update
-    update_method = user_params[:current_password] ? 'update_with_password' : 'update_without_password'
+    update_method = user_update_params[:current_password] ? 'update_with_password' : 'update_without_password'
 
-    if @user.method(update_method).call(user_params)
+    if @user.method(update_method).call(user_update_params)
       render json: @user, status: :ok
     else
       render json: format_errors(@user.errors), status: :unprocessable_entity
@@ -58,5 +58,11 @@ class V1::UsersController < ApplicationController
     params.permit(:id, :first_name, :last_name, :email,
                   :password, :password_confirmation,
                   :current_password, :university, :position, :type)
+  end
+
+  def user_update_params
+    params.permit(:id, :first_name, :last_name, :email,
+                  :password, :password_confirmation,
+                  :current_password, :university, :position)
   end
 end

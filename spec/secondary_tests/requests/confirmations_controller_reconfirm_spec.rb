@@ -42,4 +42,19 @@ RSpec.describe "Confirmation Controller - Reconfirmation", type: :request do
 		expect(JSON.parse(response.body)['errors']['email'].first).to eq('is unconfirmed')
 	end
 
+	it 'user can confirm their account' do
+		user = FactoryGirl.build(:user_with_password).process_new_record
+		user.save
+
+		post '/v1/sign_in', params: { email: user.email, password: '12345678' }
+
+		expect(response.status).to eq(401)
+		expect(JSON.parse(response.body)['errors']['email'].first).to eq('is unconfirmed')
+
+		get "/v1/confirm_account?confirmation_token=#{user.confirmation_token}"
+
+		expect(status).to eq 302
+		expect(response.location).to include 'user_confirmation_success.html'
+	end
+
 end

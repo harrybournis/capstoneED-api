@@ -52,7 +52,7 @@ class PeerAssessment < ApplicationRecord
     query.empty? ? [] : where(query)
   end
 
-  def self.validate_schema(params)
+  def validate_schema(params)
     schema = Dry::Validation.Schema do
       configure { config.input_processor = :form }
 
@@ -62,7 +62,7 @@ class PeerAssessment < ApplicationRecord
       required(:answers).each do
         schema do
           required(:question_id).value(:int?)
-          required(:answer).value(:str?)
+          required(:answer) { str? | (int? & gt?(0) & lteq?(5)) }
         end
       end
     end
