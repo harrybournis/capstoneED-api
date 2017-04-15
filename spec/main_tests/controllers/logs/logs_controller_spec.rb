@@ -5,9 +5,7 @@ RSpec.describe V1::LogsController, type: :controller do
 
   before(:all) do
     @lecturer = get_lecturer_with_units_assignments_projects
-    @student = FactoryGirl.create(:student_with_password).process_new_record
-    @student.save
-    @student.confirm
+    @student = create :student_confirmed
     create :students_project, student: @student, project: @lecturer.projects.first
     create :students_project, student: @student, project: @lecturer.projects.last
   end
@@ -25,7 +23,7 @@ RSpec.describe V1::LogsController, type: :controller do
       it 'responds with 200 if valid', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
         parameters = FactoryGirl.build(:students_project).logs[0].except(:date_submitted).merge(id: @student.projects[0].id)
         post :update, params: parameters
-        expect(status).to eq(200)
+        expect(status).to eq(201)
 
         expect(body['log_entry']).to be_truthy
         expect(body['log_entry']).to eq parameters.except(:id)

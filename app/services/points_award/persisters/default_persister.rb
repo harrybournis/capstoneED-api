@@ -34,18 +34,17 @@ module PointsAward::Persisters
           end
         end
 
-        # if @points_board[:log]
-        #   @points_board[:log].each do |pe|
-        #     unless record = LogPoint.create(points: pe[:points],
-        #                                     reason_id: pe[:reason_id],
-        #                                     log_id: pe[:resource_id],
-        #                                     student_id: @points_board.student.id,
-        #                                     project_id: @points_board.resource.project_id,
-        #                                     date: DateTime.now)
-        #       @points_board.add_error(:log, record.errors.full_messages)
-        #     end
-        #   end
-        # end
+        if @points_board[:log]
+          @points_board[:log].each do |pe|
+            record = LogPoint.new(points: pe[:points],
+                                  reason_id: pe[:reason_id],
+                                  student_id: @points_board.student.id,
+                                  project_id: @points_board.resource.project_id,
+                                  date: DateTime.now)
+
+            add_errors :log, record.errors unless record.save
+          end
+        end
       end
 
       @points_board.persisted! unless @points_board.errors?

@@ -39,7 +39,8 @@
 class Log
   include ActiveModel::Serialization
 
-  attr_reader :student_id, :project_id, :date_worked, :date_submitted, :time_worked, :stage, :text
+  attr_reader :student_id, :project_id, :date_worked, :date_submitted,
+              :time_worked, :stage, :text, :students_project
 
   # Constructor. Takes a hash of the log entry, the students_project object
   # and a third optional parameter which indicates whether it is a new

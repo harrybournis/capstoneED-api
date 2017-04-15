@@ -9,37 +9,41 @@ reasons:
     description: Points gained for submitting a Project Evaluation.
     message:
 
-  log_first_of_day:
+  log:
     id: 3
+    description: Points gained for submitting a Log.
+
+  log_first_of_day:
+    id: 4
     description: Points gained for submitting the first log of the day.
     message:
 
   peer_assessment_first_of_team:
-    id: 4
+    id: 5
     description: Points gained for being the first person in a team to submit a peer assessment.
     message:
 
   project_evaluation_first_of_team:
-    id: 5
+    id: 6
     description: Points gained for being the first person in a team to submit a project evaluation.
     message:
 
   log_first_of_team:
-    id: 6
+    id: 7
     description: Points gained for being the first person in a team to submit a log.
     message:
 
   peer_assessment_first_of_assignment:
-    id: 7
+    id: 8
     description: Points gained for being the first person in an assignment to submit a peer assessment.
     message:
 
   project_evaluation_first_of_assignment:
-    id: 8
+    id: 9
     description: Points gained for being the first person in an assignment to submit a project evaluation.
     message:
 
   log_first_of_assignment:
-    id: 9
+    id: 10
     description: Points gained for being the first person in an assignment to submit a log.
     message:
