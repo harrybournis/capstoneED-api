@@ -1,6 +1,3 @@
-require 'coveralls'
-Coveralls.wear!
-
 if ENV['COVERAGE']
     require 'simplecov'
     SimpleCov.start 'rails'

@@ -45,4 +45,12 @@ module TestHelpers
     return student, csrf
   end
 
+  def valid_log_entry
+    JSON.parse({ date_worked: (DateTime.now - 1.day).to_i.to_s, date_submitted: DateTime.now.to_i.to_s, time_worked: 10.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json)
+  end
+
+  def invalid_log_entry
+    JSON.parse({ date_submitted: DateTime.now.to_i.to_s, time_worked: 10.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json)
+  end
+
 end

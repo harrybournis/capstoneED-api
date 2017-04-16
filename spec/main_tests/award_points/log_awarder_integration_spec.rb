@@ -152,4 +152,27 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
 	    expect(@point).to be_falsy
     end
   end
+
+  describe 'Profile points get updated' do
+    it 'with points for log, first of team, first of assignment' do
+      @students_project.logs = []
+      @students_project.save
+      expect(@student.points_for_project_id(@project.id)).to eq 0
+
+      Timecop.travel(DateTime.now + 5.days) do
+        @student, @csrf = login_integration @student
+
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change {
+          @student.points_for_project_id(@project.id)
+        }.to(@game_setting.points_log +
+             @game_setting.points_log_first_of_team +
+             @game_setting.points_log_first_of_day +
+             @game_setting.points_log_first_of_assignment)
+
+        expect(status).to eq 201
+      end
+    end
+  end
 end

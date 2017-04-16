@@ -120,8 +120,10 @@ RSpec.describe PointsAward::Persisters::DefaultPersister, type: :model do
 
   describe 'LogPoint' do
     before :each do
-      @student = instance_double "Student", id: 5
-      @log = instance_double "Log", id: 9
+      @student = create :student_confirmed
+      @project = create :project
+      sp = create :students_project, project_id: @project.id, student_id: @student.id
+      @log = Log.new valid_log_entry, sp
       @points_board = PointsAward::PointsBoard.new(@student, @log)
 
       @points_board.add :log, { points: 10, reason_id: 1 }

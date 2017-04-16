@@ -5,8 +5,8 @@ RSpec.describe Log do
   before :each do
     @sp = create :students_project
     @entry = @sp.logs[0]
-    @valid_params = JSON.parse({ date_worked: (DateTime.now - 1.day).to_i.to_s, date_submitted: DateTime.now.to_i.to_s, time_worked: 10.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json)
-    @invalid_params = JSON.parse({ date_submitted: DateTime.now.to_i.to_s, time_worked: 10.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json)
+    @valid_params = valid_log_entry
+    @invalid_params = invalid_log_entry
   end
 
   it 'is initialized successfully' do

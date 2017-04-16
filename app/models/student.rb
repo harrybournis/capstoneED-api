@@ -20,18 +20,25 @@ class Student < User
   has_many  :log_points
   has_many  :peer_assessment_points
 
-  # Validations
   validates_absence_of :position, :university
   validates_inclusion_of :type, in: ['Student']
 
-  # returns all the Students that share a Team with self
+  # Returns all the students in the same teams as the student.
+  #
+  # @return [Array] The students
+  #
   def teammates
     Student.joins(:projects).where('projects.id' => projects.ids)
            .where.not(id: id).distinct
   end
 
-  # returns the Student's nickname for the provided project
-  # Returns nil if no nickname is found
+  # Returns the student's nickname for the provided project.
+  # Returns nil if student can not be found in the project.
+  #
+  # @param project_id [Integer] The id of the project
+  #
+  # @return [String | nil] The nickname or nil if student not found.
+  #
   def nickname_for_project_id(project_id)
     JoinTables::StudentsProject.select(:nickname)
                                .where(project_id: project_id, student_id: id)[0]
@@ -40,13 +47,34 @@ class Student < User
     nil
   end
 
-  # returns the student's points for the provided project
-  # Returns nil if the project is not found
+  # Returns the student's points for the provided project.
+  # Returns nil if student can not be found in the project.
+  #
+  # @param project_id [Integer] The id of the project
+  #
+  # @return [Integer | nil] The points or nil if student not found.
+  #
   def points_for_project_id(project_id)
     JoinTables::StudentsProject.select(:points)
                                .where(project_id: project_id, student_id: id)[0]
                                .points
   rescue
     nil
+  end
+
+  # Updates a students points in a project.
+  # Returns nil if student can not be found in the project.
+  #
+  # @param points [Integer] The points to be added.
+  # @param project_id [Integer] The id of the project
+  #
+  # @return [Integer | nil] The new points after adding the new ones, or nil
+  #
+  def add_points_for_project_id(points, project_id)
+    return nil unless sp = JoinTables::StudentsProject.where(project_id: project_id,
+                                                             student_id: id)
+                                                      .first
+    sp.update(points: sp.points + points)
+    sp.valid? ? sp.points : nil
   end
 end

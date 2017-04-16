@@ -122,4 +122,20 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       expect(@point).to be_falsy
     end
   end
+
+  describe 'Profile points get updated' do
+    it 'with points for project_evaluation, first of team, first of assignment' do
+      expect(@student.points_for_project_id(@project.id)).to eq 0
+
+      expect {
+        post '/v1/project_evaluations', params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+      }.to change {
+        @student.points_for_project_id(@project.id)
+      }.to(@game_setting.points_project_evaluation +
+           @game_setting.points_project_evaluation_first_of_team +
+           @game_setting.points_project_evaluation_first_of_assignment)
+
+      expect(status).to eq 201
+    end
+  end
 end

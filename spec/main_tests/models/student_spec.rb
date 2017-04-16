@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Student, type: :model do
 
 	describe 'validations' do
-		subject(:student) { FactoryGirl.build(:student) }
+		subject(:student) { build(:student) }
 
 		it { should have_many(:projects).through(:students_projects) }
 		it { should have_many(:assignments).through(:projects) }
@@ -23,19 +23,19 @@ RSpec.describe Student, type: :model do
 		it { should validate_confirmation_of(:password) }
 
 		it 'does not allow provider to be updated' do
-			student = FactoryGirl.create(:student)
+			student = create(:student)
 			expect(student.update(provider: 'email')).to be_truthy
 			expect(student.errors).to be_empty
 			expect(student.provider).to eq('test')
 		end
 	end
 
-	let(:student) { FactoryGirl.create(:student) }
+	let(:student) { create(:student) }
 
 	it 'destroys students_projects on destroy' do
-		assignment = FactoryGirl.create(:assignment_with_projects)
+		assignment = create(:assignment_with_projects)
 		@project = assignment.projects.first
-		student = FactoryGirl.create(:student)
+		student = create(:student)
 		#@project.students << student
 		create :students_project, student: student, project: @project
 		team_count = Project.all.size
@@ -45,15 +45,15 @@ RSpec.describe Student, type: :model do
 	end
 
 	it '#teammates returns students in the same projects' do
-		@user = FactoryGirl.create(:student_confirmed)
+		@user = create(:student_confirmed)
 
-		project1 = FactoryGirl.create(:project)
-		project3 = FactoryGirl.create(:project)
-		teammate = FactoryGirl.create(:student_confirmed)
-		3.times { create :students_project, student: create(:student_confirmed), project: project1 }#project1.students << FactoryGirl.create(:student_confirmed) }
+		project1 = create(:project)
+		project3 = create(:project)
+		teammate = create(:student_confirmed)
+		3.times { create :students_project, student: create(:student_confirmed), project: project1 }#project1.students << create(:student_confirmed) }
 		create :students_project, student: @user, project: project1
 		create :students_project, student: teammate, project: project1
-		3.times { create :students_project, student: create(:student_confirmed), project: project3 } #project3.students << FactoryGirl.create(:student_confirmed) }
+		3.times { create :students_project, student: create(:student_confirmed), project: project3 } #project3.students << create(:student_confirmed) }
 		create :students_project, student: @user, project: project3
 		create :students_project, student: teammate, project: project3
 
@@ -62,9 +62,9 @@ RSpec.describe Student, type: :model do
 	end
 
 	it '#nickname_for_project_id returns the nickname for the provided project' do
-		student = FactoryGirl.create(:student)
-		project = FactoryGirl.create(:project)
-		project2 = FactoryGirl.create(:project)
+		student = create(:student)
+		project = create(:project)
+		project2 = create(:project)
 		nickname = "dr dre"
 		nickname2 = "snoop dogg"
 		sp = JoinTables::StudentsProject.new(project_id: project.id, student_id: student.id, nickname: nickname)
@@ -77,16 +77,16 @@ RSpec.describe Student, type: :model do
 	end
 
 	it '#nickname_for_project_id returns nil if student is not in the project' do
-		student = FactoryGirl.create(:student)
-		project = FactoryGirl.create(:project)
+		student = create(:student)
+		project = create(:project)
 
 		expect(student.nickname_for_project_id(project.id)).to eq(nil)
 	end
 
-	it '#points_for_project_id returns the nickname for the provided project' do
-		student = FactoryGirl.create(:student)
-		project = FactoryGirl.create(:project)
-		project2 = FactoryGirl.create(:project)
+	it '#points_for_project_id returns the points for the provided project' do
+		student = create(:student)
+		project = create(:project)
+		project2 = create(:project)
 		nickname = "dr dre"
 		nickname2 = "snoop dogg"
 		points1 = 30
@@ -101,9 +101,30 @@ RSpec.describe Student, type: :model do
 	end
 
 	it '#points_for_project_id returns nil if student is not in the project' do
-		student = FactoryGirl.create(:student)
-		project = FactoryGirl.create(:project)
+		student = create(:student)
+		project = create(:project)
 
 		expect(student.points_for_project_id(project.id)).to eq(nil)
+	end
+
+	it '#add_points_for_project_id returns the updated points for the project' do
+		student = create :student_confirmed
+		project = create :project
+		project2 = create :project
+		points1 = 30
+		points2 = 50
+		sp = JoinTables::StudentsProject.new(project_id: project.id, student_id: student.id, nickname: 'nickanem', points: points1)
+		sp2 = JoinTables::StudentsProject.new(project_id: project2.id, student_id: student.id, nickname: 'nicknens', points: points2)
+
+		expect(sp.save).to be_truthy
+		expect(student.add_points_for_project_id(20, project.id)).to eq(points1 + 20)
+		expect(sp2.save).to be_truthy
+		expect(student.add_points_for_project_id(10, project2.id)).to eq(points2 + 10)
+	end
+	it '#add_points_for_project_id returns nil if student not in the project' do
+		student = create(:student)
+		project = create(:project)
+
+		expect(student.add_points_for_project_id(20, project.id)).to eq(nil)
 	end
 end

@@ -27,6 +27,8 @@ RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
     it 'gets full points for submitting a peer_assessment in time' do
       Timecop.travel(@pa_form.start_date + 1.minute) do
         @student, @csrf = login_integration @student
+        expect(PeerAssessmentPoint.where(student_id: @student.id)).to be_empty
+        original_points = @student.points_for_project_id(@project.id)
 
         expect {
           post '/v1/peer_assessments', params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }, headers: { 'X-XSRF-TOKEN' => @csrf }
@@ -35,6 +37,12 @@ RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
         expect(status).to eq 201
         @point = PeerAssessmentPoint.where(student_id: @student.id, peer_assessment_id: body['peer_assessment']['id'], reason_id: Reason[:peer_assessment][:id]).last
         expect(@point.points).to eq @game_setting.points_peer_assessment
+
+        new_points = 0
+        PeerAssessmentPoint.where(student_id: @student.id).each do |pap|
+          new_points += pap.points
+        end
+        expect(@student.points_for_project_id(@project.id)).to eq new_points
       end
     end
 
@@ -131,6 +139,26 @@ RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
         expect(status).to eq 201
         @point = PeerAssessmentPoint.where(student_id: @student.id, peer_assessment_id: body['peer_assessment']['id'], reason_id: Reason[:peer_assessment_first_of_assignment][:id]).last
         expect(@point).to be_falsy
+      end
+    end
+  end
+
+  describe 'Profile points get updated' do
+
+    it 'with points for peer_Assessment, first of team, first of assignment' do
+      Timecop.travel(@pa_form.start_date + 1.minute) do
+        @student, @csrf = login_integration @student
+        expect(@student.points_for_project_id(@project.id)).to eq 0
+
+        expect {
+          post '/v1/peer_assessments', params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change {
+          @student.points_for_project_id(@project.id)
+        }.to(@game_setting.points_peer_assessment +
+             @game_setting.points_peer_assessment_first_of_team +
+             @game_setting.points_peer_assessment_first_of_assignment)
+
+        expect(status).to eq 201
       end
     end
   end
