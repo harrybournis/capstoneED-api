@@ -152,4 +152,27 @@ RSpec.describe PointsAward::PointsBoard, type: :model do
       expect { @points_board.total_points(:invalid_key) }.to raise_error ArgumentError
     end
   end
+
+  describe '#points_persisted' do
+    it 'only accepts the input if the POintsBoard has persisted' do
+      @points_board = PointsBoard.new(create(:student))
+      array = []
+      2.times { array << create(:log_point) }
+      expect(@points_board.persisted?).to be_falsy
+      @points_board.points_persisted = array
+      expect(@points_board.points_persisted).to be_empty
+      @points_board.persisted!
+      @points_board.points_persisted = array
+      expect(@points_board.points_persisted).to_not be_empty
+    end
+
+    it 'raises an erorr if the input is not an array' do
+      @points_board = PointsBoard.new(create(:student))
+      object = create(:log_point)
+      @points_board.persisted!
+      expect {
+        @points_board.points_persisted = object
+      }.to raise_error ArgumentError
+    end
+  end
 end

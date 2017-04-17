@@ -18,8 +18,8 @@ module PointsAward
   #
   # @author [harrybournis]
   #
-  class PointsBoard
-    attr_reader :student, :resource, :points, :errors
+  class PointsBoard < ActiveModelSerializers::Model # to be serializable by AMS
+    attr_reader :student, :resource, :points, :points_persisted, :errors
     # Constructor. Takes a Student object which will be awarded the points,
     # and an optional resource.
     #
@@ -39,6 +39,7 @@ module PointsAward
       @persisted = false
       @points = {}
       @errors = {}
+      @points_persisted = []
     end
 
     def [](value)
@@ -107,6 +108,21 @@ module PointsAward
     #
     def success?
       !errors?
+    end
+
+    # Sets the points_persisted attrbibute if the PointsBoard has persisted!.
+    # Returns false if it has not persisted.
+    #
+    # @param point_object [PeerAssessmentPoint | ProjectEvaluationPoint | LogPoint]
+    #   The object that will be added to the points_persisted array.
+    #
+    # @return [Boolean] True if the PointsBoard has persisted, false otherwise.
+    #
+    def points_persisted=(array)
+      return false unless @persisted
+      raise ArgumentError, 'Input is not an array.' unless array.is_a? Array
+      @points_persisted = array
+      true
     end
 
     # Adds new poits to the points hash, using the 'key' param as key.

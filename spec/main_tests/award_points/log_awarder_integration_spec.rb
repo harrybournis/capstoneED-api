@@ -175,4 +175,40 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
       end
     end
   end
+
+  describe 'Serialization' do
+    it 'includes points in the json response' do
+      expect(@student.points_for_project_id(@project.id)).to eq 0
+
+      expect {
+        post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+      }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
+
+      expect(status).to eq 201
+
+      new_points = 0
+      LogPoint.where(student_id: @student.id).each do |pap|
+        new_points += pap.points
+      end
+      expect(@student.points_for_project_id(@project.id)).to eq new_points
+
+      expect(body['points']).to be_truthy
+      expect(body['points']['points_earned']).to eq new_points
+      expect(body['points']['new_total']).to eq @student.points_for_project_id(@project.id)
+      expect(body['points']['detailed']['log']).to be_a Array
+      expect(body['points']['detailed']['log'].length).to eq LogPoint.where(student_id: @student.id).count
+      expect(body['points']['detailed']['log'][0]['reason_id']).to be_truthy
+      expect(body['points']['detailed']['log'][0]['points']).to be_truthy
+    end
+
+    it 'does not include points in the response if the request was invalid' do
+      expect {
+        post "/v1/projects/#{@project.id}/logs", params: @invalid_log_entry, headers: { 'X-XSRF-TOKEN' => @csrf }
+      }.to_not change { LogPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment_first_of_assignment][:id]).count }
+
+      expect(status).to eq 422
+
+      expect(body['points']).to be_falsy
+    end
+  end
 end

@@ -1,6 +1,11 @@
 module PointsAward::Persisters
 
   class DefaultPersister < PointsAward::Persister
+    def initialize(points_board)
+      super points_board
+      @points_persisted = []
+    end
+
     def call
 
       with_transaction do
@@ -13,10 +18,9 @@ module PointsAward::Persisters
                                              student_id: @points_board.student.id,
                                              project_id: @points_board.resource.project_id,
                                              date: DateTime.now)
-            unless record.save &&
-                   update_total_points(:peer_assessment,
-                                       pa[:points],
-                                       @points_board.resource.project_id)
+            unless record.save && update_total_points(:peer_assessment,
+                                                      record,
+                                                      @points_board.resource.project_id)
               add_errors :peer_assessment, record.errors.full_messages
             end
           end
@@ -32,10 +36,9 @@ module PointsAward::Persisters
                                                 project_id: @points_board.resource.project_id,
                                                 date: DateTime.now)
 
-            unless record.save &&
-                   update_total_points(:project_evaluation,
-                                       pe[:points],
-                                       @points_board.resource.project_id)
+            unless record.save && update_total_points(:project_evaluation,
+                                                      record,
+                                                      @points_board.resource.project_id)
               add_errors :project_evaluation, record.errors.full_messages
             end
           end
@@ -49,10 +52,9 @@ module PointsAward::Persisters
                                   project_id: @points_board.resource.project_id,
                                   date: DateTime.now)
 
-            unless record.save &&
-                   update_total_points(:log,
-                                       log[:points],
-                                       @points_board.resource.project_id)
+            unless record.save && update_total_points(:log,
+                                                      record,
+                                                      @points_board.resource.project_id)
               add_errors :log, record.errors.full_messages
             end
           end
@@ -60,6 +62,7 @@ module PointsAward::Persisters
       end
 
       @points_board.persisted! unless @points_board.errors?
+      @points_board.points_persisted = @points_persisted
       @points_board
     end
 
@@ -71,11 +74,11 @@ module PointsAward::Persisters
       end
     end
 
-    def update_total_points(key, points, project_id)
-      unless @points_board
-             .student
-             .add_points_for_project_id(points, project_id)
-
+    def update_total_points(key, record, project_id)
+      if @points_board.student
+                      .add_points_for_project_id(record.points, project_id)
+        @points_persisted << record
+      else
         add_errors key, ['Can not add points. Student does not belong in this project.']
       end
     end

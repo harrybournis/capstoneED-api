@@ -162,4 +162,47 @@ RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
       end
     end
   end
+
+  describe 'Serialization' do
+    it 'includes points in the json response' do
+      Timecop.travel(@pa_form.start_date + 1.minute) do
+        @student, @csrf = login_integration @student
+        expect(@student.points_for_project_id(@project.id)).to eq 0
+
+        expect {
+          post '/v1/peer_assessments', params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { PeerAssessmentPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment][:id]).count }
+
+        expect(status).to eq 201
+
+        new_points = 0
+        PeerAssessmentPoint.where(student_id: @student.id).each do |pap|
+          new_points += pap.points
+        end
+        expect(@student.points_for_project_id(@project.id)).to eq new_points
+
+        expect(body['points']).to be_truthy
+        expect(body['points']['points_earned']).to eq new_points
+        expect(body['points']['new_total']).to eq @student.points_for_project_id(@project.id)
+        expect(body['points']['detailed']['peer_assessment']).to be_a Array
+        expect(body['points']['detailed']['peer_assessment'].length).to eq PeerAssessmentPoint.where(student_id: @student.id).count
+        expect(body['points']['detailed']['peer_assessment'][0]['reason_id']).to be_truthy
+        expect(body['points']['detailed']['peer_assessment'][0]['points']).to be_truthy
+      end
+    end
+
+    it 'does not include points in the response if the request was invalid' do
+      Timecop.travel(@pa_form.start_date + 1.minute) do
+        @student, @csrf = login_integration @student
+
+        expect {
+          post '/v1/peer_assessments', params: { pa_form_id: @pa_form.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to_not change { PeerAssessmentPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment_first_of_assignment][:id]).count }
+
+        expect(status).to eq 422
+
+        expect(body['points']).to be_falsy
+      end
+    end
+  end
 end

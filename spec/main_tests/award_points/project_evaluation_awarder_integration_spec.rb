@@ -138,4 +138,58 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       expect(status).to eq 201
     end
   end
+
+  describe 'Serialization' do
+    it 'includes points in the json response' do
+      expect(@student.points_for_project_id(@project.id)).to eq 0
+
+      expect {
+        post '/v1/project_evaluations', params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+      }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation][:id]).count }
+
+      expect(status).to eq 201
+
+      new_points = 0
+      ProjectEvaluationPoint.where(student_id: @student.id).each do |pap|
+        new_points += pap.points
+      end
+      expect(@student.points_for_project_id(@project.id)).to eq new_points
+
+      expect(body['points']).to be_truthy
+      expect(body['points']['points_earned']).to eq new_points
+      expect(body['points']['new_total']).to eq @student.points_for_project_id(@project.id)
+      expect(body['points']['detailed']['project_evaluation']).to be_a Array
+      expect(body['points']['detailed']['project_evaluation'].length).to eq ProjectEvaluationPoint.where(student_id: @student.id).count
+      expect(body['points']['detailed']['project_evaluation'][0]['reason_id']).to be_truthy
+      expect(body['points']['detailed']['project_evaluation'][0]['points']).to be_truthy
+    end
+
+    it 'does not include points in the response if the request was invalid' do
+        @student, @csrf = login_integration @student
+
+        @project.students.delete(@student)
+        attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id)
+
+        expect {
+          post '/v1/project_evaluations', params: attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to_not change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation][:id]).count }
+
+        expect(status).to eq 422
+
+        expect(body['points']).to be_falsy
+    end
+
+    it 'does not include points if current user is a lecturer' do
+      @lecturer, @csrf_lecturer = login_integration @lecturer
+      @attr_lecturer = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @lecturer.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feeling_id: @feeling.id)
+
+      expect {
+        post '/v1/project_evaluations', params: @attr_lecturer, headers: { 'X-XSRF-TOKEN' => @csrf_lecturer }
+      }.to_not change { ProjectEvaluationPoint.where(student_id: @lecturer.id, reason_id: Reason[:project_evaluation][:id]).count }
+
+      expect(status).to eq 201
+
+      expect(body['points']).to be_falsy
+    end
+  end
 end
