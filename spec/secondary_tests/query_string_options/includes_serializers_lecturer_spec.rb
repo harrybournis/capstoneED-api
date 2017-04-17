@@ -130,10 +130,12 @@ RSpec.describe 'Includes', type: :controller do
 				expect(status).to eq(200)
 			end
 
-			it 'index works with includes' do
-				get :index, params: { includes: 'unit,iterations' }
-
-				expect(status).to eq(200)
+			it 'included projects have team_points and team_average' do
+				get :show, params: { id: @assignment.id, includes: 'projects'}
+				body_assignment = body['assignment']
+				expect(response.status).to eq(200)
+				expect(body_assignment['projects'][0]['team_points']).to be_truthy
+				expect(body_assignment['projects'][0]['team_average']).to be_truthy
 			end
 		end
 

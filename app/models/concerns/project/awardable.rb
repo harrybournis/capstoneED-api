@@ -11,7 +11,7 @@ module Project::Awardable
   #
   # @return [Integer] The sum of the Students Points.
   #
-  def total_points
+  def team_points
     students_projects.select(:points).sum :points
   end
 
@@ -19,7 +19,8 @@ module Project::Awardable
   #
   # @return [Integer] The average of the Students Points.
   #
-  def average_points
-    (students_projects.select(:points).average :points).round
+  def team_average
+    avg = students_projects.select(:points).average :points
+    avg ? avg.round : 0
   end
 end

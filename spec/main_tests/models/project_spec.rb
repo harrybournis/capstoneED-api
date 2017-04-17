@@ -207,7 +207,7 @@ RSpec.describe Project, type: :model do
 				expect(project.save).to be_truthy
 			end
 
-			it '#total_points returns the total points of all students in project' do
+			it '#team_points returns the total points of all students in project' do
 				project = create :project
 				student1 = create :student
 				student2 = create :student
@@ -218,10 +218,17 @@ RSpec.describe Project, type: :model do
 				sp2 = create :students_project, student: student2, project: project, points: points2
 				expect(project.students.count).to eq(2)
 
-				expect(project.total_points).to eq(sp1.points + sp2.points)
+				expect(project.team_points).to eq(sp1.points + sp2.points)
 			end
 
-			it '#average_points returns the average points of all students in project' do
+			it '#team_points returns 0 if no students in project' do
+				expect(project.students.count).to eq(0)
+
+				expect(project.team_points.class).to eq Integer
+				expect(project.team_points).to eq 0
+			end
+
+			it '#team_average returns the average points of all students in project' do
 				project = create :project
 				student1 = create :student
 				student2 = create :student
@@ -233,8 +240,15 @@ RSpec.describe Project, type: :model do
 				expect(project.students.count).to eq(2)
 
 				a = [sp1.points, sp2.points]
-				expect(project.average_points.class).to eq Integer
-				expect(project.average_points).to eq (a.reduce(:+) / a.size.to_f).round
+				expect(project.team_average.class).to eq Integer
+				expect(project.team_average).to eq (a.reduce(:+) / a.size.to_f).round
+			end
+
+			it '#team_average returns 0 if no students in project' do
+				expect(project.students.count).to eq(0)
+
+				expect(project.team_average.class).to eq Integer
+				expect(project.team_average).to eq 0
 			end
 	end
 end

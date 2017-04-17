@@ -38,6 +38,13 @@ RSpec.describe V1::ProjectsController, type: :controller do
 					expect(project['nickname']).to eq @student.nickname_for_project_id project['id']
 				end
 			end
+
+			it "returns projects with team_points and team_average as attributes" do
+				get :index
+				expect(status).to eq(200)
+				expect(body['projects'][0]['team_points']).to be_truthy
+				expect(body['projects'][0]['team_average']).to be_truthy
+			end
 		end
 
 		describe "GET show" do
@@ -59,7 +66,7 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				expect(body['project']['nickname']).to eq @student.nickname_for_project_id @student.projects[0].id
 			end
 
-			it 'includes students maybe why' do
+			it 'can include students' do
 				project = @student.projects.first
 				create :students_project, student: create(:student), project: project
 				expect(project.students.count).to eq 2
@@ -70,6 +77,14 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				expect(status).to eq(200)
 				project.reload
 				expect(body['project']['students'].length).to eq project.students.count
+			end
+
+			it "returns project with team_points and team_average as attributes" do
+				get :show, params: { id: @student.projects.first.id }
+
+				expect(status).to eq(200)
+				expect(body['project']['team_points']).to be_truthy
+				expect(body['project']['team_average']).to be_truthy
 			end
 		end
 

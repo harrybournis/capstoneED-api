@@ -30,8 +30,8 @@ RSpec.describe V1::PointsController, type: :controller do
 
         expect(status).to eq 200
         expect(body['points']['personal']).to eq @student.points_for_project_id(@project.id)
-        expect(body['points']['team_average']).to eq @project.average_points
-        expect(body['points']['team_points']).to eq @project.total_points
+        expect(body['points']['team_average']).to eq @project.team_average
+        expect(body['points']['team_points']).to eq @project.team_points
       end
 
       it 'each field is 0 if there are no points' do
@@ -77,8 +77,8 @@ RSpec.describe V1::PointsController, type: :controller do
         expect(status).to eq 200
 
         expect(body['points']['personal']).to be_falsy
-        expect(body['points']['team_average']).to eq @project.average_points
-        expect(body['points']['team_points']).to eq @project.total_points
+        expect(body['points']['team_average']).to eq @project.team_average
+        expect(body['points']['team_points']).to eq @project.team_points
       end
 
       it 'returns 403 if user is not associated with the project' do
@@ -117,7 +117,7 @@ RSpec.describe V1::PointsController, type: :controller do
         body['points'].each do |points|
           project_id = points['project_id']
           expect(points['team_name']).to eq Project.find(project_id).team_name
-          expect(points['team_points']).to eq Project.find(project_id).total_points
+          expect(points['team_points']).to eq Project.find(project_id).team_points
           if points['project_id'] == @project.id
             expect(points['my_team']).to be true
           else
@@ -159,7 +159,7 @@ RSpec.describe V1::PointsController, type: :controller do
         body['points'].each do |points|
           project_id = points['project_id']
           expect(points['team_name']).to eq Project.find(project_id).team_name
-          expect(points['team_points']).to eq Project.find(project_id).total_points
+          expect(points['team_points']).to eq Project.find(project_id).team_points
           expect(points['my_team']).to be_falsy
         end
       end
