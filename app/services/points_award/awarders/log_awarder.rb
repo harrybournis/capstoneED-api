@@ -58,7 +58,7 @@ module PointsAward::Awarders
       return if @logs_length > 1
 
       found_logs = false
-      JoinTables::StudentsProject.where(project_id: @students_project.project_id).each do |sp|
+       StudentsProject.where(project_id: @students_project.project_id).each do |sp|
         found_logs = true if sp.student_id != @student.id && sp.logs.any?
       end
 
@@ -77,7 +77,7 @@ module PointsAward::Awarders
       return if @logs_length > 1
 
       found_logs = false
-      JoinTables::StudentsProject.where(project_id: @log.project.assignment.projects.select(:id)).each do |sp|
+       StudentsProject.where(project_id: @log.project.assignment.projects.select(:id)).each do |sp|
         found_logs = true if sp.student_id != @student.id && sp.logs.any?
       end
 

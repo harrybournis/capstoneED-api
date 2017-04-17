@@ -9,7 +9,7 @@ module Project::Enrollable
       return false
     end
 
-    enrolment = JoinTables::StudentsProject.new(project: self,
+    enrolment =  StudentsProject.new(project: self,
                                                 student: student,
                                                 nickname: nickname)
     if enrolment.save

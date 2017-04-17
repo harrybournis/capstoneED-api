@@ -58,8 +58,8 @@ RSpec.describe Project, type: :model do
 				@project = assignment.projects.first
 				2.times { create :students_project, student: create(:student), project: @project }#@project.students << FactoryGirl.create(:student) }
 				students_count = Student.all.size
-				expect(JoinTables::StudentsProject.all.count).to eq(2)
-				expect { Project.destroy(@project.id) }.to change { JoinTables::StudentsProject.all.count }.by(-2)
+				expect( StudentsProject.all.count).to eq(2)
+				expect { Project.destroy(@project.id) }.to change {  StudentsProject.all.count }.by(-2)
 				expect(Student.all.size).to eq(students_count)
 			end
 
@@ -233,7 +233,7 @@ RSpec.describe Project, type: :model do
 				student1 = create :student
 				student2 = create :student
 				points1 = 40
-				points2 = 55
+				points2 = 50
 
 				sp1 = create :students_project, student: student1, project: project, points: points1
 				sp2 = create :students_project, student: student2, project: project, points: points2

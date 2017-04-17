@@ -80,7 +80,7 @@ class V1::StudentsProjectsController < ApplicationController
   # Eager loads associations in the params[:includes].
   # Renders error if not associated and Halts execution
   def set_students_project_if_associated
-    unless @students_project = JoinTables::StudentsProject.where(student_id: current_user.id, project_id: params[:id])[0]
+    unless @students_project =  StudentsProject.where(student_id: current_user.id, project_id: params[:id])[0]
       render_not_associated_with_current_user('Project')
       false
     end

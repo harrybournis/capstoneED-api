@@ -1,0 +1,4 @@
+--private
+--protected
+'app/**/*.rb'
+'db/schema.rb'

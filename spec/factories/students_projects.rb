@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :students_project, class: JoinTables::StudentsProject do
+  factory :students_project do
     association :project, factory: :project
     association :student, factory: :student
     nickname { "wolverine#{rand(100000).to_s}" }

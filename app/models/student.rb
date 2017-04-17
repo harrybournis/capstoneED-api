@@ -8,7 +8,7 @@ class Student < User
   # type        :string Student
 
   # Associations
-  has_many  :students_projects, class_name: JoinTables::StudentsProject
+  has_many  :students_projects, class_name:  StudentsProject
   has_many  :projects, through: :students_projects, dependent: :destroy
   has_many  :assignments, through: :projects
   has_many  :peer_assessments_submitted_by,
@@ -40,7 +40,7 @@ class Student < User
   # @return [String | nil] The nickname or nil if student not found.
   #
   def nickname_for_project_id(project_id)
-    JoinTables::StudentsProject.select(:nickname)
+     StudentsProject.select(:nickname)
                                .where(project_id: project_id, student_id: id)[0]
                                .nickname
   rescue
@@ -55,7 +55,7 @@ class Student < User
   # @return [Integer | nil] The points or nil if student not found.
   #
   def points_for_project_id(project_id)
-    JoinTables::StudentsProject.select(:points)
+     StudentsProject.select(:points)
                                .where(project_id: project_id, student_id: id)[0]
                                .points
   rescue
@@ -71,7 +71,7 @@ class Student < User
   # @return [Integer | nil] The new points after adding the new ones, or nil
   #
   def add_points_for_project_id(points, project_id)
-    return nil unless sp = JoinTables::StudentsProject.where(project_id: project_id,
+    return nil unless sp =  StudentsProject.where(project_id: project_id,
                                                              student_id: id)
                                                       .first
     sp.update(points: sp.points + points)

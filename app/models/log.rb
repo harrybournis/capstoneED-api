@@ -1,6 +1,6 @@
 # A student can submit many logs for a project.
 # This class is not an ActiveRecord model, since logs are currently
-# implemented and saved in the JoinTables::StudentsProject model.
+# implemented and saved in the  StudentsProject model.
 # This class is meant to provide some abstraction from that implementation,
 # and increase maintainability of the project. Having a separate model for
 # logs also makes JSON serialization easier.

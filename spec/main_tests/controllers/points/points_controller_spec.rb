@@ -25,6 +25,7 @@ RSpec.describe V1::PointsController, type: :controller do
         create :students_project_with_points, project: @project, student: @student
         create :students_project_with_points, project: @project
         create :students_project_with_points, project: @project
+        @project.reload
 
         get :index_for_project, params: { project_id: @project.id }
 
@@ -38,6 +39,7 @@ RSpec.describe V1::PointsController, type: :controller do
         create :students_project_with_points, project: @project, student: @student, points: 0
         create :students_project_with_points, project: @project, points: 0
         create :students_project_with_points, project: @project, points: 0
+        @project.reload
 
         get :index_for_project, params: { project_id: @project.id }
 
@@ -71,6 +73,7 @@ RSpec.describe V1::PointsController, type: :controller do
         create :students_project_with_points, project: @project, student: @student
         create :students_project_with_points, project: @project
         create :students_project_with_points, project: @project
+        @project.reload
 
         get :index_for_project, params: { project_id: @project.id }
 
@@ -106,6 +109,7 @@ RSpec.describe V1::PointsController, type: :controller do
         create :students_project_with_points, project: @project, student: @student
         create :project, assignment: @assignment
         create :project, assignment: @assignment
+        @assignment.reload
 
         get :index_for_assignment, params: { assignment_id: @assignment.id }
 
@@ -148,6 +152,7 @@ RSpec.describe V1::PointsController, type: :controller do
       it "response contains array of hashes with 'project_id', 'team_name' and 'points'" do
         create :project, assignment: @assignment
         create :project, assignment: @assignment
+        @assignment.reload
 
         get :index_for_assignment, params: { assignment_id: @assignment.id }
 

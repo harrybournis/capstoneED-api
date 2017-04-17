@@ -12,7 +12,16 @@ module Project::Awardable
   # @return [Integer] The sum of the Students Points.
   #
   def team_points
-    students_projects.select(:points).sum :points
+    # This version is implemented as a database sum operation,
+    # but it cannot be eager loaded so it results in 5 more
+    # database queries:
+    #
+    # students_projects.select(:points).sum :points
+
+    # This version programmatically adds the points:
+    total = 0
+    students_projects.each { |s| total += s.points }
+    total
   end
 
   # The average points earned by the Students of this Project.
@@ -20,7 +29,18 @@ module Project::Awardable
   # @return [Integer] The average of the Students Points.
   #
   def team_average
-    avg = students_projects.select(:points).average :points
-    avg ? avg.round : 0
+    # This version is implemented as a database AVG operation,
+    # but it cannot be eager loaded so it results in an extra
+    # database query for each project:
+    #
+    # avg = students_projects.select(:points).average :points
+    # avg ? avg.round : 0
+
+    # This version programmatically adds the points:
+    no_of_students = students_projects.length
+    return 0 if no_of_students == 0
+    total = 0
+    students_projects.each { |s| total += s.points }
+    (total / no_of_students).round
   end
 end

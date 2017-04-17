@@ -39,8 +39,8 @@ RSpec.describe Student, type: :model do
 		#@project.students << student
 		create :students_project, student: student, project: @project
 		team_count = Project.all.size
-		expect(JoinTables::StudentsProject.all.count).to eq(1)
-		expect { student.destroy }.to change { JoinTables::StudentsProject.all.count }.by(-1)
+		expect( StudentsProject.all.count).to eq(1)
+		expect { student.destroy }.to change {  StudentsProject.all.count }.by(-1)
 		expect(Project.all.size).to eq(team_count)
 	end
 
@@ -67,8 +67,8 @@ RSpec.describe Student, type: :model do
 		project2 = create(:project)
 		nickname = "dr dre"
 		nickname2 = "snoop dogg"
-		sp = JoinTables::StudentsProject.new(project_id: project.id, student_id: student.id, nickname: nickname)
-		sp2 = JoinTables::StudentsProject.new(project_id: project2.id, student_id: student.id, nickname: nickname2)
+		sp =  StudentsProject.new(project_id: project.id, student_id: student.id, nickname: nickname)
+		sp2 =  StudentsProject.new(project_id: project2.id, student_id: student.id, nickname: nickname2)
 
 		expect(sp.save).to be_truthy
 		expect(student.nickname_for_project_id(project.id)).to eq(nickname)
@@ -91,8 +91,8 @@ RSpec.describe Student, type: :model do
 		nickname2 = "snoop dogg"
 		points1 = 30
 		points2 = 50
-		sp = JoinTables::StudentsProject.new(project_id: project.id, student_id: student.id, nickname: nickname, points: points1)
-		sp2 = JoinTables::StudentsProject.new(project_id: project2.id, student_id: student.id, nickname: nickname2, points: points2)
+		sp =  StudentsProject.new(project_id: project.id, student_id: student.id, nickname: nickname, points: points1)
+		sp2 =  StudentsProject.new(project_id: project2.id, student_id: student.id, nickname: nickname2, points: points2)
 
 		expect(sp.save).to be_truthy
 		expect(student.points_for_project_id(project.id)).to eq(points1)
@@ -113,8 +113,8 @@ RSpec.describe Student, type: :model do
 		project2 = create :project
 		points1 = 30
 		points2 = 50
-		sp = JoinTables::StudentsProject.new(project_id: project.id, student_id: student.id, nickname: 'nickanem', points: points1)
-		sp2 = JoinTables::StudentsProject.new(project_id: project2.id, student_id: student.id, nickname: 'nicknens', points: points2)
+		sp =  StudentsProject.new(project_id: project.id, student_id: student.id, nickname: 'nickanem', points: points1)
+		sp2 =  StudentsProject.new(project_id: project2.id, student_id: student.id, nickname: 'nicknens', points: points2)
 
 		expect(sp.save).to be_truthy
 		expect(student.add_points_for_project_id(20, project.id)).to eq(points1 + 20)

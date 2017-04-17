@@ -47,7 +47,7 @@ RSpec.describe V1::LogsController, type: :controller do
     describe 'GET /logs' do
       it 'responds with 200 and the students logs', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
         project = @student.projects[0]
-        sp = JoinTables::StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
+        sp =  StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
         sp.logs = []
         expect(sp.save).to be_truthy
         sp.add_log(FactoryGirl.build(:students_project).logs[0])
@@ -81,7 +81,7 @@ RSpec.describe V1::LogsController, type: :controller do
     describe 'GET /logs' do
       it 'responds with 200 and the students logs', { docs?: true, controller_class: "V1::ProjectsController" } do
         project = @student.projects[0]
-        sp = JoinTables::StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
+        sp =  StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
         sp.logs = []
         expect(sp.save).to be_truthy
         sp.add_log(FactoryGirl.build(:students_project).logs[0])

@@ -30,22 +30,28 @@ RSpec.describe 'Includes', type: :controller do
 
 			context 'Valid' do
 
-				it 'makes only on query for projects and unit' do
+				it 'show makes one query without params' do
 					expect {
 						get :show, params: { id: @assignment.id }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200) #1
+				end
 
+				it "show makes one query for includes='projects,unit" do
 					expect {
 						get :show, params: { id: @assignment.id, includes: 'projects,unit' }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200) #2
+				end
 
+				it "show makes one query for includes='projects', compact=true" do
 					expect {
-						get :show, params: { id: @assignment.id, includes: 'projects', compact: true }
+						get :show, params: { id: @assignment.id, includes: 'projects', compact: true } #
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200)
+				end
 
+				it "index makes one query with includes 'projects,unit'" do
 					expect {
 						get :index, params: { includes: 'projects,unit' }
 					}.to make_database_queries(count: 1)
@@ -54,19 +60,23 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			context 'Invalid' do
-				it 'should render errors for invalid includes params' do
+				it 'renders errors for includes that does not exist' do
 					expect {
 						get :show, params: { id: @assignment.id, includes: 'projects,unit,lecturer,banana' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400) #1
 					expect(body['errors']['base'].first).to include("Invalid 'includes' parameter")
+				end
 
+				it 'renders error for includes with symols' do
 					expect {
 						get :show, params: { id: @assignment.id, includes: 'projects,unit,lecturer,banana,manyother,wrong_params,$@^&withsymbols,*,**' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400) #1
 					expect(body['errors']['base'].first).to include("Invalid 'includes' parameter")
+				end
 
+				it 'render errors for includes with *,**' do
 					expect {
 						get :show, params: { id: @assignment.id, includes: '*,**' }
 					}.to make_database_queries(count: 0)

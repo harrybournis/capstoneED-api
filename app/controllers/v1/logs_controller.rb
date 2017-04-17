@@ -18,7 +18,7 @@ class V1::LogsController < ApplicationController
   # Only for lecturer
   # Needs student_id in params
   def index_lecturer
-    unless @students_project = JoinTables::StudentsProject.where(student_id: params[:student_id], project_id: params[:id])[0]
+    unless @students_project =  StudentsProject.where(student_id: params[:student_id], project_id: params[:id])[0]
       render json: format_errors({ student_id: ['does not belong to this project'] }),
              status: :unprocessable_entity
       return
@@ -66,7 +66,7 @@ class V1::LogsController < ApplicationController
   # Eager loads associations in the params[:includes].
   # Renders error if not associated and Halts execution
   def set_students_project_if_associated
-    unless @students_project = JoinTables::StudentsProject.where(student_id: current_user.id, project_id: params[:id])[0]
+    unless @students_project =  StudentsProject.where(student_id: current_user.id, project_id: params[:id])[0]
       render_not_associated_with_current_user('Project')
       false
     end

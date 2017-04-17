@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe JoinTables::StudentsProject, type: :model do
+RSpec.describe  StudentsProject, type: :model do
 
 	subject { FactoryGirl.build :students_project }
 
@@ -16,7 +16,7 @@ RSpec.describe JoinTables::StudentsProject, type: :model do
 		assignment = FactoryGirl.create(:assignment_with_projects)
 		create :students_project, student: student, project: assignment.projects[0]
 
-		students_project = JoinTables::StudentsProject.new(student_id: student.id, project_id: assignment.projects.last.id)
+		students_project =  StudentsProject.new(student_id: student.id, project_id: assignment.projects.last.id)
 		expect(students_project.valid?).to be_falsy
 		expect(students_project.errors[:student_id].first).to eq('has already enroled in a different Project for this Assignment')
 	end
@@ -29,10 +29,10 @@ RSpec.describe JoinTables::StudentsProject, type: :model do
 		project = assignment.projects.first
 		project_other = assignment.projects.last
 
-		sp1 = JoinTables::StudentsProject.new(nickname: 'methodman', student_id: student.id, project_id: project.id)
-		sp2 = JoinTables::StudentsProject.new(nickname: 'methodman', student_id: student_other.id, project_id: project.id)
-		sp3 = JoinTables::StudentsProject.new(nickname: 'methodman', student_id: student_other.id, project_id: project_other.id)
-		sp4 = JoinTables::StudentsProject.new(nickname: 'methodman', student_id: student_third.id, project_id: project_other.id)
+		sp1 =  StudentsProject.new(nickname: 'methodman', student_id: student.id, project_id: project.id)
+		sp2 =  StudentsProject.new(nickname: 'methodman', student_id: student_other.id, project_id: project.id)
+		sp3 =  StudentsProject.new(nickname: 'methodman', student_id: student_other.id, project_id: project_other.id)
+		sp4 =  StudentsProject.new(nickname: 'methodman', student_id: student_third.id, project_id: project_other.id)
 
 		expect(sp1.save).to be_truthy
 		expect(sp2.save).to be_falsy
@@ -45,7 +45,7 @@ RSpec.describe JoinTables::StudentsProject, type: :model do
 	it 'creating new record without logs sets logs to an empty array' do
 		student = FactoryGirl.create(:student)
 		project = FactoryGirl.create(:project)
-		sp = JoinTables::StudentsProject.new(nickname: "yo", student_id: student.id, project_id: project.id)
+		sp =  StudentsProject.new(nickname: "yo", student_id: student.id, project_id: project.id)
 
 		expect(sp.save).to be_truthy
 		expect(sp.logs.class).to eq(Array)
@@ -55,7 +55,7 @@ RSpec.describe JoinTables::StudentsProject, type: :model do
 	it 'sets points to 0 when first created' do
 		student = FactoryGirl.create(:student)
 		project = FactoryGirl.create(:project)
-		sp = JoinTables::StudentsProject.new(nickname: "yo", student_id: student.id, project_id: project.id)
+		sp =  StudentsProject.new(nickname: "yo", student_id: student.id, project_id: project.id)
 
 		expect(sp.save).to be_truthy
 		expect(sp.points).to eq 0
@@ -65,7 +65,7 @@ RSpec.describe JoinTables::StudentsProject, type: :model do
 		before :each do
 			student = FactoryGirl.create(:student)
 			project = FactoryGirl.create(:project)
-			@sp = JoinTables::StudentsProject.new(nickname: "yo", student_id: student.id, project_id: project.id)
+			@sp =  StudentsProject.new(nickname: "yo", student_id: student.id, project_id: project.id)
 			expect(@sp.save).to be_truthy
 		end
 

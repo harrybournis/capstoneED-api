@@ -18,7 +18,12 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
   #
 
   def assignments(options = {})
-    Assignment.eager_load(options[:includes]).where(lecturer_id: @id)
+    if options[:includes] && options[:includes].include?('projects')
+      options[:includes].delete('projects')
+      Assignment.eager_load(options[:includes], projects: [:students_projects]).where(lecturer_id: @id)
+    else
+      Assignment.eager_load(options[:includes]).where(lecturer_id: @id)
+    end
   end
 
   def units(options = {})
@@ -32,12 +37,19 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
   def projects(options = {})
     if options[:includes] && options[:includes].include?('students')
       options[:includes].delete('students')
+
       Project.joins(:assignment)
              .eager_load(options[:includes], students_projects: [:student])
              .where(['assignments.lecturer_id = ?', @id])
     else
+      includes =  if options[:includes]
+                    options[:includes].unshift('students_projects')
+                  else
+                    'students_projects'
+                  end
+
       Project.joins(:assignment)
-             .eager_load(options[:includes])
+             .eager_load(includes)
              .where(['assignments.lecturer_id = ?', @id])
     end
   end

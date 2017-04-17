@@ -45,16 +45,21 @@ RSpec.describe 'Includes', type: :controller do
 
 			context 'Valid' do
 
-				it 'makes only one query for iterations and unit' do
+				it 'makes only one query for no includes' do
 					expect {
 						get :show, params: { id: @assignment.id }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200) #1
+				end
 
+				it "makes one query for includes='iterations,unit" do
 					expect {
 						get :show, params: { id: @assignment.id, includes: 'iterations,unit' }
 					}.to make_database_queries(count: 1)
 					expect(status).to eq(200) #2
+				end
+
+				it "makes one query for includes='iterations', compact=true" do
 
 					expect {
 						get :show, params: { id: @assignment.id, includes: 'iterations', compact: true }
@@ -64,21 +69,9 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			context 'Invalid' do
-				it 'projects should render errors for invalid includes params' do
+				it 'renders errors for includes that is not allowed' do
 					expect {
-						get :show, params: { id: @assignment.id, includes: 'projects,unit,lecturer,banana' }
-					}.to make_database_queries(count: 0)
-					expect(status).to eq(400) #1
-					expect(body['errors']['base'].first).to include("Invalid 'includes' parameter")
-
-					expect {
-						get :show, params: { id: @assignment.id, includes: 'projects,unit,lecturer,banana,manyother,wrong_params,$@^&withsymbols,*,**' }
-					}.to make_database_queries(count: 0)
-					expect(status).to eq(400) #1
-					expect(body['errors']['base'].first).to include("Invalid 'includes' parameter")
-
-					expect {
-						get :show, params: { id: @assignment.id, includes: '*,**' }
+						get :show, params: { id: @assignment.id, includes: 'projects,pa_forms' }
 					}.to make_database_queries(count: 0)
 					expect(status).to eq(400) #1
 					expect(body['errors']['base'].first).to include("Invalid 'includes' parameter")

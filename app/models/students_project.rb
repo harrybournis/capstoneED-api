@@ -1,4 +1,4 @@
-module JoinTables
+#module JoinTables
   ## Join table for Student and Project
   class StudentsProject < ApplicationRecord
     # Attributes
@@ -106,4 +106,4 @@ module JoinTables
       end
     end
   end
-end
+#end

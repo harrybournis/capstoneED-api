@@ -1,4 +1,4 @@
-module JoinTables
+#module JoinTables
   ## Join table for Question and Section
   class QuestionsSection < ApplicationRecord
     # Attributes
@@ -12,4 +12,4 @@ module JoinTables
     # Validations
     validates_presence_of :question_id, :section_id
   end
-end
+#end
