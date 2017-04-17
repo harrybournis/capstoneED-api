@@ -1,4 +1,4 @@
-## Projects Controller
+# Projects Controller
 class V1::ProjectsController < ApplicationController
   before_action :allow_if_lecturer, only: [:create, :destroy]
   before_action -> { allow_if_lecturer(index_with_assignment_error_message) },

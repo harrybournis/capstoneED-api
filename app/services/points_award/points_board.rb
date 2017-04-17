@@ -1,5 +1,3 @@
-require 'dry-validation'
-
 module PointsAward
   # Wraps the points awarded to a Student for performing an action,
   # and provides a common interface between the various components
@@ -18,8 +16,9 @@ module PointsAward
   #
   # @author [harrybournis]
   #
-  class PointsBoard < ActiveModelSerializers::Model # to be serializable by AMS
+  class PointsBoard < ActiveModelSerializers::Model
     attr_reader :student, :resource, :points, :points_persisted, :errors
+
     # Constructor. Takes a Student object which will be awarded the points,
     # and an optional resource.
     #
@@ -163,15 +162,46 @@ module PointsAward
       @points[key] ? @points[key] << res.output : @points[key] = [res.output]
     end
 
-    def add_error(key, string)
+    # Adds an error string in the errors hash using the key provided.
+    # Raises an exception if the key is not a symbol, or if the
+    # error string is not a String.
+    #
+    # @param key [Symbol] The key that will be used to add the error into the
+    #   errors hash.
+    # @param error [String] The error that will be added. Must be a String.
+    #
+    # @raise [ArgumentError] If the key is not a Sybmol
+    # @raise [ArgumentError] If the error is not a String
+    #
+    def add_error(key, error)
       raise ArgumentError unless key.is_a?(Symbol)
-      raise ArgumentError, 'Error must be a String.' unless string.is_a? String
+      raise ArgumentError, 'Error must be a String.' unless error.is_a? String
 
-      @errors[key] ? @errors[key] << string : @errors[key] = [string]
+      @errors[key] ? @errors[key] << error : @errors[key] = [error]
     end
 
     private
 
+
+    # Validates a points hash with a schema. The hash must contain three keys:
+    # :points, :reason_id, :resource_id. The validation schema will be returned
+    # which contains both the result of the validation, and the original hash.
+    #
+    # @example
+    #   { points_id: 30, reason_id: 4, resource_id: 7 }
+    #
+    # @param hash [Hash] The hash containing the points, the reason and
+    #   an optional resource_id.
+    # @option points [Integer] The number of points that have been awarded.
+    # @option reason_id [Integer] The reason for awarding the points. Maps to
+    #   Reasons model value enum field.
+    # @option resource_id [Integer] Optional. The resource (log,
+    #   peer assessment, project evaluation) that was created that led
+    #   to the Student being awarded points.
+    #
+    # @return [Dry::Validation::Result] The result of the validation. See
+    #   dry-validations gem documentation.
+    #
     def validate_points_hash(hash)
       schema = Dry::Validation.Schema do
         configure { config.input_processor = :form }

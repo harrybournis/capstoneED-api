@@ -1,7 +1,7 @@
 module JWTAuth
-  ## The superclass for the CurrentUserStudent and CurrentUserLecturer
-  #  classes. Used in order to avoid loading the object from the
-  #  database unless needed.
+  # The superclass for the CurrentUserStudent and CurrentUserLecturer
+  # classes. Used in order to avoid loading the object from the
+  # database unless needed.
   class CurrentUser
     attr_reader :id, :type, :current_device
 

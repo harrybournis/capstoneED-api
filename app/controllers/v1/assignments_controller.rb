@@ -1,4 +1,4 @@
-## Assignments Controller
+# Assignments Controller
 class V1::AssignmentsController < ApplicationController
   before_action :allow_if_lecturer,
                 only: [:index_with_unit, :create, :update, :destroy]
