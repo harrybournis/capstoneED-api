@@ -108,4 +108,8 @@ module Reason
     # end
     # @reasons[key]
   end
+
+  def self.to_json
+    REASONS.to_json
+  end
 end

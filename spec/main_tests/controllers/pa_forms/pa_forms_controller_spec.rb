@@ -37,10 +37,10 @@ RSpec.describe V1::PaFormsController, type: :controller do
 			type1 = create :question_type
 			type2 = create :question_type
 			post :create, params: { iteration_id: @iteration.id,
-															questions: [{ 'question_id' => 1, 'text' => 'Who is it?', 'type_id' => type2.id },
-																					{ 'question_id' => 2, 'text' => 'Human?', 'type_id' => type2.id },
-																					{ 'question_id' => 3, 'text' => 'Hello?', 'type_id' => type1.id },
-																					{ 'question_id' => 4, 'text' => 'Favorite Power Ranger?', 'type_id' => type2.id }],
+															questions: [{ 'text' => 'Who is it?', 'type_id' => type2.id },
+																					{ 'text' => 'Human?', 'type_id' => type2.id },
+																					{ 'text' => 'Hello?', 'type_id' => type1.id },
+																					{ 'text' => 'Favorite Power Ranger?', 'type_id' => type2.id }],
 															start_date: @iteration.deadline + 1.day.to_i,
 															deadline: @iteration.deadline + 3.days.to_i }
 

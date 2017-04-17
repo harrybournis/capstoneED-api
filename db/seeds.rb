@@ -16,6 +16,9 @@ FactoryGirl.create :question_type, category: 'text', friendly_name: 'Text'
 FactoryGirl.create :question_type, category: 'number', friendly_name: 'Number'
 FactoryGirl.create :question_type, category: 'rank', friendly_name: 'Rank'
 
+points_object_values = [20,40,50,10,30, 20,40,50,10,30, 20,40,50,10,30]
+student_points = [50, 60, 10, 10, 20, 70, 80, 40, 30, 20, 40, 60, 50, 90, 40]
+
 ### -----------------------
 # Dummy Data
 ### -----------------------
@@ -50,8 +53,16 @@ FactoryGirl.create(:question, lecturer_id: @lecturer1.id)
     @student = FactoryGirl.create(:student_confirmed_seeder)
     @student.confirm
 
-    #@assignment.projects[i].students << @student
-    FactoryGirl.create :students_project_seeder, student: @student, project: @assignment.projects[i]
+    points = points_object_values.sample(rand(1..6))
+    # point_object_array = []
+    # points.each do |p|
+    #   symbol = [:log_point, :peer_assessment_point, :project_evaluation_point].sample
+    #   point_object_array << create(symbol, points: p, student_id: @student.id, project: @assignment.projects[i])
+    # end
+
+    FactoryGirl.create :students_project_seeder, student: @student,
+                                                 project: @assignment.projects[i],
+                                                 points: points.sum
   end
 end
 
@@ -104,7 +115,9 @@ FactoryGirl.create(:question, lecturer_id: @lecturer2.id)
     @student.confirm
 
     #@assignment.projects[i].students << @student
-    FactoryGirl.create :students_project_seeder, student: @student, project: @assignment.projects[i]
+    FactoryGirl.create :students_project_seeder, student: @student,
+                                                 project: @assignment.projects[i],
+                                                 points: student_points.sample
   end
 end
 

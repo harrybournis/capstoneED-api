@@ -21,7 +21,7 @@ RSpec.describe V1::PointsController, type: :controller do
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
       end
 
-      it "response contains 'personal', 'team_average', 'team_points'" do
+      it "response contains 'personal', 'team_average', 'team_points'", { docs?: true, lecturer?: false } do
         create :students_project_with_points, project: @project, student: @student
         create :students_project_with_points, project: @project
         create :students_project_with_points, project: @project
@@ -69,7 +69,7 @@ RSpec.describe V1::PointsController, type: :controller do
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
       end
 
-      it "response contains 'team_average', 'team_points'" do
+      it "response contains 'team_average', 'team_points'", { docs?: true } do
         create :students_project_with_points, project: @project, student: @student
         create :students_project_with_points, project: @project
         create :students_project_with_points, project: @project
@@ -105,7 +105,7 @@ RSpec.describe V1::PointsController, type: :controller do
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
       end
 
-      it "response contains array of hashes with 'project_id', 'team_name', 'points' and 'my_team'" do
+      it "response contains array of hashes with 'project_id', 'team_name', 'points' and 'my_team'", { docs?: true, lecturer?: false } do
         create :students_project_with_points, project: @project, student: @student
         create :project, assignment: @assignment
         create :project, assignment: @assignment
@@ -149,7 +149,7 @@ RSpec.describe V1::PointsController, type: :controller do
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
       end
 
-      it "response contains array of hashes with 'project_id', 'team_name' and 'points'" do
+      it "response contains array of hashes with 'project_id', 'team_name' and 'points'", { docs?: true } do
         create :project, assignment: @assignment
         create :project, assignment: @assignment
         @assignment.reload

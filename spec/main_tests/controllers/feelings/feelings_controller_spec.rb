@@ -12,7 +12,8 @@ RSpec.describe V1::FeelingsController, type: :controller do
 	end
 
 	it 'index returns all feelings', { docs?: true } do
-		FactoryGirl.create_list(:feeling, 3)
+		create :feeling, name: 'Happy', value: 1
+		create :feeling, name: 'Sad', value: 0
 		get :index
 
 		expect(status).to eq(200)

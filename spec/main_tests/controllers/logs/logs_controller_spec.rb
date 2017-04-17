@@ -21,7 +21,7 @@ RSpec.describe V1::LogsController, type: :controller do
     end
 
     describe 'POST /logs' do
-      it 'responds with 200 if valid', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
+      it 'responds with 200 if valid', { docs?: true, lecturer?: false } do
         parameters = FactoryGirl.build(:students_project).logs[0].except(:date_submitted).merge(id: @student.projects[0].id)
         post :update, params: parameters
 
@@ -31,7 +31,7 @@ RSpec.describe V1::LogsController, type: :controller do
         expect(body['log_entry']).to eq parameters.except(:id)
       end
 
-      it 'responds with 422 if invalid log parameters', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
+      it 'responds with 422 if invalid log parameters', { docs?: true, lecturer?: false } do
         post :update, params: FactoryGirl.build(:students_project).logs[0].except("date_submitted", "time_worked").merge(id: @student.projects[0].id)
         expect(status).to eq(422)
         expect(errors['log_entry'][0]).to include('is missing')
@@ -45,7 +45,7 @@ RSpec.describe V1::LogsController, type: :controller do
     end
 
     describe 'GET /logs' do
-      it 'responds with 200 and the students logs', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
+      it 'responds with 200 and the students logs', { docs?: true, lecturer?: false } do
         project = @student.projects[0]
         sp =  StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
         sp.logs = []
@@ -79,7 +79,7 @@ RSpec.describe V1::LogsController, type: :controller do
     end
 
     describe 'GET /logs' do
-      it 'responds with 200 and the students logs', { docs?: true, controller_class: "V1::ProjectsController" } do
+      it 'responds with 200 and the students logs', { docs?: true } do
         project = @student.projects[0]
         sp =  StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
         sp.logs = []
