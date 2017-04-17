@@ -68,4 +68,14 @@ RSpec.describe 'Routing', type: :routing do
 					 controller: 'v1/game_settings', action: 'update', assignment_id: "2")
 	end
 
+	# Points
+	it 'GET /v1/projects/:id/points to route to Points#index_for_project' do
+		expect(get: "#{url}/v1/projects/1/points").to route_to(
+					 controller: 'v1/points', action: 'index_for_project', project_id: '1')
+	end
+
+	it 'GET /v1/assignments/:id/points to route to Points#index_for_assignment' do
+		expect(get: "#{url}/v1/assignments/1/points").to route_to(
+					 controller: 'v1/points', action: 'index_for_assignment', assignment_id: '1')
+	end
 end

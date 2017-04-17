@@ -44,7 +44,8 @@
 class Project < ApplicationRecord
   include Project::Evaluatable,
           Project::Enrollable,
-          Project::Colorable
+          Project::Colorable,
+          Project::Awardable
 
   belongs_to  :assignment, inverse_of: :projects
   belongs_to  :unit
@@ -55,7 +56,6 @@ class Project < ApplicationRecord
   has_many    :iterations, through: :assignment
   has_many    :project_evaluations
   has_many    :peer_assessments
-  has_many    :log_points
 
   validates_presence_of :project_name,
                         :assignment,
@@ -94,22 +94,6 @@ class Project < ApplicationRecord
   #
   def student_members
     students_projects.map { |sp| Decorators::StudentMember.new(sp.student, sp) }
-  end
-
-  # The total points earned by the Students of this Project.
-  #
-  # @return [Integer] The sum of the Students Points.
-  #
-  def total_points
-    students_projects.select(:points).sum :points
-  end
-
-  # The average points earned by the Students of this Project.
-  #
-  # @return [Integer] The average of the Students Points.
-  #
-  def average_points
-    students_projects.select(:points).average :points
   end
 
   private

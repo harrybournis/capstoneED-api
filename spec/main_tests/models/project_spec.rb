@@ -14,6 +14,9 @@ RSpec.describe Project, type: :model do
 			it { should have_many :project_evaluations }
 			it { should have_many :peer_assessments }
 			it { should belong_to :unit }
+			it { should have_many :log_points }
+			it { should have_many :peer_assessment_points }
+			it { should have_many :project_evaluation_points }
 
 			it { should validate_presence_of :project_name }
 			it { should validate_presence_of :assignment }
@@ -230,7 +233,8 @@ RSpec.describe Project, type: :model do
 				expect(project.students.count).to eq(2)
 
 				a = [sp1.points, sp2.points]
-				expect(project.average_points).to eq a.reduce(:+) / a.size.to_f
+				expect(project.average_points.class).to eq Integer
+				expect(project.average_points).to eq (a.reduce(:+) / a.size.to_f).round
 			end
 	end
 end

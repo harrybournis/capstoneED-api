@@ -73,6 +73,10 @@ Rails.application.routes.draw do
 
     # Question Types
     resources :question_types, only: [:index]
+
+    # Points
+    get 'projects/:project_id/points', to: 'points#index_for_project'
+    get 'assignments/:assignment_id/points', to: 'points#index_for_assignment'
   end
 
   ## To be removed
