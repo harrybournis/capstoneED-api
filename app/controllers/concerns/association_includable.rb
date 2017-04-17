@@ -1,21 +1,28 @@
-## Methods that deal with the 'includes functionality of the API'
+# Methods that deal with the 'includes functionality of the API'.
+# This module is included in the Appliction Controller, and controllers
+# that ofer the ability to include other resources in the response will
+# use its methods mainly in before_action callbacks.
+# It also contains render commands, for both successful and error
+# responses.
 #
 module AssociationIncludable
   # Transforms the string from params[:includes] into an array,
   # by splitting elements on the , char
   # Returns nil if inludes does not exist in the params
   #
-  # @return [Array] The includes params as an array.
+  # @return [String[]] The includes params as an array.
   #
   def includes_array
     return nil unless params[:includes]
     @includes_array ||= params[:includes].split(',')
   end
 
-  # Removes the '*' symbol from the inlcudes, to protect from users
+  # Removes the '*' symbol from the includes param, to protect from users
   # abusing the ?includes parameter in the requests. If not escaped,
   #  the serializer would render all of the resource's associations
   # if passed ?includes=* or ?includes=**
+  #
+  # @return [String] Returns the includes param without the '*' character.
   #
   def sanitize_includes
     params[:includes].tr('*', '')
@@ -62,6 +69,8 @@ module AssociationIncludable
   #
   # @param [Object] resource  The resource to be rendered in json
   # @param [Symbol] status    The status of the response
+  # @param [Serializer] serializer Optional. Define the serializer to use
+  #   explicitly.
   #
   def serialize_object(resource, status, serializer = nil)
     klass = serializer ? serializer : "#{resource.class}Serializer"
@@ -89,9 +98,11 @@ module AssociationIncludable
   # parameters. Alternatively, a serializer can be specified through
   # the optional third parameter. Serializes an Array.
   #
-  # @param [Array]  resource  The resources to be rendered in json
+  # @param [Array]  resources  The resources to be rendered in json
   # @param [Symbol] status    The status of the response that will be rendered
   # @param [Class] serializer Optional. A serializer can be specified
+  #
+  # @return [Array] Returns empty array [] if resources is empty
   #
   def serialize_collection(resources, status, serializer = nil)
     return [] unless resources.length > 0

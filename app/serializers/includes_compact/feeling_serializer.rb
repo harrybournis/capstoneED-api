@@ -1,3 +1,3 @@
-class FeelingSerializer < FeelingSerializer
+class IncludesCompact::FeelingSerializer < FeelingSerializer
 	has_many :project_evaluations, serializer: Base::BaseSerializer
 end

@@ -26,7 +26,7 @@ module PointsAward
     # @param student [Student] The Student that will be awarded the points.
     # @param resource [Object] Optional. The resource that triggered the
     #   points awarding.
-    # @param options [Hash] Optional. An arbitrary number of options in a hash.
+    # @param _options [Hash] Optional. An arbitrary number of options in a hash.
     #
     # @raise [TypeError] if the params supplied do not match the specified
     #   types.
@@ -113,8 +113,10 @@ module PointsAward
     # Sets the points_persisted attrbibute if the PointsBoard has persisted!.
     # Returns false if it has not persisted.
     #
-    # @param point_object [PeerAssessmentPoint | ProjectEvaluationPoint | LogPoint]
-    #   The object that will be added to the points_persisted array.
+    # @param array [PeerAssessmentPoint[] | ProjectEvaluationPoint[] | LogPoint[]]
+    #   An Array of PeerAssessmentPoint, ProjectEvaluationPoint and LogPoint objects
+    #
+    # @raise ArgumentError If The input is not an Array.
     #
     # @return [Boolean] True if the PointsBoard has persisted, false otherwise.
     #
