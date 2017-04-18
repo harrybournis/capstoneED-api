@@ -111,6 +111,23 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body['assignment']['students'].length).to eq(@assignment.students.length)
 			end
 
+			it 'includes iterations in chronological order' do
+				3.times { FactoryGirl.create(:iteration, assignment_id: @assignment.id) }
+
+				get :show, params: { id: @assignment.id, includes: 'iterations,students' }
+
+				expect(status).to eq(200)
+				expect(body['assignment']['iterations'].length).to eq(@assignment.iterations.length)
+
+				for i in 0..body['assignment']['iterations'].length
+					if iteration = body['assignment']['iterations'][i + 1]
+						prev_ = DateTime.parse(body['assignment']['iterations'][i]['start_date']).to_i
+						next_ = DateTime.parse(body['assignment']['iterations'][i + 1]['start_date']).to_i
+						expect(prev_).to be <= next_
+					end
+				end
+			end
+
 			it 'includes pa_forms' do
 				iteration1 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
 				iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
