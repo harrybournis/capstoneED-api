@@ -32,3 +32,7 @@ en:
     points_award:
       points_award_service:
         validate_stores: "AwarderStore and PersisterStore keys don't match. Include the same keys for both stores."
+
+    rules:
+      type_id:
+        included_in?: type_id does not match any QuestionType in the database

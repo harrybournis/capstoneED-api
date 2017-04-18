@@ -91,7 +91,6 @@ RSpec.describe PaForm, type: :model do
 									{ 'text' => 'When?', 'type_id' => @type.id},
 									{ 'text' => 'Where?', 'type_id' => @type2.id}]
 			pa_form = build :pa_form, iteration_id: iteration.id, questions: questions
-
 			expect(pa_form.save).to be_falsy
 			expect(pa_form.errors[:questions].first).to include 'type_id does not match'
 		end

@@ -1,5 +1,6 @@
 ## A Lecturer creates a PAForm to assess students for each iteration
 class PaForm < Deliverable
+  include ValidationHelpers
   # Attributes
   # iteration_id  :integer
   # questions     :jsonb { question_id => question_text }
@@ -115,23 +116,34 @@ class PaForm < Deliverable
   def format_of_questions
     return unless questions.present?
 
-    unless questions.is_a? Array
-      errors.add(:questions, 'is not an Array')
-      return
+    q_types = QuestionType.all.select(:id).map { |q| q.id }
+
+    schema = Dry::Validation.JSON do
+      configure do
+        config.input_processor = :form
+        config.type_specs = true
+        config.messages = :i18n
+      end
+
+      each do
+        schema do
+          required(:question_id, :int).value(:int?)
+          required(:text, :int).value(:str?)
+          required(:type_id, :int).value(:int?, included_in?: q_types)
+        end
+      end
     end
 
-    questions.each do |q|
-      unless q.length == 3 && q['question_id'].present? &&
-                              q['text'].present? &&
-                              q['type_id'].present?
-        errors.add(:questions, "missing required parameters. Only 'question_id', 'text' and 'type_id' are accepted, and all three must be present for each question.")
-        break
-      end
-      unless QuestionType.exists?(id: q['type_id'])
-        errors.add :questions, "type_id does not match any QuestionType in the database"
-        break
-      end
-    end
+    result = schema.call(questions)
+
+    result_errors_to_active_model :questions, result
+    # unless result.success?
+    #   result.errors.each do |key, error_hash|
+    #     error_hash.each do |attr, message|
+    #       errors.add :questions, message[0]
+    #     end
+    #   end
+    # end
   end
 
   # start_date validation

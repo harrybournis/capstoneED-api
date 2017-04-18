@@ -1,5 +1,6 @@
 ## A Peer Assessemnt form submission by a Student
 class PeerAssessment < ApplicationRecord
+  include ValidationHelpers
   # Attributes
   # pa_form_id        :integer
   # submitted_by_id   :integer
@@ -56,13 +57,15 @@ class PeerAssessment < ApplicationRecord
     schema = Dry::Validation.Schema do
       configure { config.input_processor = :form }
 
-      required(:submitted_by_id).value(:int?)
-      required(:submitted_for_id).value(:int?)
-      required(:pa_form_id).value(:int?)
-      required(:answers).each do
-        schema do
-          required(:question_id).value(:int?)
-          required(:answer) { str? | (int? & gt?(0) & lteq?(5)) }
+      each do
+        required(:submitted_by_id).value(:int?)
+        required(:submitted_for_id).value(:int?)
+        required(:pa_form_id).value(:int?)
+        required(:answers).each do
+          schema do
+            required(:question_id).value(:int?)
+            required(:answer) { str? | (int? & gt?(0) & lteq?(5)) }
+          end
         end
       end
     end
@@ -94,7 +97,7 @@ class PeerAssessment < ApplicationRecord
     return unless answers.present?
 
     unless answers.is_a? Array
-      errors.add(:answers, 'is not an Array')
+      errors.add(:answers, 'is not an array')
       return
     end
 

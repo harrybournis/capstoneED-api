@@ -41,7 +41,7 @@ RSpec.describe PeerAssessment, type: :model do
 		peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
 			answers: { question_id: 1, answer: 'answ' })
 		expect(peer_assessment.save).to be_falsy
-		expect(peer_assessment.errors[:answers][0]).to include('not an Array')
+		expect(peer_assessment.errors[:answers][0]).to include('an array')
 
 		peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
 			answers: [{ question_id: 1, answer: 'answ', other: 'field' }])
