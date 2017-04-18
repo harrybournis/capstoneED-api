@@ -22,14 +22,14 @@ RSpec.describe V1::PointsController, type: :controller do
       end
 
       it "response contains 'personal', 'team_average', 'team_points'", { docs?: true, lecturer?: false } do
-        create :students_project_with_points, project: @project, student: @student
-        create :students_project_with_points, project: @project
-        create :students_project_with_points, project: @project
-        @project.reload
+        expect(create :students_project_with_points, project: @project, student: @student, points: 10).to be_truthy
+        expect(create :students_project_with_points, project: @project, points: 20).to be_truthy
+        expect(create :students_project_with_points, project: @project, points: 30).to be_truthy
 
         get :index_for_project, params: { project_id: @project.id }
 
         expect(status).to eq 200
+
         expect(body['points']['personal']).to eq @student.points_for_project_id(@project.id)
         expect(body['points']['team_average']).to eq @project.team_average
         expect(body['points']['team_points']).to eq @project.team_points
@@ -73,7 +73,6 @@ RSpec.describe V1::PointsController, type: :controller do
         create :students_project_with_points, project: @project, student: @student
         create :students_project_with_points, project: @project
         create :students_project_with_points, project: @project
-        @project.reload
 
         get :index_for_project, params: { project_id: @project.id }
 

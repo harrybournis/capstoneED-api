@@ -48,7 +48,19 @@ class V1::PointsController < ApplicationController
   end
 
   def set_project_if_associated
-    unless @project = current_user.projects.where(id: params[:project_id])[0]
+    found = false
+    if current_user.student?
+      @project = Project.eager_load(:students_projects).where(id: params[:project_id])[0]
+
+
+      @project.students_projects.each { |sp| found = true if sp.student_id == current_user.id }
+    else
+      if @project = current_user.projects.where(id: params[:project_id])[0]
+        found = true
+      end
+    end
+
+    unless found
       render_not_associated_with_current_user('Project')
       false
     end

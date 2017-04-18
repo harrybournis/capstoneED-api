@@ -96,6 +96,10 @@ class Project < ApplicationRecord
     students_projects.map { |sp| Decorators::StudentMember.new(sp.student, sp) }
   end
 
+  def current_iterations
+    iterations.where('iterations.start_date < :now AND iterations.deadline > :now', now: DateTime.now)
+  end
+
   private
 
 

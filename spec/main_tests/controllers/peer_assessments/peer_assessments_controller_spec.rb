@@ -79,7 +79,7 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 				it 'answers are not in correct format', { docs?: true, lecturer?: false } do
 					post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for, answers: { question_id: 3, answer: 'dkdk', something: 'ddd' } }
 					expect(status).to eq(422)
-					expect(errors['answers'][0]).to include('is not an Array')
+					expect(errors['answers'][0]).to include('is not an array')
 				end
 			end
 		end

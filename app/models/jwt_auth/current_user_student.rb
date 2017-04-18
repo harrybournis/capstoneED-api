@@ -74,11 +74,17 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
       options[:includes].delete('students')
       Project.joins(:students_projects)
              .where(['students_projects.student_id = ?', @id])
-             .eager_load(options[:includes], students_projects: [:student])
+             .eager_load(options[:includes], students_projects: :student)
     else
-      Project.joins(:students_projects)
+      includes =  if options[:includes]
+                    options[:includes].unshift('students_projects')
+                  else
+                    'students_projects'
+                  end
+
+      Project.eager_load(includes)
              .where(['students_projects.student_id = ?', @id])
-             .eager_load(options[:includes])
+
     end
   end
 

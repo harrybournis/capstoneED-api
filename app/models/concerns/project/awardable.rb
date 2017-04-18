@@ -36,11 +36,12 @@ module Project::Awardable
     # avg = students_projects.select(:points).average :points
     # avg ? avg.round : 0
 
-    # This version programmatically adds the points:
-    no_of_students = students_projects.length
+    # This version programmatically finds the average of the points:
+    #self.reload
+    no_of_students = self.students_projects.length
     return 0 if no_of_students == 0
     total = 0
-    students_projects.each { |s| total += s.points }
+    self.students_projects.each { |s| total += s.points }
     (total / no_of_students).round
   end
 end

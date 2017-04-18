@@ -250,5 +250,90 @@ RSpec.describe Project, type: :model do
 				expect(project.team_average.class).to eq Integer
 				expect(project.team_average).to eq 0
 			end
+
+      it '#current_iteration returns the current iteration' do
+        assignment = create :assignment
+        project = create :project, assignment: assignment
+        current_iteration = create :iteration, assignment: assignment, start_date: DateTime.now, deadline: DateTime.now + 2.days
+        other_iteration = create :iteration, assignment: assignment, start_date: DateTime.now + 5.days, deadline: DateTime.now + 10.days
+        expect(project.iterations.count).to eq 2
+
+        expect(project.current_iterations.any?).to be_truthy
+        expect(project.current_iterations[0]).to eq current_iteration
+      end
+
+      it '#current_iteration returns nil if no current iteration' do
+        assignment = create :assignment
+        project = create :project, assignment: assignment
+        other_iteration = create :iteration, assignment: assignment, start_date: DateTime.now + 5.days, deadline: DateTime.now + 10.days
+
+        expect(project.current_iterations.any?).to be_falsy
+      end
 	end
+
+  describe 'pending_evaluation?' do
+    before :each do
+      @student = create :student
+      @assignment = create :assignment
+      @project = create :project, assignment: @assignment
+      @sp = create :students_project, project: @project, student: @student
+      @iteration = create :iteration, assignment: @assignment, start_date: DateTime.now, deadline:  DateTime.now + 10.days
+    end
+
+    describe 'returns true' do
+      it 'when no project_evaluations have been sumbmitted for the current iteration' do
+        expect(@project.pending_evaluation?(@student.id)).to be_truthy
+      end
+
+      it 'if 1 has been submitted in the first half, and we are currently in the second half of the iteration' do
+        Timecop.travel DateTime.now + 1.day do
+          pe = create :project_evaluation, project: @project, iteration: @iteration, user:  @student
+          expect(pe).to be_truthy
+        end
+        
+        Timecop.travel DateTime.now + 7.days do
+          expect(@project.current_iterations[0]).to eq @iteration
+          expect(@project.pending_evaluation?(@student.id)).to be_truthy
+        end
+      end
+    end
+
+    describe 'returns false' do 
+      it 'when max number of project_evaluations has been submitted for this iteration' do
+        expect(create :project_evaluation, project: @project, iteration: @iteration, user:  @student).to be_truthy
+        expect(create :project_evaluation, project: @project, iteration: @iteration, user:  @student).to be_truthy
+
+        expect(@student.project_evaluations.where(project_id: @project.id, iteration_id: @iteration.id).count).to eq 2
+        expect(@project.pending_evaluation?(@student.id)).to be_falsy
+      end
+
+      it 'when 1 has been submitted in the second half, and we are currently in the second half of the iteration' do
+        Timecop.travel DateTime.now + 6.days do
+          pe = create :project_evaluation, project: @project, iteration: @iteration, user: @student
+        end 
+        Timecop.travel DateTime.now + 7.days do
+          expect(@student.project_evaluations.where(project_id: @project.id, iteration_id: @iteration.id).count).to eq 1
+          expect(@project.pending_evaluation?(@student.id)).to be_falsy
+        end
+      end
+
+      it 'when the student is not a member of the project' do
+        assignment = create :assignment
+        iteration = create :iteration, assignment: @assignment, start_date: DateTime.now, deadline:  DateTime.now + 10.days
+        project2 = create :project, assignment: assignment
+
+        expect(project2.pending_evaluation?(@student.id)).to be_falsy
+      end
+
+      it 'when the project has no active iterations' do
+        assignment = create :assignment
+        iteration = create :iteration, assignment: assignment, start_date: DateTime.now + 2.days, deadline:  DateTime.now + 10.days
+        project2 = create :project, assignment: assignment
+        sp = create :students_project, project: project2, student: @student
+
+        expect(project2.pending_evaluation?(@student.id)).to be_falsy
+      end
+
+    end
+  end
 end

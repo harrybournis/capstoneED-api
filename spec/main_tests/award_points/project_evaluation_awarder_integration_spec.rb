@@ -28,7 +28,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
   describe 'Success' do
     it 'awards points for completing the project evaluation' do
       expect {
-        post '/v1/project_evaluations', params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+        post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation][:id]).count }
 
       expect(status).to eq 201
@@ -38,7 +38,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
 
     it 'awards points for completing the project evaluation first in the team' do
       expect {
-        post '/v1/project_evaluations', params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+        post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_team][:id]).count }
 
       expect(status).to eq 201
@@ -50,7 +50,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       create(:project_evaluation, user: @lecturer, project_id: @project.id, iteration_id: @project.iterations[0].id)
 
       expect {
-        post '/v1/project_evaluations', params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+        post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_team][:id]).count }
 
       expect(status).to eq 201
@@ -60,7 +60,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
 
     it 'awards points for completing the project evaluation first in the assignment' do
       expect {
-        post '/v1/project_evaluations', params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+        post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_assignment][:id]).count }
 
       expect(status).to eq 201
@@ -72,7 +72,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       create(:project_evaluation, user: @lecturer, project_id: @project.id, iteration_id: @project.iterations[0].id)
 
       expect {
-        post '/v1/project_evaluations', params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+        post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_assignment][:id]).count }
 
       expect(status).to eq 201
@@ -87,7 +87,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       @attr_lecturer = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @lecturer.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feeling_id: @feeling.id)
 
       expect {
-        post '/v1/project_evaluations', params: @attr_lecturer, headers: { 'X-XSRF-TOKEN' => @csrf_lecturer }
+        post "/v1/projects/#{@project.id}/evaluations", params: @attr_lecturer, headers: { 'X-XSRF-TOKEN' => @csrf_lecturer }
       }.to_not change { ProjectEvaluationPoint.where(student_id: @lecturer.id, reason_id: Reason[:project_evaluation][:id]).count }
 
       expect(status).to eq 201
@@ -100,7 +100,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
 			create(:project_evaluation, user: @student2, project_id: @project.id, iteration_id: @project.iterations[0].id)
 
       expect {
-        post '/v1/project_evaluations', params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+        post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to_not change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_team][:id]).count }
 
       expect(status).to eq 201
@@ -114,7 +114,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       create(:project_evaluation, user: @irrelevant_student, project_id: @irrelevant_team.id, iteration_id: @project.iterations[0].id)
 
       expect {
-        post '/v1/project_evaluations', params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+        post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to_not change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_assignment][:id]).count }
 
       expect(status).to eq 201
@@ -128,7 +128,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       expect(@student.points_for_project_id(@project.id)).to eq 0
 
       expect {
-        post '/v1/project_evaluations', params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+        post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to change {
         @student.points_for_project_id(@project.id)
       }.to(@game_setting.points_project_evaluation +
@@ -144,7 +144,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       expect(@student.points_for_project_id(@project.id)).to eq 0
 
       expect {
-        post '/v1/project_evaluations', params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+        post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation][:id]).count }
 
       expect(status).to eq 201
@@ -171,7 +171,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
         attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id)
 
         expect {
-          post '/v1/project_evaluations', params: attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+          post "/v1/projects/#{@project.id}/evaluations", params: attr, headers: { 'X-XSRF-TOKEN' => @csrf }
         }.to_not change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation][:id]).count }
 
         expect(status).to eq 422
@@ -184,7 +184,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       @attr_lecturer = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @lecturer.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feeling_id: @feeling.id)
 
       expect {
-        post '/v1/project_evaluations', params: @attr_lecturer, headers: { 'X-XSRF-TOKEN' => @csrf_lecturer }
+        post "/v1/projects/#{@project.id}/evaluations", params: @attr_lecturer, headers: { 'X-XSRF-TOKEN' => @csrf_lecturer }
       }.to_not change { ProjectEvaluationPoint.where(student_id: @lecturer.id, reason_id: Reason[:project_evaluation][:id]).count }
 
       expect(status).to eq 201

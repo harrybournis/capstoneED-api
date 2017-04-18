@@ -45,6 +45,15 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				expect(body['projects'][0]['team_points']).to be_truthy
 				expect(body['projects'][0]['team_average']).to be_truthy
 			end
+
+      it 'includes pending_evaluations? field for each project' do
+        get :index
+        expect(status).to eq 200
+        
+        body['projects'].each do |p|
+          expect(p['pending_project_evaluation']).to be_in [true,false]
+        end
+      end
 		end
 
 		describe "GET show" do

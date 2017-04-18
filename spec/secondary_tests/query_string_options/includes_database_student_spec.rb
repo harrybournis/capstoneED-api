@@ -129,7 +129,7 @@ RSpec.describe 'Includes', type: :controller do
 					project = @student.projects[0]
 					expect {
 						get :show, params: { id: project.id, includes: 'assignment,students' }
-					}.to make_database_queries(count: 7)
+					}.to make_database_queries(count: 8)
 					expect(status).to eq(200)
 				end
 			end
