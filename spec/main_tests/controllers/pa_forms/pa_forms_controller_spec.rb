@@ -51,6 +51,23 @@ RSpec.describe V1::PaFormsController, type: :controller do
 																									{ "question_id" => 4, "text" => 'Favorite Power Ranger?', 'type_id' => "#{type2.id}" }])
 		end
 
+		it 'POST create saves the question if it is new' do
+			type1 = create :question_type
+			type2 = create :question_type
+
+			expect {
+			post :create, params: { iteration_id: @iteration.id,
+															questions: [{ 'text' => 'Who is it?', 'type_id' => type2.id },
+																					{ 'text' => 'Human?', 'type_id' => type2.id },
+																					{ 'text' => 'Hello?', 'type_id' => type1.id },
+																					{ 'text' => 'Favorite Power Ranger?', 'type_id' => type2.id }],
+															start_date: @iteration.deadline + 1.day.to_i,
+															deadline: @iteration.deadline + 3.days.to_i }
+			}.to change { Question.all.count }.by 4
+
+			expect(status).to eq(201)
+		end
+
 		it 'POST create responds with 422 unprocessable entity if questions not in correct form', { docs?: true } do
 			post :create, params: { iteration_id: @iteration.id, questions: { questions: ['Who is it?', 'Human?'] } }
 			expect(status).to eq(422)

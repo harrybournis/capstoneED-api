@@ -32,6 +32,7 @@ class V1::PaFormsController < ApplicationController
     @pa_form = PaForm.new(pa_form_params)
 
     if @pa_form.save
+      SaveQuestionsService.new(@pa_form.questions, current_user.id).call
       render json: @pa_form, status: :created
     else
       render json: format_errors(@pa_form.errors), status: :unprocessable_entity
