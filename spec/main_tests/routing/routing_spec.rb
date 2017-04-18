@@ -78,4 +78,14 @@ RSpec.describe 'Routing', type: :routing do
 		expect(get: "#{url}/v1/assignments/1/points").to route_to(
 					 controller: 'v1/points', action: 'index_for_assignment', assignment_id: '1')
 	end
+
+  it 'POST /v1/projects/:id/evaluations to route to project_evaluations#create' do
+    expect(post: "#{url}/v1/projects/1/evaluations").to route_to(
+           controller: 'v1/project_evaluations', action: 'create', project_id: '1')
+  end
+
+  it 'PATCH /v1/projects/:id/evaluations to route to project_evaluations#update' do
+    expect(patch: "#{url}/v1/projects/1/evaluations").to route_to(
+           controller: 'v1/project_evaluations', action: 'update', project_id: '1')
+  end
 end
