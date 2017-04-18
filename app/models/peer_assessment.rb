@@ -128,7 +128,7 @@ class PeerAssessment < ApplicationRecord
   # submitted_by
   def submitted_for_is_in_the_same_team
     return if submitted_for_id.nil? || submitted_by_id.nil? ||
-              submitted_by.teammates.include?(submitted_for)
+              submitted_by.teammates(true).include?(submitted_for)
     errors.add(:submitted_for, 'is not in the same Project with the current user')
   end
 

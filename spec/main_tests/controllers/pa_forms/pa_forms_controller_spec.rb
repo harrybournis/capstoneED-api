@@ -3,12 +3,12 @@ require 'rails_helper'
 RSpec.describe V1::PaFormsController, type: :controller do
 
 	before(:all) do
-		@lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
+		@lecturer = build(:lecturer_with_password).process_new_record
 		@lecturer.save
 		@lecturer.confirm
-		@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-		@assignment = FactoryGirl.create(:assignment, lecturer: @lecturer, unit: @unit)
-		@iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+		@unit = create(:unit, lecturer: @lecturer)
+		@assignment = create(:assignment, lecturer: @lecturer, unit: @unit)
+		@iteration = create(:iteration, assignment_id: @assignment.id)
 	end
 
 	describe 'Lecturer' do
@@ -20,14 +20,14 @@ RSpec.describe V1::PaFormsController, type: :controller do
 		end
 
 		it 'GET show returns the PAForm if associated with current user', { docs?: true } do
-			pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
+			pa_form = create(:pa_form, iteration: @iteration)
 			get :show, params: { id: pa_form.id }
 			expect(status).to eq(200)
 			expect(body['pa_form']['id']).to eq(pa_form.id)
 		end
 
 		it 'GET show responds with 403 forbidden if the project is not associated with current user' do
-			pa_form = FactoryGirl.create(:pa_form)
+			pa_form = create(:pa_form)
 			get :show, params: { id: pa_form.id }
 			expect(status).to eq(403)
 			expect(errors['base'][0]).to include('not associated')
@@ -61,22 +61,22 @@ RSpec.describe V1::PaFormsController, type: :controller do
 		end
 
 		it "POST create responds with 403 forbidden if iteration_id in not from one of lecturer's projects" do
-			iteration = FactoryGirl.create(:iteration)
+			iteration = create(:iteration)
 			post :create, params: { iteration_id: iteration.id, questions: ['Who is it?', 'Human?', 'Hello?', 'Favorite Power Ranger?'] }
 			expect(status).to eq(403)
 			expect(errors['base'][0]).to include('not associated')
 		end
 
 		# it 'PATCH update responds with 201 if correct params' do
-		# 	pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
+		# 	pa_form = create(:pa_form, iteration: @iteration)
 		# 	patch :update, params: { id: pa_form.id, questions: ['new Who is it?', 'Human?', 'new Hello?', 'Favorite Power Ranger?'] }
 		# 	expect(status).to eq(200)
 		# 	expect(body['pa_form']['questions']).to eq([{ "question_id" => 1, "text" => 'new Who is it?' }, { "question_id" => 2, "text" => 'Human?' }, { "question_id" => 3, "text" => 'new Hello?' }, { "question_id" => 4, "text" => 'Favorite Power Ranger?' }])
 		# end
 
 		# it 'PATCH update responds with 422 unprocessable entity if questions not in correct form' do
-		# 	pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
-		# 	pa_form_wrong = FactoryGirl.create(:pa_form)
+		# 	pa_form = create(:pa_form, iteration: @iteration)
+		# 	pa_form_wrong = create(:pa_form)
 		# 	patch :update, params: { id: pa_form_wrong.id, questions: { questions: ['Who is it?', 'Human?'] } }
 		# 	expect(status).to eq(403)
 
@@ -86,7 +86,7 @@ RSpec.describe V1::PaFormsController, type: :controller do
 		# end
 
 		# it 'DELETE destroy responds with 204 no content if lecturer is owner' do
-		# 	pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
+		# 	pa_form = create(:pa_form, iteration: @iteration)
 		# 	delete :destroy, params: { id: pa_form.id }
 		# 	expect(status).to eq(204)
 		# end
@@ -97,10 +97,8 @@ RSpec.describe V1::PaFormsController, type: :controller do
 
 		before(:each) do
 			@controller = V1::PaFormsController.new
-			@student = FactoryGirl.build(:student_with_password).process_new_record
-			@student.save
-			@student.confirm
-			@project = FactoryGirl.create(:project, assignment_id: @assignment.id)
+			@student = create :student_confirmed
+			@project = create(:project, assignment_id: @assignment.id)
 			create :students_project, student: @student, project: @project
 			mock_request = MockRequest.new(valid = true, @student)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -109,11 +107,11 @@ RSpec.describe V1::PaFormsController, type: :controller do
 
 		it 'GET index returns the active PAForms', { docs?: true, lecturer?: false } do
 			now = DateTime.now
-			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
-			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
-			FactoryGirl.create(:pa_form, iteration: iteration1)
-			FactoryGirl.create(:pa_form, iteration: iteration2)
-			irrelevant = FactoryGirl.create(:pa_form)
+			iteration1 = create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
+			iteration2 = create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
+			create(:pa_form, iteration: iteration1)
+			create(:pa_form, iteration: iteration2)
+			irrelevant = create(:pa_form)
 			expect(PaForm.all.length).to eq 3
 
 			Timecop.travel(now + 6.days + 1.minute) do
@@ -134,13 +132,36 @@ RSpec.describe V1::PaFormsController, type: :controller do
 			end
 		end
 
+		it 'GET index returns the active PAForms that have not been submitted by the student' do
+			now = DateTime.now
+			iteration1 = create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
+			iteration2 = create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
+			create(:pa_form, iteration: iteration1)
+			pa_form = create(:pa_form, iteration: iteration2)
+			irrelevant = create(:pa_form)
+			expect(PaForm.all.length).to eq 3
+
+			Timecop.travel(now + 5.days + 1.minute) do
+				@other_student = create :student_confirmed
+				create :students_project, project: @project, student: @other_student
+				create :peer_assessment, submitted_for: @other_student, submitted_by: @student, pa_form: pa_form
+
+				mock_request = MockRequest.new(valid = true, @student)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+				get :index
+
+				expect(status).to eq 204
+			end
+		end
+
 		it 'GET index returns the active PAForms with questions types', { docs?: true, lecturer?: false } do
 			now = DateTime.now
-			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
-			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
-			FactoryGirl.create(:pa_form, iteration: iteration1)
-			FactoryGirl.create(:pa_form, iteration: iteration2)
-			irrelevant = FactoryGirl.create(:pa_form)
+			iteration1 = create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
+			iteration2 = create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
+			create(:pa_form, iteration: iteration1)
+			create(:pa_form, iteration: iteration2)
+			irrelevant = create(:pa_form)
 			expect(PaForm.all.length).to eq 3
 
 			Timecop.travel(now + 5.days + 1.minute) do
@@ -158,11 +179,11 @@ RSpec.describe V1::PaFormsController, type: :controller do
 
 		it 'GET index contains the project_id' do
 			now = DateTime.now
-			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
-			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
-			pa_form1 = FactoryGirl.create(:pa_form, iteration: iteration1)
-			FactoryGirl.create(:pa_form, iteration: iteration2)
-			irrelevant = FactoryGirl.create(:pa_form)
+			iteration1 = create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
+			iteration2 = create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
+			pa_form1 = create(:pa_form, iteration: iteration1)
+			create(:pa_form, iteration: iteration2)
+			irrelevant = create(:pa_form)
 			expect(PaForm.all.length).to eq 3
 
 			Timecop.travel(now + 6.days + 1.minute) do
@@ -190,11 +211,11 @@ RSpec.describe V1::PaFormsController, type: :controller do
 
 		it 'GET index contains the project_id and makes queries' do
 			now = DateTime.now
-			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
-			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
-			pa_form1 = FactoryGirl.create(:pa_form, iteration: iteration1)
-			FactoryGirl.create(:pa_form, iteration: iteration2)
-			irrelevant = FactoryGirl.create(:pa_form)
+			iteration1 = create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
+			iteration2 = create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
+			pa_form1 = create(:pa_form, iteration: iteration1)
+			create(:pa_form, iteration: iteration2)
+			irrelevant = create(:pa_form)
 			expect(PaForm.all.length).to eq 3
 
 			Timecop.travel(now + 5.days + 1.minute) do
@@ -203,7 +224,7 @@ RSpec.describe V1::PaFormsController, type: :controller do
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 				expect {
 					get :index
-				}.to make_database_queries(count: 5)
+				}.to make_database_queries(count: 6)
 				expect(status).to eq 200
 				expect(body['pa_forms'].length).to eq(1)
 				projects = @student.projects
@@ -215,14 +236,14 @@ RSpec.describe V1::PaFormsController, type: :controller do
 		end
 
 		it 'GET show returns the PAForm if associated with current user' do
-			pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
+			pa_form = create(:pa_form, iteration: @iteration)
 			get :show, params: { id: pa_form.id }
 			expect(status).to eq(200)
 			expect(body['pa_form']['id']).to eq(pa_form.id)
 		end
 
 		it 'GET show responds with 403 forbidden if the project is not associated with current user' do
-			pa_form = FactoryGirl.create(:pa_form)
+			pa_form = create(:pa_form)
 			get :show, params: { id: pa_form.id }
 			expect(status).to eq(403)
 			expect(errors['base'][0]).to include('not associated')
@@ -230,13 +251,13 @@ RSpec.describe V1::PaFormsController, type: :controller do
 
 		it 'GET index return with the extensions', { docs?: true, lecturer?: false } do
 			now = DateTime.now
-			iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
-			iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
-			iteration3 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days + 1.hour, assignment_id: @assignment.id)
-			pa_form = FactoryGirl.create(:pa_form, iteration: iteration1)
-			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
-			irrelevant = FactoryGirl.create(:pa_form, iteration: iteration3)
-			extension = FactoryGirl.create(:extension, project_id: @project.id, deliverable_id: pa_form2.id)
+			iteration1 = create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
+			iteration2 = create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
+			iteration3 = create(:iteration, start_date: now + 4.days, deadline: now + 6.days + 1.hour, assignment_id: @assignment.id)
+			pa_form = create(:pa_form, iteration: iteration1)
+			pa_form2 = create(:pa_form, iteration: iteration2)
+			irrelevant = create(:pa_form, iteration: iteration3)
+			extension = create(:extension, project_id: @project.id, deliverable_id: pa_form2.id)
 			expect(PaForm.all.length).to eq 4
 
 			Timecop.travel(now + 5.days + 1.minute) do

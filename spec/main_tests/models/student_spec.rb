@@ -61,6 +61,25 @@ RSpec.describe Student, type: :model do
 		expect(@user.teammates.length).to eq 7
 	end
 
+	it '#teammates returns students and includes the students if passed true' do
+		@user = create(:student_confirmed)
+
+		project1 = create(:project)
+		project3 = create(:project)
+		teammate = create(:student_confirmed)
+		3.times { create :students_project, student: create(:student_confirmed), project: project1 }#project1.students << create(:student_confirmed) }
+		create :students_project, student: @user, project: project1
+		create :students_project, student: teammate, project: project1
+		3.times { create :students_project, student: create(:student_confirmed), project: project3 } #project3.students << create(:student_confirmed) }
+		create :students_project, student: @user, project: project3
+		create :students_project, student: teammate, project: project3
+
+		expect(@user.projects.length).to eq 2
+		expect(@user.teammates(true).length).to eq 8
+		expect(@user.teammates).to_not include @user
+		expect(@user.teammates(true)).to include @user
+	end
+
 	it '#nickname_for_project_id returns the nickname for the provided project' do
 		student = create(:student)
 		project = create(:project)

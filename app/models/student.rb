@@ -24,12 +24,22 @@ class Student < User
   validates_inclusion_of :type, in: ['Student']
 
   # Returns all the students in the same teams as the student.
+  # The student is excluded by default. By setting with_student to
+  # true the student is included in the results
+  #
+  # @param with_student = false [Boolean] If set to true it will
+  #   return teammates with the student included.
   #
   # @return [Array] The students
   #
-  def teammates
-    Student.joins(:projects).where('projects.id' => projects.ids)
-           .where.not(id: id).distinct
+  def teammates(with_student = false)
+    if with_student
+      Student.joins(:projects).where('projects.id' => projects.ids)
+             .distinct
+    else
+      Student.joins(:projects).where('projects.id' => projects.ids)
+             .where.not(id: id).distinct
+    end
   end
 
   # Returns the student's nickname for the provided project.
