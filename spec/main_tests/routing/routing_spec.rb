@@ -41,6 +41,7 @@ RSpec.describe 'Routing', type: :routing do
 	end
 
 	# pa form
+
 	it 'GET /v1/pa_forms to PAFormController#index' do
 		expect(get: "#{url}/v1/pa_forms").to route_to(
 					 controller: 'v1/pa_forms', action: 'index')
@@ -53,6 +54,7 @@ RSpec.describe 'Routing', type: :routing do
 	end
 
 	# game settings
+
 	it 'GET /v1/assignments/2/game_settings to route to GameSettings#index' do
 		expect(get: "#{url}/v1/assignments/2/game_settings").to route_to(
 					 controller: 'v1/game_settings', action: 'index', assignment_id: "2")
@@ -69,6 +71,7 @@ RSpec.describe 'Routing', type: :routing do
 	end
 
 	# Points
+
 	it 'GET /v1/projects/:id/points to route to Points#index_for_project' do
 		expect(get: "#{url}/v1/projects/1/points").to route_to(
 					 controller: 'v1/points', action: 'index_for_project', project_id: '1')
@@ -87,5 +90,12 @@ RSpec.describe 'Routing', type: :routing do
   it 'PATCH /v1/projects/:id/evaluations to route to project_evaluations#update' do
     expect(patch: "#{url}/v1/projects/1/evaluations").to route_to(
            controller: 'v1/project_evaluations', action: 'update', project_id: '1')
+  end
+
+  # Reasons
+
+  it 'GET /v1/reasons to route to reasons#index' do
+  	expect(get: "#{url}/v1/reasons").to route_to(
+  				 controller: 'v1/reasons', action: 'index')
   end
 end

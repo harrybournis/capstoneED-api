@@ -79,6 +79,9 @@ Rails.application.routes.draw do
     # Points
     get 'projects/:project_id/points', to: 'points#index_for_project'
     get 'assignments/:assignment_id/points', to: 'points#index_for_assignment'
+
+    # Reasons
+    get 'reasons', to: 'reasons#index'
   end
 
   ## To be removed
