@@ -41,7 +41,6 @@ class PointsAwardService
     log: 'DefaultPersister',
   }.freeze
 
-
   NAMESPACE = "PointsAward".freeze
 
   attr_reader :awarders, :persisters
@@ -121,6 +120,13 @@ class PointsAwardService
     @points_board = PointsAward::PointsBoard.new(@student, @resource)
   end
 
+  # Executes the action of the service. Calls each awarder and
+  # persister in succession while handling errors. It does not
+  # call the persisters if there are no points awarded by the awarders.
+  #
+  # @return [PointsBoard] A pointsboard that is either persisted, or
+  #   it has errors.
+  #
   def call
     @awarders.each do |awarder|
       chain(:awarded)   { awarder.new(@points_board).call }
@@ -140,6 +146,11 @@ class PointsAwardService
 
   private
 
+  # Validates that the same keys exist in both the AWARDER_STORE and
+  # the PERSISTER_STORE hashes. Raises an Error if they are different.
+  #
+  # @raise [ArgumentError] If the same keys do not exist in both hashes.
+  #
   def validate_stores!
     unless (AWARDER_STORE.keys - PERSISTER_STORE.keys).empty? &&
            (PERSISTER_STORE.keys - AWARDER_STORE.keys).empty?
@@ -147,12 +158,32 @@ class PointsAwardService
     end
   end
 
+  # Validates that the key exists in the AWARDER_STORE.
+  # Called on initialization, to ensure that there are awarders and
+  # persisters defined for the particular key.
+  #
+  # @param key [Symbol] The key that will be checked if it exists in
+  #   the AWARDER_STORE keys.
+  #
+  # @raise [ArgumentError] If the key does not exist in the AWARDER_STORE.
+  #
   def validate_key!(key)
     unless AWARDER_STORE.keys.include? key
       raise ArgumentError, "Invalid Key. Valid Keys are: #{AWARDER_STORE.keys.to_s}"
     end
   end
 
+  # Returns an array of contantized classes. Namespeces them
+  # according to the NAMESPACE constant, and the Awarders::
+  # namespace. If given a single string, ti constantizes it and
+  # returns it in an array. If given an array, it contantizes
+  # avery element of the array and returns the new array.
+  #
+  # @param string_or_array [String, Array<String>] The awarders
+  #   that will be constantized.
+  #
+  # @return [Array<Class>] Returns an array of classes.
+  #
   def resolve_awarder_classes(string_or_array)
     if string_or_array.is_a? String
       ["#{NAMESPACE}::Awarders::#{string_or_array}".constantize]
@@ -161,6 +192,17 @@ class PointsAwardService
     end
   end
 
+  # Returns an array of contantized classes. Namespeces them
+  # according to the NAMESPACE constant, and the Persisters::
+  # namespace. If given a single string, ti constantizes it and
+  # returns it in an array. If given an array, it contantizes
+  # avery element of the array and returns the new array.
+  #
+  # @param string_or_array [String, Array<String>] The persisters
+  #   that will be constantized.
+  #
+  # @return [Array<Class>] Returns an array of classes.
+  #
   def resolve_persister_classes(string_or_array)
     if string_or_array.is_a? String
       ["#{NAMESPACE}::Persisters::#{string_or_array}".constantize]
