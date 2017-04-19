@@ -1,4 +1,3 @@
-
 # Each lecturer has a collection of questions that they can
 # view and reuse when they create a new Pa Form. A question
 # does not hold an logic about the expected question_type and

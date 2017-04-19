@@ -1,4 +1,4 @@
-# The IterationMarkingService class gives marks to the Students
+# The CalculatePaScoresService class gives marks to the Students
 # of at the end of an Iteration. It takes a completed Iteration,
 # checks the submitted peer assessments with a marking algorithm,
 # and gives marks to the students according to the settings
@@ -6,11 +6,11 @@
 #
 # The service is intended to be called by a cron job,
 # which checks if an iteration has ended, if it hasn't been
-# marked yet, and creates a new IterationMarkingService and
+# marked yet, and creates a new CalculatePaScoresService and
 # #calls it.
 #
 # @example
-#   service = IterationMarkingService.new(@iteration)
+#   service = CalculatePaScoresService.new(@iteration)
 #
 #   if service.can_mark?
 #     service.call
@@ -19,7 +19,7 @@
 # The method #can_mark will check whether the iteration has
 # finished, and whether is has not already been marked.
 #
-# The IterationMarkingService is designed to be extensible, with
+# The CalculatePaScoresService is designed to be extensible, with
 # different marking algorithms.
 # To define a new marking algorithm, one has to add their class in the
 # services/iteration_marking/persisters/ directory, and declare it in the
@@ -40,32 +40,39 @@
 #
 # @author [harrybournis]
 #
-class IterationMarkingService
+class CalculatePaScoresService
   include Waterfall
 
-  # If no setting is found about the marking, use this class
-  DEFAULT_MARKING_ALGORITHM = 'WebPAMarkingAlgorithm'.freeze
+  attr_reader :marking_klass
 
-  # Gets all the algorithm class names from the marking_algorithms.yml file
-  # as an array
-  MARKING_ALGORITHMS = MarkingAlgorithm.all
+  # If no setting is found about the marking, use this class
+  DEFAULT_MARKING_ALGORITHM = 'WebPaMarkingAlgorithm'.freeze
 
   # Add any additional peristers classes in this array.
   PERSISTERS = ['DatabasePersister'].freeze
 
+  # The namespace of where the service's algorithms and
+  # persiters live.
+  NAMESPACE = 'CalculatePaScores'.freeze
+
   # Constructor. Takes an iteration to be marked.
-  # Checks the Assignment settings for a marking algorithm, and
-  # if it can't find one it assigns the DEFAULT_MARKING_ALGORITHM.
-  # Serches the database for the peer assessments of the
-  # iteration, and creates the MarkTable object that will be paseed
-  # to the marking algorithm.
+  # Resolves the marking_klass and serches the database
+  # for the peer assessments of the iteration, and creates
+  # the MarkTable object that will be paseed to the
+  # marking algorithm.
   #
-  # @return [IterationMarkingService]
+  # @return [CalculatePaScoresService]
   #
   def initialize(iteration)
     @iteration = iteration
-  end
+    @marking_klass = resolve_marking_algorithm_class iteration.game_setting.marking_algorithm_id
 
+    pa_form = iteration.pa_form
+    @project_marks = []
+    iteration.projects.each do |project|
+      @pa_answers_tables << CalculatePaScores::PaAnswersTable.new(project, pa_form)
+    end
+  end
 
   # Executes the action of the service. Calls the sp
   #
@@ -80,18 +87,21 @@ class IterationMarkingService
 
   private
 
-  # Validates that the key exists in the AWARDER_STORE.
-  # Called on initialization, to ensure that there are awarders and
-  # persisters defined for the particular key.
+  # Returns the marking algorithm class to be used.
+  # It first checks if the provided algorithm_id exists in the
+  # available MarkingAlgorithms, and if it can't find one it
+  # assigns the DEFAULT_MARKING_ALGORITHM.
   #
-  # @param key [Symbol] The key that will be checked if it exists in
-  #   the AWARDER_STORE keys.
+  # @param algorithm_id [Integer] The id of the algorithm that should
+  #   be resolved.
   #
-  # @raise [ArgumentError] If the key does not exist in the AWARDER_STORE.
+  # @return [Class]
   #
-  def validate_key!(key)
-    unless MARKING_ALGORITHMS.keys.include? key
-      raise ArgumentError, "Invalid Key. Valid Keys are: #{MARKING_ALGORITHMS.to_s}"
+  def resolve_marking_algorithm_class(algorithm_id)
+    if algorithm = MarkingAlgorithm[algorithm_id]
+      "Marking::Algorithms::#{algorithm}".constantize
+    else
+      "Marking::Algorithms::#{DEFAULT_MARKING_ALGORITHM}".constantize
     end
   end
 

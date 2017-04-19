@@ -9,7 +9,7 @@ module ValidationHelpers
   #
   # @param key [Symbol] The key that should be used when adding
   #   the error to active model errors.
-  # @param errors [Dry::Validation::Result] The result of
+  # @param result [Dry::Validation::Result] The result of
   #   validation.
   #
   def result_errors_to_active_model(key, result)

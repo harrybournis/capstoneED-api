@@ -1,12 +1,21 @@
 require 'rails_helper'
 
-RSpec.describe IterationMarkingService, type: :model do
+RSpec.describe CalculatePaScoresService, type: :model do
+
+  it 'initialize sets the default marking algorithm if not defined' do
+    iteration = create :iteration
+    create :game_setting, assignment: iteration.assignment, marking_algorithm_id: 666
+
+    service = CalculatePaScoresService.new iteration
+    expect(service.marking_klass).to eq Marking::Algorithms::WebPaMarkingAlgorithm
+  end
 
   context "before iteration's deadline" do
     before :each do
       @iteration = build :iteration, start_date: DateTime.now, deadline: DateTime.now + 1.year
       @iteration.save validate: false
-      @service = IterationMarkingService.new(@iteration)
+      create :game_setting, assignment: @iteration.assignment
+      @service = CalculatePaScoresService.new(@iteration)
     end
 
     describe '#call' do
@@ -26,7 +35,8 @@ RSpec.describe IterationMarkingService, type: :model do
     before :each do
       @iteration = build :iteration, start_date: DateTime.now - 2.days, deadline: DateTime.now - 1.day
       @iteration.save validate: false
-      @service = IterationMarkingService.new(@iteration)
+      create :game_setting, assignment: @iteration.assignment
+      @service = CalculatePaScoresService.new(@iteration)
     end
 
     describe '#call' do

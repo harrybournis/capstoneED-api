@@ -41,6 +41,14 @@ module PointsAward
       @points_persisted = []
     end
 
+    # Helper method to delegate the key to the points hash.
+    #
+    # @param value [Sybmol] The key will be used to retrieve
+    #   the from the points hash.
+    #
+    # @return [Array<Hash>] The array of points for the key
+    #   provided.
+    #
     def [](value)
       @points[value]
     end
@@ -181,7 +189,6 @@ module PointsAward
     end
 
     private
-
 
     # Validates a points hash with a schema. The hash must contain three keys:
     # :points, :reason_id, :resource_id. The validation schema will be returned

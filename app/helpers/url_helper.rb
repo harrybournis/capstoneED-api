@@ -1,7 +1,12 @@
+# Helpers for the various URLs that have to hardcoded
+# in the application.
+#
+# @author [harrybournis]
+#
 module UrlHelper
   # Used @ views/devise/mailer/reset_password_instructions.html.erb
   # Should be the url of the client application that allows the user
-  #  to reset their password
+  # to reset their password
   def client_reset_password_url(token)
     if Rails.env.development? || Rails.env.test?
       # add the correct path in the frontend app
@@ -15,7 +20,7 @@ module UrlHelper
 
   # Used @ views/devise/mailer/reset_password_instructions.html.erb
   # Should be the url of the client application that allows the user
-  #  to reset their password
+  # to reset their password
   def client_confirm_url(token)
     if Rails.env.development? || Rails.env.test?
       # add the correct path in the frontend app

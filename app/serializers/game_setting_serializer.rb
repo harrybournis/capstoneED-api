@@ -8,7 +8,8 @@ class GameSettingSerializer < Base::BaseSerializer
               :points_project_evaluation_first_of_team,
               :points_project_evaluation_submitted_first_day,
               :points_peer_assessment_submitted_first_day,
-              :max_logs_per_day
+              :max_logs_per_day,
+              :marking_algorithm_id
 
   type 'game_settings'
 end

@@ -41,6 +41,7 @@ class PointsAwardService
     log: 'DefaultPersister',
   }.freeze
 
+  # The namespace that the persisters and awarders live under.
   NAMESPACE = "PointsAward".freeze
 
   attr_reader :awarders, :persisters

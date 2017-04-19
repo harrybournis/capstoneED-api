@@ -1,4 +1,17 @@
+# Helpers for rendering responses in JSON.
+#
+# @author [harrybournis]
+#
 module ApiHelper
+    # Specifies the format the errors should have
+    # in invalid responses.
+    # @param errors [Hash] An errors hash, either
+    # from an active record object or custom.
+    #
+    # @return [Hash] Returns the errors in a formatted
+    #   hash, which will be then serialized into JSON
+    #   by the controller.
+    #
   def format_errors(errors)
     { errors: errors }
   end

@@ -45,6 +45,14 @@ module TestHelpers
     return student, csrf
   end
 
+  def pa_answers
+    answers { [{ question_id: 1, answer: 2 }, { question_id: 2, answer: 4 }, { question_id: 3, answer: 3 }, { question_id: 4, answer: 3 }, { question_id: 5, answer: 5 }, { question_id: 6, answer: 'text stuff' }] }
+  end
+
+  def pa_answers2
+    answers { [{ question_id: 1, answer: 2 }, { question_id: 2, answer: 4 }, { question_id: 3, answer: 3 }, { question_id: 4, answer: 3 }, { question_id: 5, answer: 5 }, { question_id: 6, answer: 'text stuff' }] }
+  end
+
   def valid_log_entry
     JSON.parse({ date_worked: (DateTime.now - 1.day).to_i.to_s, date_submitted: DateTime.now.to_i.to_s, time_worked: 10.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json)
   end
