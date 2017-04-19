@@ -95,6 +95,13 @@ module Reason
     end
   end
 
+  # Returns the reason that corresponds to the key provided.
+  #
+  # @param key [Symbol] The key/name of the resource
+  #   (:peer_assessment, :log, :project_evaluation)
+  #
+  # @return [Hash] The reason hash from the file.
+  #
   def self.[](key)
     REASONS[:reasons][key]
 
@@ -109,6 +116,10 @@ module Reason
     # @reasons[key]
   end
 
+  # Returns the reasons.yml file in JSON form.
+  #
+  # @return [JSON] The reasons.yml file in JSON
+  #
   def self.to_json
     REASONS.to_json
   end

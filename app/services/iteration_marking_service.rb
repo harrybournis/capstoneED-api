@@ -46,9 +46,30 @@ class IterationMarkingService
   # If no setting is found about the marking, use this class
   DEFAULT_MARKING_ALGORITHM = 'WebPAMarkingAlgorithm'.freeze
 
+  MARKING_ALGORITHMS =
+
   # Add any additional peristers classes in this array.
   PERSISTERS = ['DatabasePersister'].freeze
 
+  # Constructor. Takes an iteration to be marked.
+  # Checks the Assignment settings for a marking algorithm, and
+  # if it can't find one it assigns the DEFAULT_MARKING_ALGORITHM.
+  # Serches the database for the peer assessments of the
+  # iteration, and creates the MarkTable object that will be paseed
+  # to the marking algorithm.
+  #
+  # @return [IterationMarkingService]
+  #
+  def initialize(iteration)
+  end
+
+
+  # Executes the action of the service. Calls the sp
+  #
+  # @return [type] [description]
+  #
+  def call
+  end
 
   def can_mark?
   end
