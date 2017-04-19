@@ -16,7 +16,8 @@ RSpec.describe Project, type: :model do
 			it { should belong_to :unit }
 			it { should have_many :log_points }
 			it { should have_many :peer_assessment_points }
-			it { should have_many :project_evaluation_points }
+      it { should have_many :project_evaluation_points }
+			it { should have_one(:game_setting).through :assignment }
 
 			it { should validate_presence_of :project_name }
 			it { should validate_presence_of :assignment }
@@ -290,7 +291,7 @@ RSpec.describe Project, type: :model do
           pe = create :project_evaluation, project: @project, iteration: @iteration, user:  @student
           expect(pe).to be_truthy
         end
-        
+
         Timecop.travel DateTime.now + 7.days do
           expect(@project.current_iterations[0]).to eq @iteration
           expect(@project.pending_evaluation?(@student.id)).to be_truthy
@@ -298,7 +299,7 @@ RSpec.describe Project, type: :model do
       end
     end
 
-    describe 'returns false' do 
+    describe 'returns false' do
       it 'when max number of project_evaluations has been submitted for this iteration' do
         expect(create :project_evaluation, project: @project, iteration: @iteration, user:  @student).to be_truthy
         expect(create :project_evaluation, project: @project, iteration: @iteration, user:  @student).to be_truthy
@@ -310,7 +311,7 @@ RSpec.describe Project, type: :model do
       it 'when 1 has been submitted in the second half, and we are currently in the second half of the iteration' do
         Timecop.travel DateTime.now + 6.days do
           pe = create :project_evaluation, project: @project, iteration: @iteration, user: @student
-        end 
+        end
         Timecop.travel DateTime.now + 7.days do
           expect(@student.project_evaluations.where(project_id: @project.id, iteration_id: @iteration.id).count).to eq 1
           expect(@project.pending_evaluation?(@student.id)).to be_falsy

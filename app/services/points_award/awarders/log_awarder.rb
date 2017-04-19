@@ -20,13 +20,32 @@ module PointsAward::Awarders
       :log
     end
 
-    # Gives points for completing a log.
+    # Gives points for completing a log. Checks if the
+    # max_logs_per_day limit has been reached for this
+    # project, and if it has it gives no points for 24 hours.
+    # For each log after the first one, it gives gradually
+    # less points, before reaching 0.
     #
     # @return [Hash] Points
     #
     def points_for_log
+      points = @game_setting.points_log
+
+      max_logs = @game_setting.max_logs_per_day
+      current_num = 0
+
+      @students_project.logs.last(max_logs + 1).each do |log|
+        current_num += 1 if Time.at(log['date_submitted'].to_i).today?
+
+        return if current_num > max_logs
+      end
+
+      if current_num > 1
+        points = points - ((points / max_logs) * (current_num - 1))
+      end
+
       {
-        points: @game_setting.points_log,
+        points: points,
         reason_id: Reason[:log][:id]
       }
     end

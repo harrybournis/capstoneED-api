@@ -7,6 +7,7 @@ RSpec.describe V1::PointsController, type: :controller do
     @student = create :student_confirmed
     @unit = create :unit, lecturer: @lecturer
     @assignment = create :assignment, lecturer: @lecturer, unit: @unit
+    @game_setting = create :game_setting, assignment: @assignment
     @project = create :project, assignment: @assignment
   end
 

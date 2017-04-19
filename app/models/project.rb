@@ -51,6 +51,7 @@ class Project < ApplicationRecord
   belongs_to  :unit
   has_one     :lecturer, through: :assignment
   has_one     :extension
+  has_one     :game_setting, through: :assignment
   has_many    :students_projects
   has_many    :students, through: :students_projects, dependent: :delete_all
   has_many    :iterations, through: :assignment

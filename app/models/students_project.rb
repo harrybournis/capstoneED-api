@@ -11,6 +11,7 @@
     belongs_to :student
     belongs_to :project
     has_many :log_points
+    has_one :game_setting, through: :project
 
     # Validations
     validates_presence_of :project_id, :student_id, :nickname
@@ -105,5 +106,21 @@
         return
       end
     end
+
+    # def log_entry_does_not_surpass_the_daily_project_limit
+    #   return unless logs && logs_changed? && !logs.empty?
+
+    #   max_logs = game_setting.max_logs_per_day
+    #   current_num = 0
+
+    #   logs.last(max_logs + 1).each do |log|
+    #     return unless log.is_a?(Hash) && log['date_submitted']
+    #     current_num += 1 if Time.at(log['date_submitted'].to_i).today?
+
+    #     if current_num > max_logs
+    #       errors.add :log_entry, 'this log surpasses the daily log limit set in the settings.'
+    #     end
+    #   end
+    # end
   end
 #end

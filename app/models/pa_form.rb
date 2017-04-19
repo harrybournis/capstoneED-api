@@ -137,13 +137,6 @@ class PaForm < Deliverable
     result = schema.call(questions)
 
     result_errors_to_active_model :questions, result
-    # unless result.success?
-    #   result.errors.each do |key, error_hash|
-    #     error_hash.each do |attr, message|
-    #       errors.add :questions, message[0]
-    #     end
-    #   end
-    # end
   end
 
   # start_date validation

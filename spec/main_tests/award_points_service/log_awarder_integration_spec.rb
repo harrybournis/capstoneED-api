@@ -6,7 +6,7 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
     host! 'api.example.com'
 
     @assignment = create :assignment
-    @game_setting  = create :game_setting, assignment: @assignment
+    @game_setting  = create :game_setting, assignment: @assignment, points_log: 10, max_logs_per_day: 3
     @project = create :project, assignment: @assignment
     @student = create :student_confirmed
     @students_project = create :students_project, student: @student, project: @project
@@ -22,14 +22,88 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
   end
 
   describe 'Success' do
-    it 'gives points on submission' do
-      expect {
-        post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
-      }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
+    it 'gives full points on submission' do
+      Timecop.travel(DateTime.now + 5.days) do
+        @student, @csrf = login_integration @student
 
-      expect(status).to eq 201
-      @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).last
-      expect(@point.points).to eq @game_setting.points_log
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
+
+        expect(status).to eq 201
+        @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).last
+        expect(@point.points).to eq @game_setting.points_log
+      end
+    end
+
+    it 'gives less points subsequent submission of the day before the limit' do
+      @students_project.logs = []
+      @students_project.save
+
+      Timecop.travel(DateTime.now + 5.days) do
+        @student, @csrf = login_integration @student
+
+        post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        expect(status).to eq 201
+        @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).last
+        expect(@point.points).to eq @game_setting.points_log
+
+        post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        expect(status).to eq 201
+        @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).last
+        expect(@point.points).to eq @game_setting.points_log - (@game_setting.points_log / @game_setting.max_logs_per_day)
+
+        post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        expect(status).to eq 201
+        @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).last
+        expect(@point.points).to eq @game_setting.points_log - ((@game_setting.points_log / @game_setting.max_logs_per_day) * 2)
+      end
+    end
+
+    it 'does not give after the max limit' do
+      @students_project.logs = []
+      @students_project.save
+
+      Timecop.travel(DateTime.now + 5.days) do
+        @student, @csrf = login_integration @student
+
+        @game_setting.max_logs_per_day.times do
+          expect {
+            post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+          }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
+
+          expect(status).to eq 201
+        end
+
+        @students_project.reload
+        expect(@students_project.logs.length).to eq @game_setting.max_logs_per_day
+
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to_not change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
+
+        expect(status).to eq 201
+      end
+
+      Timecop.travel(DateTime.now + 7.days) do
+        @student, @csrf = login_integration @student
+
+        (@game_setting.max_logs_per_day - 1).times do
+          expect {
+            post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+          }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
+
+          expect(status).to eq 201
+        end
+
+        expect(@students_project.logs.length).to be <= @game_setting.max_logs_per_day
+
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
+
+        expect(status).to eq 201
+      end
     end
 
     it 'gives points on submission of first log of day' do

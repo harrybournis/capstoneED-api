@@ -9,6 +9,7 @@ FactoryGirl.define do
     end
 
     after :build do |obj|
+      create :game_setting, assignment: obj.project.assignment unless obj.project.assignment.game_setting
       obj.add_log(JSON.parse({ date_worked: (DateTime.now - 1.day).to_i.to_s, time_worked: 10.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json))
     end
 

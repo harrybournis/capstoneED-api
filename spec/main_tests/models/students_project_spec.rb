@@ -6,6 +6,7 @@ RSpec.describe  StudentsProject, type: :model do
 
 	it { should belong_to :project }
 	it { should belong_to :student }
+	it { should have_one(:game_setting).through :project }
 
 	it 'works' do
 		expect(FactoryGirl.create(:students_project)).to be_truthy
@@ -65,8 +66,8 @@ RSpec.describe  StudentsProject, type: :model do
 		before :each do
 			student = FactoryGirl.create(:student)
 			project = FactoryGirl.create(:project)
-			@sp =  StudentsProject.new(nickname: "yo", student_id: student.id, project_id: project.id)
-			expect(@sp.save).to be_truthy
+			@sp = create :students_project, nickname: 'yo', student_id: student.id, project_id: project.id
+			expect(@sp.valid?).to be_truthy
 		end
 
 		it 'valid' do

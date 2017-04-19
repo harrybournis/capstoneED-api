@@ -73,6 +73,7 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 			@other_unit = FactoryGirl.create(:unit)
 			@unit = FactoryGirl.create(:unit, lecturer: @user)
 			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @user.units[0], lecturer: @user)
+      @game_setting = create :game_setting, assignment: @assignment
 		end
 		before(:each) do
 			@user = FactoryGirl.create(:student)
