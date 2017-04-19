@@ -77,6 +77,18 @@ module MarkingAlgorithm
     end
   end
 
+  # Returns an array of all the available marking algorithm classes.
+  #
+  # @return [Array<String>] An array of class names in strings
+  #
+  def self.all
+    a = []
+    @marking_algorithms[:marking_algorithms].each do |key,val|
+      a << val
+    end
+    a
+  end
+
   # Returns the classname that corresponds to the id provided.
   # @param key [Integer] The id of the marking algorithm
   #

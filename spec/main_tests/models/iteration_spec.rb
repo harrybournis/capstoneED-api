@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'timecop'
 
 RSpec.describe Iteration, type: :model do
-	subject(:iteration) { FactoryGirl.create(:iteration) }
+	subject(:iteration) { create(:iteration) }
 
 	it { should validate_presence_of(:name) }
 	it { should validate_presence_of(:start_date) }
@@ -29,17 +29,22 @@ RSpec.describe Iteration, type: :model do
 		end
 	end
 
-	it '.active returns all the iterations that are currently taking place' do
-		now = DateTime.now
-		assignment  = create :assignment, start_date: now - 2.months, end_date:  now + 2.months
-		assignment2  = create :assignment, start_date: now - 2.months, end_date:  now + 2.months
-		iteration1 = create :iteration, start_date: now - 1.month, deadline: now - 10.days, assignment: assignment
-		iteration2 = create :iteration, start_date: now - 1.hour, deadline: now + 10.days, assignment: assignment
-		iteration3 = create :iteration, start_date: now - 30.minutes, deadline: now + 20.days, assignment: assignment2
-		expect(Iteration.count).to eq 3
+	it '#finished? returns true if the iteration deadline has passed' do
+		expect(iteration = create(:iteration)).to be_truthy
 
-		expect(Iteration.active.length).to eq 2
-		expect(Iteration.active).to include iteration2, iteration3
+		Timecop.travel iteration.start_date + 1.day do
+			expect(iteration.finished?).to be_falsy
+		end
+
+		Timecop.travel iteration.deadline + 1.day do
+			expect(iteration.finished?).to be_truthy
+		end
+	end
+
+	it 'validates that start_date is not in the past' do
+		iteration  = build(:iteration, start_date: DateTime.yesterday)
+		expect(iteration.valid?).to be_falsy
+		expect(iteration.errors[:start_date][0]).to eq("can't be in the past")
 	end
 
 	# it 'validates that start_date is not in the past' do
@@ -49,7 +54,7 @@ RSpec.describe Iteration, type: :model do
 	# end
 
 	it 'validates that deadline is not before the start_date' do
-		iteration  = FactoryGirl.build(:iteration, start_date: DateTime.tomorrow, deadline: DateTime.yesterday)
+		iteration  = build(:iteration, start_date: DateTime.tomorrow, deadline: DateTime.yesterday)
 		expect(iteration.valid?).to be_falsy
 		expect(iteration.errors[:deadline][0]).to eq("can't be before the start_date")
 	end

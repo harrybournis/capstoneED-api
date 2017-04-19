@@ -46,7 +46,9 @@ class IterationMarkingService
   # If no setting is found about the marking, use this class
   DEFAULT_MARKING_ALGORITHM = 'WebPAMarkingAlgorithm'.freeze
 
-  MARKING_ALGORITHMS =
+  # Gets all the algorithm class names from the marking_algorithms.yml file
+  # as an array
+  MARKING_ALGORITHMS = MarkingAlgorithm.all
 
   # Add any additional peristers classes in this array.
   PERSISTERS = ['DatabasePersister'].freeze
@@ -61,6 +63,7 @@ class IterationMarkingService
   # @return [IterationMarkingService]
   #
   def initialize(iteration)
+    @iteration = iteration
   end
 
 
@@ -72,9 +75,25 @@ class IterationMarkingService
   end
 
   def can_mark?
+    @iteration.finished?
   end
 
   private
+
+  # Validates that the key exists in the AWARDER_STORE.
+  # Called on initialization, to ensure that there are awarders and
+  # persisters defined for the particular key.
+  #
+  # @param key [Symbol] The key that will be checked if it exists in
+  #   the AWARDER_STORE keys.
+  #
+  # @raise [ArgumentError] If the key does not exist in the AWARDER_STORE.
+  #
+  def validate_key!(key)
+    unless MARKING_ALGORITHMS.keys.include? key
+      raise ArgumentError, "Invalid Key. Valid Keys are: #{MARKING_ALGORITHMS.to_s}"
+    end
+  end
 
   def resolve_persister_classes(string_or_array)
     if string_or_array.is_a? String

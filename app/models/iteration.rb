@@ -1,12 +1,38 @@
-## An Assignment has many Iterations
+# An Assignment can have multiple Iterations, and each
+# Project and Student are assessed based on it.
+# All the Projects in an Assignment share the same
+# Iterations,
+#
+# An Iteration is closely related to Peer Assessments and
+# Project Evaluations, and Students are expected to submit
+# their Peer Assessments at the end of each Iteration.
+# In the case of Project Evaluations,
+# both the Student and the Lecturer are expected to
+# submit them twice within each Iteration. An Iteration also
+# determines the start_date and dealine of a PaForm.
+#
+# Last but not least, students are marked based on the Peer
+# Assessment of each Iteration, which means that the
+# performance of the Student in the overall Project is directly
+# related to how they performed in each Iteration.
+#
+# @author [harrybournis]
+#
+# @!attribute name
+#   @return [String] The name of the Iteration. e.g. Analysis, Deisign etc.
+#
+# @!attribute start_date
+#   @return [DateTime] The date that the Iteration starts, and is
+#     considered active.
+#
+# @!attribute deadline
+#   @return [DateTime] The date that the Iteration ends
+#
+# @!attribute assignment_id
+#   @return [Integer] The id of the Assignment that the Iteration
+#     belongs to.
+#
 class Iteration < ApplicationRecord
-  # Attributes
-  # name          :string
-  # start_date    :datetime
-  # deadline      :datetime
-  # assignment_id :integer
-
-  # Associations
   belongs_to :assignment, inverse_of: :iterations
   has_one :pa_form,
           inverse_of: :iteration,
@@ -43,6 +69,19 @@ class Iteration < ApplicationRecord
     start_date <= now && now <= deadline
   end
 
+  # Returns true if the current time is after the deadline.
+  #
+  # @return [Boolean] True if after deadline.
+  #
+  def finished?
+    deadline <= DateTime.now
+  end
+
+  # Returns the iteration health (currently static CHANGE)
+  def iteration_health
+    54
+  end
+
   # Returns the start_date and the deadline as a range.
   #
   # @return [Range<DateTime>] The range of the itetrations
@@ -50,10 +89,6 @@ class Iteration < ApplicationRecord
   #
   def duration
     start_date..deadline
-  end
-  # Returns the iteration health (currently static CHANGE)
-  def iteration_health
-    54
   end
 
   private
