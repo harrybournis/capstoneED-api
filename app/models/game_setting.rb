@@ -24,6 +24,7 @@ class GameSetting < ApplicationRecord
             :max_logs_per_day,
             :points_project_evaluation_submitted_first_day,
             :points_peer_assessment_submitted_first_day,
+            :marking_algorithm_id,
             presence: true, numericality: true
 
   before_validation :set_default_values
@@ -38,6 +39,7 @@ class GameSetting < ApplicationRecord
   MAX_LOGS_PER_DAY                              = 3
   POINTS_PROJECT_EVALUATION_SUBMITTED_FIRST_DAY = 20
   POINTS_PEER_ASSESSMENT_SUBMITTED_FIRST_DAY    = 20
+  MARKING_ALGORITHM_ID                          = 1
 
   private
 
@@ -52,6 +54,7 @@ class GameSetting < ApplicationRecord
     self.max_logs_per_day ||= MAX_LOGS_PER_DAY
     self.points_project_evaluation_submitted_first_day ||= POINTS_PROJECT_EVALUATION_SUBMITTED_FIRST_DAY
     self.points_peer_assessment_submitted_first_day ||= POINTS_PEER_ASSESSMENT_SUBMITTED_FIRST_DAY
+    self.marking_algorithm_id ||= MARKING_ALGORITHM_ID
   end
 end
 

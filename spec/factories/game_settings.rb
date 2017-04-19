@@ -9,6 +9,7 @@ FactoryGirl.define do
     max_logs_per_day { 3 }
     points_project_evaluation_submitted_first_day { 10 }
     points_peer_assessment_submitted_first_day { 10 }
+    marking_algorithm_id 1
 
     association :assignment, factory: :assignment
   end

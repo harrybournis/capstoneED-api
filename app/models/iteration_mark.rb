@@ -1,0 +1,2 @@
+class IterationMark < ApplicationRecord
+end

@@ -28,6 +28,9 @@
 # @!attribute deadline
 #   @return [DateTime] The date that the Iteration ends
 #
+# @!attribute is_marked
+#   @return [Boolean] Indicates if the iteration has already been marked.
+#
 # @!attribute assignment_id
 #   @return [Integer] The id of the Assignment that the Iteration
 #     belongs to.
@@ -75,6 +78,14 @@ class Iteration < ApplicationRecord
   #
   def finished?
     deadline <= DateTime.now
+  end
+
+  # Wrapper for is_marked attribute.
+  #
+  # @return [Boolean] The valua of the is_marked attribute.
+  #
+  def marked?
+    is_marked
   end
 
   # Returns the iteration health (currently static CHANGE)
