@@ -15,7 +15,7 @@ RSpec.describe V1::ReasonsController, type: :controller do
   end
 
   describe 'index' do
-    it 'returns the all the reasons' do
+    it 'returns the all the reasons', { docs?: true } do
       get :index
 
       expect(status).to eq 200

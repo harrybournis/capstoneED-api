@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170413201144) do
+ActiveRecord::Schema.define(version: 20170421001753) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -85,7 +85,19 @@ ActiveRecord::Schema.define(version: 20170413201144) do
     t.integer "points_project_evaluation_first_of_team"
     t.integer "points_project_evaluation_first_of_assignment"
     t.integer "max_logs_per_day"
+    t.integer "marking_algorithm_id"
     t.index ["assignment_id"], name: "index_game_settings_on_assignment_id", using: :btree
+  end
+
+  create_table "iteration_marks", force: :cascade do |t|
+    t.integer  "student_id"
+    t.integer  "iteration_id"
+    t.integer  "mark"
+    t.decimal  "pa_score"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.index ["iteration_id"], name: "index_iteration_marks_on_iteration_id", using: :btree
+    t.index ["student_id"], name: "index_iteration_marks_on_student_id", using: :btree
   end
 
   create_table "iterations", force: :cascade do |t|
@@ -95,6 +107,7 @@ ActiveRecord::Schema.define(version: 20170413201144) do
     t.integer  "assignment_id"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
+    t.boolean  "is_marked"
     t.index ["assignment_id"], name: "index_iterations_on_assignment_id", using: :btree
   end
 
@@ -197,25 +210,11 @@ ActiveRecord::Schema.define(version: 20170413201144) do
   create_table "questions", force: :cascade do |t|
     t.text     "text"
     t.integer  "lecturer_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-    t.string   "category"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.integer  "question_type_id"
     t.index ["lecturer_id"], name: "index_questions_on_lecturer_id", using: :btree
-  end
-
-  create_table "questions_sections", force: :cascade do |t|
-    t.integer  "question_id"
-    t.integer  "section_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-    t.index ["question_id"], name: "index_questions_sections_on_question_id", using: :btree
-    t.index ["section_id"], name: "index_questions_sections_on_section_id", using: :btree
-  end
-
-  create_table "sections", force: :cascade do |t|
-    t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.index ["question_type_id"], name: "index_questions_on_question_type_id", using: :btree
   end
 
   create_table "students_projects", force: :cascade do |t|

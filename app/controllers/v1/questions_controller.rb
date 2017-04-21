@@ -14,7 +14,7 @@ class V1::QuestionsController < ApplicationController
     render json: @question, status: :ok
   end
 
-  # POST /custom_questions
+  # POST /questions
   def create
     @question = Question.new(question_params)
     @question.lecturer = current_user.load
@@ -27,7 +27,7 @@ class V1::QuestionsController < ApplicationController
     end
   end
 
-  # PATCH /custom_questions/:id
+  # PATCH /questions/:id
   def update
     if @question.update(question_params)
       render json: @question, status: :ok
@@ -64,6 +64,6 @@ class V1::QuestionsController < ApplicationController
   end
 
   def question_params
-    params.permit(:category, :text)
+    params.permit(:question_type_id, :text)
   end
 end

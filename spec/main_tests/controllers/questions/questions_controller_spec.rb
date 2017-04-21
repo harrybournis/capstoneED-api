@@ -16,7 +16,7 @@ RSpec.describe V1::QuestionsController, type: :controller do
 			4.times { FactoryGirl.create(:question) }
 		end
 
-		it 'GET index returns the questions scoped to the current user' do
+		it 'GET index returns the questions scoped to the current user', { docs?: true } do
 			get :index
 			expect(status).to eq(200)
 			expect(body['questions'].length).to eq(5)
@@ -29,9 +29,9 @@ RSpec.describe V1::QuestionsController, type: :controller do
 		end
 
 		it 'POST create creates a new question for current_user' do
-			post :create, params: { category: 'Question', text: 'Yo' }
+			qtype = create :question_type
+			post :create, params: { category: 'Question', text: 'Yo', question_type_id: qtype.id }
 			expect(status).to eq(201)
-			expect(body['question']['category']).to eq('Question')
 			expect(@user.questions.ids).to include(body['question']['id'])
 		end
 

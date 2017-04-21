@@ -1,3 +1,3 @@
 class QuestionSerializer < Base::BaseSerializer
-	attributes :category, :text
+	attributes :question_type_id, :text
 end

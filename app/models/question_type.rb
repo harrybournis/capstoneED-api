@@ -8,5 +8,7 @@
 # it in the client.
 #
 class QuestionType < ApplicationRecord
+  has_many :questions
+
   validates_presence_of :category, :friendly_name
 end

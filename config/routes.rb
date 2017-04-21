@@ -51,7 +51,7 @@ Rails.application.routes.draw do
     post    'projects/:id/logs', to: 'logs#update'
 
     # Custom Questions
-    resources :questions
+    resources :questions, only: [:index]
 
     # Iterations
     get 'iterations', to: 'iterations#index', constraints: -> (request) { request.params[:project_id] }

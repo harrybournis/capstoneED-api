@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :question do
     lecturer_id { FactoryGirl.create(:lecturer).id }
-    category    { ['question', 'comment'].sample }
+    association :question_type, factory: :question_type
     text        {  ['What do you typically have for breakfast?',
                   'Can you solve sudoko puzzles?',
                   'Have you ever been professionally photographed?',

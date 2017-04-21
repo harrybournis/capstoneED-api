@@ -51,8 +51,8 @@ class SaveQuestionsService
     return false unless @questions_hash && @lecturer_id
 
     @questions_hash.each do |q|
-      unless Question.find_by(lecturer_id: @lecturer_id, text: q['text'])
-        new_question = Question.new lecturer_id: @lecturer_id, text: q['text']
+      unless Question.find_by(lecturer_id: @lecturer_id, text: q['text'], question_type_id: q['type_id'].to_i)
+        new_question = Question.new lecturer_id: @lecturer_id, text: q['text'], question_type_id: q['type_id'].to_i
         return false unless new_question.save
       end
     end

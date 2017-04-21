@@ -11,10 +11,12 @@
 # @!attribute [r] lecturer_id
 #   @return [Integer] The id of the Lecturer that created the question.
 #
+# @!attribute [r] question_type_id
+#   @return [Integer] The id of the type of the question.
+#
 class Question < ApplicationRecord
   belongs_to :lecturer
-  # has_many :questions_sections, class_name:  QuestionsSection
-  # has_many :sections, through: :questions_sections
+  belongs_to :question_type
 
-  validates_presence_of :text, :lecturer_id
+  validates_presence_of :text, :lecturer_id, :question_type_id
 end
