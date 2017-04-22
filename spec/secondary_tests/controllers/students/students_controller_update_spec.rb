@@ -49,19 +49,19 @@ RSpec.describe 'V1::StudentsController PUT /update', type: :controller do
 				expect(@student.valid_password?('12345678')).to be_falsy
 			end
 
-			it 'updating email sends a new confirmation email' do
-				@student.confirm
-				expect(@student.confirmed?).to be_truthy
-				old_conf_token = @student.confirmation_token
-				put :update, params: { id: @student.id, email: 'new_email@email.com'  }
-				@student.reload
-				expect(@student.confirmation_token).to_not eq(old_conf_token)
-				expect(ActionMailer::Base.deliveries.last.to.first).to eq('new_email@email.com')
-				@student.reload
-				expect(@student.pending_reconfirmation?).to be_truthy
-				expect(@student.email).to_not eq('new_email@email.com')
-				expect(@student.unconfirmed_email).to eq('new_email@email.com')
-			end
+			# it 'updating email sends a new confirmation email' do
+			# 	@student.confirm
+			# 	expect(@student.confirmed?).to be_truthy
+			# 	old_conf_token = @student.confirmation_token
+			# 	put :update, params: { id: @student.id, email: 'new_email@email.com'  }
+			# 	@student.reload
+			# 	expect(@student.confirmation_token).to_not eq(old_conf_token)
+			# 	expect(ActionMailer::Base.deliveries.last.to.first).to eq('new_email@email.com')
+			# 	@student.reload
+			# 	expect(@student.pending_reconfirmation?).to be_truthy
+			# 	expect(@student.email).to_not eq('new_email@email.com')
+			# 	expect(@student.unconfirmed_email).to eq('new_email@email.com')
+			# end
 		end
 	end
 

@@ -8,11 +8,12 @@ class V1::PaFormsController < ApplicationController
   before_action :set_pa_form_if_associated, only: [:show, :update, :destroy]
 
   def index
-    active_uncompleted = current_user.pa_forms_active(includes: includes_array)
+    active_uncompleted = current_user.pa_forms(includes: includes_array)
                                      .where
                                      .not(id: current_user.peer_assessments_by
                                                           .select(:pa_form_id)
                                                           .collect(&:pa_form_id))
+                                     .active
 
     serialize_collection active_uncompleted, :ok
   end

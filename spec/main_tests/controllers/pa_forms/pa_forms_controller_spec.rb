@@ -126,12 +126,12 @@ RSpec.describe V1::PaFormsController, type: :controller do
 			now = DateTime.now
 			iteration1 = create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
 			iteration2 = create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
-			create(:pa_form, iteration: iteration1)
-			create(:pa_form, iteration: iteration2)
+			create(:pa_form, iteration: iteration1, start_offset: 2.days.to_i, end_offset: 5.days.to_i)
+			create(:pa_form, iteration: iteration2, start_offset: 2.days.to_i, end_offset: 5.days.to_i)
 			irrelevant = create(:pa_form)
 			expect(PaForm.all.length).to eq 3
 
-			Timecop.travel(now + 6.days + 1.minute) do
+			Timecop.travel(now + 5.days + 1.minute) do
 				mock_request = MockRequest.new(valid = true, @student)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
@@ -139,13 +139,30 @@ RSpec.describe V1::PaFormsController, type: :controller do
 				expect(status).to eq 204
 			end
 
-			Timecop.travel(now + 5.days + 1.minute) do
+			Timecop.travel(now + 5.days + 2.days + 1.minute) do
 				mock_request = MockRequest.new(valid = true, @student)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 				get :index
 				expect(status).to eq 200
 				expect(body['pa_forms'].length).to eq(1)
+			end
+
+			Timecop.travel(now + 6.days + 2.days + 1.minute) do
+				mock_request = MockRequest.new(valid = true, @student)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+				get :index
+				expect(status).to eq 200
+				expect(body['pa_forms'].length).to eq(2)
+			end
+
+			Timecop.travel(now + 6.days + 5.days + 1.minute) do
+				mock_request = MockRequest.new(valid = true, @student)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+				get :index
+				expect(status).to eq 204
 			end
 		end
 
@@ -176,12 +193,12 @@ RSpec.describe V1::PaFormsController, type: :controller do
 			now = DateTime.now
 			iteration1 = create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
 			iteration2 = create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
-			create(:pa_form, iteration: iteration1)
+			pa_form1 = create(:pa_form, iteration: iteration1)
 			create(:pa_form, iteration: iteration2)
 			irrelevant = create(:pa_form)
 			expect(PaForm.all.length).to eq 3
 
-			Timecop.travel(now + 5.days + 1.minute) do
+			Timecop.travel(pa_form1.start_date + 1.minute) do
 				mock_request = MockRequest.new(valid = true, @student)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
@@ -203,15 +220,7 @@ RSpec.describe V1::PaFormsController, type: :controller do
 			irrelevant = create(:pa_form)
 			expect(PaForm.all.length).to eq 3
 
-			Timecop.travel(now + 6.days + 1.minute) do
-				mock_request = MockRequest.new(valid = true, @student)
-				request.cookies['access-token'] = mock_request.cookies['access-token']
-				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				get :index
-				expect(status).to eq 204
-			end
-
-			Timecop.travel(now + 5.days + 1.minute) do
+			Timecop.travel(pa_form1.start_date + 1.minute) do
 				mock_request = MockRequest.new(valid = true, @student)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
@@ -235,13 +244,13 @@ RSpec.describe V1::PaFormsController, type: :controller do
 			irrelevant = create(:pa_form)
 			expect(PaForm.all.length).to eq 3
 
-			Timecop.travel(now + 5.days + 1.minute) do
+			Timecop.travel(pa_form1.start_date + 1.minute) do
 				mock_request = MockRequest.new(valid = true, @student)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 				expect {
 					get :index
-				}.to make_database_queries(count: 6)
+				}.to make_database_queries(count: 7)
 				expect(status).to eq 200
 				expect(body['pa_forms'].length).to eq(1)
 				projects = @student.projects
@@ -277,14 +286,14 @@ RSpec.describe V1::PaFormsController, type: :controller do
 			extension = create(:extension, project_id: @project.id, deliverable_id: pa_form2.id)
 			expect(PaForm.all.length).to eq 4
 
-			Timecop.travel(now + 5.days + 1.minute) do
+			Timecop.travel(pa_form2.start_date + 1.minute) do
 				mock_request = MockRequest.new(valid = true, @student)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 				get :index
 				expect(status).to eq 200
 				expect(body['pa_forms'].length).to eq(2)
-				expect(DateTime.parse(body['pa_forms'][0]['extension_until'])).to eq(pa_form2.deadline_with_extension_for_project(@project).to_datetime)
+				expect(DateTime.parse(body['pa_forms'][1]['extension_until'])).to eq(pa_form2.deadline_with_extension_for_project(@project).to_datetime)
 			end
 		end
 	end

@@ -120,12 +120,12 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
   #
   # @return [Array<PaForm>] An active record collection of the results.
   #
-  def pa_forms(options = {})
-    PaForm.joins(:students_projects)
-          .where(['students_projects.student_id = ?', @id])
-          .eager_load(options[:includes])
-          .distinct
-  end
+  # def pa_forms(options = {})
+  #   PaForm.joins(:students_projects)
+  #         .where(['students_projects.student_id = ?', @id])
+  #         .eager_load(options[:includes])
+  #         .distinct
+  # end
 
   # Returns only the pa_forms that belong to the current user that are currently
   # active.
@@ -136,14 +136,13 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
   #
   # @return [Array<PaForm>] An active record collection of the results.
   #
-  def pa_forms_active(options = {})
+  def pa_forms(options = {})
     includes =  if options[:includes]
                   options[:includes]
                 else
                   [:projects, :students_projects]
                 end
-    PaForm.active
-          .joins(:projects, :students_projects)
+    PaForm.joins(:projects, :students_projects)
           .eager_load(includes)
           .where(['students_projects.student_id = ?', @id])
           .distinct

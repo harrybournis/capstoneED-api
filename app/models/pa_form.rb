@@ -25,8 +25,11 @@ class PaForm < Deliverable
 
   # Returns only the PAForms that are available for completion now
   def self.active
-    joins(:iteration).where("iterations.start_date < :now and \n
-                              iterations.deadline > :now", now: DateTime.now)
+    now = DateTime.now
+    joins(:iteration).where("iterations.deadline < :now and \n
+                              iterations.deadline > :two_months",
+                              now: now, two_months: now - 2.months)
+                     .select { |pa| pa.active? }
   end
 
   # Returns true if the current time is after the form's start_date, and
