@@ -37,29 +37,6 @@ RSpec.describe PeerAssessment, type: :model do
 		expect(pa.project).to be_truthy
 	end
 
-	it 'should validate format of answers' do
-		peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-			answers: { question_id: 1, answer: 'answ' })
-		expect(peer_assessment.save).to be_falsy
-		expect(peer_assessment.errors[:answers][0]).to include('an array')
-
-		peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-			answers: [{ question_id: 1, answer: 'answ', other: 'field' }])
-		expect(peer_assessment.save).to be_falsy
-		expect(peer_assessment.errors[:answers][0]).to include('invalid parameters')
-
-		peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-			answers: [{ question_id: 1, answer: 'ans' }, { question_id: 2 }])
-		expect(peer_assessment.save).to be_falsy
-		expect(peer_assessment.errors[:answers][0]).to include('invalid parameters')
-
-		peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-			answers: [])
-		expect(peer_assessment.save).to be_falsy
-		expect(peer_assessment.errors[:answers][0]).to include("can't be blank")
-	end
-
-
 	it '#submit assigns the current time as date_submitted' do
 		time_now = @pa_form.start_date + 1.minute
 		Timecop.freeze(time_now) do
@@ -72,6 +49,36 @@ RSpec.describe PeerAssessment, type: :model do
 		end
 	end
 
+	describe 'answers must' do
+
+		it 'be an array' do
+			peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+				answers: { question_id: 1, answer: 'answ' })
+			expect(peer_assessment.save).to be_falsy
+			expect(peer_assessment.errors[:answers][0]).to include('an array')
+		end
+
+		it 'contain question_id and answer only' do
+			peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+				answers: [{ question_id: 1, answer: 'answ', other: 'field' }])
+			expect(peer_assessment.save).to be_falsy
+			expect(peer_assessment.errors[:answers][0]).to include('invalid parameters')
+		end
+
+		it 'contains both question_id and answer' do
+			peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+				answers: [{ question_id: 1, answer: 'ans' }, { question_id: 2 }])
+			expect(peer_assessment.save).to be_falsy
+			expect(peer_assessment.errors[:answers][0]).to include('invalid parameters')
+		end
+
+		it 'not be empty' do
+			peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+				answers: [])
+			expect(peer_assessment.save).to be_falsy
+			expect(peer_assessment.errors[:answers][0]).to include("can't be blank")
+		end
+	end
 
 	describe '#submit fails if' do
 		it 'user has already peer assessed this student for this form' do

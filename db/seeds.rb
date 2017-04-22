@@ -34,8 +34,8 @@ now = DateTime.now
 @assignment = FactoryGirl.create(:assignment, lecturer: @lecturer1, unit: @unit1)
 4.times { FactoryGirl.create(:project_seeder, assignment: @assignment) }
 @iteration1 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now - 40.seconds, deadline: now + 5.second)
-@iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 11.seconds, deadline: now + 1.month)
-@iteration3 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 1.month, deadline: now + 2.months)
+@iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 11.seconds, deadline: now + 15.seconds)
+@iteration3 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 20.seconds, deadline: now + 2.months)
 FactoryGirl.create(:pa_form_seeder, iteration: @iteration1, start_offset: 2.seconds, end_offset: 1.month)
 FactoryGirl.create(:pa_form_seeder, iteration: @iteration2)
 FactoryGirl.create(:pa_form_seeder, iteration: @iteration3)

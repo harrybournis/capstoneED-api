@@ -102,7 +102,7 @@ class PeerAssessment < ApplicationRecord
     end
 
     answers.each do |q|
-      unless q.length == 2 && q['question_id'].present? && q['answer'].present?
+      unless q.length == 2 && q.keys.include?('question_id') && q.keys.include?('answer')
         errors.add(:answers, "invalid parameters. Only 'question_id' and 'answer' are accepted, and they must BOTH be present for each question.")
         break
       end

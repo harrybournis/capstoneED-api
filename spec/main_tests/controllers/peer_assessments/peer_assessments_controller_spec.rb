@@ -46,6 +46,20 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 				end
 			end
 
+			it 'works for empty string in answer' do
+				Timecop.travel(@pa_form.start_date + 1.minute) do
+					@controller = V1::PeerAssessmentsController.new
+					mock_request = MockRequest.new(valid = true, @student)
+					request.cookies['access-token'] = mock_request.cookies['access-token']
+					request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+					post :create, params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: '' }] }
+					expect(status).to eq(201)
+					expect(body['peer_assessment']['submitted_by_id']).to eq(@student.id)
+					expect(body['peer_assessment']['answers'][1]['answer']).to eq('')
+				end
+			end
+
 			it 'creates multiple' do
 				Timecop.travel(@pa_form.start_date + 1.minute) do
 					@controller = V1::PeerAssessmentsController.new
