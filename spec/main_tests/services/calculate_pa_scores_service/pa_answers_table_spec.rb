@@ -80,17 +80,17 @@ RSpec.describe Marking::PaAnswersTable, type: :model do
   # end
 
   it '#awarded_by(student_id, question_id) returns the points awarded by the a student for question_id (table row)' do
-    expect(@table.awarded_by(@student1.id, 1)).to eq [1,1,1,1]
-    expect(@table.awarded_by(@student2.id, 1)).to eq [2,2,2,2]
-    expect(@table.awarded_by(@student3.id, 1)).to eq [3,3,3,3]
-    expect(@table.awarded_by(@student_did_not_submit.id, 1)).to eq [0,0,0,0]
+    expect(@table.awarded_by(@student1.id, 1)).to match_array [1,1,1,1]
+    expect(@table.awarded_by(@student2.id, 1)).to match_array [2,2,2,2]
+    expect(@table.awarded_by(@student3.id, 1)).to match_array [3,3,3,3]
+    expect(@table.awarded_by(@student_did_not_submit.id, 1)).to match_array [0,0,0,0]
   end
 
   it '#received_by(student_id, question_id) returns the marks that student_id received from others for question_id (table column)' do
-    expect(@table.received_by(@student1.id, 1)).to eq [1,2,3,0]
-    expect(@table.received_by(@student2.id, 1)).to eq [1,2,3,0]
-    expect(@table.received_by(@student3.id, 1)).to eq [1,2,3,0]
-    expect(@table.received_by(@student1.id, 2)).to eq [4,3,2,0]
+    expect(@table.received_by(@student1.id, 1)).to match_array [1,2,3,0]
+    expect(@table.received_by(@student2.id, 1)).to match_array [1,2,3,0]
+    expect(@table.received_by(@student3.id, 1)).to match_array [1,2,3,0]
+    expect(@table.received_by(@student1.id, 2)).to match_array [4,3,2,0]
   end
 
   it '#by_for(awarder_id, receiver_id, question_id) returns the marks awarded by awarder_id for receiver_id for question_id (table cell)' do
@@ -105,6 +105,7 @@ RSpec.describe Marking::PaAnswersTable, type: :model do
     pa = build :peer_assessment, submitted_by:  @student_did_not_submit, submitted_for: @student1, pa_form_id: @iteration.pa_form.id, answers: pa_answers, project_id: @project.id
     pa.save(validate: false)
     expect(@project.students.length).to eq @project.peer_assessments.group(:submitted_by_id).count.length
+    create :students_project, student: create(:student_confirmed), project: create(:project)
 
     table = Marking::PaAnswersTable.new @project, @pa_form
     expect(table.everyone_submitted?).to be_truthy

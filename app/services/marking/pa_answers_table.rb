@@ -49,13 +49,16 @@ module Marking
       @did_not_submit = Student.find_by_sql([
                         %{
                           select users.id from users
+                          inner join students_projects
+                          on users.id = students_projects.student_id
                           where users.type = 'Student'
+                          and students_projects.project_id = :project_id
                           and users.id not in
                           (
                               select peer_assessments.submitted_by_id from peer_assessments
-                              where peer_assessments.project_id = ?
+                              where peer_assessments.project_id = :project_id
                           )
-                        }, @project.id])
+                        }, project_id: @project.id])
       @table = init_table
     end
 
