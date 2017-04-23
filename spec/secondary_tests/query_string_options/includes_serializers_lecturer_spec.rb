@@ -151,8 +151,8 @@ RSpec.describe 'Includes', type: :controller do
 				get :show, params: { id: @assignment.id, includes: 'projects'}
 				body_assignment = body['assignment']
 				expect(response.status).to eq(200)
-				expect(body_assignment['projects'][0]['team_points']).to be_truthy
-				expect(body_assignment['projects'][0]['team_average']).to be_truthy
+				expect(body_assignment['projects'][0]['points'].keys).to include 'total'
+				expect(body_assignment['projects'][0]['points'].keys).to include 'average'
 			end
 		end
 

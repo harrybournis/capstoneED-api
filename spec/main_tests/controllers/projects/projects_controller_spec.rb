@@ -42,14 +42,14 @@ RSpec.describe V1::ProjectsController, type: :controller do
 			it "returns projects with team_points and team_average as attributes" do
 				get :index
 				expect(status).to eq(200)
-				expect(body['projects'][0]['team_points']).to be_truthy
-				expect(body['projects'][0]['team_average']).to be_truthy
+				expect(body['projects'][0]['points'].keys).to include 'total'
+				expect(body['projects'][0]['points'].keys).to include 'total'
 			end
 
       it 'includes pending_evaluations? field for each project' do
         get :index
         expect(status).to eq 200
-        
+
         body['projects'].each do |p|
           expect(p['pending_project_evaluation']).to be_in [true,false]
         end
@@ -92,8 +92,8 @@ RSpec.describe V1::ProjectsController, type: :controller do
 				get :show, params: { id: @student.projects.first.id }
 
 				expect(status).to eq(200)
-				expect(body['project']['team_points']).to be_truthy
-				expect(body['project']['team_average']).to be_truthy
+				expect(body['project']['points'].keys).to include 'total'
+				expect(body['project']['points'].keys).to include 'average'
 			end
 		end
 

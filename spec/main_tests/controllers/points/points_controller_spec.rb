@@ -22,7 +22,7 @@ RSpec.describe V1::PointsController, type: :controller do
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
       end
 
-      it "response contains 'personal', 'team_average', 'team_points'", { docs?: true, lecturer?: false } do
+      it "response contains 'personal', 'average', 'total'", { docs?: true, lecturer?: false } do
         expect(create :students_project_with_points, project: @project, student: @student, points: 10).to be_truthy
         expect(create :students_project_with_points, project: @project, points: 20).to be_truthy
         expect(create :students_project_with_points, project: @project, points: 30).to be_truthy
@@ -32,8 +32,8 @@ RSpec.describe V1::PointsController, type: :controller do
         expect(status).to eq 200
 
         expect(body['points']['personal']).to eq @student.points_for_project_id(@project.id)
-        expect(body['points']['team_average']).to eq @project.team_average
-        expect(body['points']['team_points']).to eq @project.team_points
+        expect(body['points']['average']).to eq @project.team_average
+        expect(body['points']['total']).to eq @project.team_points
       end
 
       it 'each field is 0 if there are no points' do
@@ -47,8 +47,8 @@ RSpec.describe V1::PointsController, type: :controller do
         expect(status).to eq 200
 
         expect(body['points']['personal']).to eq 0
-        expect(body['points']['team_average']).to eq 0
-        expect(body['points']['team_points']).to eq 0
+        expect(body['points']['average']).to eq 0
+        expect(body['points']['total']).to eq 0
       end
 
       it 'returns 403 if user is not associated with the project' do
@@ -70,7 +70,7 @@ RSpec.describe V1::PointsController, type: :controller do
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
       end
 
-      it "response contains 'team_average', 'team_points'", { docs?: true } do
+      it "response contains 'average', 'total'", { docs?: true } do
         create :students_project_with_points, project: @project, student: @student
         create :students_project_with_points, project: @project
         create :students_project_with_points, project: @project
@@ -80,8 +80,8 @@ RSpec.describe V1::PointsController, type: :controller do
         expect(status).to eq 200
 
         expect(body['points']['personal']).to be_falsy
-        expect(body['points']['team_average']).to eq @project.team_average
-        expect(body['points']['team_points']).to eq @project.team_points
+        expect(body['points']['average']).to eq @project.team_average
+        expect(body['points']['total']).to eq @project.team_points
       end
 
       it 'returns 403 if user is not associated with the project' do
@@ -121,7 +121,7 @@ RSpec.describe V1::PointsController, type: :controller do
         body['points'].each do |points|
           project_id = points['project_id']
           expect(points['team_name']).to eq Project.find(project_id).team_name
-          expect(points['team_points']).to eq Project.find(project_id).team_points
+          expect(points['total']).to eq Project.find(project_id).team_points
           if points['project_id'] == @project.id
             expect(points['my_team']).to be true
           else
@@ -164,7 +164,7 @@ RSpec.describe V1::PointsController, type: :controller do
         body['points'].each do |points|
           project_id = points['project_id']
           expect(points['team_name']).to eq Project.find(project_id).team_name
-          expect(points['team_points']).to eq Project.find(project_id).team_points
+          expect(points['total']).to eq Project.find(project_id).team_points
           expect(points['my_team']).to be_falsy
         end
       end

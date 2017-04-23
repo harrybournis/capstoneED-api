@@ -17,8 +17,8 @@ class V1::PointsController < ApplicationController
 
   def index_for_project_response
     json =  { points: {
-                        team_average: @project.team_average,
-                        team_points: @project.team_points
+                        average: @project.team_average,
+                        total: @project.team_points
                       }
             }
     json[:points][:personal] = current_user.points_for_project_id(@project.id) if current_user.student?
@@ -36,10 +36,13 @@ class V1::PointsController < ApplicationController
       project_hash =  {
                         project_id: project.id,
                         team_name: project.team_name,
-                        team_points: project.team_points,
-                        team_average: project.team_average
+                        total: project.team_points,
+                        average: project.team_average
                       }
-      project_hash[:my_team] = true if my_project_id && my_project_id == project.id
+      if my_project_id && my_project_id == project.id
+        project_hash[:my_team] = true
+        project_hash[:personal] = current_user.load.points_for_project_id(my_project_id)
+      end
       projects << project_hash
     end
 
