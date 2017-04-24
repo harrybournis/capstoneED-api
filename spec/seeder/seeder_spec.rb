@@ -21,8 +21,9 @@ RSpec.describe "Seeder" do
     FactoryGirl.create :question_type, category: 'number', friendly_name: 'Number'
     FactoryGirl.create :question_type, category: 'rank', friendly_name: 'Rank'
 
-    points_object_values = [20,40,50,10,30, 20,40,50,10,30, 20,40,50,10,30]
-    student_points = [50, 60, 10, 10, 20, 70, 80, 40, 30, 20, 40, 60, 50, 90, 40]
+points_object_values = [20,40,50,10,30, 20,40,50,10,30, 20,40,50,10,30]
+student_points = [50, 60, 10, 10, 20, 70, 80, 40, 30, 20, 40, 60, 50, 90, 40]
+hours_worked = [1,2,3,4,5,6,7,8,9,10]
 
     ### -----------------------
     # Dummy Data
@@ -65,11 +66,22 @@ RSpec.describe "Seeder" do
         #   point_object_array << create(symbol, points: p, student_id: @student.id, project: @assignment.projects[i])
         # end
 
-        FactoryGirl.create :students_project_seeder, student: @student,
-                                                     project: @assignment.projects[i],
-                                                     points: points.sum
-      end
+    points = points_object_values.sample(rand(1..6))
+    # point_object_array = []
+    # points.each do |p|
+    #   symbol = [:log_point, :peer_assessment_point, :project_evaluation_point].sample
+    #   point_object_array << create(symbol, points: p, student_id: @student.id, project: @assignment.projects[i])
+    # end
+
+    sp = FactoryGirl.create :students_project_seeder, student: @student,
+                                                      project: @assignment.projects[i],
+                                                      points: points.sum
+    10.times do |i|
+      sp.add_log(JSON.parse({ date_worked: (DateTime.now + i.day).to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json))
+      expect(sp.save(validate: false)).to be_truthy
     end
+  end
+end
 
     stu = @assignment.projects[0].students[0]
     stu.skip_confirmation_notification!
@@ -91,7 +103,14 @@ RSpec.describe "Seeder" do
         pe.save validate: false
       end
     end
+  end
+end
 
+Timecop.freeze now do
+  @assignment.projects.each do |project|
+    FactoryGirl.create(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+  end
+end
 
 
     # 2nd Lecturer
@@ -143,6 +162,14 @@ RSpec.describe "Seeder" do
         pe.save validate: false
       end
     end
+  end
+end
+
+Timecop.freeze now do
+  @assignment.projects.each do |project|
+    FactoryGirl.create(:project_evaluation_seeder, user: @lecturer2, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+  end
+end
 
   end
 

@@ -31,6 +31,8 @@ FactoryGirl.create :question_type, category: 'rank', friendly_name: 'Rank'
 
 points_object_values = [20,40,50,10,30, 20,40,50,10,30, 20,40,50,10,30]
 student_points = [50, 60, 10, 10, 20, 70, 80, 40, 30, 20, 40, 60, 50, 90, 40]
+hours_worked = [1,2,3,4,5,6,7,8,9,10]
+
 
 ### -----------------------
 # Dummy Data
@@ -73,9 +75,13 @@ FactoryGirl.create(:question, lecturer_id: @lecturer1.id, question_type: Questio
     #   point_object_array << create(symbol, points: p, student_id: @student.id, project: @assignment.projects[i])
     # end
 
-    FactoryGirl.create :students_project_seeder, student: @student,
-      project: @assignment.projects[i],
-      points: points.sum
+    sp = FactoryGirl.create :students_project_seeder, student: @student,
+                                                      project: @assignment.projects[i],
+                                                      points: points.sum
+    10.times do |i|
+      sp.add_log JSON.parse({ date_worked: (DateTime.now + i.day).to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json)
+      sp.save(validate: false)
+    end
   end
 end
 

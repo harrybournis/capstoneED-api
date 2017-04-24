@@ -87,6 +87,9 @@ Rails.application.routes.draw do
 
     # Form Templates
     resources :form_templates, only: [:index, :create, :update, :destroy]
+
+    # Statistics
+    get 'stats', to: 'logs/stats#hours_worked', constraints: -> (request) { request.params[:graph] == 'hours_worked' }
   end
 
   ## To be removed
