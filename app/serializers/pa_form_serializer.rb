@@ -2,6 +2,7 @@ class PaFormSerializer < Base::BaseSerializer
   attributes :id, :iteration_id, :questions, :start_date, :deadline, :project_id
   attribute :extension_until, if: :extension_until_condition
   attribute :extensions, if: :extension_condition
+  attribute :project_id, if: :student
 
   def project_id
     object.projects.each do |project|
@@ -43,5 +44,9 @@ class PaFormSerializer < Base::BaseSerializer
       end
       questions.to_json
     end
+  end
+
+  def student
+    scope.student?
   end
 end

@@ -32,6 +32,7 @@ department2 = FactoryGirl.create(:department_seeder, name: 'English Studies')
 @unit3 = FactoryGirl.create(:unit, lecturer: @lecturer1, department: department)
 now = DateTime.now
 @assignment = FactoryGirl.create(:assignment, lecturer: @lecturer1, unit: @unit1)
+@game_setting = GameSetting.create(assignment_id: @assignment.id)
 4.times { FactoryGirl.create(:project_seeder, assignment: @assignment) }
 @iteration1 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now - 40.seconds, deadline: now + 5.second)
 @iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 11.seconds, deadline: now + 15.seconds)

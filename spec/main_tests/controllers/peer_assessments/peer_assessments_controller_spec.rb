@@ -60,7 +60,7 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 				end
 			end
 
-			it 'creates multiple' do
+			it 'creates multiple', { docs?: true, lecturer?: false  } do
 				Timecop.travel(@pa_form.start_date + 1.minute) do
 					@controller = V1::PeerAssessmentsController.new
 					mock_request = MockRequest.new(valid = true, @student)

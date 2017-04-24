@@ -244,15 +244,6 @@ RSpec.describe 'Includes', type: :controller do
 				expect(body['iterations'].length).to eq(2)
 				expect(body['iterations'][1]['pa_form']).to be_truthy
 			end
-
-			it 'GET show includes pa_form' do
-				iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
-				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
-
-					get :show, params: { id: iteration.id }
-				expect(status).to eq(200)
-				expect(body['iteration']['pa_form']).to be_truthy
-			end
 		end
 
 		describe 'Peer Assessment' do
