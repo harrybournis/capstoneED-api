@@ -94,10 +94,9 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 			end
 
 			it 'updates params if current user is the owner', { docs?: true } do
-				date = Date.today + 1.year
-				patch :update, params: { id: @user.assignments[0].id, end_date: date }
+				patch :update, params: { id: @user.assignments[0].id, name: 'new name'}
 				expect(status).to eq(200)
-				expect(parse_body['assignment']['end_date']).to eq(date.to_formatted_s(:db))
+				expect(parse_body['assignment']['name']).to eq('new name')
 			end
 
 			it 'responds with 403 forbidden if th unit_id does not belong to current user' do
