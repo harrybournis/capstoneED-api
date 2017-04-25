@@ -14,10 +14,10 @@ class Assignment < ApplicationRecord
   has_many :projects, inverse_of: :assignment, dependent: :destroy
   has_many :students_projects, through: :projects
   has_many :students, through: :students_projects
-  has_many :iterations, dependent: :destroy
+  has_many :iterations, inverse_of: :assignment, dependent: :destroy
   has_many :pa_forms, through: :iterations
 
-  accepts_nested_attributes_for :projects, :game_setting
+  accepts_nested_attributes_for :projects, :game_setting, :iterations
 
   # Validations
   validates_presence_of :start_date, :end_date, :name, :unit_id, :lecturer_id

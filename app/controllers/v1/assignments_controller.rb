@@ -105,6 +105,7 @@ class V1::AssignmentsController < ApplicationController
                                   :points_project_evaluation,
                                   :points_project_evaluation_first_of_day,
                                   :points_project_evaluation_first_of_team,
-                                  :points_project_evaluation_first_of_assignment ])
+                                  :points_project_evaluation_first_of_assignment ],
+      iterations_attributes: [:name, :start_date, :deadline])
   end
 end

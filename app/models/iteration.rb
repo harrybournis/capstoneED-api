@@ -7,7 +7,7 @@ class Iteration < ApplicationRecord
   # assignment_id :integer
 
   # Associations
-  belongs_to :assignment
+  belongs_to :assignment, inverse_of: :iterations
   has_one :pa_form,
           inverse_of: :iteration,
           dependent: :destroy
@@ -20,7 +20,7 @@ class Iteration < ApplicationRecord
   accepts_nested_attributes_for :pa_form
 
   # Validations
-  validates_presence_of :name, :start_date, :deadline, :assignment_id
+  validates_presence_of :name, :start_date, :deadline, :assignment
   validate :start_date_is_in_the_future
   validate :deadline_is_after_start_date
 
