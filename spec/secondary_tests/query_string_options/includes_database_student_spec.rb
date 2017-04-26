@@ -48,14 +48,14 @@ RSpec.describe 'Includes', type: :controller do
 				it 'makes only one query for no includes' do
 					expect {
 						get :show, params: { id: @assignment.id }
-					}.to make_database_queries(count: 1)
+					}.to make_database_queries(count: 2)
 					expect(status).to eq(200) #1
 				end
 
 				it "makes one query for includes='iterations,unit" do
 					expect {
 						get :show, params: { id: @assignment.id, includes: 'iterations,unit' }
-					}.to make_database_queries(count: 1)
+					}.to make_database_queries(count: 2)
 					expect(status).to eq(200) #2
 				end
 
@@ -63,7 +63,7 @@ RSpec.describe 'Includes', type: :controller do
 
 					expect {
 						get :show, params: { id: @assignment.id, includes: 'iterations', compact: true }
-					}.to make_database_queries(count: 1)
+					}.to make_database_queries(count: 2)
 					expect(status).to eq(200)
 				end
 			end
@@ -121,7 +121,7 @@ RSpec.describe 'Includes', type: :controller do
 				it 'index_with_project makes two query for assignment and students (+1 for only_if lecturer)' do
 					expect {
 						get :index, params: { includes: 'assignment' }
-					}.to make_database_queries(count: 3)
+					}.to make_database_queries(count: 5)
 					expect(status).to eq(200)
 				end
 
@@ -129,7 +129,7 @@ RSpec.describe 'Includes', type: :controller do
 					project = @student.projects[0]
 					expect {
 						get :show, params: { id: project.id, includes: 'assignment,students' }
-					}.to make_database_queries(count: 8)
+					}.to make_database_queries(count: 9)
 					expect(status).to eq(200)
 				end
 			end

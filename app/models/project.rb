@@ -55,6 +55,7 @@ class Project < ApplicationRecord
   has_many    :students_projects
   has_many    :students, through: :students_projects, dependent: :delete_all
   has_many    :iterations, through: :assignment
+  has_many    :pa_forms, through: :iterations
   has_many    :project_evaluations
   has_many    :peer_assessments
 

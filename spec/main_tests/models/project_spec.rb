@@ -282,18 +282,35 @@ RSpec.describe Project, type: :model do
     end
 
     describe 'returns true' do
-      it 'when no project_evaluations have been sumbmitted for the current iteration' do
-        expect(@project.pending_evaluation?(@student.id)).to be_truthy
+      it "when no project_evaluations have been sumbmitted and we are at 40-50\% of the iteration" do
+        Timecop.travel DateTime.now + 2.days do
+          expect(@project.pending_evaluation?(@student.id)).to be_falsy
+        end
+
+        Timecop.travel DateTime.now + 4.days + 5.hours do
+          expect(@project.pending_evaluation?(@student.id)).to be_truthy
+        end
       end
 
-      it 'if 1 has been submitted in the first half, and we are currently in the second half of the iteration' do
-        Timecop.travel DateTime.now + 1.day do
+      it "when no project_evaluations have been sumbmitted and we are at 90-100\% of the iteration" do
+        Timecop.travel DateTime.now + 7.days do
+          expect(@project.pending_evaluation?(@student.id)).to be_falsy
+        end
+
+        Timecop.travel DateTime.now + 9.days + 5.hours do
+          expect(@project.pending_evaluation?(@student.id)).to be_truthy
+        end
+      end
+
+      it 'if 1 has been submitted in the 40-50%, and and we are at 90-100\% of the iteration' do
+        Timecop.travel DateTime.now + 4.days + 5.hours do
+          expect(@project.pending_evaluation?(@student.id)).to be_truthy
           pe = create :project_evaluation, project: @project, iteration: @iteration, user:  @student
           expect(pe).to be_truthy
         end
 
-        Timecop.travel DateTime.now + 7.days do
-          expect(@project.current_iterations[0]).to eq @iteration
+        Timecop.travel DateTime.now + 9.days + 5.hours do
+          expect(@student.project_evaluations.where(project_id: @project.id, iteration_id: @iteration.id).count).to eq 1
           expect(@project.pending_evaluation?(@student.id)).to be_truthy
         end
       end
@@ -305,7 +322,9 @@ RSpec.describe Project, type: :model do
         expect(create :project_evaluation, project: @project, iteration: @iteration, user:  @student).to be_truthy
 
         expect(@student.project_evaluations.where(project_id: @project.id, iteration_id: @iteration.id).count).to eq 2
-        expect(@project.pending_evaluation?(@student.id)).to be_falsy
+        Timecop.travel DateTime.now + 9.days + 5.hours do
+          expect(@project.pending_evaluation?(@student.id)).to be_falsy
+        end
 
         create :iteration, assignment: @assignment, start_date: DateTime.now + 10.days, deadline: DateTime.now + 12.days
 
@@ -314,11 +333,25 @@ RSpec.describe Project, type: :model do
         end
       end
 
-      it 'when 1 has been submitted in the second half, and we are currently in the second half of the iteration' do
-        Timecop.travel DateTime.now + 6.days do
-          pe = create :project_evaluation, project: @project, iteration: @iteration, user: @student
+      it "if 1 has been submitted, and and we are at 40-50\% of the iteration" do
+        Timecop.travel DateTime.now + 4.days + 5.hours do
+          pe = create :project_evaluation, project: @project, iteration: @iteration, user:  @student
+          expect(pe).to be_truthy
         end
-        Timecop.travel DateTime.now + 7.days do
+
+        Timecop.travel DateTime.now + 4.days + 7.hours do
+          expect(@student.project_evaluations.where(project_id: @project.id, iteration_id: @iteration.id).count).to eq 1
+          expect(@project.pending_evaluation?(@student.id)).to be_falsy
+        end
+      end
+
+      it "if 1 has been submitted in the 90-100\%, and we are at the 90-100%" do
+        Timecop.travel DateTime.now + 9.days + 5.hours do
+          pe = create :project_evaluation, project: @project, iteration: @iteration, user:  @student
+          expect(pe).to be_truthy
+        end
+
+        Timecop.travel DateTime.now + 9.days + 7.hours do
           expect(@student.project_evaluations.where(project_id: @project.id, iteration_id: @iteration.id).count).to eq 1
           expect(@project.pending_evaluation?(@student.id)).to be_falsy
         end

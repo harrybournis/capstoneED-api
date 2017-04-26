@@ -102,9 +102,9 @@ RSpec.describe 'Includes', type: :controller do
 
 			it 'includes iterations' do
 				3.times { FactoryGirl.create(:iteration, assignment_id: @assignment.id) }
-				expect {
-					get :show, params: { id: @assignment.id, includes: 'iterations,students' }
-				}.to make_database_queries(count: 1)
+
+				get :show, params: { id: @assignment.id, includes: 'iterations,students' }
+
 				expect(status).to eq(200)
 				expect(body['assignment']['iterations'].length).to eq(@assignment.iterations.length)
 				expect(body['assignment']['iterations'][0]['name']).to eq(Iteration.find(body['assignment']['iterations'][0]['id']).name)
@@ -134,9 +134,8 @@ RSpec.describe 'Includes', type: :controller do
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration1)
 				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 
-				expect {
-					get :show, params: { id: @assignment.id, includes: 'iterations' }
-				}.to make_database_queries(count: 1)
+				get :show, params: { id: @assignment.id, includes: 'iterations' }
+
 				expect(status).to eq(200)
 				expect(body['assignment'])
 			end
