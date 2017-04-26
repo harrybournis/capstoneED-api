@@ -21,9 +21,12 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 		end
 
 		it 'returns all the assignments for the current user if no unit_id is provided', { docs?: true } do
+			@assignment = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units.first)
+      iteration = create :iteration, assignment: @assignment
+      pa_form = create :pa_form, iteration: iteration
 			get :index
 			expect(response.status).to eq(200)
-			expect(parse_body['assignments'].length).to eq(3)
+			expect(parse_body['assignments'].length).to eq(4)
 		end
 
 		it 'returns all the assignments for the current unit if unit_id is provided and belongs to current user', { docs?: true } do
