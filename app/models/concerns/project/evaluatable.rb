@@ -35,13 +35,14 @@ module Project::Evaluatable
 
     return false unless iteration = current_iterations[0]
 
-    submitted  =  project_evaluations.where(user_id: student_id)
+    submitted  =  project_evaluations.where(user_id: student_id, iteration_id: iteration.id)
     submitted_no = submitted.length
 
     return true if submitted_no == 0
     return false if submitted_no >= ProjectEvaluation::NO_OF_EVALUATIONS_PER_ITERATION
 
     middle_of_iteration = (iteration.start_date.to_i + iteration.deadline.to_i) / 2
+    #((x - min) / (max - min).to_f).round 1
     if submitted_no == 1 &&
         submitted[0].date_submitted.to_i <= middle_of_iteration &&
         DateTime.now.to_i > middle_of_iteration

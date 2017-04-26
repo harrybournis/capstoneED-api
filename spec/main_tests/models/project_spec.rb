@@ -306,6 +306,12 @@ RSpec.describe Project, type: :model do
 
         expect(@student.project_evaluations.where(project_id: @project.id, iteration_id: @iteration.id).count).to eq 2
         expect(@project.pending_evaluation?(@student.id)).to be_falsy
+
+        create :iteration, assignment: @assignment, start_date: DateTime.now + 10.days, deadline: DateTime.now + 12.days
+
+        Timecop.travel DateTime.now + 11.days do
+          expect(@project.pending_evaluation?(@student.id)).to be_truthy
+        end
       end
 
       it 'when 1 has been submitted in the second half, and we are currently in the second half of the iteration' do
