@@ -59,6 +59,7 @@ Rails.application.routes.draw do
 
     # PAForms
     resources :pa_forms, only: [:index, :show, :create]
+    post 'assignments/:assignment_id/pa_forms', to: 'pa_forms#create_for_each_iteration'
 
     # Peer Assessments
     resources :peer_assessments, only: [:index, :show, :create]

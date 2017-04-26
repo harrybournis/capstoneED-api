@@ -47,6 +47,12 @@ RSpec.describe 'Routing', type: :routing do
 					 controller: 'v1/pa_forms', action: 'index')
 	end
 
+	# create pa_forms for each iteration of assignment
+	it 'POST /v1/assignments/:assignment_id/pa_forms to PAFormController#create_for_each_iteration' do
+		expect(post: "#{url}/v1/assignments/2/pa_forms").to route_to(
+					 controller: 'v1/pa_forms', action: 'create_for_each_iteration', assignment_id: '2')
+	end
+
 	# question types
 	it 'GET /v1/question_types to QuestionTypesController#index' do
 		expect(get: "#{url}/v1/question_types").to route_to(

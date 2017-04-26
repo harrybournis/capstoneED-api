@@ -84,6 +84,135 @@ RSpec.describe V1::PaFormsController, type: :controller do
 			expect(errors['base'][0]).to include('not associated')
 		end
 
+		describe 'POST create_for_each_iteration' do
+			before :each do
+				@type1 = create :question_type
+				@type2 = create :question_type
+			end
+
+			it 'responds with 201 if successful', { docs?: true } do
+				assignment = create(:assignment, lecturer: @lecturer, unit: @unit)
+				iteration1 = create :iteration, assignment: assignment
+				iteration2 = create :iteration, assignment: assignment
+				expect(assignment.iterations.count).to eq 2
+				expect(iteration1.pa_form).to be_falsy
+				expect(iteration2.pa_form).to be_falsy
+
+				expect {
+					post :create_for_each_iteration, params: { assignment_id: assignment.id, questions: [{ 'text' => 'Who is it?', 'type_id' => @type2.id },
+																							{ 'text' => 'Human?', 'type_id' => @type2.id },
+																							{ 'text' => 'Hello?', 'type_id' => @type1.id },
+																							{ 'text' => 'Favorite Power Ranger?', 'type_id' => @type2.id }],
+																	start_offset: 1.day.to_i,
+																	end_offset: 3.days.to_i }
+				}.to change { PaForm.count }.by assignment.iterations.count
+
+				expect(status).to eq 201
+				iteration1.reload
+				iteration2.reload
+				expect(iteration1.pa_form).to be_truthy
+				expect(iteration2.pa_form).to be_truthy
+			end
+
+			it 'responds with 422 if error in the form' do
+				assignment = create(:assignment, lecturer: @lecturer, unit: @unit)
+				iteration1 = create :iteration, assignment: assignment
+				iteration2 = create :iteration, assignment: assignment
+				expect(assignment.iterations.count).to eq 2
+				expect(iteration1.pa_form).to be_falsy
+				expect(iteration2.pa_form).to be_falsy
+
+				expect {
+					post :create_for_each_iteration, params: { assignment_id: assignment.id, questions: [{ 'text' => 'Who is it?', 'type_id' => @type2.id },
+																							{ 'text' => 'Human?', 'type_id' => @type2.id },
+																							{ 'text' => 'Hello?', 'type_id' => @type1.id },
+																							{ 'text' => 'Favorite Power Ranger?', 'type_id' => @type2.id }],
+																	end_offset: 3.days.to_i }
+				}.to_not change { PaForm.count }
+
+				expect(status).to eq 422
+				expect(iteration1.pa_form).to be_falsy
+				expect(iteration2.pa_form).to be_falsy
+			end
+
+			it 'responds with 422 if assignment does not have iterations' do
+				assignment = create(:assignment, lecturer: @lecturer, unit: @unit)
+				expect(assignment.iterations.count).to eq 0
+
+				expect {
+					post :create_for_each_iteration, params: { assignment_id: assignment.id, questions: [{ 'text' => 'Who is it?', 'type_id' => @type2.id },
+																							{ 'text' => 'Human?', 'type_id' => @type2.id },
+																							{ 'text' => 'Hello?', 'type_id' => @type1.id },
+																							{ 'text' => 'Favorite Power Ranger?', 'type_id' => @type2.id }],
+																	start_offset: 1.day.to_i,
+																	end_offset: 3.days.to_i }
+				}.to_not change { PaForm.count }
+
+				expect(status).to eq 422
+				expect(errors_base[0]).to include 'Iterations'
+			end
+
+			it 'responds with 422 if at least one iteration already has a pa_form' do
+				assignment = create(:assignment, lecturer: @lecturer, unit: @unit)
+				iteration1 = create :iteration, assignment: assignment
+				iteration2 = create :iteration, assignment: assignment
+				pa_form = create :pa_form, iteration: iteration1
+				expect(assignment.iterations.count).to eq 2
+				expect(iteration1.pa_form).to be_truthy
+
+				expect {
+					post :create_for_each_iteration, params: { assignment_id: assignment.id, questions: [{ 'text' => 'Who is it?', 'type_id' => @type2.id },
+																							{ 'text' => 'Human?', 'type_id' => @type2.id },
+																							{ 'text' => 'Hello?', 'type_id' => @type1.id },
+																							{ 'text' => 'Favorite Power Ranger?', 'type_id' => @type2.id }],
+																	start_offset: 1.day.to_i,
+																	end_offset: 3.days.to_i }
+				}.to_not change { PaForm.count }
+
+				expect(status).to eq 422
+				expect(iteration1.pa_form).to be_truthy
+				expect(iteration2.pa_form).to be_falsy
+				expect(errors_base[0]).to include 'already'
+			end
+
+			it 'responds with 403 if assignment does not belong to user' do
+				assignment = create(:assignment)
+				iteration1 = create :iteration, assignment: assignment
+				expect(iteration1.pa_form).to be_falsy
+
+				expect {
+					post :create_for_each_iteration, params: { assignment_id: assignment.id, questions: [{ 'text' => 'Who is it?', 'type_id' => @type2.id },
+																							{ 'text' => 'Human?', 'type_id' => @type2.id },
+																							{ 'text' => 'Hello?', 'type_id' => @type1.id },
+																							{ 'text' => 'Favorite Power Ranger?', 'type_id' => @type2.id }],
+																	end_offset: 3.days.to_i }
+				}.to_not change { PaForm.count }
+
+				expect(status).to eq 403
+				expect(iteration1.pa_form).to be_falsy
+				expect(errors_base[0]).to include 'associated'
+			end
+
+			it 'responds with 403 if current user is a student' do
+				student = create :student_confirmed
+
+				@controller = V1::PaFormsController.new
+				mock_request = MockRequest.new(valid = true, student)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+				expect {
+					post :create_for_each_iteration, params: { assignment_id: @assignment.id, questions: [{ 'text' => 'Who is it?', 'type_id' => @type2.id },
+																							{ 'text' => 'Human?', 'type_id' => @type2.id },
+																							{ 'text' => 'Hello?', 'type_id' => @type1.id },
+																							{ 'text' => 'Favorite Power Ranger?', 'type_id' => @type2.id }],
+																	end_offset: 3.days.to_i }
+				}.to_not change { PaForm.count }
+
+				expect(errors_base[0]).to include 'Lecturer'
+			end
+		end
+
 		# it 'PATCH update responds with 201 if correct params' do
 		# 	pa_form = create(:pa_form, iteration: @iteration)
 		# 	patch :update, params: { id: pa_form.id, questions: ['new Who is it?', 'Human?', 'new Hello?', 'Favorite Power Ranger?'] }

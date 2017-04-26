@@ -1,6 +1,6 @@
 ## PAForms Controller
 class V1::PaFormsController < ApplicationController
-  before_action :allow_if_lecturer, only: [:create, :update, :destroy]
+  before_action :allow_if_lecturer, only: [:create, :update, :destroy, :create_for_each_iteration]
   before_action :allow_if_student, only:  [:index]
   before_action :validate_includes,
                 only: [:index, :show],
@@ -38,6 +38,51 @@ class V1::PaFormsController < ApplicationController
     else
       render json: format_errors(@pa_form.errors), status: :unprocessable_entity
     end
+  end
+
+
+  # POST /assignments/:assignment_id/pa_forms
+  def create_for_each_iteration
+    # Return error if assignment_id not associated with current_user
+    unless @assignment = current_user.assignments
+                                     .where(id: params[:assignment_id])[0]
+      render_not_associated_with_current_user('Assignment')
+      return
+    end
+
+    # Return error if assignment has no iterations
+    unless @assignment.iterations.length > 0
+      render json: format_errors(base: ['This assignment has no Iterations.']), status: :unprocessable_entity
+      return
+    end
+
+    # Return error if at least one iteration already has a pa_form
+    unless @assignment.pa_forms.empty?
+      render json: format_errors(base: ['An Iteration in this Assignment already contains a PaForm.']), status: :unprocessable_entity
+      return
+    end
+
+    errors = []
+    pa_forms = []
+    PaForm.transaction do
+      @assignment.iterations.each do |iteration|
+        @pa_form = PaForm.new(pa_form_for_multiple_params)
+        @pa_form.iteration_id = iteration.id
+        unless @pa_form.save
+          errors = @pa_form.errors
+          raise ActiveRecord::Rollback
+        end
+        pa_forms << @pa_form
+      end
+    end
+
+    if errors.empty?
+      render json: pa_forms, status: :created
+    else
+      render json: format_errors(errors), status: :unprocessable_entity
+    end
+  rescue Exception => e
+    render json: format_errors(e), status: :unprocessable_entity
   end
 
   # # PATCH /pa_forms/:id
@@ -80,6 +125,10 @@ class V1::PaFormsController < ApplicationController
 
   def pa_form_params
     params.permit(:iteration_id, :start_date, :deadline, questions: [:text, :type_id])
+  end
+
+  def pa_form_for_multiple_params
+    params.permit(:start_offset, :end_offset, questions: [:text, :type_id])
   end
 
   def pa_form_wout_questions_params

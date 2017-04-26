@@ -48,7 +48,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 				expect(Assignment.find(body['assignment']['id']).game_setting.points_log).to eq points
 			end
 
-			it 'accepts nested attributes for assignments', { docs?: true } do
+			it 'accepts nested attributes for iterations', { docs?: true } do
 				iterations = []
 				2.times { iterations << attributes_for(:iteration).except(:assignment_id) }
 				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(iterations_attributes: iterations )
