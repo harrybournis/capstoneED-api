@@ -268,4 +268,18 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			expect(@user.projects.active.count).to eq(@current_user.projects.active.count)
 		end
 	end
+
+	describe 'form_templates' do
+		it 'returns form_templates of the lecturer' do
+			@lecturer = create :lecturer_confirmed
+			2.times { create(:form_template, lecturer: @lecturer) }
+			expect(@lecturer.form_templates.length).to eq 2
+			@request = MockRequest.new(valid = true,@lecturer)
+			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			@token_id = decoded_token.first['id']
+			@device = decoded_token.first['device']
+			@current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
+			expect(@current_user.form_templates).to eq @lecturer.form_templates
+		end
+	end
 end

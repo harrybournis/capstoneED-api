@@ -183,6 +183,18 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
     ProjectEvaluation.where(user_id: @id)
   end
 
+  # Monkeypatches the form_templates method of th current user to avoid loading the
+  # user when trying to retrieve their form_templates.
+  #
+  # @return [Array<FormTemplate>] An active record collection of the results.
+  #
+  def form_templates
+    FormTemplate.where(lecturer_id: @id)
+  end
+
+  #-------------------------------------------------------------------------#
+  # Associations
+
   # An array of all the associations that are allowed to be included
   # in an assignment query.
   #

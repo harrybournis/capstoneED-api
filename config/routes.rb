@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+
   namespace :v1, constraints: { format: 'json' } do
     # Authentication Routes
     get     'me',       to: 'authentications#me'
@@ -83,6 +84,9 @@ Rails.application.routes.draw do
 
     # Reasons
     get 'reasons', to: 'reasons#index'
+
+    # Form Templates
+    resources :form_templates, only: [:index, :create, :update, :destroy]
   end
 
   ## To be removed

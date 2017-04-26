@@ -14,6 +14,7 @@ class Lecturer < User
   has_many :assignments
   has_many :projects, through: :assignments
   has_many :questions, dependent: :destroy
+  has_many :form_templates
 
   # Validations
   validates_presence_of :position

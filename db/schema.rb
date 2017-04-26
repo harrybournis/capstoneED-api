@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170424234620) do
+ActiveRecord::Schema.define(version: 20170426170521) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,8 +25,8 @@ ActiveRecord::Schema.define(version: 20170424234620) do
   end
 
   create_table "assignments", force: :cascade do |t|
-    t.datetime "start_date"
-    t.datetime "end_date"
+    t.date     "start_date"
+    t.date     "end_date"
     t.integer  "unit_id"
     t.integer  "lecturer_id"
     t.datetime "created_at",  null: false
@@ -70,6 +70,15 @@ ActiveRecord::Schema.define(version: 20170424234620) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer  "value"
+  end
+
+  create_table "form_templates", force: :cascade do |t|
+    t.string   "name"
+    t.jsonb    "questions"
+    t.integer  "lecturer_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.index ["lecturer_id"], name: "index_form_templates_on_lecturer_id", using: :btree
   end
 
   create_table "game_settings", force: :cascade do |t|
