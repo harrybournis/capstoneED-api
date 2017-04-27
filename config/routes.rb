@@ -69,7 +69,7 @@ Rails.application.routes.draw do
     get     'projects/:project_id/evaluations', to: 'project_evaluations#index_with_project'
     get     'iterations/:iteration_id/evaluations', to: 'project_evaluations#index_with_iteration'
     post    'projects/:project_id/evaluations', to: 'project_evaluations#create'
-    patch   'projects/:project_id/evaluations', to: 'project_evaluations#update'
+    # patch   'projects/:project_id/evaluations', to: 'project_evaluations#update'
     #resources :project_evaluations, only: [:create, :update]
 
     # Feelings

@@ -57,13 +57,13 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 			end
 		end
 
-		it 'PATCH update works only for lecturer' do
-			pe = FactoryGirl.create(:project_evaluation, user: @student, percent_complete: 89)
-			patch :update, params: { id: pe.id, project_id: pe.project_id, percent_complete: pe.percent_complete }
+		# it 'PATCH update works only for lecturer' do
+		# 	pe = FactoryGirl.create(:project_evaluation, user: @student, percent_complete: 89)
+		# 	patch :update, params: { id: pe.id, project_id: pe.project_id, percent_complete: pe.percent_complete }
 
-			expect(status).to eq(403)
-			expect(errors['base'][0]).to include('must be Lecturer')
-		end
+		# 	expect(status).to eq(403)
+		# 	expect(errors['base'][0]).to include('must be Lecturer')
+		# end
 
 		it 'GET index_with_project returns project_health, team_health', { docs?: true } do
 			FactoryGirl.create(:project_evaluation, user: @student, project_id: @project.id, iteration_id: @project.iterations[0].id)
@@ -125,12 +125,12 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 			end
 		end
 
-		it 'PATCH update updates the percent and feeling', { docs?: true } do
-			pe = FactoryGirl.create(:project_evaluation_lecturer, user: @lecturer, percent_complete: 89)
-			patch :update, params: { id: pe.id, project_id: pe.project_id, percent_complete: pe.percent_complete }
+		# it 'PATCH update updates the percent and feeling', { docs?: true } do
+		# 	pe = FactoryGirl.create(:project_evaluation_lecturer, user: @lecturer, percent_complete: 89)
+		# 	patch :update, params: { id: pe.id, project_id: pe.project_id, percent_complete: pe.percent_complete }
 
-			expect(status).to eq(200)
-			expect(body['project_evaluation']['percent_complete']).to eq 89
-		end
+		# 	expect(status).to eq(200)
+		# 	expect(body['project_evaluation']['percent_complete']).to eq 89
+		# end
 	end
 end
