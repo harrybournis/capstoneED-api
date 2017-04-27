@@ -15,6 +15,9 @@ module JWTAuth
     @cookies_httponly   = true      # javascript can't read cookies
     @cookies_samesite   = false     # send cookies only if url in address bar matches the current site
 
+    @domain_test  = 'api.example.com'.freeze # Used for tests only
+    @domain_development = ''.freeze          # Left blank because cookies don't work with a domain in localhost
+
     ###
     # Called before an authenticated endpoint in before_action in
     # application_controller. validates the access-token in the cookies,
@@ -207,6 +210,14 @@ module JWTAuth
 
     def self.domain
       @domain
+    end
+
+    def self.domain_test
+      @domain_test
+    end
+
+    def self.domain_development
+      @domain_development
     end
   end
 end

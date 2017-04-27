@@ -15,6 +15,12 @@ module JWTAuth
       @user ||= User.find(@id)
     end
 
+    def sign_out
+      if active_token = ActiveToken.find_by_device(current_device)
+        active_token.destroy
+      end
+    end
+
     private
 
     def method_missing(method_sym, *arguments, &block)

@@ -37,20 +37,21 @@ class V1::AuthenticationsController < ApplicationController
   # Signs out user by deleting the ActiveToken for their device, and
   # deleting the access-token and refresh token cookies
   def sign_out
-    if active_token = ActiveToken.find_by_device(current_user.current_device)
-      active_token.destroy
-    end
-    cookies.delete('access-token', domain: JWTAuth::JWTAuthenticator.domain)
-    cookies['refresh-token'] = { value: nil,
-                                 expires: Time.at(0),
-                                 domain: JWTAuth::JWTAuthenticator.domain,
-                                 path: '/v1/refresh',
-                                 secure: true,
-                                 httponly: true,
-                                 same_site: true }
-    cookies.delete('refresh-token',
-                   domain: JWTAuth::JWTAuthenticator.domain,
-                   path: '/v1/refresh')
+    sign_out_current_user
+    # if active_token = ActiveToken.find_by_device(current_user.current_device)
+    #   active_token.destroy
+    # end
+    # cookies.delete('access-token', domain: JWTAuth::JWTAuthenticator.domain)
+    # cookies['refresh-token'] = { value: nil,
+    #                              expires: Time.at(0),
+    #                              domain: JWTAuth::JWTAuthenticator.domain,
+    #                              path: '/v1/refresh',
+    #                              secure: true,
+    #                              httponly: true,
+    #                              same_site: true }
+    # cookies.delete('refresh-token',
+    #                domain: JWTAuth::JWTAuthenticator.domain,
+    #                path: '/v1/refresh')
     render json: '', status: :no_content
   end
 

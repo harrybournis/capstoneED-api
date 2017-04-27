@@ -27,6 +27,7 @@ class V1::UsersController < ApplicationController
     update_method = user_update_params[:current_password] ? 'update_with_password' : 'update_without_password'
 
     if @user.method(update_method).call(user_update_params)
+      sign_out_current_user
       render json: @user, status: :ok
     else
       render json: format_errors(@user.errors), status: :unprocessable_entity

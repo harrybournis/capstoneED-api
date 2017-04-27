@@ -15,6 +15,33 @@ module CurrentUserable
     !@current.nil?
   end
 
+  # Signs out the current user. Deletes the ActiveToken for the current_device
+  # and deletes the cookies.
+  #
+  def sign_out_current_user
+    current_user.sign_out
+
+    domain =  if Rails.env.development?
+                JWTAuth::JWTAuthenticator.domain_development
+              elsif Rails.env.test?
+                JWTAuth::JWTAuthenticator.domain_test
+              else
+                JWTAuth::JWTAuthenticator.domain
+              end
+
+    cookies.delete('access-token', domain: domain)
+    cookies['refresh-token'] = { value: nil,
+                                 expires: Time.at(0),
+                                 domain: domain,
+                                 path: '/v1/refresh',
+                                 secure: true,
+                                 httponly: true,
+                                 same_site: true }
+    cookies.delete('refresh-token',
+                   domain: domain,
+                   path: '/v1/refresh')
+  end
+
   def allow_if_authenticated_by_email(extra_suggestion = nil)
     return if @current.provider == 'email'
     message = ["Provider is #{@current.provider}. Did not authenticate with email/password. #{extra_suggestion if extra_suggestion}"]

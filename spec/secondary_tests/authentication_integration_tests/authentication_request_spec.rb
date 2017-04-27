@@ -1,11 +1,9 @@
 require 'rails_helper'
 
-RSpec.describe "Confirmation Controller - Reconfirmation", type: :request do
+RSpec.describe "Authentication Integration", type: :request do
 
-	before(:all) do
-		@lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
-		@lecturer.save
-		@lecturer.confirm
+	before(:each) do
+		@lecturer = create :lecturer_confirmed
 	end
 
 	before(:each) { host! 'api.example.com' }
@@ -68,5 +66,31 @@ RSpec.describe "Confirmation Controller - Reconfirmation", type: :request do
 			get '/v1/me', params: nil, headers: { 'X-XSRF-TOKEN' => csrf }, as: :json
 			expect(status).to eq(401) #me2
 		end
+	end
+
+	it 'user is signed out after password change' do
+		new_password = 'qwertyuiop'
+
+		post '/v1/sign_in', params: { email: @lecturer.email, password: '12345678', remember_me: '1' }, as: :json
+		expect(status).to eq(200)#signin
+		csrf = response.headers['XSRF-TOKEN']
+
+		get '/v1/me', params: nil, headers: { 'X-XSRF-TOKEN' => csrf }, as: :json
+		expect(status).to eq(200) #me
+
+		patch "/v1/users/#{@lecturer.id}", params: { password: new_password,
+					password_confirmation: new_password, current_password: '12345678'  }, headers: { 'X-XSRF-TOKEN' => csrf }, as: :json
+		expect(status).to eq 200
+
+		get '/v1/me', params: nil, headers: { 'X-XSRF-TOKEN' => csrf }, as: :json
+		# You should be logged out
+		expect(status).to eq(401)
+
+		post '/v1/sign_in', params: { email: @lecturer.email, password: new_password, remember_me: '1' }, as: :json
+		expect(status).to eq(200)#signin
+		csrf = response.headers['XSRF-TOKEN']
+
+		get '/v1/me', params: nil, headers: { 'X-XSRF-TOKEN' => csrf }, as: :json
+		expect(status).to eq(200) #me
 	end
 end
