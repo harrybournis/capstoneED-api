@@ -50,8 +50,9 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 
 			it 'accepts nested attributes for iterations', { docs?: true } do
 				iterations = []
-				2.times { iterations << attributes_for(:iteration).except(:assignment_id) }
-				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(iterations_attributes: iterations )
+				assignment_attr = attributes_for(:assignment, unit_id: @user.units[0].id)
+				2.times { iterations << attributes_for(:iteration).except(:assignment_id).merge(start_date: assignment_attr[:start_date], deadline: assignment_attr[:end_date]) }
+				parameters = assignment_attr.merge(iterations_attributes: iterations )
 
 				expect {
 					post :create, params: parameters

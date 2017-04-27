@@ -153,8 +153,8 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			@unit = FactoryGirl.create(:unit, lecturer: @user)
 			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @user)
 
-			iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
-			iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+			iteration = FactoryGirl.create(:iteration, assignment: @assignment)
+			iteration2 = FactoryGirl.create(:iteration, assignment: @assignment)
 			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 			expect(@current_user.pa_forms.length).to eq(2)
@@ -204,7 +204,7 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			@current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
 
 			assignment = @user.assignments[0]
-			iteration = FactoryGirl.create(:iteration, assignment_id: assignment.id)
+			iteration = FactoryGirl.create(:iteration, assignment: assignment)
 			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
 			project = @user.assignments[0].projects[0]
 			extension = FactoryGirl.create(:extension, project_id: project.id, deliverable_id: pa_form.id)

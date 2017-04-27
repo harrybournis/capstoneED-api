@@ -4,14 +4,13 @@ RSpec.describe V1::IterationsController, type: :controller do
 
 		before(:all) do
 			@controller = V1::IterationsController.new
-			@user = FactoryGirl.create(:lecturer)
+			@user = create(:lecturer)
 
-			@unit = FactoryGirl.create(:unit, lecturer_id: @user.id)
-			2.times { FactoryGirl.create(:assignment_with_projects, unit_id: @unit.id, lecturer_id: @user.id)}
-			@irrelevant_assignment = FactoryGirl.create(:assignment_with_projects)
-
-			FactoryGirl.create(:iteration, assignment_id: @user.assignments[0].id)
-			2.times { FactoryGirl.create(:iteration, assignment_id: @user.assignments[1].id) }
+			@unit = create(:unit, lecturer_id: @user.id)
+			2.times { create(:assignment_with_projects, unit_id: @unit.id, lecturer_id: @user.id)}
+			@irrelevant_assignment = create(:assignment_with_projects)
+			create(:iteration, assignment: @user.assignments[0])
+			2.times { create(:iteration, assignment: @user.assignments[1]) }
 			expect(@user.assignments[0].iterations.count).to eq(1)
 			expect(@user.assignments[1].iterations.count).to eq(2)
 		end
@@ -38,12 +37,12 @@ RSpec.describe V1::IterationsController, type: :controller do
 		end
 
 		it 'GET index works for students' do
-			@user = FactoryGirl.create(:student)
+			@user = create(:student)
 			mock_request = MockRequest.new(valid = true, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-			Assignment.first.projects << FactoryGirl.create(:project)
+			Assignment.first.projects << create(:project)
 			create :students_project, student: @user, project: Assignment.first.projects.first
 
 			get :index, params: { assignment_id: Assignment.first.id }
@@ -81,12 +80,12 @@ RSpec.describe V1::IterationsController, type: :controller do
 		end
 
 		it 'GET show iteration needs the assignment to be associated with current_user' do
-			@user = FactoryGirl.create(:student)
+			@user = create(:student)
 			mock_request = MockRequest.new(valid = true, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-			Assignment.first.projects << FactoryGirl.create(:project)
+			Assignment.first.projects << create(:project)
 			create :students_project, student: @user, project: Assignment.first.projects.first
 
 			get :show, params: { id: Assignment.first.iterations[0].id }
@@ -124,22 +123,22 @@ RSpec.describe V1::IterationsController, type: :controller do
 
 		# it 'GET index return with the extensions on the pa_forms' do
 		# 	now = DateTime.now
-		# 	@assignment = FactoryGirl.create(:assignment, lecturer: @user, unit: @unit)
-		# 	@iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
-		# 	@iteration1 = FactoryGirl.create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
-		# 	@iteration2 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
-		# 	@iteration3 = FactoryGirl.create(:iteration, start_date: now + 4.days, deadline: now + 6.days + 1.hour, assignment_id: @assignment.id)
-		# 	pa_form0 = FactoryGirl.create(:pa_form, iteration: @iteration)
-		# 	pa_form1 = FactoryGirl.create(:pa_form, iteration: @iteration1)
-		# 	pa_form2 = FactoryGirl.create(:pa_form, iteration: @iteration2)
-		# 	pa_form3 = FactoryGirl.create(:pa_form, iteration: @iteration3)
-		# 	@student = FactoryGirl.build(:student_with_password).process_new_record
+		# 	@assignment = create(:assignment, lecturer: @user, unit: @unit)
+		# 	@iteration = create(:iteration, assignment_id: @assignment.id)
+		# 	@iteration1 = create(:iteration, start_date: now + 3.days, deadline: now + 5.days, assignment_id: @assignment.id)
+		# 	@iteration2 = create(:iteration, start_date: now + 4.days, deadline: now + 6.days, assignment_id: @assignment.id)
+		# 	@iteration3 = create(:iteration, start_date: now + 4.days, deadline: now + 6.days + 1.hour, assignment_id: @assignment.id)
+		# 	pa_form0 = create(:pa_form, iteration: @iteration)
+		# 	pa_form1 = create(:pa_form, iteration: @iteration1)
+		# 	pa_form2 = create(:pa_form, iteration: @iteration2)
+		# 	pa_form3 = create(:pa_form, iteration: @iteration3)
+		# 	@student = build(:student_with_password).process_new_record
 		# 	@student.save
 		# 	@student.confirm
-		# 	@project = FactoryGirl.create(:project, assignment_id: @assignment.id)
+		# 	@project = create(:project, assignment_id: @assignment.id)
 		# 	create :students_project, student: @student, project: @project
-		# 	extension = FactoryGirl.create(:extension, project_id: @project.id, deliverable_id: pa_form1.id)
-		# 	extension2 = FactoryGirl.create(:extension, project_id: @project.id, deliverable_id: pa_form2.id)
+		# 	extension = create(:extension, project_id: @project.id, deliverable_id: pa_form1.id)
+		# 	extension2 = create(:extension, project_id: @project.id, deliverable_id: pa_form2.id)
 
 		# 	Timecop.travel(now + 5.days + 1.minute) do
 		# 		mock_request = MockRequest.new(valid = true, @user)
@@ -168,7 +167,7 @@ RSpec.describe V1::IterationsController, type: :controller do
 		end
 
 		it 'GET show responds with 403 forbidden if user is not associated with iteration assignment' do
-			assignment = FactoryGirl.create(:assignment)
+			assignment = create(:assignment)
 			get :show, params: { id: assignment.id }
 			expect(status).to eq(403)
 			expect(errors['base'][0]).to include('not associated with the current user')
@@ -184,14 +183,14 @@ RSpec.describe V1::IterationsController, type: :controller do
 		end
 
 		it 'PATCH update responds with 403 if id is not associated with current_user' do
-			iteration = FactoryGirl.create(:iteration)
+			iteration = create(:iteration)
 			patch :update, params: { id: iteration.id, name: 'different' }
 			expect(status).to eq(403)
 			expect(errors['base'][0]).to include('not associated with the current user')
 		end
 
 		it 'DELETE destroy responds with 403 if id is not associated with current_user' do
-			iteration = FactoryGirl.create(:iteration)
+			iteration = create(:iteration)
 			patch :update, params: { id: iteration.id, name: 'different' }
 			expect(status).to eq(403)
 			expect(errors['base'][0]).to include('not associated with the current user')

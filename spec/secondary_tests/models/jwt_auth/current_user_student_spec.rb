@@ -133,8 +133,8 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 		end
 
 		it 'returns correct pa_forms' do
-			iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
-			iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+			iteration = FactoryGirl.create(:iteration, assignment: @assignment)
+			iteration2 = FactoryGirl.create(:iteration, assignment: @assignment)
 			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 
@@ -227,8 +227,8 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
 		end
 
 		it 'returns the associated extensions' do
-			iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
-			iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+			iteration = FactoryGirl.create(:iteration, assignment: @assignment)
+			iteration2 = FactoryGirl.create(:iteration, assignment: @assignment)
 			pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 			pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 			extension = FactoryGirl.create(:extension, deliverable_id: pa_form.id, project_id: @team.id)

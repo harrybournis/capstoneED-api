@@ -8,7 +8,7 @@ RSpec.describe V1::PaFormsController, type: :controller do
 		@lecturer.confirm
 		@unit = create(:unit, lecturer: @lecturer)
 		@assignment = create(:assignment, lecturer: @lecturer, unit: @unit)
-		@iteration = create(:iteration, assignment_id: @assignment.id)
+		@iteration = create(:iteration, assignment: @assignment)
 	end
 
 	describe 'Lecturer' do

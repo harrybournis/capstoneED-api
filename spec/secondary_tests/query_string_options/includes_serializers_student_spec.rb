@@ -88,8 +88,8 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'GET index includes pa_form' do
-				iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
-				iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+				iteration = FactoryGirl.create(:iteration, assignment: @assignment)
+				iteration2 = FactoryGirl.create(:iteration, assignment: @assignment)
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 
@@ -100,7 +100,7 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'GET show includes pa_form' do
-				iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+				iteration = FactoryGirl.create(:iteration, assignment: @assignment)
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 
 				get :show, params: { id: iteration.id, includes: 'pa_form' }
@@ -112,8 +112,8 @@ RSpec.describe 'Includes', type: :controller do
 		describe 'PaForm' do
 			before :each do
 				@controller = V1::PaFormsController.new
-				iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
-				iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+				iteration = FactoryGirl.create(:iteration, assignment: @assignment)
+				iteration2 = FactoryGirl.create(:iteration, assignment: @assignment)
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 			end

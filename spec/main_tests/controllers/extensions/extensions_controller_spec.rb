@@ -18,7 +18,7 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 	describe 'POST /extensions' do
 		it 'creates new extension', { docs?: true } do
 			assignment = @lecturer.assignments[0]
-			iteration = FactoryGirl.create(:iteration, assignment_id: assignment.id)
+			iteration = FactoryGirl.create(:iteration, assignment: assignment)
 			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
 			project = assignment.projects[0]
 			time = 2.days.to_i
@@ -31,7 +31,7 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 		end
 
 		it 'responds with 403 forbidden if project or iteration are not associated with current lecturer' do
-			iteration = FactoryGirl.create(:iteration, assignment_id: @lecturer.assignments[0].id)
+			iteration = FactoryGirl.create(:iteration, assignment: @lecturer.assignments[0])
 			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
 			project = FactoryGirl.create(:project)
 			expect {
@@ -44,7 +44,7 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 	describe 'PATCH /extensions' do
 		it 'updates the extra time', { docs?: true } do
 			assignment = @lecturer.assignments[0]
-			iteration = FactoryGirl.create(:iteration, assignment_id: assignment.id)
+			iteration = FactoryGirl.create(:iteration, assignment: assignment)
 			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
 			project = assignment.projects[0]
 			time = 3.days.to_i
@@ -58,7 +58,7 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 
 		it 'returns 403 if team extension not associated with current lecturer', { docs?: true } do
 			assignment = @lecturer.assignments[0]
-			iteration = FactoryGirl.create(:iteration, assignment_id: assignment.id)
+			iteration = FactoryGirl.create(:iteration, assignment: assignment)
 			project = FactoryGirl.create(:project)
 			time = 3.days.to_i
 			extension = FactoryGirl.create(:extension)
@@ -70,7 +70,7 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 	describe 'DELETE /extensions' do
 		it 'deletes extension', { docs?: true } do
 			assignment = @lecturer.assignments[0]
-			iteration = FactoryGirl.create(:iteration, assignment_id: assignment.id)
+			iteration = FactoryGirl.create(:iteration, assignment: assignment)
 			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
 			project = assignment.projects[0]
 			time = 3.days.to_i
@@ -82,7 +82,7 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 
 		it 'returns 403 if team extension not associated with current lecturer' do
 			assignment = @lecturer.assignments[0]
-			iteration = FactoryGirl.create(:iteration, assignment_id: assignment.id)
+			iteration = FactoryGirl.create(:iteration, assignment: assignment)
 			project = FactoryGirl.create(:project)
 			time = 3.days.to_i
 			extension = FactoryGirl.create(:extension)

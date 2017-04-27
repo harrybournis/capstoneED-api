@@ -21,7 +21,7 @@ class Iteration < ApplicationRecord
 
   # Validations
   validates_presence_of :name, :start_date, :deadline, :assignment
-  validate :start_date_is_in_the_future
+  validate :takes_place_within_the_assignment_duration
   validate :deadline_is_after_start_date
 
   # return whether the iteration is currently happening
@@ -36,6 +36,21 @@ class Iteration < ApplicationRecord
   end
 
   private
+
+  # Validates that the iteration start_date is after the start_date of the
+  # Assignment, and that the end_date is before the end_date of the assignment.
+  #
+  def takes_place_within_the_assignment_duration
+    return unless start_date.present? && deadline.present? && assignment.present?
+
+    unless start_date.to_i >= assignment.start_date.to_i - 1.minute
+      errors.add(:start_date, "can't be before the start of the Assignment")
+    end
+
+    unless deadline.to_i <= assignment.end_date.to_i + 1.minute
+      errors.add(:deadline, "can't be after the end of the Assignment")
+    end
+  end
 
   # start_date validation
   def start_date_is_in_the_future

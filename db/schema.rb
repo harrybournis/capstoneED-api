@@ -25,8 +25,8 @@ ActiveRecord::Schema.define(version: 20170426170521) do
   end
 
   create_table "assignments", force: :cascade do |t|
-    t.date     "start_date"
-    t.date     "end_date"
+    t.datetime "start_date"
+    t.datetime "end_date"
     t.integer  "unit_id"
     t.integer  "lecturer_id"
     t.datetime "created_at",  null: false

@@ -101,7 +101,7 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'includes iterations' do
-				3.times { FactoryGirl.create(:iteration, assignment_id: @assignment.id) }
+				3.times { FactoryGirl.create(:iteration, assignment: @assignment) }
 
 				get :show, params: { id: @assignment.id, includes: 'iterations,students' }
 
@@ -112,7 +112,7 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'includes iterations in chronological order' do
-				3.times { FactoryGirl.create(:iteration, assignment_id: @assignment.id) }
+				3.times { FactoryGirl.create(:iteration, assignment: @assignment) }
 
 				get :show, params: { id: @assignment.id, includes: 'iterations,students' }
 
@@ -129,8 +129,8 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'includes pa_forms' do
-				iteration1 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
-				iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+				iteration1 = FactoryGirl.create(:iteration, assignment: @assignment)
+				iteration2 = FactoryGirl.create(:iteration, assignment: @assignment)
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration1)
 				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 
@@ -233,8 +233,8 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'GET index includes pa_form' do
-				iteration = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
-				iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id)
+				iteration = FactoryGirl.create(:iteration, assignment: @assignment)
+				iteration2 = FactoryGirl.create(:iteration, assignment: @assignment)
 				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
 				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
 
