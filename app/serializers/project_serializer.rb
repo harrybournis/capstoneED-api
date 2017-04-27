@@ -4,7 +4,7 @@ class ProjectSerializer < Base::BaseSerializer
    :pending_project_evaluation, :points
 
   def pending_project_evaluation
-    object.pending_evaluation?(current_user.id)
+    object.pending_evaluation?(current_user)
   end
 
   def points

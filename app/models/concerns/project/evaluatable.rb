@@ -27,17 +27,23 @@ module Project::Evaluatable
   # @return [Boolean] True if student can submit a project evaluation
   #   for this project.
   #
-  def pending_evaluation?(student_id)
+  def pending_evaluation?(user)
     # find it by looping to save many database queries
     found = false
-    students_projects.each do |sp|
-      found = true if sp.student_id == student_id
+
+    if user.student?
+      students_projects.each do |sp|
+        found = true if sp.student_id == user.id
+      end
+    else
+      found = lecturer.id == user.id
     end
+
     return false unless found
 
     return false unless iteration = current_iterations[0]
 
-    submitted  =  project_evaluations.where(user_id: student_id, iteration_id: iteration.id)
+    submitted  =  project_evaluations.where(user_id: user.id, iteration_id: iteration.id)
     submitted_no = submitted.length
 
     return false if submitted_no >= ProjectEvaluation::NO_OF_EVALUATIONS_PER_ITERATION

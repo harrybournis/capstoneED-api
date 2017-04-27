@@ -253,14 +253,16 @@ RSpec.describe Project, type: :model do
     end
 
     it '#current_iteration returns the current iteration' do
-      assignment = create :assignment
+      assignment = create :assignment, start_date: DateTime.now, end_date: DateTime.now + 10.days
       project = create :project, assignment: assignment
-      current_iteration = create :iteration, assignment: assignment, start_date: DateTime.now, deadline: DateTime.now + 2.days
-      other_iteration = create :iteration, assignment: assignment, start_date: DateTime.now + 5.days, deadline: DateTime.now + 10.days
+      current_iteration = create :iteration, assignment: assignment, start_date: DateTime.now, deadline: DateTime.now + 5.days
+      other_iteration = create :iteration, assignment: assignment, start_date: DateTime.now + 6.days, deadline: DateTime.now + 9.days
       expect(project.iterations.count).to eq 2
 
-      expect(project.current_iterations.any?).to be_truthy
-      expect(project.current_iterations[0]).to eq current_iteration
+      Timecop.travel DateTime.now + 4.days do
+        expect(project.current_iterations.any?).to be_truthy
+        expect(project.current_iterations[0]).to eq current_iteration
+      end
     end
 
     it '#current_iteration returns nil if no current iteration' do
@@ -274,8 +276,10 @@ RSpec.describe Project, type: :model do
 
   describe 'pending_evaluation?' do
     before :each do
-      @student = create :student
-      @assignment = create :assignment
+      @lecturer = create :lecturer_confirmed, id: 1222
+      @student = create :student_confirmed
+      @unit = create :unit, lecturer: @lecturer
+      @assignment = create :assignment, lecturer: @lecturer, unit: @unit, start_date: DateTime.now, end_date: DateTime.now + 11.days
       @project = create :project, assignment: @assignment
       @sp = create :students_project, project: @project, student: @student
       @iteration = create :iteration, assignment: @assignment, start_date: DateTime.now, deadline:  DateTime.now + 10.days
@@ -284,34 +288,44 @@ RSpec.describe Project, type: :model do
     describe 'returns true' do
       it "when no project_evaluations have been sumbmitted and we are at 40-50\% of the iteration" do
         Timecop.travel DateTime.now + 2.days do
-          expect(@project.pending_evaluation?(@student.id)).to be_falsy
+          expect(@project.pending_evaluation?(@student)).to be_falsy
         end
 
         Timecop.travel DateTime.now + 4.days + 5.hours do
-          expect(@project.pending_evaluation?(@student.id)).to be_truthy
+          expect(@project.pending_evaluation?(@student)).to be_truthy
         end
       end
 
       it "when no project_evaluations have been sumbmitted and we are at 90-100\% of the iteration" do
         Timecop.travel DateTime.now + 7.days do
-          expect(@project.pending_evaluation?(@student.id)).to be_falsy
+          expect(@project.pending_evaluation?(@student)).to be_falsy
         end
 
         Timecop.travel DateTime.now + 9.days + 5.hours do
-          expect(@project.pending_evaluation?(@student.id)).to be_truthy
+          expect(@project.pending_evaluation?(@student)).to be_truthy
         end
       end
 
       it 'if 1 has been submitted in the 40-50%, and and we are at 90-100\% of the iteration' do
         Timecop.travel DateTime.now + 4.days + 5.hours do
-          expect(@project.pending_evaluation?(@student.id)).to be_truthy
+          expect(@project.pending_evaluation?(@student)).to be_truthy
           pe = create :project_evaluation, project: @project, iteration: @iteration, user:  @student
           expect(pe).to be_truthy
         end
 
         Timecop.travel DateTime.now + 9.days + 5.hours do
           expect(@student.project_evaluations.where(project_id: @project.id, iteration_id: @iteration.id).count).to eq 1
-          expect(@project.pending_evaluation?(@student.id)).to be_truthy
+          expect(@project.pending_evaluation?(@student)).to be_truthy
+        end
+      end
+
+      it 'works for lecturer' do
+        Timecop.travel DateTime.now + 2.days do
+          expect(@project.pending_evaluation?(@lecturer)).to be_falsy
+        end
+
+        Timecop.travel DateTime.now + 4.days + 5.hours do
+          expect(@project.pending_evaluation?(@lecturer)).to be_truthy
         end
       end
     end
@@ -323,13 +337,13 @@ RSpec.describe Project, type: :model do
 
         expect(@student.project_evaluations.where(project_id: @project.id, iteration_id: @iteration.id).count).to eq 2
         Timecop.travel DateTime.now + 9.days + 5.hours do
-          expect(@project.pending_evaluation?(@student.id)).to be_falsy
+          expect(@project.pending_evaluation?(@student)).to be_falsy
         end
 
-        create :iteration, assignment: @assignment, start_date: DateTime.now + 10.days, deadline: DateTime.now + 12.days
+        create :iteration, assignment: @assignment, start_date: DateTime.now + 10.days + 10.hours, deadline: DateTime.now + 10.days + 15.hours
 
-        Timecop.travel DateTime.now + 11.days do
-          expect(@project.pending_evaluation?(@student.id)).to be_truthy
+        Timecop.travel DateTime.now + 10.days + 12.hours do
+          expect(@project.pending_evaluation?(@student)).to be_truthy
         end
       end
 
@@ -341,7 +355,7 @@ RSpec.describe Project, type: :model do
 
         Timecop.travel DateTime.now + 4.days + 7.hours do
           expect(@student.project_evaluations.where(project_id: @project.id, iteration_id: @iteration.id).count).to eq 1
-          expect(@project.pending_evaluation?(@student.id)).to be_falsy
+          expect(@project.pending_evaluation?(@student)).to be_falsy
         end
       end
 
@@ -353,7 +367,7 @@ RSpec.describe Project, type: :model do
 
         Timecop.travel DateTime.now + 9.days + 7.hours do
           expect(@student.project_evaluations.where(project_id: @project.id, iteration_id: @iteration.id).count).to eq 1
-          expect(@project.pending_evaluation?(@student.id)).to be_falsy
+          expect(@project.pending_evaluation?(@student)).to be_falsy
         end
       end
 
@@ -362,7 +376,7 @@ RSpec.describe Project, type: :model do
         iteration = create :iteration, assignment: @assignment, start_date: DateTime.now, deadline:  DateTime.now + 10.days
         project2 = create :project, assignment: assignment
 
-        expect(project2.pending_evaluation?(@student.id)).to be_falsy
+        expect(project2.pending_evaluation?(@student)).to be_falsy
       end
 
       it 'when the project has no active iterations' do
@@ -371,9 +385,11 @@ RSpec.describe Project, type: :model do
         project2 = create :project, assignment: assignment
         sp = create :students_project, project: project2, student: @student
 
-        expect(project2.pending_evaluation?(@student.id)).to be_falsy
+        expect(project2.pending_evaluation?(@student)).to be_falsy
       end
 
     end
   end
 end
+
+
