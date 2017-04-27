@@ -63,8 +63,9 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
     it 'does not give after the max limit' do
       @students_project.logs = []
       @students_project.save
+      now = DateTime.now
 
-      Timecop.travel(DateTime.now + 5.days) do
+      Timecop.travel(now + 5.days) do
         @student, @csrf = login_integration @student
 
         @game_setting.max_logs_per_day.times do
@@ -84,11 +85,17 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
 
         expect(status).to eq 201
       end
+    end
 
-      Timecop.travel(DateTime.now + 7.days) do
+    it 'resets after a day' do
+      @students_project.logs = []
+      @students_project.save
+      now = DateTime.now
+
+      Timecop.travel(now + 5.days) do
         @student, @csrf = login_integration @student
 
-        (@game_setting.max_logs_per_day - 1).times do
+        @game_setting.max_logs_per_day.times do
           expect {
             post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
           }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
@@ -96,11 +103,42 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
           expect(status).to eq 201
         end
 
-        expect(@students_project.logs.length).to be <= @game_setting.max_logs_per_day
+        @students_project.reload
+        expect(@students_project.logs.length).to eq @game_setting.max_logs_per_day
 
         expect {
           post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
-        }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
+        }.to_not change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
+
+        expect(status).to eq 201
+
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to_not change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
+
+        expect(status).to eq 201
+
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to_not change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
+
+        expect(status).to eq 201
+      end
+
+      Timecop.travel(now + 6.days) do
+        @student, @csrf = login_integration @student
+
+        @game_setting.max_logs_per_day.times do
+          expect {
+            post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+          }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
+
+          expect(status).to eq 201
+        end
+
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to_not change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
 
         expect(status).to eq 201
       end
@@ -121,8 +159,8 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
     end
 
     it 'gives points on submission of first log of day if no other log exists' do
-    	@students_project.logs = []
-    	@students_project.save
+      @students_project.logs = []
+      @students_project.save
 
       Timecop.travel(DateTime.now + 5.days) do
         @student, @csrf = login_integration @student
@@ -138,38 +176,38 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
     end
 
     it 'gives points if submitted first in the team' do
-    	@students_project.logs = []
-    	@students_project.save
-    	@student2 = create :student_confirmed
-    	@sp2 = create :students_project, project: @project, student: @student2
-			@sp2.logs = []
-			@sp2.save
+      @students_project.logs = []
+      @students_project.save
+      @student2 = create :student_confirmed
+      @sp2 = create :students_project, project: @project, student: @student2
+      @sp2.logs = []
+      @sp2.save
 
       expect {
         post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_team][:id]).count }
 
       expect(status).to eq 201
-	    @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_team][:id]).last
-	    expect(@point.points).to eq @game_setting.points_log_first_of_team
+      @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_team][:id]).last
+      expect(@point.points).to eq @game_setting.points_log_first_of_team
     end
 
     it 'gives points if submitted first in the assignment' do
-    	@students_project.logs = []
-    	@students_project.save
-    	@student2 = create :student_confirmed
-    	@project2 = create :project, assignment: @assignment
-    	@sp2 = create :students_project, project: @project2, student: @student2
-			@sp2.logs = []
-			@sp2.save
+      @students_project.logs = []
+      @students_project.save
+      @student2 = create :student_confirmed
+      @project2 = create :project, assignment: @assignment
+      @sp2 = create :students_project, project: @project2, student: @student2
+      @sp2.logs = []
+      @sp2.save
 
       expect {
         post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_assignment][:id]).count }
 
       expect(status).to eq 201
-	    @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_assignment][:id]).last
-	    expect(@point.points).to eq @game_setting.points_log_first_of_assignment
+      @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_assignment][:id]).last
+      expect(@point.points).to eq @game_setting.points_log_first_of_assignment
     end
   end
 
@@ -196,34 +234,34 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
     end
 
     it 'does not give points if not first of team' do
-    	@students_project.logs = []
-    	@students_project.save
-    	@student2 = create :student_confirmed
-    	@sp2 = create :students_project, project: @project, student: @student2
+      @students_project.logs = []
+      @students_project.save
+      @student2 = create :student_confirmed
+      @sp2 = create :students_project, project: @project, student: @student2
 
       expect {
         post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to_not change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_team][:id]).count }
 
       expect(status).to eq 201
-	    @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_team][:id]).last
-	    expect(@point).to be_falsy
+      @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_team][:id]).last
+      expect(@point).to be_falsy
     end
 
     it 'does not give points if not first of assignment' do
-    	@students_project.logs = []
-    	@students_project.save
-    	@student2 = create :student_confirmed
-    	@project2 = create :project, assignment: @assignment
-    	@sp2 = create :students_project, project: @project2, student: @student2
+      @students_project.logs = []
+      @students_project.save
+      @student2 = create :student_confirmed
+      @project2 = create :project, assignment: @assignment
+      @sp2 = create :students_project, project: @project2, student: @student2
 
       expect {
         post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to_not change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_assignment][:id]).count }
 
       expect(status).to eq 201
-	    @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_assignment][:id]).last
-	    expect(@point).to be_falsy
+      @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_assignment][:id]).last
+      expect(@point).to be_falsy
     end
   end
 

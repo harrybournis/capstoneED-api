@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Unit, type: :model do
 
-	subject(:unit) { FactoryGirl.build(:unit) }
+  subject(:unit) { FactoryGirl.build(:unit) }
 
   it { should belong_to :lecturer }
   it { should belong_to :department }
@@ -10,7 +10,7 @@ RSpec.describe Unit, type: :model do
   it { should have_many :projects }
 
   it { should validate_presence_of :name }
-	it { should validate_presence_of :code }
+  it { should validate_presence_of :code }
   it { should validate_presence_of :semester }
   it { should validate_presence_of :year }
   it { should validate_presence_of :lecturer_id }

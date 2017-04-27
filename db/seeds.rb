@@ -12,8 +12,8 @@ feeling7 = Feeling.create(name: 'Fears Confirmed', value: 0)
 feeling8 = Feeling.create(name: 'Anger', value: 0)
 
 # Default question types
-FactoryGirl.create :question_type, category: 'text', friendly_name: 'Text'
-FactoryGirl.create :question_type, category: 'number', friendly_name: 'Number'
+FactoryGirl.create :question_type, category: 'text', friendly_name: 'Comment'
+FactoryGirl.create :question_type, category: 'number', friendly_name: 'Likert Scale'
 FactoryGirl.create :question_type, category: 'rank', friendly_name: 'Rank'
 
 points_object_values = [20,40,50,10,30, 20,40,50,10,30, 20,40,50,10,30]
