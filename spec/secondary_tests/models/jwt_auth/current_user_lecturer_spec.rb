@@ -228,7 +228,7 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 			@project.assignment.start_date = now
 			@project.assignment.end_date = now + 1.month
 			@project.assignment.save
-			@project.assignment.iterations << FactoryGirl.create(:iteration, start_date: now, deadline: now + 28.days)
+			create :iteration, assignment: @project.assignment
 			feeling = FactoryGirl.create(:feeling)
 
 			now = DateTime.now

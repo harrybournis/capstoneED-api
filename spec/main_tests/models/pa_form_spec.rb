@@ -189,16 +189,17 @@ RSpec.describe PaForm, type: :model do
 
 	it '#active? returns true if current time is after start_date and before deadline' do
 		now = DateTime.now
-		iteration = create :iteration, start_date: now, deadline: now + 1.second
+		assignment = create :assignment
+		iteration = create :iteration, assignment: assignment
 		expect(iteration.valid?).to be_truthy
 		pa = create :pa_form, iteration: iteration, start_offset: 1.minute.to_i, end_offset: 2.days.to_i
 		expect(pa.valid?).to be_truthy
 
-		Timecop.travel now + 1.day do
+		Timecop.travel iteration.deadline + 5.minutes do
 			expect(pa.active?).to be_truthy
 		end
 
-		Timecop.travel now + 3.days do
+		Timecop.travel iteration.deadline + 5.days do
 			expect(pa.active?).to be_falsy
 		end
 	end

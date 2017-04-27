@@ -40,21 +40,21 @@ RSpec.describe 'Includes', type: :controller do
 				it "show makes one query for includes='projects,unit" do
 					expect {
 						get :show, params: { id: @assignment.id, includes: 'projects,unit' }
-					}.to make_database_queries(count: 2)
+					}.to make_database_queries(count: 3)
 					expect(status).to eq(200) #2
 				end
 
 				it "show makes one query for includes='projects', compact=true" do
 					expect {
 						get :show, params: { id: @assignment.id, includes: 'projects', compact: true } #
-					}.to make_database_queries(count: 2)
+					}.to make_database_queries(count: 1)
 					expect(status).to eq(200)
 				end
 
 				it "index makes one query with includes 'projects,unit'" do
 					expect {
 						get :index, params: { includes: 'projects,unit' }
-					}.to make_database_queries(count: 2)
+					}.to make_database_queries(count: 3)
 					expect(status).to eq(200)
 				end
 			end
@@ -133,7 +133,7 @@ RSpec.describe 'Includes', type: :controller do
 				it 'index_with_assignment makes two query for project and students (+1 for only_if lecturer)' do
 					expect {
 						get :index_with_assignment, params: { includes: 'assignment', assignment_id: @lecturer.assignments[0].id }
-					}.to make_database_queries(count: 3)
+					}.to make_database_queries(count: 5)
 					expect(status).to eq(200)
 				end
 
@@ -141,14 +141,14 @@ RSpec.describe 'Includes', type: :controller do
 					project = @lecturer.projects[0]
 					expect {
 						get :show, params: { id: project.id, includes: 'assignment,students' }
-					}.to make_database_queries(count: 2)
+					}.to make_database_queries(count: 3)
 					expect(status).to eq(200)
 				end
 
 				it 'index makes one query for includes unit and assignment compact' do
 					expect {
 						get :index, params: { includes: 'unit,assignment', compact: true }
-					}.to make_database_queries(count: 1)
+					}.to make_database_queries(count: 3)
 					expect(status).to eq(200)
 				end
 			end

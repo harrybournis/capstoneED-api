@@ -12,8 +12,8 @@ feeling7 = Feeling.create(name: 'Fears Confirmed', value: 0)
 feeling8 = Feeling.create(name: 'Anger', value: 0)
 
 # Default question types
-FactoryGirl.create :question_type, category: 'text', friendly_name: 'Comment'
-FactoryGirl.create :question_type, category: 'number', friendly_name: 'Likert Scale'
+FactoryGirl.create :question_type, category: 'text', friendly_name: 'Text'
+FactoryGirl.create :question_type, category: 'number', friendly_name: 'Number'
 FactoryGirl.create :question_type, category: 'rank', friendly_name: 'Rank'
 
 points_object_values = [20,40,50,10,30, 20,40,50,10,30, 20,40,50,10,30]
@@ -31,12 +31,11 @@ department2 = FactoryGirl.create(:department_seeder, name: 'English Studies')
 @unit2 = FactoryGirl.create(:unit, lecturer: @lecturer1, department: department)
 @unit3 = FactoryGirl.create(:unit, lecturer: @lecturer1, department: department)
 now = DateTime.now
-@assignment = FactoryGirl.create(:assignment, lecturer: @lecturer1, unit: @unit1)
-@game_setting = GameSetting.create(assignment_id: @assignment.id)
+@assignment = FactoryGirl.create(:assignment, lecturer: @lecturer1, unit: @unit1, start_date: now - 2.months, end_date: now + 2.months)
 4.times { FactoryGirl.create(:project_seeder, assignment: @assignment) }
-@iteration1 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now - 40.seconds, deadline: now + 5.second)
-@iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 11.seconds, deadline: now + 15.seconds)
-@iteration3 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 20.seconds, deadline: now + 2.months)
+@iteration1 = FactoryGirl.create(:iteration, assignment: @assignment, start_date: @assignment.start_date, deadline: @assignment.start_date + 2.months - 1.hour)
+@iteration2 = FactoryGirl.create(:iteration, assignment: @assignment, start_date: @assignment.start_date + 2.months - 1.hour, deadline: @assignment.start_date + 3.month)
+@iteration3 = FactoryGirl.create(:iteration, assignment: @assignment, start_date: @assignment.start_date + 3.months + 1.day, deadline: @assignment.start_date + 4.months)
 FactoryGirl.create(:pa_form_seeder, iteration: @iteration1, start_offset: 2.seconds, end_offset: 1.month)
 FactoryGirl.create(:pa_form_seeder, iteration: @iteration2)
 FactoryGirl.create(:pa_form_seeder, iteration: @iteration3)
@@ -75,14 +74,16 @@ stu.confirm
 Timecop.freeze now do
   @assignment.projects.each do |project|
     project.students.each do |student|
-      FactoryGirl.create(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+      pe = build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+      pe.save validate: false
     end
   end
 end
 
 Timecop.freeze now do
   @assignment.projects.each do |project|
-    FactoryGirl.create(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+    pe = build(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+    pe.save validate: false
   end
 end
 
@@ -93,11 +94,11 @@ end
 @unit1 = FactoryGirl.create(:unit, lecturer: @lecturer2, department: department)
 @unit2 = FactoryGirl.create(:unit, lecturer: @lecturer2, department: department)
 @unit3 = FactoryGirl.create(:unit, lecturer: @lecturer2, department: department)
-@assignment = FactoryGirl.create(:assignment, lecturer: @lecturer2, unit: @unit1)
+@assignment = FactoryGirl.create(:assignment, lecturer: @lecturer2, unit: @unit1, start_date: now - 2.months, end_date: now + 2.months)
 4.times { FactoryGirl.create(:project_seeder, assignment: @assignment) }
-@iteration1 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now - 40.seconds, deadline: now + 1.second)
-@iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 11.seconds, deadline: now + 1.month)
-@iteration3 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 1.month, deadline: now + 2.months)
+@iteration1 = FactoryGirl.create(:iteration, assignment: @assignment, start_date: @assignment.start_date, deadline: @assignment.start_date + 2.months - 1.hour)
+@iteration2 = FactoryGirl.create(:iteration, assignment: @assignment, start_date: @assignment.start_date + 2.months - 1.hour, deadline: @assignment.start_date + 3.month)
+@iteration3 = FactoryGirl.create(:iteration, assignment: @assignment, start_date: @assignment.start_date + 3.months + 1.day, deadline: @assignment.start_date + 4.months)
 FactoryGirl.create(:pa_form_seeder, iteration: @iteration1, start_offset: 2.seconds, end_offset: 1.month)
 FactoryGirl.create(:pa_form_seeder, iteration: @iteration2)
 FactoryGirl.create(:pa_form_seeder, iteration: @iteration3)
@@ -125,13 +126,15 @@ end
 Timecop.freeze now do
   @assignment.projects.each do |project|
     project.students.each do |student|
-      FactoryGirl.create(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+      pe = build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+      pe.save validate: false
     end
   end
 end
 
 Timecop.freeze now do
   @assignment.projects.each do |project|
-    FactoryGirl.create(:project_evaluation_seeder, user: @lecturer2, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+    pe = build(:project_evaluation_seeder, user: @lecturer2, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+    pe.save validate: false
   end
 end

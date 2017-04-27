@@ -17,8 +17,12 @@ RSpec.describe Iteration, type: :model do
 
 	it '#active? returns whether the iteration is currently going on' do
 		now = DateTime.now
-		iteration = FactoryGirl.create(:iteration, start_date: now, deadline: now + 3.days)
-		expect(iteration.active?).to be_truthy
+		assignment = create :assignment
+		iteration = create :iteration, assignment: assignment
+
+		Timecop.travel iteration.start_date + 2.hours do
+			expect(iteration.active?).to be_truthy
+		end
 
 		Timecop.travel(DateTime.now + 1.year) do
 			expect(iteration.active?).to be_falsy

@@ -31,7 +31,7 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
   def assignments(options = {})
     if options[:includes] && options[:includes].include?('projects')
       options[:includes].delete('projects')
-      Assignment.eager_load(options[:includes], projects: [:students_projects]).where(lecturer_id: @id)
+      Assignment.eager_load(options[:includes].map(&:to_sym).push(:pa_forms, { projects: [:students_projects] })).where(lecturer_id: @id)
     else
       Assignment.eager_load(options[:includes]).where(lecturer_id: @id)
     end
