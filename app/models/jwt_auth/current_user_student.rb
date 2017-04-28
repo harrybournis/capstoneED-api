@@ -110,6 +110,18 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
              .distinct
   end
 
+  def iterations_active(options = {})
+    includes =  if options[:includes]
+                  options[:includes].unshift('pa_form')
+                else
+                  'pa_form'
+                end
+    Iteration.active.joins(:students_projects)
+             .where(['students_projects.student_id = ?', @id])
+             .eager_load(includes)
+             .distinct
+  end
+
   # Monkeypatches the pa_forms method of the current user to optimize the
   # joins and offer the ability to dynamically include different associations in
   # the response.

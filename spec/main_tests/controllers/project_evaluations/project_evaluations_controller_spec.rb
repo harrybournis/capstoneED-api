@@ -14,7 +14,7 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 		@project.assignment.start_date = now
 		@project.assignment.end_date = now + 1.month
 		@project.assignment.save
-		create :iteration, assignment: @project.assignment
+		@iteration = create :iteration, assignment: @project.assignment
 		@feeling = FactoryGirl.create(:feeling)
 	end
 
@@ -56,6 +56,9 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 				expect(errors['iteration_id'][0]).to include('currently active')
 			end
 		end
+
+		it 'index returns 200 and the projects that can be evaluated without the students'
+		it 'index returns 204 if no projects can be evaluated'
 
 		# it 'PATCH update works only for lecturer' do
 		# 	pe = FactoryGirl.create(:project_evaluation, user: @student, percent_complete: 89)
@@ -124,6 +127,29 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 				expect(errors['iteration_id'][0]).to include('currently active')
 			end
 		end
+
+		it 'index returns 200 and the projects that can be evaluated with the students' do
+			Timecop.travel @iteration.deadline - 1.hour do
+				mock_request = MockRequest.new(valid = true, @lecturer)
+				request.cookies['access-token'] = mock_request.cookies['access-token']
+				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+				@iteration.projects.each do |project|
+					expect(project.pending_evaluation(@lecturer)).to be_truthy
+				end
+
+				get :index
+
+				expect(status).to eq 200
+				expect(body['pending_evaluations']).to be_truthy
+				expect(body['pending_evaluations'].length).to eq @iteration.projects.length
+				expect(body['pending_evaluations'][0]['project_id']).to be_in @iteration.projects.ids
+				expect(body['pending_evaluations'][0]['iteration_id']).to eq @iteration.id
+				expect(body['pending_evaluations'][0]['team_answers']).to be_truthy
+				expect(body['pending_evaluations'][0]['team_answers'].length).to eq Project.find(id: ody['pending_evaluations'][0]['project_id']).students.count
+			end
+		end
+		it 'index returns 204 if no projects can be evaluated'
 
 		# it 'PATCH update updates the percent and feeling', { docs?: true } do
 		# 	pe = FactoryGirl.create(:project_evaluation_lecturer, user: @lecturer, percent_complete: 89)

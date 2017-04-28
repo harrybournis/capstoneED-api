@@ -35,11 +35,6 @@ RSpec.describe 'Routing', type: :routing do
 			controller: 'v1/iterations', action: 'index', assignment_id: '3')
 	end
 
-	it 'GET /iteration/:id/evaluations to project_evaluations index with iteration' do
-		expect(get: "#{url}/v1/iterations/3/evaluations").to route_to(
-			controller: 'v1/project_evaluations', action: 'index_with_iteration', iteration_id: '3')
-	end
-
 	# pa form
 
 	it 'GET /v1/pa_forms to PAFormController#index' do
@@ -88,6 +83,8 @@ RSpec.describe 'Routing', type: :routing do
 					 controller: 'v1/points', action: 'index_for_assignment', assignment_id: '1')
 	end
 
+	# Project Evaluations
+
   it 'POST /v1/projects/:id/evaluations to route to project_evaluations#create' do
     expect(post: "#{url}/v1/projects/1/evaluations").to route_to(
            controller: 'v1/project_evaluations', action: 'create', project_id: '1')
@@ -98,10 +95,21 @@ RSpec.describe 'Routing', type: :routing do
            controller: 'v1/project_evaluations', action: 'update', project_id: '1')
   end
 
+	it 'GET /iteration/:id/evaluations to project_evaluations index with iteration' do
+		expect(get: "#{url}/v1/iterations/3/evaluations").to route_to(
+			controller: 'v1/project_evaluations', action: 'index_with_iteration', iteration_id: '3')
+	end
+
+  it 'GET /v1/project-evaluations to route to project_evaluations#index' do
+    expect(get: "#{url}/v1/project-evaluations").to route_to(
+           controller: 'v1/project_evaluations', action: 'index')
+  end
+
   # Reasons
 
   it 'GET /v1/reasons to route to reasons#index' do
   	expect(get: "#{url}/v1/reasons").to route_to(
   				 controller: 'v1/reasons', action: 'index')
   end
+
 end

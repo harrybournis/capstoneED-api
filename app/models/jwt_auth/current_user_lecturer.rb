@@ -1,4 +1,4 @@
-# Wrapper for the Lecturer class when the current user is
+# Wrapaer for the Lecturer class when the current user is
 # a Lecturer. Overrides methods of its associations to
 # execute custom SQL queries where needed.
 class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
@@ -126,6 +126,18 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
                   'pa_form'
                 end
     Iteration.joins(:assignment)
+             .eager_load(includes)
+             .where(['assignments.lecturer_id = ?', @id])
+  end
+
+  def iterations_active(options = {})
+    includes =  if options[:includes]
+                  options[:includes].unshift('pa_form')
+                else
+                  'pa_form'
+                end
+    Iteration.active
+             .joins(:assignment)
              .eager_load(includes)
              .where(['assignments.lecturer_id = ?', @id])
   end

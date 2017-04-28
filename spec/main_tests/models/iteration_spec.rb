@@ -29,6 +29,19 @@ RSpec.describe Iteration, type: :model do
 		end
 	end
 
+	it '.active returns all the iterations that are currently taking place' do
+		now = DateTime.now
+		assignment  = create :assignment, start_date: now - 2.months, end_date:  now + 2.months
+		assignment2  = create :assignment, start_date: now - 2.months, end_date:  now + 2.months
+		iteration1 = create :iteration, start_date: now - 1.month, deadline: now - 10.days, assignment: assignment
+		iteration2 = create :iteration, start_date: now - 1.hour, deadline: now + 10.days, assignment: assignment
+		iteration3 = create :iteration, start_date: now - 30.minutes, deadline: now + 20.days, assignment: assignment2
+		expect(Iteration.count).to eq 3
+
+		expect(Iteration.active.length).to eq 2
+		expect(Iteration.active).to include iteration2, iteration3
+	end
+
 	# it 'validates that start_date is not in the past' do
 	# 	iteration  = FactoryGirl.build(:iteration, start_date: DateTime.yesterday)
 	# 	expect(iteration.valid?).to be_falsy

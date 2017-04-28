@@ -15,6 +15,22 @@ class V1::ProjectEvaluationsController < ApplicationController
     render json: @iteration, serializer: IterationStatsSerializer
   end
 
+
+  # GET /project-evaluations
+  #
+  def index
+    # pending = []
+    # current_user.iterations_active.each do |i|
+    #   i.projects.each do |project|
+    #     if project.pending_evaluation(current_user)
+    #       pending << PendingEvaluation.new(project, i)
+    #     end
+    #   end
+    # end
+    #
+    # render json: pending, serializer_each: PendingEvaluationSerializer, status: :ok
+  end
+
   # POST /project_evaluations
   def create
     @pe = ProjectEvaluation.new(project_evaluations_params)
