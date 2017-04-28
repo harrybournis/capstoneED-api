@@ -72,4 +72,10 @@ RSpec.describe Iteration, type: :model do
 		iteration = build :iteration, assignment: assignment, start_date: now, deadline: now + 10.days
 		expect(iteration.valid?).to be_truthy
 	end
+
+  it '#evaluation_submission_period_middle returns the range between the dates in 40-50% of the iteration length' do
+  end
+
+  it '#evaluation_submission_period_end returns the range between the dates in 90-100% of the iteration length' do
+  end
 end
