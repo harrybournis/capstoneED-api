@@ -101,10 +101,10 @@ class V1::ProjectEvaluationsController < ApplicationController
   end
 
   def project_evaluations_params
-    params.permit(:project_id, :iteration_id, :feeling_id, :percent_complete, feelings_project_evaluations_attributes: [:feeling_id, :percent])
+    params.permit(:project_id, :iteration_id, :percent_complete, feelings_project_evaluations_attributes: [:feeling_id, :percent])
   end
 
   def update_project_evaluation_params
-    params.permit(:feeling_id, :percent_complete)
+    params.permit( :percent_complete)
   end
 end

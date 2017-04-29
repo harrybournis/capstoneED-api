@@ -28,7 +28,8 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
     end
 
     it 'POST create creates new project_evaluation if student is in project', { docs?: true, lecturer?: false } do
-      attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id)
+      attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feelings: valid_feelings_params)
+
       post :create, params: attr
 
       expect(status).to eq(201)
@@ -128,7 +129,8 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
     end
 
     it 'POST create creates new project_evaluation if lecturer is in project' do
-      attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @lecturer.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feeling_id: @feeling.id)
+      attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @lecturer.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feelings: valid_feelings_params)
+
       post :create, params: attr
 
       expect(status).to eq(201)

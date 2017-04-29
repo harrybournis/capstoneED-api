@@ -22,7 +22,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
     post '/v1/sign_in', params: { email: @student.email, password: '12345678' }
     expect(response.status).to eq(200)
     @csrf = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
-    @attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feeling_id: @feeling.id)
+    @attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feelings: valid_feelings_params)
   end
 
   describe 'Success' do
@@ -84,7 +84,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
   describe 'Failure' do
     it 'does not award points if user is a lecturer' do
       @lecturer, @csrf_lecturer = login_integration @lecturer
-      @attr_lecturer = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @lecturer.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feeling_id: @feeling.id)
+      @attr_lecturer = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @lecturer.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feelings: valid_feelings_params)
 
       expect {
         post "/v1/projects/#{@project.id}/evaluations", params: @attr_lecturer, headers: { 'X-XSRF-TOKEN' => @csrf_lecturer }
@@ -181,7 +181,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
 
     it 'does not include points if current user is a lecturer' do
       @lecturer, @csrf_lecturer = login_integration @lecturer
-      @attr_lecturer = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @lecturer.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feeling_id: @feeling.id)
+      @attr_lecturer = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @lecturer.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feelings: valid_feelings_params)
 
       expect {
         post "/v1/projects/#{@project.id}/evaluations", params: @attr_lecturer, headers: { 'X-XSRF-TOKEN' => @csrf_lecturer }

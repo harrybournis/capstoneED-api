@@ -6,10 +6,10 @@ feeling1 = Feeling.create(name: 'Happiness', value: 1)
 feeling2 = Feeling.create(name: 'Love', value: 1)
 feeling3 = Feeling.create(name: 'Relief', value: 1)
 feeling4 = Feeling.create(name: 'Satisfaction', value: 1)
-feeling5 = Feeling.create(name: 'Fear', value: 0)
-feeling6 = Feeling.create(name: 'Disapointment', value: 0)
-feeling7 = Feeling.create(name: 'Fears Confirmed', value: 0)
-feeling8 = Feeling.create(name: 'Anger', value: 0)
+feeling5 = Feeling.create(name: 'Fear', value: -1)
+feeling6 = Feeling.create(name: 'Disapointment', value: -1)
+feeling7 = Feeling.create(name: 'Fears Confirmed', value: -1)
+feeling8 = Feeling.create(name: 'Anger', value: -1)
 
 # Default question types
 FactoryGirl.create :question_type, category: 'text', friendly_name: 'Text'
@@ -74,7 +74,7 @@ stu.confirm
 Timecop.freeze now do
   @assignment.projects.each do |project|
     project.students.each do |student|
-      pe = build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+      pe = build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
       pe.save validate: false
     end
   end
@@ -82,7 +82,7 @@ end
 
 Timecop.freeze now do
   @assignment.projects.each do |project|
-    pe = build(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+    pe = build(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1, date_submitted: now,  feelings_project_evaluations_attributes: valid_feelings_params)
     pe.save validate: false
   end
 end
@@ -126,7 +126,7 @@ end
 Timecop.freeze now do
   @assignment.projects.each do |project|
     project.students.each do |student|
-      pe = build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+      pe = build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
       pe.save validate: false
     end
   end
@@ -134,7 +134,7 @@ end
 
 Timecop.freeze now do
   @assignment.projects.each do |project|
-    pe = build(:project_evaluation_seeder, user: @lecturer2, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+    pe = build(:project_evaluation_seeder, user: @lecturer2, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
     pe.save validate: false
   end
 end
