@@ -1,4 +1,6 @@
-## A Project can be Evaluated by both a Lecturer and a Student
+# A Project can be Evaluated by both a Lecturer and a Student
+# during an Iteration. The answers of the Student and Lecturer
+# are compared, and they are presented for feedback.
 class ProjectEvaluation < ApplicationRecord
   # Attributes
   #
@@ -13,13 +15,13 @@ class ProjectEvaluation < ApplicationRecord
   belongs_to :project
   belongs_to :iteration
   belongs_to :user
-  belongs_to :feeling
+  has_many :feelings_project_evaluations, inverse_of: :project_evaluation
+  has_many :feelings, through: :feelings_project_evaluations
   has_many :project_evaluation_points
 
   # Validations
   validates_presence_of :project_id,
                         :iteration_id,
-                        :feeling_id,
                         :user_id,
                         :percent_complete,
                         :date_submitted
@@ -30,6 +32,8 @@ class ProjectEvaluation < ApplicationRecord
   validate :iteration_is_active
   validate :user_is_associated_with_project
   validate :iteration_limit_of_evaluations_has_not_been_reached_for_user
+
+  accepts_nested_attributes_for :feelings_project_evaluations
 
   # Callbacks
   before_validation :assign_date_submitted_to_current_time

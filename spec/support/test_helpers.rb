@@ -90,4 +90,17 @@ module TestHelpers
       end
   end
 
+  def valid_feelings_params
+    if Feeling.all.count > 2
+      feeling1 = Feeling.first
+      feeling2 = Feeling.second
+    else
+      feeling1 = create :feeling
+      feeling2 = create :feeling
+    end
+    [
+      { feeling_id: feeling1.id, percent: 32 },
+      { feeling_id: feeling2.id, percent: 64 }
+    ]
+  end
 end

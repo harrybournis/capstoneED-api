@@ -28,13 +28,21 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
     end
 
     it 'POST create creates new project_evaluation if student is in project', { docs?: true, lecturer?: false } do
-      attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feeling_id: @feeling.id)
+      attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id)
       post :create, params: attr
 
       expect(status).to eq(201)
-      expect(body['project_evaluation']['feeling']).to eq(@feeling.name)
     end
 
+    it 'POST create creates new project_evaluation with feelings', { docs?: true, lecturer?: false } do
+      attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feelings: valid_feelings_params)
+
+      expect {
+        post :create, params: attr
+      }.to change { FeelingsProjectEvaluation.count }.by 2
+
+      expect(status).to eq(201)
+    end
     it 'POST returns 422 unprocessable_entity if student does not belong in project', { docs?: true, lecturer?: false }  do
       @project.students.delete(@student)
       attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id)

@@ -1,4 +1,4 @@
-## Project Evaluation Controller
+# Project Evaluation Controller
 class V1::ProjectEvaluationsController < ApplicationController
   before_action :allow_if_lecturer, only: [:update]
   before_action :set_project_evaluation_if_associated, only: :update
@@ -14,7 +14,6 @@ class V1::ProjectEvaluationsController < ApplicationController
   def index_with_iteration
     render json: @iteration, serializer: IterationStatsSerializer
   end
-
 
   # GET /project-evaluations
   #
@@ -37,6 +36,7 @@ class V1::ProjectEvaluationsController < ApplicationController
 
   # POST /project_evaluations
   def create
+    params[:feelings_project_evaluations_attributes] = params['feelings']
     @pe = ProjectEvaluation.new(project_evaluations_params)
     @pe.user = current_user.load
 
@@ -101,7 +101,7 @@ class V1::ProjectEvaluationsController < ApplicationController
   end
 
   def project_evaluations_params
-    params.permit(:project_id, :iteration_id, :feeling_id, :percent_complete)
+    params.permit(:project_id, :iteration_id, :feeling_id, :percent_complete, feelings_project_evaluations_attributes: [:feeling_id, :percent])
   end
 
   def update_project_evaluation_params
