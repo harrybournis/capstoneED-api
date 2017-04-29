@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170426170521) do
+ActiveRecord::Schema.define(version: 20170429154628) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -70,6 +70,16 @@ ActiveRecord::Schema.define(version: 20170426170521) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer  "value"
+  end
+
+  create_table "feelings_project_evaluations", force: :cascade do |t|
+    t.integer  "feeling_id"
+    t.integer  "project_evaluation_id"
+    t.integer  "percent"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+    t.index ["feeling_id"], name: "index_feelings_project_evaluations_on_feeling_id", using: :btree
+    t.index ["project_evaluation_id"], name: "index_feelings_project_evaluations_on_project_evaluation_id", using: :btree
   end
 
   create_table "form_templates", force: :cascade do |t|
