@@ -1,5 +1,5 @@
 module Decorators
-  ## Decorates the Student with their nickname for a Specific Project
+  # Decorates the Student with their nickname for a Specific Project
   class StudentMember
     include ActiveModel::Serialization
 

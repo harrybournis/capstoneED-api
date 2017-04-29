@@ -19,16 +19,20 @@ class V1::ProjectEvaluationsController < ApplicationController
   # GET /project-evaluations
   #
   def index
-    # pending = []
-    # current_user.iterations_active.each do |i|
-    #   i.projects.each do |project|
-    #     if project.pending_evaluation(current_user)
-    #       pending << PendingEvaluation.new(project, i)
-    #     end
-    #   end
-    # end
-    #
-    # render json: pending, serializer_each: PendingEvaluationSerializer, status: :ok
+    pending = []
+    current_user.iterations_active.each do |iteration|
+      iteration.projects.each do |project|
+        if project.pending_evaluation(current_user)
+          pending << Decorators::PendingProjectEvaluation.new(iteration, project)
+        end
+      end
+    end
+
+    if pending.any?
+      render json: pending, each_serializer: PendingProjectEvaluationSerializer, status: :ok
+    else
+      render json: '', status: :no_content
+    end
   end
 
   # POST /project_evaluations
