@@ -27,20 +27,26 @@ module Project::Evaluatable
   # @return [Boolean] True if student can submit a project evaluation
   #   for this project.
   #
-  def pending_evaluation?(student_id)
+  def pending_evaluation(user)
     # find it by looping to save many database queries
     found = false
-    students_projects.each do |sp|
-      found = true if sp.student_id == student_id
+
+    if user.student?
+      students_projects.each do |sp|
+        found = true if sp.student_id == user.id
+      end
+    else
+      found = true
     end
-    return false unless found
 
-    return false unless iteration = current_iterations[0]
+    return nil unless found
 
-    submitted  =  project_evaluations.where(user_id: student_id, iteration_id: iteration.id)
+    return nil unless iteration = current_iterations[0]
+
+    submitted  =  project_evaluations.where(user_id: user.id, iteration_id: iteration.id)
     submitted_no = submitted.length
 
-    return false if submitted_no >= ProjectEvaluation::NO_OF_EVALUATIONS_PER_ITERATION
+    return nil if submitted_no >= ProjectEvaluation::NO_OF_EVALUATIONS_PER_ITERATION
 
     mid_start = 0.4
     end_start = 0.9
@@ -49,17 +55,17 @@ module Project::Evaluatable
     now = DateTime.now.to_i
     progress = calculate_progress(now, iteration_start, iteration_end)
 
-    return true if submitted_no == 0 && (progress.between?(mid_start, 0.5) ||
+    return iteration if submitted_no == 0 && (progress.between?(mid_start, 0.5) ||
                                          progress.between?(end_start, 1))
 
     if submitted_no == 1 &&
        calculate_progress(submitted[0].date_submitted.to_i, iteration_start, iteration_end)
          .between?(mid_start, 0.5) &&
        progress.between?(end_start, 1)
-      return true
+      return iteration
     end
 
-    false
+    nil
   end
 
   private

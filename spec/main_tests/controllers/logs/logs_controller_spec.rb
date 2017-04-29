@@ -28,7 +28,7 @@ RSpec.describe V1::LogsController, type: :controller do
         expect(status).to eq(201)
 
         expect(body['log_entry']).to be_truthy
-        expect(body['log_entry']).to eq parameters.except(:id)
+        expect(body['log_entry']).to eq parameters.except(:id,:date_submitted)
       end
 
       it 'responds with 422 if invalid log parameters', { docs?: true, lecturer?: false } do

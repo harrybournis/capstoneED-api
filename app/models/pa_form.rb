@@ -18,7 +18,7 @@ class PaForm < Deliverable
   # Validations
   validates_presence_of   :iteration, :questions, :start_offset, :end_offset
   validate                :format_of_questions
-  validate                :start_date_is_in_the_future
+  # validate                :start_date_is_in_the_future
   validate                :deadline_is_after_start_date
 
   before_validation :set_start_offset_end_offset

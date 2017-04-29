@@ -11,10 +11,10 @@ RSpec.describe "Seeder" do
     feeling2 = Feeling.create(name: 'Love', value: 1)
     feeling3 = Feeling.create(name: 'Relief', value: 1)
     feeling4 = Feeling.create(name: 'Satisfaction', value: 1)
-    feeling5 = Feeling.create(name: 'Fear', value: 0)
-    feeling6 = Feeling.create(name: 'Disapointment', value: 0)
-    feeling7 = Feeling.create(name: 'Fears Confirmed', value: 0)
-    feeling8 = Feeling.create(name: 'Anger', value: 0)
+    feeling5 = Feeling.create(name: 'Fear', value: -1)
+    feeling6 = Feeling.create(name: 'Disapointment', value: -1)
+    feeling7 = Feeling.create(name: 'Fears Confirmed', value: -1)
+    feeling8 = Feeling.create(name: 'Anger', value: -1)
 
     # Default question types
     FactoryGirl.create :question_type, category: 'text', friendly_name: 'Text'
@@ -36,11 +36,11 @@ RSpec.describe "Seeder" do
     @unit2 = FactoryGirl.create(:unit, lecturer: @lecturer1, department: department)
     @unit3 = FactoryGirl.create(:unit, lecturer: @lecturer1, department: department)
     now = DateTime.now
-    @assignment = FactoryGirl.create(:assignment, lecturer: @lecturer1, unit: @unit1)
+    @assignment = FactoryGirl.create(:assignment, lecturer: @lecturer1, unit: @unit1, start_date: now - 2.months, end_date: now + 2.months)
     4.times { FactoryGirl.create(:project_seeder, assignment: @assignment) }
-    @iteration1 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now - 40.seconds, deadline: now + 5.second)
-    @iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 11.seconds, deadline: now + 1.month)
-    @iteration3 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 1.month, deadline: now + 2.months)
+    @iteration1 = FactoryGirl.create(:iteration, assignment: @assignment, start_date: @assignment.start_date, deadline: @assignment.start_date + 2.months - 1.hour)
+    @iteration2 = FactoryGirl.create(:iteration, assignment: @assignment, start_date: @assignment.start_date + 2.months - 1.hour, deadline: @assignment.start_date + 3.month)
+    @iteration3 = FactoryGirl.create(:iteration, assignment: @assignment, start_date: @assignment.start_date + 3.months + 1.day, deadline: @assignment.start_date + 4.months)
     FactoryGirl.create(:pa_form_seeder, iteration: @iteration1, start_offset: 2.seconds, end_offset: 1.month)
     FactoryGirl.create(:pa_form_seeder, iteration: @iteration2)
     FactoryGirl.create(:pa_form_seeder, iteration: @iteration3)
@@ -79,14 +79,16 @@ RSpec.describe "Seeder" do
     Timecop.freeze now do
       @assignment.projects.each do |project|
         project.students.each do |student|
-          FactoryGirl.create(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+          pe = build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
+          pe.save validate: false
         end
       end
     end
 
     Timecop.freeze now do
       @assignment.projects.each do |project|
-        FactoryGirl.create(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+        pe = build(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1, date_submitted: now,  feelings_project_evaluations_attributes: valid_feelings_params)
+        pe.save validate: false
       end
     end
 
@@ -97,11 +99,11 @@ RSpec.describe "Seeder" do
     @unit1 = FactoryGirl.create(:unit, lecturer: @lecturer2, department: department)
     @unit2 = FactoryGirl.create(:unit, lecturer: @lecturer2, department: department)
     @unit3 = FactoryGirl.create(:unit, lecturer: @lecturer2, department: department)
-    @assignment = FactoryGirl.create(:assignment, lecturer: @lecturer2, unit: @unit1)
+    @assignment = FactoryGirl.create(:assignment, lecturer: @lecturer2, unit: @unit1, start_date: now - 2.months, end_date: now + 2.months)
     4.times { FactoryGirl.create(:project_seeder, assignment: @assignment) }
-    @iteration1 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now - 40.seconds, deadline: now + 1.second)
-    @iteration2 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 11.seconds, deadline: now + 1.month)
-    @iteration3 = FactoryGirl.create(:iteration, assignment_id: @assignment.id, start_date: now + 1.month, deadline: now + 2.months)
+    @iteration1 = FactoryGirl.create(:iteration, assignment: @assignment, start_date: @assignment.start_date, deadline: @assignment.start_date + 2.months - 1.hour)
+    @iteration2 = FactoryGirl.create(:iteration, assignment: @assignment, start_date: @assignment.start_date + 2.months - 1.hour, deadline: @assignment.start_date + 3.month)
+    @iteration3 = FactoryGirl.create(:iteration, assignment: @assignment, start_date: @assignment.start_date + 3.months + 1.day, deadline: @assignment.start_date + 4.months)
     FactoryGirl.create(:pa_form_seeder, iteration: @iteration1, start_offset: 2.seconds, end_offset: 1.month)
     FactoryGirl.create(:pa_form_seeder, iteration: @iteration2)
     FactoryGirl.create(:pa_form_seeder, iteration: @iteration3)
@@ -129,14 +131,16 @@ RSpec.describe "Seeder" do
     Timecop.freeze now do
       @assignment.projects.each do |project|
         project.students.each do |student|
-          FactoryGirl.create(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+          pe = build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
+          pe.save validate: false
         end
       end
     end
 
     Timecop.freeze now do
       @assignment.projects.each do |project|
-        FactoryGirl.create(:project_evaluation_seeder, user: @lecturer2, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
+        pe = build(:project_evaluation_seeder, user: @lecturer2, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
+        pe.save validate: false
       end
     end
 

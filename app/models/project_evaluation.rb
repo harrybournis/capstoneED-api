@@ -1,4 +1,6 @@
-## A Project can be Evaluated by both a Lecturer and a Student
+# A Project can be Evaluated by both a Lecturer and a Student
+# during an Iteration. The answers of the Student and Lecturer
+# are compared, and they are presented for feedback.
 class ProjectEvaluation < ApplicationRecord
   # Attributes
   #
@@ -13,16 +15,17 @@ class ProjectEvaluation < ApplicationRecord
   belongs_to :project
   belongs_to :iteration
   belongs_to :user
-  belongs_to :feeling
+  has_many :feelings_project_evaluations, inverse_of: :project_evaluation
+  has_many :feelings, through: :feelings_project_evaluations
   has_many :project_evaluation_points
 
   # Validations
   validates_presence_of :project_id,
                         :iteration_id,
-                        :feeling_id,
                         :user_id,
                         :percent_complete,
-                        :date_submitted
+                        :date_submitted,
+                        :feelings_average
   validates_inclusion_of :percent_complete,
                          in: 0..100,
                          message: 'must be between 0 and 100'
@@ -31,8 +34,11 @@ class ProjectEvaluation < ApplicationRecord
   validate :user_is_associated_with_project
   validate :iteration_limit_of_evaluations_has_not_been_reached_for_user
 
+  accepts_nested_attributes_for :feelings_project_evaluations
+
   # Callbacks
   before_validation :assign_date_submitted_to_current_time
+  before_validation :set_feelings_average, on: [:create, :save]
 
   # Constants
   NO_OF_EVALUATIONS_PER_ITERATION = 2
@@ -74,5 +80,16 @@ class ProjectEvaluation < ApplicationRecord
     return if iteration_id.nil? || user_id.nil? || project_id.nil? ||
               iteration.project_evaluations.where(user_id: user_id, project_id: project_id).count < NO_OF_EVALUATIONS_PER_ITERATION
     errors.add(:iteration_id, "the limit of ProjectEvaluations for this iteration has been reached")
+  end
+
+  # Before saving calculate the feelings average if it is a new
+  # record.
+  def set_feelings_average
+    return if persisted? || feelings_project_evaluations.empty?
+    sum = 0
+    feelings_project_evaluations.each do |fp|
+      sum += fp.percent * fp.feeling.value
+    end
+    self.feelings_average = sum / Feeling.count
   end
 end

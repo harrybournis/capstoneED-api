@@ -17,12 +17,29 @@ RSpec.describe Iteration, type: :model do
 
 	it '#active? returns whether the iteration is currently going on' do
 		now = DateTime.now
-		iteration = FactoryGirl.create(:iteration, start_date: now, deadline: now + 3.days)
-		expect(iteration.active?).to be_truthy
+		assignment = create :assignment
+		iteration = create :iteration, assignment: assignment
+
+		Timecop.travel iteration.start_date + 2.hours do
+			expect(iteration.active?).to be_truthy
+		end
 
 		Timecop.travel(DateTime.now + 1.year) do
 			expect(iteration.active?).to be_falsy
 		end
+	end
+
+	it '.active returns all the iterations that are currently taking place' do
+		now = DateTime.now
+		assignment  = create :assignment, start_date: now - 2.months, end_date:  now + 2.months
+		assignment2  = create :assignment, start_date: now - 2.months, end_date:  now + 2.months
+		iteration1 = create :iteration, start_date: now - 1.month, deadline: now - 10.days, assignment: assignment
+		iteration2 = create :iteration, start_date: now - 1.hour, deadline: now + 10.days, assignment: assignment
+		iteration3 = create :iteration, start_date: now - 30.minutes, deadline: now + 20.days, assignment: assignment2
+		expect(Iteration.count).to eq 3
+
+		expect(Iteration.active.length).to eq 2
+		expect(Iteration.active).to include iteration2, iteration3
 	end
 
 	# it 'validates that start_date is not in the past' do
@@ -55,4 +72,10 @@ RSpec.describe Iteration, type: :model do
 		iteration = build :iteration, assignment: assignment, start_date: now, deadline: now + 10.days
 		expect(iteration.valid?).to be_truthy
 	end
+
+  it '#evaluation_submission_period_middle returns the range between the dates in 40-50% of the iteration length' do
+  end
+
+  it '#evaluation_submission_period_end returns the range between the dates in 90-100% of the iteration length' do
+  end
 end

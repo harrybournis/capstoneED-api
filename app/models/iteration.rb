@@ -24,6 +24,19 @@ class Iteration < ApplicationRecord
   validate :takes_place_within_the_assignment_duration
   validate :deadline_is_after_start_date
 
+
+  # Returns the Iterations that are currently taking place.
+  # Iteration start_date must be smaller than the current time,
+  # and the deadline should be bigger than the current time.
+  # Can be chained with further active record question.
+  #
+  # @return [Iteation[]] An active record collection with the Iterations.
+  #
+  def self.active
+    now = DateTime.now
+    where(["iterations.start_date <= :now and iterations.deadline >= :now", now: now])
+  end
+
   # return whether the iteration is currently happening
   def active?
     now = DateTime.now

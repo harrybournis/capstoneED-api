@@ -43,17 +43,23 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
       Timecop.travel(DateTime.now + 5.days) do
         @student, @csrf = login_integration @student
 
-        post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
         expect(status).to eq 201
         @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).last
         expect(@point.points).to eq @game_setting.points_log
 
-        post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
         expect(status).to eq 201
         @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).last
         expect(@point.points).to eq @game_setting.points_log - (@game_setting.points_log / @game_setting.max_logs_per_day)
 
-        post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).count }
         expect(status).to eq 201
         @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log][:id]).last
         expect(@point.points).to eq @game_setting.points_log - ((@game_setting.points_log / @game_setting.max_logs_per_day) * 2)
@@ -125,7 +131,7 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
         expect(status).to eq 201
       end
 
-      Timecop.travel(now + 6.days) do
+      Timecop.travel(now + 6.days + 2.hours) do
         @student, @csrf = login_integration @student
 
         @game_setting.max_logs_per_day.times do

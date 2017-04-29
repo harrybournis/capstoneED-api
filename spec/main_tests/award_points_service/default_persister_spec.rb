@@ -73,7 +73,7 @@ RSpec.describe PointsAward::Persisters::DefaultPersister, type: :model do
       @project.assignment.start_date = now
       @project.assignment.end_date = now + 1.month
       @project.assignment.save
-      @project.assignment.iterations << FactoryGirl.create(:iteration, start_date: now, deadline: now + 28.days)
+      create(:iteration, assignment: @project.assignment)
       @feeling = FactoryGirl.create(:feeling)
       @project_evaluation = FactoryGirl.create(:project_evaluation, user: @student, project: @project, percent_complete: 89, date_submitted: DateTime.now, iteration: @project.assignment.iterations.first)
       expect(@project_evaluation.valid?).to be_truthy

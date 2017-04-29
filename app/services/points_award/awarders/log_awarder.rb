@@ -35,7 +35,10 @@ module PointsAward::Awarders
       current_num = 0
 
       @students_project.logs.last(max_logs + 1).each do |log|
-        current_num += 1 if Time.at(log['date_submitted'].to_i).today?
+        # tried this with .today? method, but some kind of bug
+        # kept saying that DateTime.now was not today in testing.
+        # This works in every case.
+        current_num += 1 if DateTime.now.to_i - Time.at(log['date_submitted'].to_i).to_i <= 1.day.to_i
 
         return if current_num > max_logs
       end

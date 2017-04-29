@@ -13,7 +13,7 @@ RSpec.describe V1::FeelingsController, type: :controller do
 
 	it 'index returns all feelings', { docs?: true } do
 		create :feeling, name: 'Happy', value: 1
-		create :feeling, name: 'Sad', value: 0
+		create :feeling, name: 'Sad', value: -1
 		get :index
 
 		expect(status).to eq(200)
