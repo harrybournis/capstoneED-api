@@ -20,6 +20,10 @@ class V1::PointsController < ApplicationController
     current_ranks = service.call
 
     json =  { points: {
+                        project_name: @project.project_name,
+                        team_name: @project.team_name,
+                        logo: @project.logo,
+                        color: @project.color,
                         average: @project.team_average,
                         total: @project.team_points,
                         previous_rank: @project.rank,
@@ -46,6 +50,9 @@ class V1::PointsController < ApplicationController
     @assignment.projects.each do |project|
       project_hash =  {
                         project_id: project.id,
+                        project_name: project.project_name,
+                        logo: project.logo,
+                        color: project.color,
                         team_name: project.team_name,
                         total: project.team_points,
                         average: project.team_average,
