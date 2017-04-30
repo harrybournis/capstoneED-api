@@ -5,7 +5,10 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
   before(:each) do
     host! 'api.example.com'
 
-    @assignment = create :assignment
+    now = DateTime.now
+    @assignment = create :assignment, start_date: now - 2.months, end_date: now + 2.months
+    @iteration1 = create :iteration, assignment: @assignment, start_date: @assignment.start_date, deadline: now + 1.month
+    @iteration2 = create :iteration, assignment: @assignment, start_date: now + 1.month + 1.minute, deadline: @assignment.end_date
     @game_setting  = create :game_setting, assignment: @assignment, points_log: 10, max_logs_per_day: 3
     @project = create :project, assignment: @assignment
     @student = create :student_confirmed
@@ -181,7 +184,7 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
       end
     end
 
-    it 'gives points if submitted first in the team' do
+    it 'gives points if submitted first in the team for each iteration' do
       @students_project.logs = []
       @students_project.save
       @student2 = create :student_confirmed
@@ -196,9 +199,18 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
       expect(status).to eq 201
       @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_team][:id]).last
       expect(@point.points).to eq @game_setting.points_log_first_of_team
+
+      Timecop.travel @iteration2.start_date + 1.day do
+        @student, @csrf = login_integration @student
+
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_team][:id]).count }
+
+      end
     end
 
-    it 'gives points if submitted first in the assignment' do
+    it 'gives points if submitted first in the assignment for each iteration' do
       @students_project.logs = []
       @students_project.save
       @student2 = create :student_confirmed
@@ -214,6 +226,14 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
       expect(status).to eq 201
       @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_assignment][:id]).last
       expect(@point.points).to eq @game_setting.points_log_first_of_assignment
+
+      Timecop.travel @iteration2.start_date + 1.day do
+        @student, @csrf = login_integration @student
+
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_assignment][:id]).count }
+      end
     end
   end
 
@@ -268,6 +288,14 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
       expect(status).to eq 201
       @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_assignment][:id]).last
       expect(@point).to be_falsy
+
+      Timecop.travel @iteration2.start_date + 1.day do
+        @student, @csrf = login_integration @student
+
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_assignment][:id]).count }
+      end
     end
   end
 

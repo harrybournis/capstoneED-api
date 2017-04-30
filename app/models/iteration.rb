@@ -43,6 +43,14 @@ class Iteration < ApplicationRecord
     start_date <= now && now <= deadline
   end
 
+  # Returns the start_date and the deadline as a range.
+  #
+  # @return [Range<DateTime>] The range of the itetrations
+  #   start_date and deadline.
+  #
+  def duration
+    start_date..deadline
+  end
   # Returns the iteration health (currently static CHANGE)
   def iteration_health
     54

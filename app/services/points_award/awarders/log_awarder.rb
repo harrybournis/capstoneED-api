@@ -73,15 +73,21 @@ module PointsAward::Awarders
     end
 
     # Gives points for submtting a log first in the team
+    # for the curren iteration.
     #
     # @return [Hash] Points.
     #
     def first_of_team
-      return if @logs_length > 1
-
       found_logs = false
-       StudentsProject.where(project_id: @students_project.project_id).each do |sp|
-        found_logs = true if sp.student_id != @student.id && sp.logs.any?
+
+      current_iteration  = @students_project.project.current_iterations[0]
+      StudentsProject.where(project_id: @students_project.project_id).each do |sp|
+        if sp.student_id != @student.id
+          if sp.logs.any? && current_iteration.duration.cover?(Time.at(sp.logs[-1]['date_submitted'].to_i))
+            found_logs = true
+            break
+          end
+        end
       end
 
       return if found_logs
@@ -92,15 +98,21 @@ module PointsAward::Awarders
     end
 
     # Gives points for submitting a log first in the assignment
+    # for the current iteration.
     #
     # @return [Hash] Points.
     #
     def first_of_assignment
-      return if @logs_length > 1
-
       found_logs = false
-       StudentsProject.where(project_id: @log.project.assignment.projects.select(:id)).each do |sp|
-        found_logs = true if sp.student_id != @student.id && sp.logs.any?
+
+      current_iteration = @students_project.project.current_iterations[0]
+      @students_project.project.assignment.students_projects.each do |sp|
+        if sp.student_id != @student.id
+          if sp.logs.any? && current_iteration.duration.cover?(Time.at(sp.logs[-1]['date_submitted'].to_i))
+            found_logs = true
+            break
+          end
+        end
       end
 
       return if found_logs

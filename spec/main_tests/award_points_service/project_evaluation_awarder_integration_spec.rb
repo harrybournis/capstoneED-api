@@ -12,7 +12,8 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
     @project.assignment.start_date = now
     @project.assignment.end_date = now + 1.month
     @project.assignment.save
-    create(:iteration, assignment: @project.assignment)
+    create :iteration, assignment: @project.assignment, deadline: now + 1.month - 2.days
+    @iteration2 = create :iteration, assignment: @project.assignment, start_date: now + 1.month - 1.day, deadline: now + 1.month
     @feeling = FactoryGirl.create(:feeling)
   end
 
@@ -37,6 +38,9 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
     end
 
     it 'awards points for completing the project evaluation first in the team' do
+      student2 = create :student_confirmed
+      create :students_project, project: @project, student: student2
+
       expect {
         post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
       }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_team][:id]).count }
@@ -44,6 +48,14 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       expect(status).to eq 201
       @point = ProjectEvaluationPoint.where(student_id: @student.id, project_evaluation_id: body['project_evaluation']['id'], reason_id: Reason[:project_evaluation_first_of_team][:id]).last
       expect(@point.points).to eq @game_setting.points_project_evaluation_first_of_team
+
+      Timecop.travel @iteration2.start_date + 2.hours do
+        @student, @csrf = login_integration @student
+
+        expect {
+          post "/v1/projects/#{@project.id}/evaluations", params: @attr.merge(iteration_id: @iteration2.id), headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_team][:id]).count }
+      end
     end
 
     it 'awards points for completing the project evaluation first in the team and the lecturer already submitted' do
@@ -95,9 +107,9 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       expect(@point).to be_falsy
     end
     it 'does not award points if not the first in the team' do
-    	@student2 = create :student_confirmed
-			create :students_project, student: @student2, project: @project
-			create(:project_evaluation, user: @student2, project_id: @project.id, iteration_id: @project.iterations[0].id)
+      @student2 = create :student_confirmed
+      create :students_project, student: @student2, project: @project
+      create(:project_evaluation, user: @student2, project_id: @project.id, iteration_id: @project.iterations[0].id)
 
       expect {
         post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
@@ -165,18 +177,18 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
     end
 
     it 'does not include points in the response if the request was invalid' do
-        @student, @csrf = login_integration @student
+      @student, @csrf = login_integration @student
 
-        @project.students.delete(@student)
-        attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id)
+      @project.students.delete(@student)
+      attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id)
 
-        expect {
-          post "/v1/projects/#{@project.id}/evaluations", params: attr, headers: { 'X-XSRF-TOKEN' => @csrf }
-        }.to_not change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation][:id]).count }
+      expect {
+        post "/v1/projects/#{@project.id}/evaluations", params: attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+      }.to_not change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation][:id]).count }
 
-        expect(status).to eq 422
+      expect(status).to eq 422
 
-        expect(body['points']).to be_falsy
+      expect(body['points']).to be_falsy
     end
 
     it 'does not include points if current user is a lecturer' do
