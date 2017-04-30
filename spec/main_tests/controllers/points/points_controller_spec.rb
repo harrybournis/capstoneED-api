@@ -79,10 +79,27 @@ RSpec.describe V1::PointsController, type: :controller do
 
         expect(status).to eq 200
 
+        @project = Project.find(@project.id)
         expect(body['points']['personal']).to be_falsy
         expect(body['points']['average']).to eq @project.team_average
         expect(body['points']['total']).to eq @project.team_points
       end
+
+      it "contains the previous_rank and the current_rank"  do
+        create :students_project_with_points, project: @project, student: @student
+        create :students_project_with_points, project: @project
+        create :students_project_with_points, project: @project
+
+        get :index_for_project, params: { project_id: @project.id }
+
+        expect(status).to eq 200
+
+        expect(body['points'].keys).to include 'previous_rank'
+        expect(body['points']['current_rank']).to be_truthy
+        @project = Project.find(@project.id)
+        expect(body['points']['current_rank']).to eq @project.rank
+      end
+
 
       it 'returns 403 if user is not associated with the project' do
         project2 = create :project
@@ -137,6 +154,45 @@ RSpec.describe V1::PointsController, type: :controller do
 
         expect(status).to eq 403
         expect(errors_base[0]).to include 'not associated'
+      end
+
+      it 'response contains current_rank and previous_rank' do
+        create :students_project, project: @project, student: @student, points: 10
+        create :students_project, project: @project, points: 10
+        project2 = create :project, assignment: @assignment
+        create :students_project, project: project2, points: 30
+        create :students_project, project: project2, points: 23
+
+        get :index_for_assignment, params: { assignment_id: @assignment.id }
+        expect(status).to eq 200
+        expect(body['points'][0]['current_rank']).to eq 2
+        expect(body['points'][1]['current_rank']).to eq 1
+        expect(body['points'][0]['previous_rank']).to eq nil
+        expect(body['points'][1]['previous_rank']).to eq nil
+      end
+
+      it 'rank is updated after the request' do
+        create :students_project, project: @project, student: @student, points: 10
+        sp = create :students_project, project: @project, points: 10
+        project2 = create :project, assignment: @assignment
+        create :students_project, project: project2, points: 30
+        create :students_project, project: project2, points: 23
+
+        get :index_for_assignment, params: { assignment_id: @assignment.id }
+        expect(status).to eq 200
+
+        sp.update(points: 70)
+        previous = body['points'][0]['current_rank']
+
+        @controller = V1::PointsController.new
+        get :index_for_assignment, params: { assignment_id: @assignment.id }
+        expect(status).to eq 200
+
+        body['points'].each do |project|
+          next unless project['project_id'] == @project.id
+          expect(project['current_rank']).to eq 1
+          expect(project['previous_rank']).to eq previous
+        end
       end
     end
 

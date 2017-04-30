@@ -16,12 +16,20 @@ class V1::PointsController < ApplicationController
   private
 
   def index_for_project_response
+    service = CalculateProjectRankService.new(@project.assignment)
+    current_ranks = service.call
+
     json =  { points: {
                         average: @project.team_average,
-                        total: @project.team_points
+                        total: @project.team_points,
+                        previous_rank: @project.rank,
+                        current_rank: current_ranks[@project.id]
                       }
             }
     json[:points][:personal] = current_user.points_for_project_id(@project.id) if current_user.student?
+
+    service.update!
+
     json
   end
 
@@ -32,12 +40,17 @@ class V1::PointsController < ApplicationController
       my_project_id = current_user.projects.where(assignment_id: @assignment.id)[0].id
     end
 
+    service = CalculateProjectRankService.new(@assignment)
+    current_ranks = service.call
+
     @assignment.projects.each do |project|
       project_hash =  {
                         project_id: project.id,
                         team_name: project.team_name,
                         total: project.team_points,
-                        average: project.team_average
+                        average: project.team_average,
+                        previous_rank: project.rank,
+                        current_rank: current_ranks[project.id]
                       }
       if my_project_id && my_project_id == project.id
         project_hash[:my_team] = true
@@ -45,6 +58,8 @@ class V1::PointsController < ApplicationController
       end
       projects << project_hash
     end
+
+    service.update!
 
     json = { points: projects }
     json

@@ -12,6 +12,7 @@ module Project::Awardable
   # @return [Integer] The sum of the Students Points.
   #
   def team_points
+    return @total if @total
     # This version is implemented as a database sum operation,
     # but it cannot be eager loaded so it results in 5 more
     # database queries:
@@ -21,6 +22,7 @@ module Project::Awardable
     # This version programmatically adds the points:
     total = 0
     students_projects.each { |s| total += s.points }
+    @total = total
     total
   end
 
