@@ -1,3 +1,16 @@
+def valid_feelings_params
+  if Feeling.all.count > 2
+    feeling1 = Feeling.first
+    feeling2 = Feeling.second
+  else
+    feeling1 = create :feeling
+    feeling2 = create :feeling
+  end
+  [
+    { feeling_id: feeling1.id, percent: 32 },
+    { feeling_id: feeling2.id, percent: 64 }
+  ]
+end
 ### -----------------------
 # Defaults
 ### -----------------------
@@ -61,8 +74,8 @@ FactoryGirl.create(:question, lecturer_id: @lecturer1.id, question_type: Questio
     # end
 
     FactoryGirl.create :students_project_seeder, student: @student,
-                                                 project: @assignment.projects[i],
-                                                 points: points.sum
+      project: @assignment.projects[i],
+      points: points.sum
   end
 end
 
@@ -74,7 +87,7 @@ stu.confirm
 Timecop.freeze now do
   @assignment.projects.each do |project|
     project.students.each do |student|
-      pe = build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
+      pe = FactoryGirl.build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
       pe.save validate: false
     end
   end
@@ -82,7 +95,7 @@ end
 
 Timecop.freeze now do
   @assignment.projects.each do |project|
-    pe = build(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1, date_submitted: now,  feelings_project_evaluations_attributes: valid_feelings_params)
+    pe = FactoryGirl.build(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1, date_submitted: now,  feelings_project_evaluations_attributes: valid_feelings_params)
     pe.save validate: false
   end
 end
@@ -118,15 +131,15 @@ FactoryGirl.create(:question, lecturer_id: @lecturer2.id, question_type: Questio
 
     #@assignment.projects[i].students << @student
     FactoryGirl.create :students_project_seeder, student: @student,
-                                                 project: @assignment.projects[i],
-                                                 points: student_points.sample
+      project: @assignment.projects[i],
+      points: student_points.sample
   end
 end
 
 Timecop.freeze now do
   @assignment.projects.each do |project|
     project.students.each do |student|
-      pe = build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
+      pe = FactoryGirl.build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
       pe.save validate: false
     end
   end
@@ -134,7 +147,7 @@ end
 
 Timecop.freeze now do
   @assignment.projects.each do |project|
-    pe = build(:project_evaluation_seeder, user: @lecturer2, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
+    pe = FactoryGirl.build(:project_evaluation_seeder, user: @lecturer2, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
     pe.save validate: false
   end
 end
