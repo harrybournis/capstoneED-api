@@ -18,7 +18,7 @@ module Marking
   # @author [harrybournis]
   #
   class PaAnswersTable
-    attr_reader :project, :pa_form, :question_ids
+    attr_reader :project, :student_ids, :pa_form, :question_ids
     # Constructor. Creates a new PaAnswersTable for an Project and
     # a PaForm. Gets peer assessments from the database for this
     # pa_form, and creates the marks array. For every peer
@@ -45,6 +45,7 @@ module Marking
 
       @peer_assessments = @pa_form.peer_assessments.where(project_id: @project.id)
 
+      @student_ids = @project.students.select(:id).ids
       # get the ids of the students that did not submit, if any
       @did_not_submit = Student.find_by_sql([
                         %{
@@ -124,6 +125,15 @@ module Marking
     #
     def by_for(awarder_id, receiver_id, question_id)
       @table[question_id][awarder_id][receiver_id]
+    end
+
+    # Returns an Array with the ids of the
+    # Students that did not submit the Peer Assessment.
+    #
+    # @return [Array<Integer>] The ids of the students
+    #   that did not submit.
+    def did_not_submit_ids
+      @did_not_submit.map(&:id)
     end
 
     private

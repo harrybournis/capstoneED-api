@@ -13,6 +13,24 @@ module Marking
       @marks.any?
     end
 
+    # Returns the scores hash.
+    #
+    # @return [Hash<Integer,Decimal>] The scores
+    #   for each student.
+    #
+    def scores
+        @scores
+    end
+
+    # Returns the marks hash.
+    #
+    # @return [Hash<Integer,Integer>] The marks
+    #   for each student.
+    #
+    def marks
+        @marks
+    end
+
     # Returns the score for the provided
     # student_id.
     #

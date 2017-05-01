@@ -66,23 +66,36 @@ class CalculatePaScoresService
   def initialize(iteration)
     @iteration = iteration
     @marking_klass = resolve_marking_algorithm_class iteration.game_setting.marking_algorithm_id
-
-    pa_form = iteration.pa_form
-    @project_marks = []
-    iteration.projects.each do |project|
-      @pa_answers_tables << CalculatePaScores::PaAnswersTable.new(project, pa_form)
-    end
+    @persisters = resolve_persister_classes
+    @pa_form = iteration.pa_form
   end
 
   # Executes the action of the service. Calls the sp
   #
-  # @return [type] [description]
+  # @return [Boolean] True if successfully scored and persited,
+  #   false if there was an error.
   #
   def call
+    return nil unless can_mark?
+    @iteration.projects.each do |project|
+      pa_answers_table = Marking::PaAnswersTable.new(project, @pa_form)
+      results = @marking_klass.calculate_scores(pa_answers_table)
+
+      @persisters.each do |persister|
+        chain(:persisted) { persister.new(@iteration, results).save! }
+          .when_falsy     { outflow[:persisted] == true }
+          .dam            { nil }
+      end
+
+      chain               { return true }
+      on_dam              { return nil }
+    end
+  rescue
+    return nil
   end
 
   def can_mark?
-    @iteration.finished?
+    @iteration.finished? && !@iteration.marked?
   end
 
   private
@@ -105,11 +118,7 @@ class CalculatePaScoresService
     end
   end
 
-  def resolve_persister_classes(string_or_array)
-    if string_or_array.is_a? String
-      ["#{NAMESPACE}::Persisters::#{string_or_array}".constantize]
-    else
-      string_or_array.map { |s| "#{NAMESPACE}::Persisters::#{s}".constantize }
-    end
+  def resolve_persister_classes
+    PERSISTERS.map { |s| "Marking::Persisters::#{s}".constantize }
   end
 end
