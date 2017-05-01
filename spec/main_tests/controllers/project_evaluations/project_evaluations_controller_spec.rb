@@ -28,14 +28,14 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
     end
 
     it 'POST create creates new project_evaluation if student is in project', { docs?: true, lecturer?: false } do
-      attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feelings: valid_feelings_params)
+      attr = FactoryGirl.attributes_for(:project_evaluation).except(:date_submitted, :feelings_average, :iteration, :project, :user).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feelings: valid_feelings_params)
 
       post :create, params: attr
 
       expect(status).to eq(201)
     end
 
-    it 'POST create creates new project_evaluation with feelings', { docs?: true, lecturer?: false } do
+    it 'POST create creates new project_evaluation with feelings' do
       attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feelings: valid_feelings_params)
 
       expect {
@@ -44,7 +44,7 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 
       expect(status).to eq(201)
     end
-    it 'POST returns 422 unprocessable_entity if student does not belong in project', { docs?: true, lecturer?: false }  do
+    it 'POST returns 422 unprocessable_entity if student does not belong in project' do
       @project.students.delete(@student)
       attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id)
       post :create, params: attr
@@ -59,6 +59,7 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
         request.cookies['access-token'] = mock_request.cookies['access-token']
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
         attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id)
+
         post :create, params: attr
 
         expect(status).to eq(422)
@@ -66,11 +67,12 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
       end
     end
 
-    it 'index returns 200 and the projects that can be evaluated without the students' do
+    it 'index returns 200 and the projects that can be evaluated without the students', { docs?: true, lecturer?: false } do
       Timecop.travel @iteration.deadline - 1.hour do
         mock_request = MockRequest.new(valid = true, @student)
         request.cookies['access-token'] = mock_request.cookies['access-token']
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
         get :index
 
         expect(status).to eq 200
@@ -82,7 +84,7 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
       end
     end
 
-    it 'index returns 204 if no projects can be evaluated' do
+    it 'index returns 204 if no projects can be evaluated', { docs?: true, lecturer?: false } do
       Timecop.travel @iteration.start_date + 2.hours do
         mock_request = MockRequest.new(valid = true, @student)
         request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -162,7 +164,7 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
       end
     end
 
-    it 'index returns 200 and the projects that can be evaluated with the students' do
+    it 'index returns 200 and the projects that can be evaluated with the students', { docs?: true } do
       Timecop.travel @iteration.deadline - 1.hour do
         mock_request = MockRequest.new(valid = true, @lecturer)
         request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -183,13 +185,14 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
         expect(body['pending_evaluations'][0]['team_answers'].length).to eq Project.find( body['pending_evaluations'][0]['project_id']).students.count
       end
     end
-    it 'index returns 204 if no projects can be evaluated' do
+    it 'index returns 204 if no projects can be evaluated', { docs?: true } do
       Timecop.travel @iteration.start_date + 2.hours do
         mock_request = MockRequest.new(valid = true, @lecturer)
         request.cookies['access-token'] = mock_request.cookies['access-token']
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
         get :index
+
         expect(status).to eq 204
       end
     end
