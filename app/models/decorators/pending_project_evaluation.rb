@@ -102,11 +102,11 @@ module Decorators
       answers = []
 
       pe.each do |evaluation|
-        answers << { student: evaluation.user, percent_completed: evaluation.percent_complete }
+        answers << ActiveModelSerializers::SerializableResource.new(evaluation.user).serializable_hash.merge(percent_completed: evaluation.percent_complete)
       end
 
       students.each do |student|
-        answers << { student: student, percent_completed: nil }
+        answers << ActiveModelSerializers::SerializableResource.new(student).serializable_hash.merge(percent_completed: nil)
       end
 
       @team_answers = answers
