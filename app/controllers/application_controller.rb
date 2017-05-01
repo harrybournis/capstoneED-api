@@ -50,7 +50,7 @@ class ApplicationController < ActionController::API
       logger.error e.message
       logger.error e.backtrace.join("\n\t")
     end
-    render json: format_errors({ base: [Rails.env.production? ? 'Operation Failed' : e.message] }),
+    render json: format_errors({ base: [Rails.env.production? ? 'Operation Failed' : e.backtrace] }),
            status: 500
   end
 end

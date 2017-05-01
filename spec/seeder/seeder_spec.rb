@@ -3,6 +3,19 @@ require 'rails_helper'
 RSpec.describe "Seeder" do
 
   before(:each) do
+    def valid_feelings_params
+      if Feeling.all.count > 2
+        feeling1 = Feeling.first
+        feeling2 = Feeling.second
+      else
+        feeling1 = create :feeling
+        feeling2 = create :feeling
+      end
+      [
+        { feeling_id: feeling1.id, percent: 32 },
+        { feeling_id: feeling2.id, percent: 64 }
+      ]
+    end
     ### -----------------------
     # Defaults
     ### -----------------------
@@ -21,9 +34,9 @@ RSpec.describe "Seeder" do
     FactoryGirl.create :question_type, category: 'number', friendly_name: 'Number'
     FactoryGirl.create :question_type, category: 'rank', friendly_name: 'Rank'
 
-points_object_values = [20,40,50,10,30, 20,40,50,10,30, 20,40,50,10,30]
-student_points = [50, 60, 10, 10, 20, 70, 80, 40, 30, 20, 40, 60, 50, 90, 40]
-hours_worked = [1,2,3,4,5,6,7,8,9,10]
+    points_object_values = [20,40,50,10,30, 20,40,50,10,30, 20,40,50,10,30]
+    student_points = [50, 60, 10, 10, 20, 70, 80, 40, 30, 20, 40, 60, 50, 90, 40]
+    hours_worked = [1,2,3,4,5,6,7,8,9,10]
 
     ### -----------------------
     # Dummy Data
@@ -66,52 +79,52 @@ hours_worked = [1,2,3,4,5,6,7,8,9,10]
         #   point_object_array << create(symbol, points: p, student_id: @student.id, project: @assignment.projects[i])
         # end
 
-    points = points_object_values.sample(rand(1..6))
-    # point_object_array = []
-    # points.each do |p|
-    #   symbol = [:log_point, :peer_assessment_point, :project_evaluation_point].sample
-    #   point_object_array << create(symbol, points: p, student_id: @student.id, project: @assignment.projects[i])
-    # end
-
-    sp = FactoryGirl.create :students_project_seeder, student: @student,
+        sp = FactoryGirl.create :students_project_seeder, student: @student,
                                                       project: @assignment.projects[i],
                                                       points: points.sum
-    10.times do |i|
-      sp.add_log(JSON.parse({ date_worked: (DateTime.now + i.day).to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json))
-      expect(sp.save(validate: false)).to be_truthy
+        10.times do |i|
+          sp.add_log(JSON.parse({ date_worked: (DateTime.now + i.day).to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json))
+          sp.save(validate: false)
+        end
+      end
     end
-  end
-end
 
     stu = @assignment.projects[0].students[0]
     stu.skip_confirmation_notification!
     stu.update(email: 'giorgos@bar.com')
     stu.confirm
 
-    Timecop.freeze now do
+    Timecop.freeze @iteration1.deadline - 1.hour do
       @assignment.projects.each do |project|
         project.students.each do |student|
-          pe = build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
-          pe.save validate: false
+          pe = FactoryGirl.build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, feelings_project_evaluations_attributes: valid_feelings_params)
+          pe.save #validate: false
         end
       end
     end
 
-    Timecop.freeze now do
+    Timecop.travel @iteration1.start_date + 1.month - 5.hours do
       @assignment.projects.each do |project|
-        pe = build(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1, date_submitted: now,  feelings_project_evaluations_attributes: valid_feelings_params)
-        pe.save validate: false
+        project.students.each do |student|
+          pe = FactoryGirl.build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, feelings_project_evaluations_attributes: valid_feelings_params)
+          pe.save #validate: false
+        end
       end
     end
-  end
-end
 
-Timecop.freeze now do
-  @assignment.projects.each do |project|
-    FactoryGirl.create(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
-  end
-end
+    Timecop.freeze @iteration1.deadline - 1.hour do
+      @assignment.projects.each do |project|
+        pe = FactoryGirl.build(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1,  feelings_project_evaluations_attributes: valid_feelings_params)
+        pe.save #validate: false
+      end
+    end
 
+    Timecop.travel @iteration1.start_date + 1.month - 5.hours do
+      @assignment.projects.each do |project|
+        pe = FactoryGirl.build(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1,  feelings_project_evaluations_attributes: valid_feelings_params)
+        pe.save #validate: false
+      end
+    end
 
     # 2nd Lecturer
     @lecturer2 = FactoryGirl.create(:lecturer_confirmed_seeder, email: 'foo1@bar.com')
@@ -150,7 +163,7 @@ end
     Timecop.freeze now do
       @assignment.projects.each do |project|
         project.students.each do |student|
-          pe = build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
+          pe = FactoryGirl.build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
           pe.save validate: false
         end
       end
@@ -158,21 +171,12 @@ end
 
     Timecop.freeze now do
       @assignment.projects.each do |project|
-        pe = build(:project_evaluation_seeder, user: @lecturer2, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
+        pe = FactoryGirl.build(:project_evaluation_seeder, user: @lecturer2, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
         pe.save validate: false
       end
     end
-  end
-end
-
-Timecop.freeze now do
-  @assignment.projects.each do |project|
-    FactoryGirl.create(:project_evaluation_seeder, user: @lecturer2, project: project, iteration: @iteration1, date_submitted: now, feeling: Feeling.all.sample)
-  end
-end
 
   end
-
 
   it 'works' do
     expect(Lecturer.count).to eq 2

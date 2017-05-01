@@ -1,8 +1,7 @@
 class V1::Logs::StatsController < ApplicationController
-
   before_action :allow_if_lecturer, only: :hours_worked
   before_action :contains_project_id, only: :hours_worked
-  before_action :set_project_if_associated, only: :hours_worked
+  before_action :set_project_if_associated,  only: :hours_worked
 
   # GET /stats?graph=hours_worked&project_id=2
   def hours_worked

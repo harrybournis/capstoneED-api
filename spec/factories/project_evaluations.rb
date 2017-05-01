@@ -11,7 +11,7 @@ FactoryGirl.define do
       project
     end
     iteration { FactoryGirl.create(:iteration, assignment: project.assignment, start_date: @now, deadline: @now + 28.days) }
-    percent_complete (10..93).to_a.sample
+    percent_complete { rand 10..93 }
     date_submitted nil
     feelings_average { rand -60..90 }
     factory :project_evaluation_lecturer do

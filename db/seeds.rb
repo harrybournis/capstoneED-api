@@ -33,7 +33,6 @@ points_object_values = [20,40,50,10,30, 20,40,50,10,30, 20,40,50,10,30]
 student_points = [50, 60, 10, 10, 20, 70, 80, 40, 30, 20, 40, 60, 50, 90, 40]
 hours_worked = [1,2,3,4,5,6,7,8,9,10]
 
-
 ### -----------------------
 # Dummy Data
 ### -----------------------
@@ -76,10 +75,10 @@ FactoryGirl.create(:question, lecturer_id: @lecturer1.id, question_type: Questio
     # end
 
     sp = FactoryGirl.create :students_project_seeder, student: @student,
-                                                      project: @assignment.projects[i],
-                                                      points: points.sum
+                                                  project: @assignment.projects[i],
+                                                  points: points.sum
     10.times do |i|
-      sp.add_log JSON.parse({ date_worked: (DateTime.now + i.day).to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json)
+      sp.add_log(JSON.parse({ date_worked: (DateTime.now + i.day).to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json))
       sp.save(validate: false)
     end
   end
@@ -90,23 +89,37 @@ stu.skip_confirmation_notification!
 stu.update(email: 'giorgos@bar.com')
 stu.confirm
 
-Timecop.freeze now do
+Timecop.freeze @iteration1.deadline - 1.hour do
   @assignment.projects.each do |project|
     project.students.each do |student|
-      pe = FactoryGirl.build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, date_submitted: now, feelings_project_evaluations_attributes: valid_feelings_params)
-      pe.save validate: false
+      pe = FactoryGirl.build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, feelings_project_evaluations_attributes: valid_feelings_params)
+      pe.save #validate: false
     end
   end
 end
 
-Timecop.freeze now do
+Timecop.travel @iteration1.start_date + 1.month - 5.hours do
   @assignment.projects.each do |project|
-    pe = FactoryGirl.build(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1, date_submitted: now,  feelings_project_evaluations_attributes: valid_feelings_params)
-    pe.save validate: false
+    project.students.each do |student|
+      pe = FactoryGirl.build(:project_evaluation_seeder, user: student, project: project, iteration: @iteration1, feelings_project_evaluations_attributes: valid_feelings_params)
+      pe.save #validate: false
+    end
   end
 end
 
+Timecop.freeze @iteration1.deadline - 1.hour do
+  @assignment.projects.each do |project|
+    pe = FactoryGirl.build(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1,  feelings_project_evaluations_attributes: valid_feelings_params)
+    pe.save #validate: false
+  end
+end
 
+Timecop.travel @iteration1.start_date + 1.month - 5.hours do
+  @assignment.projects.each do |project|
+    pe = FactoryGirl.build(:project_evaluation_seeder, user: @lecturer1, project: project, iteration: @iteration1,  feelings_project_evaluations_attributes: valid_feelings_params)
+    pe.save #validate: false
+  end
+end
 
 # 2nd Lecturer
 @lecturer2 = FactoryGirl.create(:lecturer_confirmed_seeder, email: 'foo1@bar.com')
@@ -137,8 +150,8 @@ FactoryGirl.create(:question, lecturer_id: @lecturer2.id, question_type: Questio
 
     #@assignment.projects[i].students << @student
     FactoryGirl.create :students_project_seeder, student: @student,
-      project: @assignment.projects[i],
-      points: student_points.sample
+                                                 project: @assignment.projects[i],
+                                                 points: student_points.sample
   end
 end
 

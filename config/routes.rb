@@ -90,6 +90,7 @@ Rails.application.routes.draw do
 
     # Statistics
     get 'stats', to: 'logs/stats#hours_worked', constraints: -> (request) { request.params[:graph] == 'hours_worked' }
+    get 'stats', to: 'project_evaluations/stats#percent_completion', constraints: -> (request) { request.params[:graph] == 'percent_completion' }
   end
 
   ## To be removed

@@ -49,10 +49,9 @@ RSpec.describe V1::Logs::StatsController, type: :request do
 
       expect(status).to eq 200
 
-      expect(body['hours_worked_graph'].length).to eq @sp1.logs.length + @sp2.logs.length
-      expect(body['hours_worked_graph'][0][0]).to be_a Integer
-      expect(Time.at(body['hours_worked_graph'][0][1].to_i).to_datetime).to be_truthy
-      expect(body['hours_worked_graph'][0][1].to_datetime).to eq Time.at(@sp1.logs[0]['date_worked'].to_i).to_datetime
+      expect(body['hours_worked_graph'].length).to eq @project.students.length
+      expect(Time.at(body['hours_worked_graph'][0]['data'][0][0].to_i / 1000).to_datetime).to be_truthy
+      expect(Time.at(body['hours_worked_graph'][0]['data'][0][0].to_i / 1000).to_datetime).to eq Time.at(@sp1.logs[0]['date_worked'].to_i).to_datetime
     end
 
     it 'GET hours_worked returns 400 bad request if no project_id in params' do
