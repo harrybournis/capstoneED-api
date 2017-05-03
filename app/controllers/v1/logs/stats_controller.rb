@@ -7,16 +7,27 @@ class V1::Logs::StatsController < ApplicationController
   def hours_worked
     result = []
 
+    average_hash = Hash.new { |key,val| key[val] = [] }
+
     @project.students_projects.eager_load(:student).each do |sp|
       student_logs = { name: sp.student.full_name, data: [], visible: false }
 
       sp.logs.each do |log|
-        # Time.at(log['date_worked'].to_i).to_datetime
-        #
-        student_logs[:data] << [log['date_worked'].to_i * 1000, log['time_worked'].to_i / 3600]
+        date = Time.at(log['date_worked'].to_i).beginning_of_day.to_i * 1000
+        time = log['time_worked'].to_i / 3600
+
+        average_hash[date] << time
+        student_logs[:data] << [date, time]
       end
       result << student_logs
     end
+
+    average_result = { name: 'Team Average', data: [] }
+    average_hash.each do |date_worked,time_array|
+      average_result[:data] << [date_worked, time_array.inject(:+).to_f / time_array.length]
+    end
+
+    result.unshift average_result
 
     render json: { hours_worked_graph: result }.to_json, status: :ok
   end
