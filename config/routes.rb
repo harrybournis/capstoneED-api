@@ -91,6 +91,7 @@ Rails.application.routes.draw do
     # Statistics
     get 'stats', to: 'logs/stats#hours_worked_assignment', constraints: -> (request) { request.params[:graph] == 'hours_worked' && request.params[:assignment_id] }
     get 'stats', to: 'logs/stats#hours_worked_project', constraints: -> (request) { request.params[:graph] == 'hours_worked' && request.params[:project_id] }
+    get 'stats', to: 'logs/stats#logs_heatmap', constraints: -> (request) { request.params[:graph] == 'logs_heatmap' }
     get 'stats', to: 'project_evaluations/stats#percent_completion', constraints: -> (request) { request.params[:graph] == 'percent_completion' }
   end
 

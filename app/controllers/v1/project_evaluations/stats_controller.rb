@@ -51,7 +51,7 @@ class V1::ProjectEvaluations::StatsController < ApplicationController
   end
 
   def set_project_if_associated
-    unless @project = current_user.projects(includes: includes_array).where(id: params[:project_id])[0]
+    unless @project = current_user.projects(includes: [:iterations, :students, :lecturer]).where(id: params[:project_id])[0]
       render_not_associated_with_current_user('Project')
       false
     end

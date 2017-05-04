@@ -19,4 +19,8 @@ RSpec.describe 'Stats Routing', type: :routing do
       controller: 'v1/logs/stats', action: 'hours_worked_assignment', graph: "hours_worked", assignment_id: "3")
   end
 
+  it 'GET /stats?graph=logs_heatmap&project_id routes to logs_heatmap' do
+    expect(get: "#{url}/v1/stats?graph=logs_heatmap&project_id=5").to route_to(controller: 'v1/logs/stats', action: 'logs_heatmap', graph: 'logs_heatmap', project_id: "5")
+  end
+
 end

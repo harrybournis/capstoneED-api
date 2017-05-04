@@ -1,8 +1,8 @@
 class V1::Logs::StatsController < ApplicationController
   before_action :allow_if_lecturer, only: [:hours_worked_project, :hours_worked_assignment]
-  before_action :contains_project_id, only: :hours_worked_project
+  before_action :contains_project_id, only: [:hours_worked_project, :logs_heatmap]
   before_action :contains_assignment_id, only: :hours_worked_assignment
-  before_action :set_project_if_associated,  only: :hours_worked_project
+  before_action :set_project_if_associated,  only: [:hours_worked_project, :logs_heatmap]
   before_action :set_assignment_if_associated,  only: :hours_worked_assignment
 
   # GET /stats?graph=hours_worked&project_id=2
@@ -59,6 +59,34 @@ class V1::Logs::StatsController < ApplicationController
     render json: { hours_worked_graph: result }.to_json, status: :ok
   end
 
+  def logs_heatmap
+    result = []
+    logs_count_hash = Hash.new { |key,val| key[val] = Hash.new { |key,val| key[val] = Hash.new { |key,val| key[val] = 0 } } }
+
+    order_hash = {}
+    @project.students_projects.order(:id).eager_load(:student).each_with_index do |sp,index|
+      #logs_count_hash[sp.student_id][sp.student.full_name] = 0
+      order_hash[sp.student_id] = index
+      sp.logs.each do |log|
+        date = Time.at(log['date_submitted'].to_i).beginning_of_day.to_i * 1000
+
+        logs_count_hash[sp.student_id][sp.student.full_name][date] += 1 || average_hash[sp.student_id][sp.student.full_name][date] = 1
+      end
+    end
+
+    logs_count_hash.each do |student_id,name_date|
+      name_date.each do |name,date_number|
+        student =  { name: name, data: [] }
+        date_number.each do |date,number_of_logs|
+          student[:data] << [date, order_hash[student_id], number_of_logs]
+        end
+        result << student
+      end
+    end
+
+    render json: { logs_heatmap: result }.to_json, status: :ok
+  end
+
   private
 
   def contains_project_id
@@ -76,7 +104,7 @@ class V1::Logs::StatsController < ApplicationController
   end
 
   def set_project_if_associated
-    unless @project = current_user.projects.where(id: params[:project_id])[0]
+    unless @project = current_user.projects(includes: [:students_projects, :students]).where(id: params[:project_id])[0]
       render_not_associated_with_current_user('Project')
       false
     end
