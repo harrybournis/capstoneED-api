@@ -89,7 +89,8 @@ Rails.application.routes.draw do
     resources :form_templates, only: [:index, :create, :update, :destroy]
 
     # Statistics
-    get 'stats', to: 'logs/stats#hours_worked', constraints: -> (request) { request.params[:graph] == 'hours_worked' }
+    get 'stats', to: 'logs/stats#hours_worked_assignment', constraints: -> (request) { request.params[:graph] == 'hours_worked' && request.params[:assignment_id] }
+    get 'stats', to: 'logs/stats#hours_worked_project', constraints: -> (request) { request.params[:graph] == 'hours_worked' && request.params[:project_id] }
     get 'stats', to: 'project_evaluations/stats#percent_completion', constraints: -> (request) { request.params[:graph] == 'percent_completion' }
   end
 
