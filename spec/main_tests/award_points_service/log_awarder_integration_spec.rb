@@ -259,20 +259,20 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
       expect(@point).to be_falsy
     end
 
-    it 'does not give points if not first of team' do
-      @students_project.logs = []
-      @students_project.save
-      @student2 = create :student_confirmed
-      @sp2 = create :students_project, project: @project, student: @student2
-
-      expect {
-        post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
-      }.to_not change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_team][:id]).count }
-
-      expect(status).to eq 201
-      @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_team][:id]).last
-      expect(@point).to be_falsy
-    end
+    # it 'does not give points if not first of team' do
+      # @students_project.logs = []
+      # @students_project.save
+      # @student2 = create :student_confirmed
+      # @sp2 = create :students_project, project: @project, student: @student2
+#
+      # expect {
+        # post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+      # }.to_not change { LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_team][:id]).count }
+#
+      # expect(status).to eq 201
+      # @point = LogPoint.where(student_id: @student.id, reason_id: Reason[:log_first_of_team][:id]).last
+      # expect(@point).to be_falsy
+    # end
 
     # it 'does not give points if not first of assignment' do
       # @students_project.logs = []
@@ -347,14 +347,14 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
       expect(body['points']['detailed']['log'][0]['points']).to be_truthy
     end
 
-    it 'does not include points in the response if the request was invalid' do
-      expect {
-        post "/v1/projects/#{@project.id}/logs", params: @invalid_log_entry, headers: { 'X-XSRF-TOKEN' => @csrf }
-      }.to_not change { LogPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment_first_of_assignment][:id]).count }
-
-      expect(status).to eq 422
-
-      expect(body['points']).to be_falsy
-    end
+    # it 'does not include points in the response if the request was invalid' do
+      # expect {
+        # post "/v1/projects/#{@project.id}/logs", params: @invalid_log_entry, headers: { 'X-XSRF-TOKEN' => @csrf }
+      # }.to_not change { LogPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment_first_of_assignment][:id]).count }
+#
+      # expect(status).to eq 422
+#
+      # expect(body['points']).to be_falsy
+    # end
   end
 end

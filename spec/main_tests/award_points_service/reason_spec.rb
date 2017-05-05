@@ -27,20 +27,11 @@ RSpec.describe Reason, type: :model do
     expect(Reason[:project_evaluation_first_of_team]).to be_truthy
   end
 
-  it 'contains :log_first_of_team' do
-    expect(Reason[:log_first_of_team]).to be_truthy
+  it 'contains :project_evaluation_submitted_first_day' do
+    expect(Reason[:project_evaluation_submitted_first_day]).to be_truthy
   end
 
-  it 'contains :peer_assessment_first_of_assignment' do
-    expect(Reason[:peer_assessment_first_of_assignment]).to be_truthy
+  it 'contains :peer_asssessment_submitted_first_day' do
+    expect(Reason[:peer_assessment_submitted_first_day]).to be_truthy
   end
-
-  it 'contains :project_evaluation_first_of_assignment' do
-    expect(Reason[:project_evaluation_first_of_assignment]).to be_truthy
-  end
-
-  it 'contains :log_first_of_assignment' do
-    expect(Reason[:log_first_of_assignment]).to be_truthy
-  end
-
 end

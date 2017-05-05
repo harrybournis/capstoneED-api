@@ -222,7 +222,7 @@ RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
 
         expect {
           post '/v1/peer_assessments', params: { pa_form_id: @pa_form.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }, headers: { 'X-XSRF-TOKEN' => @csrf }
-        }.to_not change { PeerAssessmentPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment_first_of_assignment][:id]).count }
+        }.to_not change { PeerAssessmentPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment][:id]).count }
 
         expect(status).to eq 422
 
