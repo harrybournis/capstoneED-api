@@ -30,6 +30,8 @@ class GameSetting < ApplicationRecord
             :points_project_evaluation_first_of_team,
             :points_project_evaluation_first_of_assignment,
             :max_logs_per_day,
+            :points_project_evaluation_submitted_first_day,
+            :points_peer_assessment_submitted_first_day,
             presence: true, numericality: true
 
   before_validation :set_default_values
@@ -46,6 +48,8 @@ class GameSetting < ApplicationRecord
   POINTS_PROJECT_EVALUATION_FIRST_OF_TEAM       = 5
   POINTS_PROJECT_EVALUATION_FIRST_OF_ASSIGNMENT = 15
   MAX_LOGS_PER_DAY                              = 3
+  POINTS_PROJECT_EVALUATION_SUBMITTED_FIRST_DAY= 20
+  POINTS_PEER_ASSESSMENT_SUBMITTED_FIRST_DAY    = 20
 
   private
 
@@ -62,6 +66,8 @@ class GameSetting < ApplicationRecord
     self.points_project_evaluation_first_of_team ||= POINTS_PROJECT_EVALUATION_FIRST_OF_TEAM
     self.points_project_evaluation_first_of_assignment ||= POINTS_PROJECT_EVALUATION_FIRST_OF_ASSIGNMENT
     self.max_logs_per_day ||= MAX_LOGS_PER_DAY
+    self.points_project_evaluation_submitted_first_day ||= POINTS_PROJECT_EVALUATION_SUBMITTED_FIRST_DAY
+    self.points_peer_assessment_submitted_first_day ||= POINTS_PEER_ASSESSMENT_SUBMITTED_FIRST_DAY
   end
 end
 

@@ -47,3 +47,11 @@ reasons:
     id: 10
     description: Points gained for being the first person in an assignment to submit a log.
     message:
+
+  project_evaluation_submitted_first_day:
+    id: 11
+    description: Points gained for submitting the ProjectEvaluation during on the first day that it is available.
+
+  peer_assessment_submitted_first_day:
+    id: 12
+    description: Points gained for submitting the PeerAssessment during the first day that it is available.

@@ -12,7 +12,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
     @project.assignment.start_date = now
     @project.assignment.end_date = now + 1.month
     @project.assignment.save
-    create :iteration, assignment: @project.assignment, deadline: now + 1.month - 2.days
+    @iteration = create :iteration, assignment: @project.assignment, deadline: now + 1.month - 2.days
     @iteration2 = create :iteration, assignment: @project.assignment, start_date: now + 1.month - 1.day, deadline: now + 1.month
     @feeling = FactoryGirl.create(:feeling)
   end
@@ -70,27 +70,47 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       expect(@point.points).to eq @game_setting.points_project_evaluation_first_of_team
     end
 
-    it 'awards points for completing the project evaluation first in the assignment' do
-      expect {
-        post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
-      }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_assignment][:id]).count }
+    it 'awards points for completing the project evaluation during the first day that it is available' do
+      pr = Decorators::PendingProjectEvaluation.new(@iteration, @project)
+      start = nil
+      Timecop.travel @iteration.deadline - 1.minute do
+        start = pr.current_submission_range.min
+      end
 
-      expect(status).to eq 201
-      @point = ProjectEvaluationPoint.where(student_id: @student.id, project_evaluation_id: body['project_evaluation']['id'], reason_id: Reason[:project_evaluation_first_of_assignment][:id]).last
-      expect(@point.points).to eq @game_setting.points_project_evaluation_first_of_assignment
+      Timecop.travel start + 1.minute do
+        @student, @csrf = login_integration @student
+        expect {
+          post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_submitted_first_day][:id]).count }
+        expect(status).to eq 201
+
+        @point = ProjectEvaluationPoint.where(student_id: @student.id, project_evaluation_id: body['project_evaluation']['id'], reason_id: Reason[:project_evaluation_submitted_first_day][:id]).last
+        expect(@point.points).to eq @game_setting.points_project_evaluation_submitted_first_day
+
+      end
     end
 
-    it 'awards points for completing the project evaluation first in the assignment and the lecturer already submitted' do
-      create(:project_evaluation, user: @lecturer, project_id: @project.id, iteration_id: @project.iterations[0].id)
-
-      expect {
-        post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
-      }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_assignment][:id]).count }
-
-      expect(status).to eq 201
-      @point = ProjectEvaluationPoint.where(student_id: @student.id, project_evaluation_id: body['project_evaluation']['id'], reason_id: Reason[:project_evaluation_first_of_assignment][:id]).last
-      expect(@point.points).to eq @game_setting.points_project_evaluation_first_of_assignment
-    end
+    # it 'awards points for completing the project evaluation first in the assignment' do
+      # expect {
+        # post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+      # }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_assignment][:id]).count }
+#
+      # expect(status).to eq 201
+      # @point = ProjectEvaluationPoint.where(student_id: @student.id, project_evaluation_id: body['project_evaluation']['id'], reason_id: Reason[:project_evaluation_first_of_assignment][:id]).last
+      # expect(@point.points).to eq @game_setting.points_project_evaluation_first_of_assignment
+    # end
+#
+    # it 'awards points for completing the project evaluation first in the assignment and the lecturer already submitted' do
+      # create(:project_evaluation, user: @lecturer, project_id: @project.id, iteration_id: @project.iterations[0].id)
+#
+      # expect {
+        # post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+      # }.to change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_assignment][:id]).count }
+#
+      # expect(status).to eq 201
+      # @point = ProjectEvaluationPoint.where(student_id: @student.id, project_evaluation_id: body['project_evaluation']['id'], reason_id: Reason[:project_evaluation_first_of_assignment][:id]).last
+      # expect(@point.points).to eq @game_setting.points_project_evaluation_first_of_assignment
+    # end
   end
 
   describe 'Failure' do
@@ -106,6 +126,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       @point = ProjectEvaluationPoint.where(student_id: @lecturer.id, project_evaluation_id: body['project_evaluation']['id'], reason_id: Reason[:project_evaluation][:id]).last
       expect(@point).to be_falsy
     end
+
     it 'does not award points if not the first in the team' do
       @student2 = create :student_confirmed
       create :students_project, student: @student2, project: @project
@@ -119,20 +140,38 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       @point = ProjectEvaluationPoint.where(student_id: @student.id, project_evaluation_id: body['project_evaluation']['id'], reason_id: Reason[:project_evaluation_first_of_team][:id]).last
       expect(@point).to be_falsy
     end
-    it 'does not award point if not first in the assignment' do
-      @irrelevant_team = create :project, assignment: @project.assignment
-      @irrelevant_student = create :student_confirmed
-      create :students_project, student: @irrelevant_student, project: @irrelevant_team
-      create(:project_evaluation, user: @irrelevant_student, project_id: @irrelevant_team.id, iteration_id: @project.iterations[0].id)
 
-      expect {
-        post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
-      }.to_not change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_assignment][:id]).count }
 
-      expect(status).to eq 201
-      @point = ProjectEvaluationPoint.where(student_id: @student.id, project_evaluation_id: body['project_evaluation']['id'], reason_id: Reason[:project_evaluation_first_of_assignment][:id]).last
-      expect(@point).to be_falsy
+    it 'does not award points for first day if submitted on the second day' do
+      pr = Decorators::PendingProjectEvaluation.new(@iteration, @project)
+      start = nil
+      Timecop.travel @iteration.deadline - 1.minute do
+        start = pr.current_submission_range.min
+      end
+
+      Timecop.travel @iteration.deadline - 1.minute do
+        @student, @csrf = login_integration @student
+        expect {
+          post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to_not change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_submitted_first_day][:id]).count }
+        expect(status).to eq 201
+      end
     end
+
+    # it 'does not award point if not first in the assignment' do
+      # @irrelevant_team = create :project, assignment: @project.assignment
+      # @irrelevant_student = create :student_confirmed
+      # create :students_project, student: @irrelevant_student, project: @irrelevant_team
+      # create(:project_evaluation, user: @irrelevant_student, project_id: @irrelevant_team.id, iteration_id: @project.iterations[0].id)
+#
+      # expect {
+        # post "/v1/projects/#{@project.id}/evaluations", params: @attr, headers: { 'X-XSRF-TOKEN' => @csrf }
+      # }.to_not change { ProjectEvaluationPoint.where(student_id: @student.id, reason_id: Reason[:project_evaluation_first_of_assignment][:id]).count }
+#
+      # expect(status).to eq 201
+      # @point = ProjectEvaluationPoint.where(student_id: @student.id, project_evaluation_id: body['project_evaluation']['id'], reason_id: Reason[:project_evaluation_first_of_assignment][:id]).last
+      # expect(@point).to be_falsy
+    # end
   end
 
   describe 'Profile points get updated' do
@@ -144,8 +183,8 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
       }.to change {
         @student.points_for_project_id(@project.id)
       }.to(@game_setting.points_project_evaluation +
-           @game_setting.points_project_evaluation_first_of_team +
-           @game_setting.points_project_evaluation_first_of_assignment)
+           @game_setting.points_project_evaluation_first_of_team)
+           # @game_setting.points_project_evaluation_first_of_assignment)
 
       expect(status).to eq 201
     end

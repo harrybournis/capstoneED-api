@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170429225903) do
+ActiveRecord::Schema.define(version: 20170505211933) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -105,6 +105,8 @@ ActiveRecord::Schema.define(version: 20170429225903) do
     t.integer "points_project_evaluation_first_of_assignment"
     t.integer "max_logs_per_day"
     t.integer "marking_algorithm_id"
+    t.integer "points_project_evaluation_submitted_first_day"
+    t.integer "points_peer_assessment_submitted_first_day"
     t.index ["assignment_id"], name: "index_game_settings_on_assignment_id", using: :btree
   end
 
@@ -234,6 +236,21 @@ ActiveRecord::Schema.define(version: 20170429225903) do
     t.integer  "question_type_id"
     t.index ["lecturer_id"], name: "index_questions_on_lecturer_id", using: :btree
     t.index ["question_type_id"], name: "index_questions_on_question_type_id", using: :btree
+  end
+
+  create_table "questions_sections", force: :cascade do |t|
+    t.integer  "question_id"
+    t.integer  "section_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.index ["question_id"], name: "index_questions_sections_on_question_id", using: :btree
+    t.index ["section_id"], name: "index_questions_sections_on_section_id", using: :btree
+  end
+
+  create_table "sections", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "students_projects", force: :cascade do |t|
