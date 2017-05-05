@@ -51,10 +51,10 @@ RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
         @student, @csrf = login_integration @student
 
         @params = { peer_assessments: [
-                                        { pa_form_id: @pa_form.id, submitted_for_id: @student_for.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] },
-                                        { pa_form_id: @pa_form.id, submitted_for_id: @student3.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }
-                                      ]
-                  }
+          { pa_form_id: @pa_form.id, submitted_for_id: @student_for.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] },
+          { pa_form_id: @pa_form.id, submitted_for_id: @student3.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }
+        ]
+        }
 
         expect {
           post '/v1/peer_assessments', params: @params, headers: { 'X-XSRF-TOKEN' => @csrf }
@@ -80,21 +80,34 @@ RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
       end
     end
 
-    # it 'gets less points for submitting a peer_Assessment after others in the team'
-
-    it 'gets full points for submitting a peer_Assessment before the rest of the assignment students' do
+    it 'awards points for submtting the peer assessment during the first day it is available' do
       Timecop.travel(@pa_form.start_date + 1.minute) do
         @student, @csrf = login_integration @student
 
         expect {
           post '/v1/peer_assessments', params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }, headers: { 'X-XSRF-TOKEN' => @csrf }
-        }.to change { PeerAssessmentPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment_first_of_assignment][:id]).count }
+        }.to change { PeerAssessmentPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment_submitted_first_day][:id]).count }
 
         expect(status).to eq 201
-        @point = PeerAssessmentPoint.where(student_id: @student.id, peer_assessment_id: body['peer_assessment']['id'], reason_id: Reason[:peer_assessment_first_of_assignment][:id]).last
-        expect(@point.points).to eq @game_setting.points_peer_assessment_first_of_assignment
+        @point = PeerAssessmentPoint.where(student_id: @student.id, peer_assessment_id: body['peer_assessment']['id'], reason_id: Reason[:peer_assessment_submitted_first_day][:id]).last
+        expect(@point.points).to eq @game_setting.points_peer_assessment_submitted_first_day
       end
     end
+    # it 'gets less points for submitting a peer_Assessment after others in the team'
+
+    # it 'gets full points for submitting a peer_Assessment before the rest of the assignment students' do
+    # Timecop.travel(@pa_form.start_date + 1.minute) do
+    # @student, @csrf = login_integration @student
+    #
+    # expect {
+    # post '/v1/peer_assessments', params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }, headers: { 'X-XSRF-TOKEN' => @csrf }
+    # }.to change { PeerAssessmentPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment_first_of_assignment][:id]).count }
+    #
+    # expect(status).to eq 201
+    # @point = PeerAssessmentPoint.where(student_id: @student.id, peer_assessment_id: body['peer_assessment']['id'], reason_id: Reason[:peer_assessment_first_of_assignment][:id]).last
+    # expect(@point.points).to eq @game_setting.points_peer_assessment_first_of_assignment
+    # end
+    # end
 
     # it 'gets less points for submitting a peer_assessment after others in the assignment'
   end
@@ -121,26 +134,38 @@ RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
       end
     end
 
-    it 'gets no points for not submitting first a peer_assessment in the assignment' do
-      @irrelevant_team = create :project, assignment: @assignment
-      @irrelevant_student = create :student_confirmed
-      @irrelevant_student2 = create :student_confirmed
-      create :students_project, student: @irrelevant_student2, project: @irrelevant_team
-      create :students_project, student: @irrelevant_student, project: @irrelevant_team
-      create :peer_assessment, pa_form: @pa_form, submitted_by: @irrelevant_student, submitted_for: @irrelevant_student2
-
-      Timecop.travel(@pa_form.start_date + 1.minute) do
+    it 'does not award points if submitted after the first day available'  do
+      Timecop.travel(@pa_form.start_date + 1.day + 1.minute) do
         @student, @csrf = login_integration @student
 
         expect {
           post '/v1/peer_assessments', params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }, headers: { 'X-XSRF-TOKEN' => @csrf }
-        }.to_not change { PeerAssessmentPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment_first_of_assignment][:id]).count }
+        }.to_not change { PeerAssessmentPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment_submitted_first_day][:id]).count }
 
         expect(status).to eq 201
-        @point = PeerAssessmentPoint.where(student_id: @student.id, peer_assessment_id: body['peer_assessment']['id'], reason_id: Reason[:peer_assessment_first_of_assignment][:id]).last
-        expect(@point).to be_falsy
       end
     end
+
+    # it 'gets no points for not submitting first a peer_assessment in the assignment' do
+    # @irrelevant_team = create :project, assignment: @assignment
+    # @irrelevant_student = create :student_confirmed
+    # @irrelevant_student2 = create :student_confirmed
+    # create :students_project, student: @irrelevant_student2, project: @irrelevant_team
+    # create :students_project, student: @irrelevant_student, project: @irrelevant_team
+    # create :peer_assessment, pa_form: @pa_form, submitted_by: @irrelevant_student, submitted_for: @irrelevant_student2
+    #
+    # Timecop.travel(@pa_form.start_date + 1.minute) do
+    # @student, @csrf = login_integration @student
+    #
+    # expect {
+    # post '/v1/peer_assessments', params: { pa_form_id: @pa_form.id, submitted_for_id: @student_for.id, answers: [{ question_id: 3, answer: 1 }, { question_id: 2, answer: 'I enjoyed the presentations' }] }, headers: { 'X-XSRF-TOKEN' => @csrf }
+    # }.to_not change { PeerAssessmentPoint.where(student_id: @student.id, reason_id: Reason[:peer_assessment_first_of_assignment][:id]).count }
+    #
+    # expect(status).to eq 201
+    # @point = PeerAssessmentPoint.where(student_id: @student.id, peer_assessment_id: body['peer_assessment']['id'], reason_id: Reason[:peer_assessment_first_of_assignment][:id]).last
+    # expect(@point).to be_falsy
+    # end
+    # end
   end
 
   describe 'Profile points get updated' do
@@ -156,7 +181,7 @@ RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
           @student.points_for_project_id(@project.id)
         }.to(@game_setting.points_peer_assessment +
              @game_setting.points_peer_assessment_first_of_team +
-             @game_setting.points_peer_assessment_first_of_assignment)
+             @game_setting.points_peer_assessment_submitted_first_day)
 
         expect(status).to eq 201
       end

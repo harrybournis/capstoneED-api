@@ -46,20 +46,36 @@ module PointsAward::Awarders
       end
     end
 
+    # Points awarded for submitting the peer assessment during the
+    # first day that it is available
+    #
+    # @return [Hash | nil] The points or nil if not submtted
+    #   during the first day.
+    #
+    def points_for_submitting_on_first_day
+      if @peer_assessment.date_submitted <= @peer_assessment.pa_form.start_date + 1
+        {
+          points: @game_setting.points_peer_assessment_submitted_first_day,
+          reason_id: Reason[:peer_assessment_submitted_first_day][:id],
+          resource_id: @points_board.resource.id
+        }
+      end
+    end
+
     # Points awarded for submitting the peer asssessment before
     # everyone in all the teams of the assignment.
     #
     # @return [Hash | nil] The points or nil if not the first one.
     #
-    def points_for_first_in_assignment
-      if PeerAssessment.where(pa_form_id: @peer_assessment.pa_form_id).count == 1
-        {
-          points: @game_setting.points_peer_assessment_first_of_assignment,
-          reason_id: Reason[:peer_assessment_first_of_assignment][:id],
-          resource_id: @points_board.resource.id
-        }
-      end
-    end
+    # def points_for_first_in_assignment
+      # if PeerAssessment.where(pa_form_id: @peer_assessment.pa_form_id).count == 1
+        # {
+          # points: @game_setting.points_peer_assessment_first_of_assignment,
+          # reason_id: Reason[:peer_assessment_first_of_assignment][:id],
+          # resource_id: @points_board.resource.id
+        # }
+      # end
+    # end
 
     private
 
