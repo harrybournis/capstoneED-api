@@ -77,49 +77,49 @@ module PointsAward::Awarders
     #
     # @return [Hash] Points.
     #
-    def first_of_team
-      found_logs = false
-
-      current_iteration  = @students_project.project.current_iterations[0]
-      StudentsProject.where(project_id: @students_project.project_id).each do |sp|
-        if sp.student_id != @student.id
-          if sp.logs.any? && current_iteration.duration.cover?(Time.at(sp.logs[-1]['date_submitted'].to_i))
-            found_logs = true
-            break
-          end
-        end
-      end
-
-      return if found_logs
-      {
-        points: @game_setting.points_log_first_of_team,
-        reason_id: Reason[:log_first_of_team][:id]
-      }
-    end
+    # def first_of_team
+      # found_logs = false
+#
+      # current_iteration  = @students_project.project.current_iterations[0]
+      # StudentsProject.where(project_id: @students_project.project_id).each do |sp|
+        # if sp.student_id != @student.id
+          # if sp.logs.any? && current_iteration.duration.cover?(Time.at(sp.logs[-1]['date_submitted'].to_i))
+            # found_logs = true
+            # break
+          # end
+        # end
+      # end
+#
+      # return if found_logs
+      # {
+        # points: @game_setting.points_log_first_of_team,
+        # reason_id: Reason[:log_first_of_team][:id]
+      # }
+    # end
 
     # Gives points for submitting a log first in the assignment
     # for the current iteration.
     #
     # @return [Hash] Points.
     #
-    def first_of_assignment
-      found_logs = false
-
-      current_iteration = @students_project.project.current_iterations[0]
-      @students_project.project.assignment.students_projects.each do |sp|
-        if sp.student_id != @student.id
-          if sp.logs.any? && current_iteration.duration.cover?(Time.at(sp.logs[-1]['date_submitted'].to_i))
-            found_logs = true
-            break
-          end
-        end
-      end
-
-      return if found_logs
-      {
-        points: @game_setting.points_log_first_of_assignment,
-        reason_id: Reason[:log_first_of_assignment][:id]
-      }
-    end
+    # def first_of_assignment
+      # found_logs = false
+#
+      # current_iteration = @students_project.project.current_iterations[0]
+      # @students_project.project.assignment.students_projects.each do |sp|
+        # if sp.student_id != @student.id
+          # if sp.logs.any? && current_iteration.duration.cover?(Time.at(sp.logs[-1]['date_submitted'].to_i))
+            # found_logs = true
+            # break
+          # end
+        # end
+      # end
+#
+      # return if found_logs
+      # {
+        # points: @game_setting.points_log_first_of_assignment,
+        # reason_id: Reason[:log_first_of_assignment][:id]
+      # }
+    # end
   end
 end
