@@ -53,6 +53,7 @@ GEM
     byebug (9.0.6)
     case_transform (0.2)
       activesupport
+    chronic (0.10.2)
     coderay (1.1.1)
     color-generator (0.0.4)
     concurrent-ruby (1.0.5)
@@ -259,6 +260,8 @@ GEM
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
+    whenever (0.9.7)
+      chronic (>= 0.6.3)
     yard (0.9.9)
     yard-activerecord (0.0.16)
       yard (>= 0.8.3)
@@ -305,6 +308,7 @@ DEPENDENCIES
   unicorn-rails (~> 2.2, >= 2.2.1)
   vcr (~> 3.0, >= 3.0.3)
   waterfall (~> 1.0, >= 1.0.5)
+  whenever (~> 0.9.7)
   yard-activerecord (~> 0.0.16)
 
 RUBY VERSION

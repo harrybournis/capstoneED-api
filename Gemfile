@@ -61,6 +61,9 @@ gem 'time_difference', '~> 0.5.0'
 # YARD documentation for ActiveRecord classes
 gem 'yard-activerecord', '~> 0.0.16'
 
+# Cron job scheduling
+gem 'whenever', '~> 0.9.7'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
