@@ -98,6 +98,7 @@ class Iteration < ApplicationRecord
   def scored?
     is_scored
   end
+
   # Returns the iteration health (currently static CHANGE)
   def iteration_health
     54
