@@ -49,11 +49,9 @@ class Iteration < ApplicationRecord
 
   accepts_nested_attributes_for :pa_form
 
-  # Validations
   validates_presence_of :name, :start_date, :deadline, :assignment
   validate :takes_place_within_the_assignment_duration
   validate :deadline_is_after_start_date
-
 
   # Returns the Iterations that are currently taking place.
   # Iteration start_date must be smaller than the current time,
