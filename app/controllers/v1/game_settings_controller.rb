@@ -16,18 +16,22 @@ class V1::GameSettingsController < ApplicationController
 
   # POST /assignments/:assignment_id/game_settings
   def create
-    if @assignment.game_setting
-      message = ['This assignment already contains game setting. Try PATCH /assignments/:assignment_id/game_settings/:game_settings_id to update.']
-      render json: format_errors(assignment_id: message), status: :forbidden
-      return
-    end
+    unless @assignment.game_setting
+      game_setting = GameSetting.new(game_settings_params)
 
-    game_setting = GameSetting.new(game_settings_params)
-
-    if game_setting.save
-      render json: game_setting, status: :created
+      if game_setting.save
+        render json: game_setting, status: :created
+      else
+        render json: format_errors(game_setting.errors), status: 422
+      end
     else
-      render json: format_errors(game_setting.errors), status: 422
+      game_setting = @assignment.game_setting
+
+      if game_setting.update(game_settings_params.except(:assignment_id))
+        render json: game_setting, status: :ok
+      else
+        render json: format_errors(game_setting.errors), status: :unprocessable_entity
+      end
     end
   end
 

@@ -127,14 +127,26 @@ RSpec.describe V1::GameSettingsController, type: :controller do
       expect(errors_base[0]).to include('Lecturer to access')
     end
 
-    it 'returns 403 if the assignment already has game settings' do
-      parameters = attributes_for(:game_setting).merge({ assignment_id: @assignment.id })
+    it 'if game settings exists it  updates ' do
+      @controller = V1::GameSettingsController.new
+      mock_request = MockRequest.new(valid = true, @user)
+      request.cookies['access-token'] = mock_request.cookies['access-token']
+      request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-      post :create, params: parameters
+      post :create, params: { assignment_id: @assignment.id}.merge(attributes_for(:game_setting).merge(points_log: 444))
 
-      expect(status).to eq 403
-      expect(errors['assignment_id'][0]).to include 'already'
+      expect(status).to eq 200
+      expect(body['game_settings']['points_log']).to eq 444
     end
+
+    # it 'returns 403 if the assignment already has game settings' do
+    #   parameters = attributes_for(:game_setting).merge({ assignment_id: @assignment.id })
+
+    #   post :create, params: parameters
+
+    #   expect(status).to eq 403
+    #   expect(errors['assignment_id'][0]).to include 'already'
+    # end
   end
 
 
