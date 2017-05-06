@@ -125,6 +125,7 @@ ActiveRecord::Schema.define(version: 20170505221040) do
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
     t.boolean  "is_marked"
+    t.boolean  "is_scored"
     t.index ["assignment_id"], name: "index_iterations_on_assignment_id", using: :btree
   end
 
