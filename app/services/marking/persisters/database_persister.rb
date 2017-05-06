@@ -25,6 +25,8 @@ module Marking
           @results.scores.each do |student_id,score|
             IterationMark.create!(iteration_id: @iteration.id, student_id: student_id, pa_score: score)
           end
+
+          @iteration.update!(is_scored: true)
         end
         true
       end

@@ -67,7 +67,11 @@ class Iteration < ApplicationRecord
     where(["iterations.start_date <= :now and iterations.deadline >= :now", now: now])
   end
 
-  # return whether the iteration is currently happening
+  # Returns true if current time is between the steart_date and
+  # the deadline of the iteration.
+  #
+  # @return [Boolean]
+  #
   def active?
     now = DateTime.now
     start_date <= now && now <= deadline
@@ -83,12 +87,19 @@ class Iteration < ApplicationRecord
 
   # Wrapper for is_marked attribute.
   #
-  # @return [Boolean] The valua of the is_marked attribute.
+  # @return [Boolean] The value of the is_marked attribute.
   #
   def marked?
     is_marked
   end
 
+  # Wrapper for is_scored attribute.
+  #
+  # @return [Boolean] The value of the is_scored attribute.
+  #
+  def scored?
+    is_scored
+  end
   # Returns the iteration health (currently static CHANGE)
   def iteration_health
     54

@@ -95,7 +95,7 @@ class CalculatePaScoresService
   end
 
   def can_mark?
-    @iteration.finished? && !@iteration.marked?
+    @iteration.finished? && !@iteration.scored?
   end
 
   private

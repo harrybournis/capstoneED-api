@@ -34,7 +34,7 @@ RSpec.describe CalculatePaScoresService, type: :model do
       now = DateTime.now
       @lecturer = create :lecturer_confirmed
       @unit = create :unit, lecturer: @lecturer
-      @assignment = create :assignment, unit: @unit, lecturer: @lecturer, start_date: now - 1.day, end_date: now + 2.days
+      @assignment = create :assignment, unit: @unit, lecturer: @lecturer, start_date: now , end_date: now + 2.days
       @iteration = create :iteration, assignment: @assignment
       @pa_form = create :pa_form, iteration: @iteration
       @qtype = create :question_type, category: 'number'
@@ -103,7 +103,7 @@ RSpec.describe CalculatePaScoresService, type: :model do
     it '#can_mark? returns false if marked before' do
       Timecop.travel @iteration.deadline + 1.day do
         expect(@service.can_mark?).to be_truthy
-        @iteration.update(is_marked: true)
+        @iteration.update(is_scored: true)
 
         service = CalculatePaScoresService.new(@iteration)
         expect(service.can_mark?).to be_falsy
