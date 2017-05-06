@@ -3,7 +3,7 @@ class AssignmentSerializer < Base::BaseSerializer
   attribute :pa_form, if: :pa_forms_any?
 
   def pa_form
-    ActiveModelSerializers::SerializableResource.new(object.pa_forms[0], serializer: PaFormSerializer, scope: scope).as_json
+    ActiveModelSerializers::SerializableResource.new(object.pa_forms[0], serializer: PaFormSerializer, scope: scope).as_json[:pa_form]
   end
 
   def pa_forms_any?
