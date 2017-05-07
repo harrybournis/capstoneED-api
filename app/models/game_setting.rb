@@ -30,15 +30,15 @@ class GameSetting < ApplicationRecord
   before_validation :set_default_values
 
   # Default Points Values
-  POINTS_LOG                                    = 50
-  POINTS_LOG_FIRST_OF_DAY                       = 0
+  POINTS_LOG                                    = 5
+  POINTS_LOG_FIRST_OF_DAY                       = 5
   POINTS_PEER_ASSESSMENT                        = 50
-  POINTS_PEER_ASSESSMENT_FIRST_OF_TEAM          = 5
+  POINTS_PEER_ASSESSMENT_FIRST_OF_TEAM          = 20
   POINTS_PROJECT_EVALUATION                     = 50
-  POINTS_PROJECT_EVALUATION_FIRST_OF_TEAM       = 5
-  MAX_LOGS_PER_DAY                              = 3
-  POINTS_PROJECT_EVALUATION_SUBMITTED_FIRST_DAY = 20
-  POINTS_PEER_ASSESSMENT_SUBMITTED_FIRST_DAY    = 20
+  POINTS_PROJECT_EVALUATION_FIRST_OF_TEAM       = 20
+  MAX_LOGS_PER_DAY                              = 1
+  POINTS_PROJECT_EVALUATION_SUBMITTED_FIRST_DAY = 120
+  POINTS_PEER_ASSESSMENT_SUBMITTED_FIRST_DAY    = 120
   MARKING_ALGORITHM_ID                          = 1
 
   private
