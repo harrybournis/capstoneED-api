@@ -31,11 +31,6 @@ class V1::ProjectEvaluations::StatsController < ApplicationController
         @lecturer_results[:data] << [name,percent[0]]
       end
     end
-    # @lecturer_hash.each do |iteration_id,value|
-    #   value.each do |name,percent|
-    #     @lecturer_results[:data] << [name,percent[0]]
-    #   end
-    # end
 
     @students_results = { name: "Students' Average Estimation", data: [] }
     @students_hash.keys.sort.each do |iteration_id|
@@ -44,11 +39,6 @@ class V1::ProjectEvaluations::StatsController < ApplicationController
         @students_results[:data] << [name, (percent.inject(:+).to_f / percent.length).round(1)]
       end
     end
-    # @students_hash.each do |iteration_id,value|
-    #   value.each do |name,percent|
-    #     @students_results[:data] << [name, (percent.inject(:+).to_f / percent.length).round(1)]
-    #   end
-    # end
 
     render json: { percent_completion_graph: [@lecturer_results,@students_results] }.to_json, status: :ok
   end
