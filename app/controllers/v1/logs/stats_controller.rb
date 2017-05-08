@@ -29,9 +29,6 @@ class V1::Logs::StatsController < ApplicationController
       time_array = average_hash[date_worked]
       average_result[:data] << [date_worked, (time_array.inject(:+).to_f / time_array.length).round(1)]
     end
-    # average_hash.each do |date_worked,time_array|
-    #   average_result[:data] << [date_worked, (time_array.inject(:+).to_f / time_array.length).round(1)]
-    # end
 
     result.unshift average_result
 
@@ -76,16 +73,24 @@ class V1::Logs::StatsController < ApplicationController
       sp.logs.each do |log|
         date = Time.at(log['date_submitted'].to_i).beginning_of_day.to_i * 1000
 
-        logs_count_hash[sp.student_id][sp.student.full_name][date] += 1 || average_hash[sp.student_id][sp.student.full_name][date] = 1
+        if logs_count_hash[sp.student_id][sp.student.full_name][date]
+          logs_count_hash[sp.student_id][sp.student.full_name][date] += 1
+        else
+          average_hash[sp.student_id][sp.student.full_name][date] = 1
+        end
       end
     end
 
     logs_count_hash.each do |student_id,name_date|
       name_date.each do |name,date_number|
         student =  { name: name, data: [] }
-        date_number.each do |date,number_of_logs|
+        date_number.keys.sort.each do |date|
+          number_of_logs = date_number[date]
           student[:data] << [date, order_hash[student_id], number_of_logs]
         end
+        # date_number.each do |date,number_of_logs|
+        #   student[:data] << [date, order_hash[student_id], number_of_logs]
+        # end
         result << student
       end
     end

@@ -11,7 +11,7 @@ class V1::ProjectEvaluations::StatsController < ApplicationController
     @project.iterations.each do |iteration|
       next unless iteration.finished?
 
-      iteration.project_evaluations.order(:date_submitted).each do |pe|
+      iteration.project_evaluations.where(project_id: @project.id).order(:date_submitted).each do |pe|
         h = pe.user.lecturer? ? @lecturer_hash : @students_hash
         time_period = ''
 
@@ -25,18 +25,30 @@ class V1::ProjectEvaluations::StatsController < ApplicationController
 
     results = []
     @lecturer_results = { name: "Lecturer's Estimation" , data: [] }
-    @lecturer_hash.each do |iteration_id,value|
+    @lecturer_hash.keys.sort.each do |iteration_id|
+      value = @lecturer_hash[iteration_id]
       value.each do |name,percent|
         @lecturer_results[:data] << [name,percent[0]]
       end
     end
+    # @lecturer_hash.each do |iteration_id,value|
+    #   value.each do |name,percent|
+    #     @lecturer_results[:data] << [name,percent[0]]
+    #   end
+    # end
 
     @students_results = { name: "Students' Average Estimation", data: [] }
-    @students_hash.each do |iteration_id,value|
+    @students_hash.keys.sort.each do |iteration_id|
+      value = @students_hash[iteration_id]
       value.each do |name,percent|
         @students_results[:data] << [name, (percent.inject(:+).to_f / percent.length).round(1)]
       end
     end
+    # @students_hash.each do |iteration_id,value|
+    #   value.each do |name,percent|
+    #     @students_results[:data] << [name, (percent.inject(:+).to_f / percent.length).round(1)]
+    #   end
+    # end
 
     render json: { percent_completion_graph: [@lecturer_results,@students_results] }.to_json, status: :ok
   end
