@@ -33,6 +33,9 @@
     points_object_values = [20,40,50,10,30, 20,40,50,10,30, 20,40,50,10,30]
     student_points = [50, 60, 10, 10, 20, 70, 80, 40, 30, 20, 40, 60, 50, 90, 40]
     hours_worked = [1,2,3,4,5,6,7,8,9,10]
+    hours_worked_small = [1,2,3]
+    hours_worked_medium = [3,4,5,6]
+    hours_worked_large = [5,6,7,8,9,10]
 
     # Lecturer-units-assignments
     @lecturer = FactoryGirl.create :lecturer_confirmed, first_name: 'Thanos', last_name: 'Hatziapostolou', email: 'thanos@hatziapostolou.com', password: '12345678'
@@ -216,7 +219,7 @@
     @sp = FactoryGirl.create :students_project_seeder, project: @project1, student: @student4, nickname: 'Tyccoon Typhoon'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(5).sort.each do |date|
-      @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
+      @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked_large.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
       @sp.save
     end
     @sp.update(points: 15)
@@ -280,7 +283,7 @@
     @sp = FactoryGirl.create :students_project_seeder, project: @project2, student: @student1, nickname: 'SlimEliteHannah'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(3).sort.each do |date|
-      @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
+      @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked_large.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
       @sp.save
     end
     @sp.update(points: 15)
@@ -302,7 +305,7 @@
     @sp = FactoryGirl.create :students_project_seeder, project: @project2, student: @student2, nickname: 'Crampsal'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(10).sort.each do |date|
-      @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
+      @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked_small.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
       @sp.save
     end
     @sp.update(points: 50)
@@ -541,7 +544,7 @@
     @sp = FactoryGirl.create :students_project_seeder, project: @project4, student: @student1, nickname: 'Footbox'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(25).sort.each do |date|
-      @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
+      @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked_medium.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
       @sp.save
     end
     @sp.update(points: 125)
@@ -563,7 +566,7 @@
     @sp = FactoryGirl.create :students_project_seeder, project: @project4, student: @student2, nickname: 'Skilled Salamander'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(14).sort.each do |date|
-      @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
+      @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked_medium.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
       @sp.save
     end
     @sp.update(points: 70)
@@ -607,7 +610,7 @@
     @sp = FactoryGirl.create :students_project_seeder, project: @project4, student: @student4, nickname: 'Panther Colonel'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(9).sort.each do |date|
-      @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
+      @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked_large.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
       @sp.save
     end
     @sp.update(points: 45)
