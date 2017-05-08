@@ -64,7 +64,7 @@ class Project < ApplicationRecord
                         :team_name,
                         :unit,
                         :assignment
-  validates_uniqueness_of :id, :enrollment_key
+  #validates_uniqueness_of :id, :enrollment_key
   validates_uniqueness_of :project_name,
                           scope: :assignment_id,
                           case_sensitive: false

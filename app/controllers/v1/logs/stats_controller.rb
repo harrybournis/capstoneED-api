@@ -1,5 +1,5 @@
 class V1::Logs::StatsController < ApplicationController
-  before_action :allow_if_lecturer, only: [:hours_worked_project, :hours_worked_assignment]
+  #before_action :allow_if_lecturer, only: [:hours_worked_project, :hours_worked_assignment]
   before_action :contains_project_id, only: [:hours_worked_project, :logs_heatmap]
   before_action :contains_assignment_id, only: :hours_worked_assignment
   before_action :set_project_if_associated,  only: [:hours_worked_project, :logs_heatmap]
@@ -25,9 +25,13 @@ class V1::Logs::StatsController < ApplicationController
     end
 
     average_result = { name: 'Team Average', data: [] }
-    average_hash.each do |date_worked,time_array|
-      average_result[:data] << [date_worked, time_array.inject(:+).to_f / time_array.length]
+    average_hash.keys.sort.each do |date_worked|
+      time_array = average_hash[date_worked]
+      average_result[:data] << [date_worked, (time_array.inject(:+).to_f / time_array.length).round(1)]
     end
+    # average_hash.each do |date_worked,time_array|
+    #   average_result[:data] << [date_worked, (time_array.inject(:+).to_f / time_array.length).round(1)]
+    # end
 
     result.unshift average_result
 
@@ -50,8 +54,10 @@ class V1::Logs::StatsController < ApplicationController
 
     average_hash.each do |project_name,date_time|
       team_result = { name: project_name, data: [] }
-      date_time.each do |date,time|
-        team_result[:data] << [date, time.inject(:+).to_f / time.length]
+      #binding.pry
+      date_time.keys.sort.each do |date|
+        time = date_time[date]
+        team_result[:data] << [date, (time.inject(:+).to_f / time.length).round(1)]
       end
       result << team_result
     end

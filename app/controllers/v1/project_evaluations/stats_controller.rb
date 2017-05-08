@@ -34,7 +34,7 @@ class V1::ProjectEvaluations::StatsController < ApplicationController
     @students_results = { name: "Students' Average Estimation", data: [] }
     @students_hash.each do |iteration_id,value|
       value.each do |name,percent|
-        @students_results[:data] << [name,percent.inject(:+).to_f / percent.length]
+        @students_results[:data] << [name, (percent.inject(:+).to_f / percent.length).round(1)]
       end
     end
 

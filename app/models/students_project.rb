@@ -28,12 +28,21 @@
 
     before_validation :set_points_to_zero
 
-    # Add a new log entry. Adds date_submitted field with the current time
-    # If the entry is not a Hash, an empty array is added so that
-    # the format_of_last_log validation fails
-    def add_log(entry)
+    # Add a new log entry. Can specify an optional date_submitted parameter.
+    # In date_submitted is not passwed the it adds date_submitted field
+    # with the current time. If the entry is not a Hash, an empty array
+    # is added so that the format_of_last_log validation fails.
+    #
+    # @param entry [Hash] The hash of the log entry.
+    # @parma date_of_submission [DateTime] Optional. Specify a date of
+    #   submission for the log.
+    def add_log(entry, date_of_submission = nil)
       logs << if entry.class == Hash
-                entry.merge('date_submitted' => DateTime.now.to_i.to_s)
+                if date_of_submission
+                  entry.merge('date_submitted' => date_of_submission.to_i.to_s)
+                else
+                  entry.merge('date_submitted' => DateTime.now.to_i.to_s)
+                end
               else
                 []
               end
