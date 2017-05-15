@@ -1,11 +1,14 @@
+# Controller for FormTemplate resource.
 class V1::FormTemplatesController < ApplicationController
   before_action :allow_if_lecturer
   before_action :set_form_template_if_associated, only: [:update, :destroy]
 
+  # GET /form_templates
   def index
     render json: current_user.form_templates, status: :ok
   end
 
+  # POST /form_templates
   def create
     @form_template = FormTemplate.new(form_template_params)
     @form_template.lecturer = current_user.load
@@ -17,6 +20,7 @@ class V1::FormTemplatesController < ApplicationController
     end
   end
 
+  # PATCH /form_templates
   def update
     if @form_template.update(form_template_params)
       render json: @form_template, status: :ok
@@ -25,6 +29,7 @@ class V1::FormTemplatesController < ApplicationController
     end
   end
 
+  # DELETE /form_templates
   def destroy
     if @form_template.destroy
       render json: '', status: :no_content
@@ -45,6 +50,7 @@ class V1::FormTemplatesController < ApplicationController
     end
   end
 
+  # Strong params for FormTemplate
   def form_template_params
     params.permit(:name, questions: [:text, :type_id])
   end

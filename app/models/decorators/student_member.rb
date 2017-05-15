@@ -1,3 +1,4 @@
+# Module for decorator classes.
 module Decorators
   # Decorates the Student with their nickname for a Specific Project
   class StudentMember

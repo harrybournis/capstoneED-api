@@ -130,6 +130,14 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
              .where(['assignments.lecturer_id = ?', @id])
   end
 
+  # Returns only the iterations that are currently active for the current user.
+  #
+  # @param options = {} [Hash] Optional.
+  # @option includes [Array<String>] An array of the associations that will be
+  #   eager loaded.
+  #
+  # @return [Array<Iteration>] An active record collection of the results.
+  #
   def iterations_active(options = {})
     includes =  if options[:includes]
                   options[:includes].unshift('pa_form')

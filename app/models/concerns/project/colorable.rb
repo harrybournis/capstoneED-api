@@ -1,7 +1,13 @@
+# Project mixin. Provides functionlaity with color for a project.
 module Project::Colorable
   extend ActiveSupport::Concern
 
+  # The value of color saturation that
+  # the generated color will have.
   COLOR_SATURATION = 0.86
+
+  # The valud of color lightness that the
+  # generated color will have
   COLOR_LIGHTNESS = 0.48
 
   # Generates a new random color and stores it in the color

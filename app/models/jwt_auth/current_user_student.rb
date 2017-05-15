@@ -18,6 +18,12 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
     true
   end
 
+  # Returns the nickname of the student for the provided project_id
+  #
+  # @param project_id The project that the nickname will be returned for.
+  #
+  # @return [String|nil] Returns the nickname of the student for the
+  #   provided project_id or nil if it could not be found.
   def nickname_for_project_id(project_id)
     StudentsProject.select(:nickname)
                    .where(project_id: project_id, student_id: @id)[0]
@@ -110,6 +116,14 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
              .distinct
   end
 
+  # Returns only the iterations that are currently active for the current user.
+  #
+  # @param options = {} [Hash] Optional.
+  # @option includes [Array<String>] An array of the associations that will be
+  #   eager loaded.
+  #
+  # @return [Array<Iteration>] An active record collection of the results.
+  #
   def iterations_active(options = {})
     includes =  if options[:includes]
                   options[:includes].unshift('pa_form')

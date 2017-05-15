@@ -1,5 +1,5 @@
+# User mixin. Provides functionality for authenticating by email.
 module User::EmailAuthenticatable
-
 	extend ActiveSupport::Concern
 
 	# Called on a new user object before save. It generates a unique uid and
@@ -14,6 +14,13 @@ module User::EmailAuthenticatable
 
 	module ClassMethods
 
+    # Valudates sign in params. Checks if email exists in teh database,
+    # and whether the password in correct.
+    # Returns error if wrong email, password, remember_me value or if
+    # user has not yet confirmed their account.
+    #
+    # @param params The paras that will be used to authenticate.
+    #   Must include email, password, remember me.
 		def validate_for_sign_in (params)
 			user = User.find_by_email(params[:email])
 

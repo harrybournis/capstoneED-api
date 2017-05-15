@@ -1,3 +1,16 @@
+# A form template is a collection of questions that a Lecturer can use
+# to create a new PA Form fast. Belongs to a single Lecturer.
+#
+# @author [harrybournis]
+#
+# @!attribute lecturer_id
+#   @return [Integer] The id of the lecturer that created the form_template
+# @!attribute name
+#   @return [String] The name that the lecturer has given to identify the form template.
+#
+# @!attribute questions
+#   @return [jsonb] The questions for the PA Form
+#
 class FormTemplate < ApplicationRecord
   belongs_to :lecturer
   validates_presence_of :name, :questions, :lecturer

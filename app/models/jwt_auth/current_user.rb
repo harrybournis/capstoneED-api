@@ -1,3 +1,4 @@
+# Module for authenticating using JWTs
 module JWTAuth
   # The superclass for the CurrentUserStudent and CurrentUserLecturer
   # classes. Used in order to avoid loading the object from the
@@ -11,10 +12,16 @@ module JWTAuth
       @current_device = device
     end
 
+    # Loads the user object from the database.
+    #
+    # @return [User] The user object
     def load
       @user ||= User.find(@id)
     end
 
+    # Sign the current_user out
+    #
+    # @return [Boolean] True if signed out. False if error.
     def sign_out
       if active_token = ActiveToken.find_by_device(current_device)
         active_token.destroy

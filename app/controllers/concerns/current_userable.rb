@@ -11,6 +11,9 @@ module CurrentUserable
     @current
   end
 
+  # Returns whether a user has signed in
+  #
+  # @return [Boolean] True if a user has signed in.
   def user_signed_in?
     !@current.nil?
   end
@@ -42,6 +45,13 @@ module CurrentUserable
                    path: '/v1/refresh')
   end
 
+  # Before action to allow if the user has created their account
+  # with provided == email. Currently there are no
+  # OAuth options provided, and a user can only craete an account by email.
+  # Renders errors and returns false if user has not created their account with email.
+  #
+  # @param extra_suggestion Optional. Can include a suggestion to return in
+  #   the error message.
   def allow_if_authenticated_by_email(extra_suggestion = nil)
     return if @current.provider == 'email'
     message = ["Provider is #{@current.provider}. Did not authenticate with email/password. #{extra_suggestion if extra_suggestion}"]
@@ -49,6 +59,12 @@ module CurrentUserable
     false
   end
 
+  # Before action to authorize an endpoint only for lecturers.
+  # Renders error and returns false if current user is a student.
+  #
+  # @param extra_suggestion Optional. Can include a suggestion to return in
+  #   the error message.
+  #
   def allow_if_lecturer(extra_suggestion = nil)
     return if @current.type == 'Lecturer'
     message = ["You must be Lecturer to access this resource. #{extra_suggestion if extra_suggestion}"]
@@ -56,6 +72,13 @@ module CurrentUserable
     false
   end
 
+
+  # Before action to authorize an endpoint only for students.
+  # Renders error and returns false if current user is a lecturer.
+  #
+  # @param extra_suggestion Optional. Can include a suggestion to return in
+  #   the error message.
+  #
   def allow_if_student(extra_suggestion = nil)
     return if @current.type == 'Student'
     message = ["You must be Student to access this resource. #{extra_suggestion if extra_suggestion}"]
@@ -64,6 +87,9 @@ module CurrentUserable
   end
 
   # Renders error message with :forbidden status code
+  #
+  # @param resource The resource that the error message should say
+  #   that is not associated with current user.
   def render_not_associated_with_current_user(resource)
     render json: format_errors({ base: ["This #{resource} is not associated with the current user"] }),
            status: :forbidden

@@ -1,3 +1,4 @@
+# Controller for stats and graphs
 class V1::Logs::StatsController < ApplicationController
   #before_action :allow_if_lecturer, only: [:hours_worked_project, :hours_worked_assignment]
   before_action :contains_project_id, only: [:hours_worked_project, :logs_heatmap]
@@ -35,6 +36,7 @@ class V1::Logs::StatsController < ApplicationController
     render json: { hours_worked_graph: result }.to_json, status: :ok
   end
 
+  # GET /stats?graph=hours_worked&assignment_id=2
   def hours_worked_assignment
     result = []
 
@@ -62,6 +64,7 @@ class V1::Logs::StatsController < ApplicationController
     render json: { hours_worked_graph: result }.to_json, status: :ok
   end
 
+  # GET /stats?graph=logs_heatmap
   def logs_heatmap
     result = []
     logs_count_hash = Hash.new { |key,val| key[val] = Hash.new { |key,val| key[val] = Hash.new { |key,val| key[val] = 0 } } }
@@ -100,6 +103,7 @@ class V1::Logs::StatsController < ApplicationController
 
   private
 
+  # Before action that checks if params include project_id
   def contains_project_id
     unless params[:project_id]
       render json: format_errors(base: ["The graph 'hours_worked' needs a project_id or assignment_id in the params"]), status: :bad_request
@@ -107,6 +111,7 @@ class V1::Logs::StatsController < ApplicationController
     end
   end
 
+  # Before action that checks if params include assignment_id
   def contains_assignment_id
     unless params[:assignment_id]
       render json: format_errors(base: ["The graph 'hours_worked' needs a project_id or assignment_id in the params"]), status: :bad_request
@@ -114,6 +119,8 @@ class V1::Logs::StatsController < ApplicationController
     end
   end
 
+  # Sets @project if the project_id belongs to a project assiciated with
+  # the current user.
   def set_project_if_associated
     unless @project = current_user.projects(includes: [:students_projects, :students]).where(id: params[:project_id])[0]
       render_not_associated_with_current_user('Project')
@@ -121,6 +128,8 @@ class V1::Logs::StatsController < ApplicationController
     end
   end
 
+  # Sets @assgnment if the assgnment_id belongs to a assignemnt assiciated
+  # with the current user.
   def set_assignment_if_associated
     unless @assignment = current_user.assignments.where(id: params[:assignment_id])[0]
       render_not_associated_with_current_user('Assignment')
@@ -128,6 +137,7 @@ class V1::Logs::StatsController < ApplicationController
     end
   end
 
+  # Returns a string of a javascript method that parses date to utc.
   def format_date date
     "Date.UTC(#{date.year}, #{date.month - 1}, #{date.day})".to_json
   end

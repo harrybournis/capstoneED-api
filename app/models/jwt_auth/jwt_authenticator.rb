@@ -18,13 +18,14 @@ module JWTAuth
     @domain_test  = 'api.example.com'.freeze # Used for tests only
     @domain_development = ''.freeze          # Left blank because cookies don't work with a domain in localhost
 
-    ###
     # Called before an authenticated endpoint in before_action in
     # application_controller. validates the access-token in the cookies,
     # and compares the csrf_token value in the access-token with the
     # X-XSRF-TOKEN in the headers.
     #
-    # returns boolean
+    # @param request The request object.
+    #
+    # @return [Boolean] Returns true if user authenticated successfully
     #
     def self.authenticate(request)
       return false unless validated_request = valid_access_request(request)
@@ -48,13 +49,18 @@ module JWTAuth
       false
     end
 
-    ###
     # Called after successful authentication either by email or oauth2.
     # Creates new access-token cookie, and new refresh-token cookie.
     # Also creates a csrf token which is added both to the payload of the
     # access-token, and the headers of the response, for later comparison.
     #
-    # returns boolean
+    # @param user [User] The user that will be signed in.
+    # @param response [Response] The response object.
+    # @param cookies [Cookies] The cookies.
+    # @param remember_me [Boolean] Whether remember_me should be set to
+    #   true of false
+    #
+    # @return [Boolean] True if user signed in successfully
     #
     def self.sign_in(user, response, cookies, remember_me)
       new_device = nil
@@ -77,13 +83,16 @@ module JWTAuth
       false
     end
 
-    ###
     # Called from the /refresh route. Receives a refresh-token in the cookies.
     # creates a new access-token cookie, a new refresh token cookie, and a
     # csrf token which is added both to the payload of the access-token,
     # and the headers of the response, for later comparison.
     #
-    # returns boolean
+    # @param request [Request] The request object.
+    # @param response [Response] The response object.
+    # @param cookies [Cookies] The cookies.
+    #
+    # @return [Boolean] True if refreshed succesfully
     #
     def self.refresh(request, response, cookies)
       return false unless validated_request = valid_refresh_request(request)
@@ -109,8 +118,6 @@ module JWTAuth
       false
     end
 
-
-    #### PRIVATE METHODS
     def self.create_new_tokens(user, response, cookies, device, time_now, remember_me)
       csrf_token        = SecureRandom.urlsafe_base64(32)
       exp_time          = time_now + @exp

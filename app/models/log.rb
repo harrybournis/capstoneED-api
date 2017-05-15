@@ -153,6 +153,7 @@ class Log
 
   private
 
+  # Sets persisted property to true
   def persisted!
     @persisted = true
   end

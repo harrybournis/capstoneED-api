@@ -26,6 +26,7 @@ class ApplicationController < ActionController::API
     end
   end
 
+  # Outputs debug information in the logs during development.
   def log_for_development
     log = ''
     log << ' no access-token ' if request.cookies['access-token'].nil?

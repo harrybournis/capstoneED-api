@@ -1,3 +1,6 @@
+# Project mixin. Methods that provide the points functionality to the Project.
+# Includes the associations with log_points, peer_assessment_points and
+# project_evaluation_points tables.
 module Project::Awardable
   extend ActiveSupport::Concern
 
