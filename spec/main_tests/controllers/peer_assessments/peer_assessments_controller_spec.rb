@@ -246,7 +246,7 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			end
 
 			it 'returns 403 forbiden if peer_assement not associated' do
-				other = FactoryGirl.create(:peer_assessment)
+				other = FactoryGirl.create(:peer_assessment_with_callback)
 				get :show, params: { id: other.id }
 				expect(status).to eq(403)
 				expect(errors['base'][0]).to include('not associated')

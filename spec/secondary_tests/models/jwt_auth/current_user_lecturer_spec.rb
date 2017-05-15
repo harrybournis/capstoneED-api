@@ -184,11 +184,11 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
       create :students_project, student: student, project: project
       create :students_project, student: student2, project: project
       create :students_project, student: student3, project: project
-      peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student, submitted_for: student2)
-      peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student, submitted_for: student3)
-      peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student2, submitted_for: student)
-      peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student2, submitted_for: student3)
-      peer_assessment_irrellevant = FactoryGirl.create(:peer_assessment)
+      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student, submitted_for: student2)
+      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student, submitted_for: student3)
+      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student2, submitted_for: student)
+      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student2, submitted_for: student3)
+      peer_assessment_irrellevant = FactoryGirl.create(:peer_assessment_with_callback)
 
       expect(@current_user.peer_assessments.length).to eq(4)
     end

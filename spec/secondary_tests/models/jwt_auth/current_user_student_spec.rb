@@ -194,13 +194,13 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
       create :students_project, student: student, project: project
       create :students_project, student: student2, project: project
       create :students_project, student: student3, project: project
-      peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student)
-      peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student2)
-      peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: @user, submitted_for: student3)
-      peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student, submitted_for: student2)
-      peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student, submitted_for: student3)
-      peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: pa_form, submitted_by: student, submitted_for: @user)
-      peer_assessment_irrellevant = FactoryGirl.create(:peer_assessment)
+      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: @user, submitted_for: student)
+      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: @user, submitted_for: student2)
+      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: @user, submitted_for: student3)
+      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student, submitted_for: student2)
+      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student, submitted_for: student3)
+      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student, submitted_for: @user)
+      peer_assessment_irrellevant = FactoryGirl.create(:peer_assessment_with_callback)
 
       expect(@current_user.peer_assessments_for.length).to eq(1)
       expect(@current_user.peer_assessments_by.length).to eq(3)

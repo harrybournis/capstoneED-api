@@ -76,15 +76,6 @@ RSpec.describe V1::Logs::StatsController, type: :request do
       expect(status).to eq 403
       expect(errors['base'][0]).to include 'associated'
     end
-
-    it 'GET hours_worked returns 403 forbidden current user is a student' do
-      @student1, @csrf = login_integration @student1
-
-      get "/v1/stats?graph=hours_worked&project_id=#{@project.id}", headers: { 'X-XSRF-TOKEN' => @csrf }
-
-      expect(status).to eq 403
-      expect(errors['base'][0]).to include 'Lecturer'
-    end
   end
 
 end

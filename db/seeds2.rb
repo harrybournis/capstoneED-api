@@ -1,8 +1,3 @@
-require 'rails_helper'
-
-RSpec.describe "Seeder" do
-
-  before(:each) do
     def valid_feelings_params
       if Feeling.all.count > 2
         feeling1 = Feeling.first
@@ -50,8 +45,7 @@ RSpec.describe "Seeder" do
 
     now = DateTime.now
     @assignment11 = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 1', start_date: now - 2.month, end_date: now - 1.month - 1.day, unit: @unit1
-    @assignment12 = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 2', start_date: now - 1.month, end_date: now + 9.days, unit: @unit1
-    @assignment_new = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 3', start_date: now + 10.days, end_date: now + 1.month, unit: @unit1
+    @assignment12 = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 2', start_date: now - 1.month, end_date: now + 1.day, unit: @unit1
 
     @game_settings = GameSetting.new assignment_id: @assignment12.id
     @game_settings.save
@@ -66,8 +60,7 @@ RSpec.describe "Seeder" do
 
     @iteration121 = FactoryGirl.create :iteration,  name: 'Analysis', start_date: @assignment12.start_date, deadline: @assignment12.start_date + 10.days, assignment: @assignment12
     @iteration122 = FactoryGirl.create :iteration,  name: 'Design', start_date: @assignment12.start_date + 11.days, deadline: @assignment12.start_date + 20.days, assignment: @assignment12
-    @iteration123 = FactoryGirl.create :iteration,  name: 'Implementation', start_date: @assignment12.start_date + 20.days, deadline: now - 1.day, assignment: @assignment12
-    @iteration124 = FactoryGirl.create :iteration,  name: 'Testing', start_date: now - 1.day, deadline: @assignment12.end_date, assignment: @assignment12
+    @iteration123 = FactoryGirl.create :iteration,  name: 'Implementation', start_date: @assignment12.start_date + 20.days, deadline: @assignment12.end_date, assignment: @assignment12
 
     # FactoryGirl.create :iteration,  name: 'Analysis - Design', start_date: @assignment21.start_date, deadline: @assignment21.start_date + 15.days, assignment: @assignment21
     # FactoryGirl.create :iteration,  name: 'Implementation', start_date: @assignment21.start_date + 15.days, deadline: @assignment21.end_date, assignment: @assignment21
@@ -85,11 +78,6 @@ RSpec.describe "Seeder" do
     @project2 = FactoryGirl.create :project, project_name: 'books.gr Website', team_name: 'Book Team', enrollment_key: 'key', assignment: @assignment12, unit: @assignment12.unit
     @project3 = FactoryGirl.create :project, project_name: 'clothes.gr Website', team_name: 'The Fashion Police', enrollment_key: 'key', assignment: @assignment12, unit: @assignment12.unit
     @project4 = FactoryGirl.create :project, project_name: 'medieval-gear.gr Website', team_name: 'Knights of Frappe', enrollment_key: 'key', assignment: @assignment12, unit: @assignment12.unit
-
-    FactoryGirl.create :project, project_name: 'party.gov Website', enrollment_key: 'key', assignment: @assignment_new, unit: @assignment12.unit
-    FactoryGirl.create :project, project_name: 'help.com Website', enrollment_key: 'key', assignment: @assignment_new, unit: @assignment12.unit
-    FactoryGirl.create :project, project_name: 'navarinou.gr Website', enrollment_key: 'key', assignment: @assignment_new, unit: @assignment12.unit
-    FactoryGirl.create :project, project_name: 'cheap-email.com Website', enrollment_key: 'key', assignment: @assignment_new, unit: @assignment12.unit
 
 
     # Pa Form
@@ -180,8 +168,8 @@ RSpec.describe "Seeder" do
     pe.save validate: false
     pe = FactoryGirl.build :project_evaluation, date_submitted: @assignment12.start_date + 25.days - 2.hours, iteration_id: @iteration123.id, project_id: @project1.id, user_id: @student1.id, percent_complete: 64
     pe.save validate: false
-    # pe = FactoryGirl.build :project_evaluation, date_submitted: @assignment12.end_date - 2.hours, iteration_id: @iteration123.id, project_id: @project1.id, user_id: @student1.id, percent_complete: 95
-    # pe.save validate: false
+    pe = FactoryGirl.build :project_evaluation, date_submitted: @assignment12.end_date - 2.hours, iteration_id: @iteration123.id, project_id: @project1.id, user_id: @student1.id, percent_complete: 95
+    pe.save validate: false
 
 
     @student2 = FactoryGirl.create :student_confirmed, first_name: "Harris", last_name: 'Bournis', email: 'harris@bournis.com'
@@ -692,9 +680,3 @@ RSpec.describe "Seeder" do
     FactoryGirl.create :question, lecturer_id: @lecturer.id, question_type_id: @question_number.id, text: 'The team member routinely uses time well throughout the project to ensure things get done on time and meet deadlines and responsibilities'
     FactoryGirl.create :question, lecturer_id: @lecturer.id, question_type_id: @question_rank.id, text: 'Rank your team members according to their overall contribution to the project'
 
-  end
-
-  it 'works' do
-    puts ""
-  end
-end

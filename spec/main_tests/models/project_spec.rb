@@ -22,8 +22,6 @@ RSpec.describe Project, type: :model do
     it { should validate_presence_of :project_name }
     it { should validate_presence_of :assignment }
 
-    it { should validate_uniqueness_of(:id) }
-    it { should validate_uniqueness_of(:enrollment_key) }
     it { should validate_uniqueness_of(:project_name).scoped_to(:assignment_id).case_insensitive }
 
     it 'vaidates uniqueness of team_name for assignment' do

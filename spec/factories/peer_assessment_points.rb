@@ -3,7 +3,7 @@ FactoryGirl.define do
     points { [10, 5, 20, 50].sample }
     date { DateTime.now }
     project { create :project }
-    peer_assessment { create :peer_assessment }
+    peer_assessment { create :peer_assessment_with_callback }
     student { create :student }
     reason_id { [1,2,3].sample }
   end

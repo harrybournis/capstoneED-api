@@ -25,9 +25,9 @@ class User < ApplicationRecord
   end
 
   # !! PLACEHOLDER IMAGE
-  def avatar_url
-    'http://i.pravatar.cc/100'
-  end
+  # def avatar_url
+  #   'http://i.pravatar.cc/100'
+  # end
 
   def lecturer?
     type == 'Lecturer'

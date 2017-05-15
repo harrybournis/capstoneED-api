@@ -1,4 +1,4 @@
-    def valid_feelings_params
+   def valid_feelings_params
       if Feeling.all.count > 2
         feeling1 = Feeling.first
         feeling2 = Feeling.second
@@ -27,7 +27,7 @@
 
     # Default question types
     @question_text = FactoryGirl.create :question_type, category: 'text', friendly_name: 'Comment'
-    @question_number = FactoryGirl.create :question_type, category: 'number', friendly_name: 'Linkert Scale'
+    @question_number = FactoryGirl.create :question_type, category: 'number', friendly_name: 'Likert Scale'
     @question_rank = FactoryGirl.create :question_type, category: 'rank', friendly_name: 'Rank'
 
     points_object_values = [20,40,50,10,30, 20,40,50,10,30, 20,40,50,10,30]
@@ -37,15 +37,17 @@
     hours_worked_medium = [3,4,5,6]
     hours_worked_large = [5,6,7,8,9,10]
 
+    base_url = 'http://capstoneed-api.org:21992/placeholders'
     # Lecturer-units-assignments
-    @lecturer = FactoryGirl.create :lecturer_confirmed, first_name: 'Thanos', last_name: 'Hatziapostolou', email: 'thanos@hatziapostolou.com', password: '12345678'
+    @lecturer = FactoryGirl.create :lecturer_confirmed, first_name: 'Thanos', last_name: 'Hatziapostolou', email: 'thanos@hatziapostolou.com', password: '12345678', avatar_url: "#{base_url}/hatzi.jpg"
     @department = FactoryGirl.create :department, name: 'Computer Science', university: 'University of Sheffield'
     @unit1 = FactoryGirl.create :unit, lecturer: @lecturer, name: 'Web Programming', code: 'CCP2300', semester: 'Spring', year: 2017, department: @department
     @unit2 = FactoryGirl.create :unit, lecturer: @lecturer, name: 'Data Structures', code: 'CCP2400', semester: 'Spring', year: 2017, department: @department
 
     now = DateTime.now
-    # @assignment11 = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 1', start_date: now - 2.month, end_date: now - 1.month - 1.day, unit: @unit1
-    @assignment12 = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 2', start_date: now - 1.month, end_date: now + 1.day, unit: @unit1
+    @assignment11 = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 1', start_date: now - 2.month, end_date: now - 1.month - 1.day, unit: @unit1
+    @assignment12 = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 2', start_date: now - 1.month, end_date: now + 9.days, unit: @unit1
+    @assignment_new = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 3', start_date: now + 10.days, end_date: now + 1.month, unit: @unit1
 
     @game_settings = GameSetting.new assignment_id: @assignment12.id
     @game_settings.save
@@ -60,7 +62,8 @@
 
     @iteration121 = FactoryGirl.create :iteration,  name: 'Analysis', start_date: @assignment12.start_date, deadline: @assignment12.start_date + 10.days, assignment: @assignment12
     @iteration122 = FactoryGirl.create :iteration,  name: 'Design', start_date: @assignment12.start_date + 11.days, deadline: @assignment12.start_date + 20.days, assignment: @assignment12
-    @iteration123 = FactoryGirl.create :iteration,  name: 'Implementation', start_date: @assignment12.start_date + 20.days, deadline: @assignment12.end_date, assignment: @assignment12
+    @iteration123 = FactoryGirl.create :iteration,  name: 'Implementation', start_date: @assignment12.start_date + 20.days, deadline: now - 1.day, assignment: @assignment12
+    @iteration124 = FactoryGirl.create :iteration,  name: 'Testing', start_date: now - 1.day, deadline: @assignment12.end_date, assignment: @assignment12
 
     # FactoryGirl.create :iteration,  name: 'Analysis - Design', start_date: @assignment21.start_date, deadline: @assignment21.start_date + 15.days, assignment: @assignment21
     # FactoryGirl.create :iteration,  name: 'Implementation', start_date: @assignment21.start_date + 15.days, deadline: @assignment21.end_date, assignment: @assignment21
@@ -74,10 +77,15 @@
     # @project = FactoryGirl.create :project, project_name: 'petshop.gr Website', team_name: 'Puppies', enrollment_key: 'key', assignment: @assignment11, unit: @assignment11.unit
     # @project = FactoryGirl.create :project, project_name: 'congress.com Website', team_name: 'CIA Agents', enrollment_key: 'key', assignment: @assignment11, unit: @assignment11.unit
     #
-    @project1 = FactoryGirl.create :project, project_name: 'food.gr Website', team_name: 'FoodGr-ers', enrollment_key: 'key', assignment: @assignment12, unit: @assignment12.unit
-    @project2 = FactoryGirl.create :project, project_name: 'books.gr Website', team_name: 'Book Team', enrollment_key: 'key', assignment: @assignment12, unit: @assignment12.unit
-    @project3 = FactoryGirl.create :project, project_name: 'clothes.gr Website', team_name: 'The Fashion Police', enrollment_key: 'key', assignment: @assignment12, unit: @assignment12.unit
-    @project4 = FactoryGirl.create :project, project_name: 'medieval-gear.gr Website', team_name: 'Knights of Frappe', enrollment_key: 'key', assignment: @assignment12, unit: @assignment12.unit
+    @project1 = FactoryGirl.create :project, project_name: 'food.gr Website', team_name: 'FoodGr-ers', enrollment_key: 'key', assignment: @assignment12, unit: @assignment12.unit, logo: "#{base_url}/food.png"
+    @project2 = FactoryGirl.create :project, project_name: 'books.gr Website', team_name: 'Book Team', enrollment_key: 'key', assignment: @assignment12, unit: @assignment12.unit, logo: "#{base_url}/book.png"
+    @project3 = FactoryGirl.create :project, project_name: 'clothes.gr Website', team_name: 'The Fashion Police', enrollment_key: 'key', assignment: @assignment12, unit: @assignment12.unit, logo: "#{base_url}/clothes.png"
+    @project4 = FactoryGirl.create :project, project_name: 'medieval-gear.gr Website', team_name: 'Knights of Frappe', enrollment_key: 'key', assignment: @assignment12, unit: @assignment12.unit, logo: "#{base_url}/medieval.png"
+
+    FactoryGirl.create :project, project_name: 'party.gov Website', enrollment_key: 'key', assignment: @assignment_new, unit: @assignment12.unit
+    FactoryGirl.create :project, project_name: 'help.com Website', enrollment_key: 'key', assignment: @assignment_new, unit: @assignment12.unit
+    FactoryGirl.create :project, project_name: 'navarinou.gr Website', enrollment_key: 'key', assignment: @assignment_new, unit: @assignment12.unit
+    FactoryGirl.create :project, project_name: 'cheap-email.com Website', enrollment_key: 'key', assignment: @assignment_new, unit: @assignment12.unit
 
 
     # Pa Form
@@ -86,7 +94,7 @@
                  { 'text' => 'The team member took a leadership role organizing others, encouraging group participation supporting when necessary and solving problems', 'type_id' => @question_number.id },
                  { 'text' => 'The team member routinely uses time well throughout the project to ensure things get done on time and meet deadlines and responsibilities', 'type_id' => @question_number.id },
                  { 'text' => 'Rank your team members according to their overall contribution to the project', 'type_id' => @question_rank.id },
-                 { 'text' => 'If you want, you can leave a comment about the teammbers', 'type_id' => @question_text.id }]
+                 { 'text' => 'If you want, you can leave a comment about the team members', 'type_id' => @question_text.id }]
     @pa_form1 = FactoryGirl.create :pa_form, iteration_id: @iteration121.id, start_offset: 0, end_offset: 3.days.to_i, questions: questions
     @pa_form2 = FactoryGirl.create :pa_form, iteration_id: @iteration122.id, start_offset: 0, end_offset: 3.days.to_i, questions: questions
     @pa_form3 = FactoryGirl.create :pa_form, iteration_id: @iteration123.id, start_offset: 0, end_offset: 3.days.to_i, questions: questions
@@ -149,7 +157,7 @@
     # Students
 
     # ³³³³³³³³³³³³³³³³³³³³³³³³³³³³³ our team ³³³³³³³³³³³³³³³³³³³
-    @student1 = FactoryGirl.create :student_confirmed, first_name: 'Ioannis', last_name: 'Boutsikas', email: 'ioannis@boutsikas.com'
+    @student1 = FactoryGirl.create :student_confirmed, first_name: 'Ioannis', last_name: 'Boutsikas', email: 'ioannis@boutsikas.com', avatar_url: "#{base_url}/1.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project1, student: @student1, nickname: 'Zinadore'
 
     (@assignment12.start_date.to_datetime..now).sort.each do |date|
@@ -168,11 +176,11 @@
     pe.save validate: false
     pe = FactoryGirl.build :project_evaluation, date_submitted: @assignment12.start_date + 25.days - 2.hours, iteration_id: @iteration123.id, project_id: @project1.id, user_id: @student1.id, percent_complete: 64
     pe.save validate: false
-    pe = FactoryGirl.build :project_evaluation, date_submitted: @assignment12.end_date - 2.hours, iteration_id: @iteration123.id, project_id: @project1.id, user_id: @student1.id, percent_complete: 95
-    pe.save validate: false
+    # pe = FactoryGirl.build :project_evaluation, date_submitted: @assignment12.end_date - 2.hours, iteration_id: @iteration123.id, project_id: @project1.id, user_id: @student1.id, percent_complete: 95
+    # pe.save validate: false
 
 
-    @student2 = FactoryGirl.create :student_confirmed, first_name: "Harris", last_name: 'Bournis', email: 'harris@bournis.com'
+    @student2 = FactoryGirl.create :student_confirmed, first_name: "Harris", last_name: 'Bournis', email: 'harris@bournis.com', avatar_url: "#{base_url}/2.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project1, student: @student2, nickname: 'Peer Assessment Gangsta (PAG)'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(18).sort.each do |date|
@@ -194,7 +202,7 @@
     pe.save validate: false
 
 
-    @student3 = FactoryGirl.create :student_confirmed, first_name: "Panos", last_name: 'Kapsalas', email: 'panos@kapsalas.com'
+    @student3 = FactoryGirl.create :student_confirmed, first_name: "Panos", last_name: 'Kapsalas', email: 'panos@kapsalas.com', avatar_url: "#{base_url}/3.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project1, student: @student3, nickname: 'Spectacular Lolos'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(26).sort.each do |date|
@@ -215,7 +223,7 @@
     pe = FactoryGirl.build :project_evaluation, date_submitted: @assignment12.end_date - 2.hours, iteration_id: @iteration123.id, project_id: @project1.id, user_id: @student3.id, percent_complete: 96
     pe.save validate: false
 
-    @student4 = FactoryGirl.create :student_confirmed, first_name: "Thanos", last_name: 'Doulgeris', email: 'thanos@doulgeris.com'
+    @student4 = FactoryGirl.create :student_confirmed, first_name: "Thanos", last_name: 'Doulgeris', email: 'thanos@doulgeris.com', avatar_url: "#{base_url}/4.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project1, student: @student4, nickname: 'Tyccoon Typhoon'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(5).sort.each do |date|
@@ -279,7 +287,7 @@
 
     # ³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³ Team 2 ³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³
     # WORST TEAM
-    @student1 = FactoryGirl.create :student_confirmed_seeder
+    @student1 = FactoryGirl.create :student_confirmed_seeder, avatar_url: "#{base_url}/5.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project2, student: @student1, nickname: 'SlimEliteHannah'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(3).sort.each do |date|
@@ -301,7 +309,7 @@
     pe.save validate: false
 
 
-    @student2 = FactoryGirl.create :student_confirmed_seeder
+    @student2 = FactoryGirl.create :student_confirmed_seeder, avatar_url: "#{base_url}/6.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project2, student: @student2, nickname: 'Crampsal'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(10).sort.each do |date|
@@ -323,7 +331,7 @@
     pe.save validate: false
 
 
-    @student3 = FactoryGirl.create :student_confirmed_seeder
+    @student3 = FactoryGirl.create :student_confirmed_seeder, avatar_url: "#{base_url}/7.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project2, student: @student3, nickname: 'DarkSuru'
     @sp.update(points: 0)
     # pe = FactoryGirl.build :project_evaluation, date_submitted: @assignment12.start_date + 5.days - 2.hours, iteration_id: @iteration121.id, project_id: @project2.id, user_id: @student3.id, percent_complete: 14
@@ -345,7 +353,7 @@
     #   @sp.save
     # end
 
-    @student4 = FactoryGirl.create :student_confirmed_seeder
+    @student4 = FactoryGirl.create :student_confirmed_seeder, avatar_url: "#{base_url}/8.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project2, student: @student4, nickname: 'OneTrendy'
     @sp.update(points: 0)
     # pe = FactoryGirl.build :project_evaluation, date_submitted: @assignment12.start_date + 5.days - 2.hours, iteration_id: @iteration121.id, project_id: @project1.id, user_id: @student4.id, percent_complete: 14
@@ -409,7 +417,7 @@
 
     # ³³³³³³³³³³³³³³³³³³³³³³³³³³³ Team 3 ³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³
     # BEST TEAM
-    @student1 = FactoryGirl.create :student_confirmed_seeder
+    @student1 = FactoryGirl.create :student_confirmed_seeder, avatar_url: "#{base_url}/9.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project3, student: @student1, nickname: 'HeroBiggRodeo'
 
     (@assignment12.start_date.to_datetime..now).sort.each do |date|
@@ -431,7 +439,7 @@
     pe.save validate: false
 
 
-    @student2 = FactoryGirl.create :student_confirmed_seeder
+    @student2 = FactoryGirl.create :student_confirmed_seeder, avatar_url: "#{base_url}/10.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project3, student: @student2, nickname: 'Slimodocam'
 
     (@assignment12.start_date.to_datetime..now).sort.each do |date|
@@ -453,7 +461,7 @@
     pe.save validate: false
 
 
-    @student3 = FactoryGirl.create :student_confirmed_seeder
+    @student3 = FactoryGirl.create :student_confirmed_seeder, avatar_url: "#{base_url}/11.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project3, student: @student3, nickname: 'Jamentoity'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(29).sort.each do |date|
@@ -475,7 +483,7 @@
     pe.save validate: false
 
 
-    @student4 = FactoryGirl.create :student_confirmed_seeder
+    @student4 = FactoryGirl.create :student_confirmed_seeder, avatar_url: "#{base_url}/12.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project3, student: @student4, nickname: 'Hoteliana'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(25).sort.each do |date|
@@ -540,7 +548,7 @@
 
 
     #³³³³³³³³³³³³³³³³³³³³³³³³³³³³ Team 4 ³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³³
-    @student1 = FactoryGirl.create :student_confirmed_seeder
+    @student1 = FactoryGirl.create :student_confirmed_seeder, avatar_url: "#{base_url}/13.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project4, student: @student1, nickname: 'Footbox'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(25).sort.each do |date|
@@ -562,7 +570,7 @@
     pe.save validate: false
 
 
-    @student2 = FactoryGirl.create :student_confirmed_seeder
+    @student2 = FactoryGirl.create :student_confirmed_seeder, avatar_url: "#{base_url}/14.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project4, student: @student2, nickname: 'Skilled Salamander'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(14).sort.each do |date|
@@ -584,7 +592,7 @@
     pe.save validate: false
 
 
-    @student3 = FactoryGirl.create :student_confirmed_seeder
+    @student3 = FactoryGirl.create :student_confirmed_seeder, avatar_url: "#{base_url}/15.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project4, student: @student3, nickname: 'Sunny King'
     @sp.update(points: 0)
     # pe = FactoryGirl.build :project_evaluation, date_submitted: @assignment12.start_date + 5.days - 2.hours, iteration_id: @iteration121.id, project_id: @project4.id, user_id: @student3.id, percent_complete: 14
@@ -606,7 +614,7 @@
     #   @sp.save
     # end
 
-    @student4 = FactoryGirl.create :student_confirmed_seeder
+    @student4 = FactoryGirl.create :student_confirmed_seeder, avatar_url: "#{base_url}/16.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project4, student: @student4, nickname: 'Panther Colonel'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(9).sort.each do |date|
@@ -668,5 +676,14 @@
     FactoryGirl.create :peer_assessment, pa_form: @pa_form2, submitted_by: @student4, submitted_for: @student4, date_submitted: @iteration122.deadline + 1.hours,answers: [{'question_id' => 1, 'answer' => 4}, {'question_id' => 2, 'answer' => 4}, {'question_id' => 3, 'answer' => 5}, {'question_id' => 4, 'answer' => 5}, {'question_id' => 5, 'answer' => 5}, {'question_id' => 6, 'answer' => ''}]
 
     # Form Templates
+    FactoryGirl.create :form_template, lecturer_id: @lecturer.id, name: 'Industial Project template', questions: questions
+    FactoryGirl.create :form_template, lecturer_id: @lecturer.id, name: 'My simple template', questions: questions
+    FactoryGirl.create :form_template, lecturer_id: @lecturer.id, name: 'Template 1', questions: questions
 
     # Lecturer Questions
+    FactoryGirl.create :question, lecturer_id: @lecturer.id, question_type_id: @question_text.id, text: 'If you want, you can leave a comment about the team members'
+    FactoryGirl.create :question, lecturer_id: @lecturer.id, question_type_id: @question_number.id, text: 'The team member completed an equal share of work'
+    FactoryGirl.create :question, lecturer_id: @lecturer.id, question_type_id: @question_number.id, text: 'The team member was extremely eager to plan and execute tasks and the project as a whole'
+    FactoryGirl.create :question, lecturer_id: @lecturer.id, question_type_id: @question_number.id, text: 'The team member took a leadership role organizing others, encouraging group participation supporting when necessary and solving problems'
+    FactoryGirl.create :question, lecturer_id: @lecturer.id, question_type_id: @question_number.id, text: 'The team member routinely uses time well throughout the project to ensure things get done on time and meet deadlines and responsibilities'
+    FactoryGirl.create :question, lecturer_id: @lecturer.id, question_type_id: @question_rank.id, text: 'Rank your team members according to their overall contribution to the project'

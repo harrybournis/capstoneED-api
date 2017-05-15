@@ -249,7 +249,7 @@ RSpec.describe 'Includes', type: :controller do
 			before do
 				@iteration = FactoryGirl.create(:iteration, assignment: @assignment)
 				@pa_form  = FactoryGirl.create(:pa_form, iteration: @iteration)
-				@peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form)
+				@peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: @pa_form)
 				@controller = V1::PeerAssessmentsController.new
 			end
 

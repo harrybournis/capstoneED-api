@@ -25,12 +25,12 @@ RSpec.describe PeerAssessment, type: :model do
 	end
 
 	it 'works' do
-		pa = FactoryGirl.build(:peer_assessment)
+		pa = FactoryGirl.build(:peer_assessment_with_callback)
 		expect(pa.save).to be_truthy
 	end
 
 	it 'automatically saves the project_id from the pa_form before save' do
-		pa = FactoryGirl.build(:peer_assessment)
+		pa = FactoryGirl.build(:peer_assessment_with_callback)
 
 		expect(pa.project_id).to be_falsy
 		expect(pa.save).to be_truthy
@@ -174,11 +174,11 @@ RSpec.describe PeerAssessment, type: :model do
 
 			pa = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
 				answers: [{ question_id: 1, answer: 'answ' }])
-			pa2 = FactoryGirl.create(:peer_assessment, pa_form: @pa_form2, submitted_by: @student_by, submitted_for: @student_for,
+			pa2 = FactoryGirl.create(:peer_assessment_with_callback, pa_form: @pa_form2, submitted_by: @student_by, submitted_for: @student_for,
 				answers: [{ question_id: 1, answer: 'answ' }]) # same students, different form
 			pa3 = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by2, submitted_for: @student_for2,
 				answers: [{ question_id: 1, answer: 'answ' }]) # same form, different students
-			peer_assessments_rest = FactoryGirl.create_list(:peer_assessment, 5)
+			peer_assessments_rest = FactoryGirl.create_list(:peer_assessment_with_callback, 5)
 			expect(pa.save).to be_truthy
 			expect(pa2.save).to be_truthy
 			expect(pa3.save).to be_truthy
@@ -211,7 +211,7 @@ RSpec.describe PeerAssessment, type: :model do
 		it 'queries using both project_id and iteration_id' do
 			new_iteration = FactoryGirl.create(:iteration, assignment: @pa_form.assignment)
 			new_pa_form = FactoryGirl.create(:pa_form, iteration: new_iteration)
-			new_pa = FactoryGirl.create(:peer_assessment, pa_form: new_pa_form, submitted_by: @student_by, submitted_for: @student_for,
+			new_pa = FactoryGirl.create(:peer_assessment_with_callback, pa_form: new_pa_form, submitted_by: @student_by, submitted_for: @student_for,
 				answers: [{ question_id: 1, answer: 'answ' }])
 
 			expect(PeerAssessment.where(project_id: @project.id).count).to eq(3)
