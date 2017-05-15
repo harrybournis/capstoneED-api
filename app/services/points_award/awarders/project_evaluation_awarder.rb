@@ -34,7 +34,7 @@ module PointsAward::Awarders
     # everyone in the team. The lecturer is not take into account
     # if they have already submitted.
     #
-    # @aeturn [Hash | nil] The points or nil if not the first one.
+    # @return [Hash | nil] The points or nil if not the first one.
     #
     def points_for_first_in_team
       evaluations = ProjectEvaluation.where(project_id: @project_evaluation.project_id,

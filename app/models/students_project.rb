@@ -34,7 +34,7 @@
     # is added so that the format_of_last_log validation fails.
     #
     # @param entry [Hash] The hash of the log entry.
-    # @parma date_of_submission [DateTime] Optional. Specify a date of
+    # @param date_of_submission [DateTime] Optional. Specify a date of
     #   submission for the log.
     def add_log(entry, date_of_submission = nil)
       logs << if entry.class == Hash

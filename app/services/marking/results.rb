@@ -73,7 +73,7 @@ module Marking
     #
     # @param student_id [Integer] The id of the Student
     #   receiving the mark.
-    # @param score [Integer] The mark.
+    # @param mark [Integer] The mark.
     #
     # @return [Boolean,nil] Returns true if successully added, nil
     #   if the student already has a mark.

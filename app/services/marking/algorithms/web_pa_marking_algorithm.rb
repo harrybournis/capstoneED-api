@@ -72,7 +72,7 @@ module Marking
 
       # Calculates the score for a single question
       #
-      # @param pa_answers_table [Marking::PaAnswersTable] The answers table.
+      # @param results [Marking::PaAnswersTable] The answers table.
       # @param question_id [Integer] The question that will be calculated
       #
       def self.calculate_question(results, question_id)
