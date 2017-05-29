@@ -36,6 +36,16 @@ ActiveRecord::Schema.define(version: 20170508043216) do
     t.index ["unit_id"], name: "index_assignments_on_unit_id", using: :btree
   end
 
+  create_table "books", force: :cascade do |t|
+    t.string  "author",     limit: 80
+    t.string  "language",   limit: 80
+    t.string  "publisher",  limit: 80
+    t.string  "subject",    limit: 80
+    t.string  "title",      limit: 100
+    t.string  "isbn",       limit: 80
+    t.boolean "is_instock",             default: false
+  end
+
   create_table "deliverables", force: :cascade do |t|
     t.jsonb    "questions",    default: {}, null: false
     t.integer  "iteration_id"
@@ -235,27 +245,12 @@ ActiveRecord::Schema.define(version: 20170508043216) do
     t.index ["question_type_id"], name: "index_questions_on_question_type_id", using: :btree
   end
 
-  create_table "questions_sections", force: :cascade do |t|
-    t.integer  "question_id"
-    t.integer  "section_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-    t.index ["question_id"], name: "index_questions_sections_on_question_id", using: :btree
-    t.index ["section_id"], name: "index_questions_sections_on_section_id", using: :btree
-  end
-
-  create_table "sections", force: :cascade do |t|
-    t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "students_projects", force: :cascade do |t|
     t.integer "project_id"
     t.integer "student_id"
     t.string  "nickname"
     t.jsonb   "logs",       default: [], null: false
-    t.integer "points"
+    t.integer "points",     default: 0
     t.index ["logs"], name: "index_students_projects_on_logs", using: :gin
     t.index ["project_id"], name: "index_students_projects_on_project_id", using: :btree
     t.index ["student_id"], name: "index_students_projects_on_student_id", using: :btree
