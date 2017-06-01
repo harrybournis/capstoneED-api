@@ -74,7 +74,9 @@ RSpec.describe Project, type: :model do
 
     it 'autogenerates enrollment key if not provided by user' do
       assignment = FactoryGirl.create(:assignment)
-      attributes = FactoryGirl.attributes_for(:project).except(:enrollment_key).merge(assignment_id: assignment.id)
+      attributes = FactoryGirl.attributes_for(:project)
+                              .except(:enrollment_key)
+                              .merge(assignment_id: assignment.id)
       project = Project.new(attributes)
       project.valid?
       expect(project.errors[:enrollment_key]).to be_empty
@@ -155,7 +157,8 @@ RSpec.describe Project, type: :model do
     describe 'autogenerates team_name' do
       it 'if none was given during creation' do
         assignment = create :assignment
-        attributes = attributes_for(:project).except(:team_name).merge!(assignment_id: assignment.id)
+        attributes = attributes_for(:project).except(:team_name)
+                                             .merge!(assignment_id: assignment.id)
         expect(attributes[:team_name]).to be_falsy
 
         project = Project.new(attributes)
