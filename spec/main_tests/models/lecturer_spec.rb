@@ -10,6 +10,8 @@ RSpec.describe Lecturer, type: :model do
 		it { should have_many(:projects).through(:assignments) }
 		it { should have_many(:questions).dependent(:destroy) }
 		it { should have_many :form_templates }
+    it { should have_many :assignments }
+    it { should have_many(:iterations).through(:assignments) }
 
 		it { should validate_presence_of(:first_name) }
 		it { should validate_presence_of(:last_name) }

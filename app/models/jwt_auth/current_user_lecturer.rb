@@ -130,6 +130,10 @@ class JWTAuth::CurrentUserLecturer < JWTAuth::CurrentUser
              .where(['assignments.lecturer_id = ?', @id])
   end
 
+  def scored_iterations(options = {})
+    Iteration.joins(:assignment).where(['assignments.lecturer_id = ? and iterations.is_scored = ?', @id, true]).order(deadline: :desc)
+  end
+
   # Returns only the iterations that are currently active for the current user.
   #
   # @param options = {} [Hash] Optional.
