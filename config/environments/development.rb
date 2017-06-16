@@ -50,7 +50,7 @@ Rails.application.configure do
 
   config.action_dispatch.tld_length = 0
 
-  config.log_level = :error
+  config.log_level = :debug
 
   # Lograge Gem configuration
   # config.lograge.enabled = true

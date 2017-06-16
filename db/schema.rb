@@ -36,16 +36,6 @@ ActiveRecord::Schema.define(version: 20170508043216) do
     t.index ["unit_id"], name: "index_assignments_on_unit_id", using: :btree
   end
 
-  create_table "books", force: :cascade do |t|
-    t.string  "author",     limit: 80
-    t.string  "language",   limit: 80
-    t.string  "publisher",  limit: 80
-    t.string  "subject",    limit: 80
-    t.string  "title",      limit: 100
-    t.string  "isbn",       limit: 80
-    t.boolean "is_instock",             default: false
-  end
-
   create_table "deliverables", force: :cascade do |t|
     t.jsonb    "questions",    default: {}, null: false
     t.integer  "iteration_id"
