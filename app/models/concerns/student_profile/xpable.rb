@@ -24,9 +24,17 @@ module StudentProfile::Xpable
   #
   def calculate_level(coefficient = COEFFICIENT)
     level = (Math.sqrt(coefficient * self.total_xp)).to_i
+
+    if level <= 0
+      self.level = MIN_LEVEL
+      return MIN_LEVEL
+    end
+    if level > MAX_LEVEL
+      self.level = MAX_LEVEL
+      return MAX_LEVEL if level > MAX_LEVEL
+    end
+
     self.level = level
-    return MIN_LEVEL if level <= 0
-    return MAX_LEVEL if level > MAX_LEVEL
     level
   end
 

@@ -5,7 +5,11 @@ class V1::AuthenticationsController < ApplicationController
   # GET /me
   # validates the JWT access-token and returns the current user
   def me
-    render json: current_user.load, status: :ok
+    if current_user.student?
+      render json: current_user.load, serializer: StudentWithXpSerializer, status: :ok
+    else
+      render json: current_user.load, status: :ok
+    end
   end
 
   # POST /refresh

@@ -34,7 +34,7 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
       end
 
       it 'expect current_user to be same class as their type' do
-        new_en = FactoryGirl.create(:student)
+        new_en = FactoryGirl.create(:student_confirmed)
         mock_request = MockRequest.new(valid = true, new_en)
         request.cookies['access-token'] = mock_request.cookies['access-token']
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']

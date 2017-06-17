@@ -164,6 +164,7 @@ RSpec.describe "Seeder" do
 
     # ³³³³³³³³³³³³³³³³³³³³³³³³³³³³³ our team ³³³³³³³³³³³³³³³³³³³
     @student1 = FactoryGirl.create :student_confirmed, first_name: 'Ioannis', last_name: 'Boutsikas', email: 'ioannis@boutsikas.com'
+    @student_profile = StudentProfile.create(student: @student1)
     @sp = FactoryGirl.create :students_project_seeder, project: @project1, student: @student1, nickname: 'Zinadore'
 
     (@assignment12.start_date.to_datetime..now).sort.each do |date|
@@ -187,6 +188,7 @@ RSpec.describe "Seeder" do
 
 
     @student2 = FactoryGirl.create :student_confirmed, first_name: "Harris", last_name: 'Bournis', email: 'harris@bournis.com'
+    @student_profile = StudentProfile.create(student: @student2)
     @sp = FactoryGirl.create :students_project_seeder, project: @project1, student: @student2, nickname: 'Peer Assessment Gangsta (PAG)'
 
     (@assignment12.start_date.to_datetime..now).to_a.sample(18).sort.each do |date|

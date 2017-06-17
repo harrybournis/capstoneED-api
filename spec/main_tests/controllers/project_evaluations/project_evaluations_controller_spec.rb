@@ -6,7 +6,7 @@ RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 
   before(:all) do
     @lecturer = get_lecturer_with_units_assignments_projects
-    @student = FactoryGirl.create(:student)
+    @student = FactoryGirl.create(:student_confirmed)
     @project = @lecturer.projects.first
     create :students_project, student: @student, project: @project
     now = DateTime.now

@@ -5,9 +5,6 @@ FactoryGirl.define do
     email             { "jonathan#{rand(100000).to_s}burgerhuman#{rand(100000).to_s}@gmail.com" }
     provider          { 'test' }
     type              { 'Student' }
-    after :build do |obj|
-      create :student_profile, student: obj
-    end
 
     factory :student_with_password do
       provider 'email'
@@ -19,6 +16,7 @@ FactoryGirl.define do
           obj.skip_confirmation_notification!
           obj.save
           obj.confirm
+          create :student_profile, student: obj
         end
       end
     end
@@ -35,6 +33,7 @@ FactoryGirl.define do
         obj.skip_confirmation_notification!
         obj.save
         obj.confirm
+          create :student_profile, student: obj
       end
     end
   end

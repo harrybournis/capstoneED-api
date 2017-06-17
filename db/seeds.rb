@@ -172,6 +172,10 @@
 
     # ³³³³³³³³³³³³³³³³³³³³³³³³³³³³³ our team ³³³³³³³³³³³³³³³³³³³
     @student1 = FactoryGirl.create :student_confirmed, first_name: 'Ioannis', last_name: 'Boutsikas', email: 'ioannis@boutsikas.com', avatar_url: "#{base_url}/1.jpg"
+    sp = @student1.student_profile
+    sp.total_xp = 0
+    sp.calculate_level
+    sp.save
     @sp = FactoryGirl.create :students_project_seeder, project: @project1, student: @student1, nickname: 'Zinadore'
     @sp = FactoryGirl.create :students_project_seeder, project: @project_diff_current, student: @student1, nickname: 'Zinadore'
 
