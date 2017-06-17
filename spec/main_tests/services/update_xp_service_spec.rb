@@ -22,4 +22,13 @@ RSpec.describe UpdateXpService, type: :model do
 
     expect(pointsboard.xp).to eq pointsboard.total_points
   end
+
+  it 'does not update the xp if the level is the max' do
+    @student_profile.level = StudentProfile::MAX_LEVEL
+    @student_profile.save
+
+    expect {
+      UpdateXpService.new(@points_board).call
+    }.to_not change { @student.total_xp }
+  end
 end

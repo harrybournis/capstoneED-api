@@ -33,8 +33,9 @@ module StudentProfile::Xpable
   # Calculates the remaining xp till the next level is reached.
   #
   # @return [Integer] The number of xp needed to reach the next level
+  #
   def calculate_xp_to_next_level(coefficient = COEFFICIENT)
-    calculate_xp_to_level(self.level + 1, coefficient) - self.total_xp
+    (calculate_xp_to_level(self.level + 1, coefficient) - self.total_xp).to_i
   end
 
   private

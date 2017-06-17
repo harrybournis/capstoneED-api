@@ -12,6 +12,7 @@ class UpdateXpService
   # @return [PointsBoard] The pointsboard containing the xp gained
   #
   def call
+    return @pointsboard if @student_profile.level >= StudentProfile::MAX_LEVEL
     new_xp = @pointsboard.total_points
     @student_profile.total_xp += new_xp
     @student_profile.calculate_level

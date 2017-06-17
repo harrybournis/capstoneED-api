@@ -11,7 +11,8 @@ module PointsAwardable
   # @return [PointsBoard] The resulting PointsBoard after processing.
   #
   def award_points(key, resource = nil, options = {})
-    PointsAwardService.new(key, current_user, resource, options).call
+    pointsboard = PointsAwardService.new(key, current_user, resource, options).call
+    UpdateXpService.new(pointsboard).call
   end
 
   # Serializes the resource with the points in the points board to
@@ -29,6 +30,10 @@ module PointsAwardable
     return resource unless points_board.persisted?
 
     points_json = ActiveModelSerializers::SerializableResource.new(points_board, serializer: PointsAward::PointsBoardSerializer).as_json
-    resource_json.merge(points_json)
+    resource_json.merge!(points_json)
+
+    return resource_json unless points_board.xp
+    xp_json = ActiveModelSerializers::SerializableResource.new(points_board, serializer: XP::EarnedXpSerializer).as_json
+    resource_json.merge!(xp_json)
   end
 end

@@ -105,4 +105,12 @@ class Student < User
   def level
     self.student_profile.level
   end
+
+  # Returns the xp required to advance to the next level
+  #
+  # @return [Integer] The xp required for the next level
+  #
+  def calculate_xp_to_next_level
+    self.student_profile.calculate_xp_to_next_level
+  end
 end
