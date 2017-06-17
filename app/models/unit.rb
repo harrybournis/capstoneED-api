@@ -23,7 +23,7 @@
 # @!attribute year
 #   @return [Integer] The year that the Unit takes place.
 #
-# @!attribute semeseter
+# @!attribute semester
 #   @return [String] The academic semester that the Unit takes place. Usually
 #     this is 'autumn' or 'spring', although no limitations are placed on the input.
 #
