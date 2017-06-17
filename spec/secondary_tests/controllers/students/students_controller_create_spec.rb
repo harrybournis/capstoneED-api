@@ -54,6 +54,16 @@ RSpec.describe 'V1::StudentsController POST /create', type: :controller do
 				expect(status).to eq(201)
 				expect(ActionMailer::Base.deliveries.last.to.first).to eq(@student.email)
 			end
+
+      it 'creates a student profile if the new user is a student' do
+				expect {
+					post :create, params: { 'email' => 'email@email.com', 'password' => '12345678',
+					'password_confirmation' => '12345678', 'first_name' => @student.first_name,
+					'last_name' => @student.last_name, type: 'Student' }
+				}. to change { StudentProfile.count }
+
+        expect(StudentProfile.last.student.id).to eq (Student.last.id)
+      end
 		end
 
 	end
