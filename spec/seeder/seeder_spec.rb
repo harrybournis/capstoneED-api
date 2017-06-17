@@ -53,6 +53,8 @@ RSpec.describe "Seeder" do
     @assignment12 = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 2', start_date: now - 1.month, end_date: now + 9.days, unit: @unit1
     @assignment_new = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 3', start_date: now + 10.days, end_date: now + 1.month, unit: @unit1
 
+    @assignment_diff_current = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'All about lists', start_date: now - 12.days, end_date: now + 24.days - 8.hours, unit: @unit2
+
     @game_settings = GameSetting.new assignment_id: @assignment12.id
     @game_settings.save
 

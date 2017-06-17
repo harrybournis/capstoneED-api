@@ -49,8 +49,17 @@
     @assignment12 = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 2', start_date: now - 1.month, end_date: now + 9.days, unit: @unit1
     @assignment_new = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 3', start_date: now + 10.days, end_date: now + 1.month, unit: @unit1
 
+    @assignment_diff_current = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'All about lists', start_date: now - 12.days, end_date: now + 24.days - 8.hours, unit: @unit2
+
+    @game_settings11 = GameSetting.new assignment_id: @assignment11.id
+    @game_settings11.save
     @game_settings = GameSetting.new assignment_id: @assignment12.id
     @game_settings.save
+    @game_settings_new = GameSetting.new assignment_id: @assignment_new.id
+    @game_settings_new.save
+
+    @game_settings2 = GameSetting.new assignment_id: @assignment_diff_current.id
+    @game_settings2.save
 
 
     # @assignment21 = FactoryGirl.create :assignment, lecturer: @lecturer, name: 'Practical 1', start_date: now - 1.month, end_date: now - 1.day, unit: @unit2
@@ -64,6 +73,9 @@
     @iteration122 = FactoryGirl.create :iteration,  name: 'Design', start_date: @assignment12.start_date + 11.days, deadline: @assignment12.start_date + 20.days, assignment: @assignment12
     @iteration123 = FactoryGirl.create :iteration,  name: 'Implementation', start_date: @assignment12.start_date + 20.days, deadline: now - 1.day, assignment: @assignment12
     @iteration124 = FactoryGirl.create :iteration,  name: 'Testing', start_date: now - 1.day, deadline: @assignment12.end_date, assignment: @assignment12
+
+    @iteration_diff_current = FactoryGirl.create :iteration, name: 'Analysis / Design', start_date: @assignment_diff_current.start_date, deadline: now + 1.day, assignment: @assignment_diff_current
+    @iteration_diff_current2 = FactoryGirl.create :iteration, name: 'Implementation', start_date: now + 2.days,  deadline: @assignment_diff_current.end_date, assignment: @assignment_diff_current
 
     # FactoryGirl.create :iteration,  name: 'Analysis - Design', start_date: @assignment21.start_date, deadline: @assignment21.start_date + 15.days, assignment: @assignment21
     # FactoryGirl.create :iteration,  name: 'Implementation', start_date: @assignment21.start_date + 15.days, deadline: @assignment21.end_date, assignment: @assignment21
@@ -87,6 +99,8 @@
     FactoryGirl.create :project, project_name: 'navarinou.gr Website', enrollment_key: 'key', assignment: @assignment_new, unit: @assignment12.unit
     FactoryGirl.create :project, project_name: 'cheap-email.com Website', enrollment_key: 'key', assignment: @assignment_new, unit: @assignment12.unit
 
+    @project_diff_current = FactoryGirl.create :project, project_name: 'ArrayList Performance Testing', team_name: 'The A-(rray)Listers', enrollment_key: 'key', assignment: @assignment_diff_current, unit: @assignment_diff_current.unit, logo: "#{base_url}/food.png"
+    @project_diff_current2 = FactoryGirl.create :project, project_name: 'Stack and Queue Use Cases', team_name: "Stackin' Paper", enrollment_key: 'key', assignment: @assignment_diff_current, unit: @assignment_diff_current.unit, logo: "#{base_url}/food.png"
 
     # Pa Form
     questions = [{ 'text' => 'The team member completed an equal share of work', 'type_id' => @question_number.id },
@@ -159,6 +173,7 @@
     # ³³³³³³³³³³³³³³³³³³³³³³³³³³³³³ our team ³³³³³³³³³³³³³³³³³³³
     @student1 = FactoryGirl.create :student_confirmed, first_name: 'Ioannis', last_name: 'Boutsikas', email: 'ioannis@boutsikas.com', avatar_url: "#{base_url}/1.jpg"
     @sp = FactoryGirl.create :students_project_seeder, project: @project1, student: @student1, nickname: 'Zinadore'
+    @sp = FactoryGirl.create :students_project_seeder, project: @project_diff_current, student: @student1, nickname: 'Zinadore'
 
     (@assignment12.start_date.to_datetime..now).sort.each do |date|
       @sp.add_log(JSON.parse({ date_worked: date.to_i.to_s, time_worked: hours_worked.sample.hours.to_i.to_s, stage: 'Analysis', text: 'Worked on database and use cases' }.to_json), date.to_i.to_s)
