@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170508043216) do
+ActiveRecord::Schema.define(version: 20170617094036) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,16 @@ ActiveRecord::Schema.define(version: 20170508043216) do
     t.string   "name"
     t.index ["lecturer_id"], name: "index_assignments_on_lecturer_id", using: :btree
     t.index ["unit_id"], name: "index_assignments_on_unit_id", using: :btree
+  end
+
+  create_table "books", force: :cascade do |t|
+    t.string  "author",     limit: 80
+    t.string  "language",   limit: 80
+    t.string  "publisher",  limit: 80
+    t.string  "subject",    limit: 80
+    t.string  "title",      limit: 100
+    t.string  "isbn",       limit: 80
+    t.boolean "is_instock",             default: false
   end
 
   create_table "deliverables", force: :cascade do |t|
@@ -233,6 +243,30 @@ ActiveRecord::Schema.define(version: 20170508043216) do
     t.integer  "question_type_id"
     t.index ["lecturer_id"], name: "index_questions_on_lecturer_id", using: :btree
     t.index ["question_type_id"], name: "index_questions_on_question_type_id", using: :btree
+  end
+
+  create_table "questions_sections", force: :cascade do |t|
+    t.integer  "question_id"
+    t.integer  "section_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.index ["question_id"], name: "index_questions_sections_on_question_id", using: :btree
+    t.index ["section_id"], name: "index_questions_sections_on_section_id", using: :btree
+  end
+
+  create_table "sections", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "student_profiles", force: :cascade do |t|
+    t.integer  "student_id"
+    t.integer  "total_xp",   default: 0
+    t.integer  "level",      default: 1
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.index ["student_id"], name: "index_student_profiles_on_student_id", using: :btree
   end
 
   create_table "students_projects", force: :cascade do |t|

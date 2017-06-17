@@ -15,6 +15,11 @@ class V1::UsersController < ApplicationController
     @user = User.new(user_params).process_new_record
 
     if @user.save
+      if @user.student?
+        unless sp = StudentProfile.create(student: @user)
+          render json: format_errors(sp.errors), status: :unprocessable_entity
+        end
+      end
       render json: @user, status: :created
     else
       render json: format_errors(@user.errors), status: :unprocessable_entity

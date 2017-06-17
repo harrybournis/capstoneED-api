@@ -39,6 +39,20 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
       end
     end
 
+    it 'updates the students xp' do
+      Timecop.travel(DateTime.now + 5.days) do
+        @student, @csrf = login_integration @student
+
+        expect {
+          post "/v1/projects/#{@project.id}/logs", params: @valid_params, headers: { 'X-XSRF-TOKEN' => @csrf }
+        }.to change { @student.student_profile.reload.total_xp }
+
+        expect(status).to eq 201
+
+        expect(body['xp']).to be_truthy
+        expect(body['xp']['total_xp']).to eq @student.student_profile.total_xp
+      end
+    end
     it 'gives less points subsequent submission of the day before the limit' do
       @students_project.logs = []
       @students_project.save

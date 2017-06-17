@@ -20,6 +20,7 @@ class Student < User
   has_many  :log_points
   has_many  :peer_assessment_points
   has_many  :iteration_marks
+  has_one   :student_profile
 
   validates_absence_of :position, :university
   validates_inclusion_of :type, in: ['Student']
@@ -87,5 +88,30 @@ class Student < User
                                                       .first
     sp.update(points: sp.points + points)
     sp.valid? ? sp.points : nil
+  end
+
+  # Returns the total number of xp saved in the StudentProfile
+  #
+  # @return [Integer] The total number of the student's xp
+  #
+  def total_xp
+    self.student_profile.total_xp
+  end
+
+  # Returns the current level of the student, saved in the
+  # StudentProfile.
+  #
+  # @return [Integer] The current level of the student
+  #
+  def level
+    self.student_profile.level
+  end
+
+  # Returns the xp required to advance to the next level
+  #
+  # @return [Integer] The xp required for the next level
+  #
+  def calculate_xp_to_next_level
+    self.student_profile.calculate_xp_to_next_level
   end
 end

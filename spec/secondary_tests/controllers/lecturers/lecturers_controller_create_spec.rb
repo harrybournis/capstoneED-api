@@ -52,6 +52,12 @@ RSpec.describe 'V1::LecturersController POST /create', type: :controller do
 				expect(status).to eq(201)
 				expect(ActionMailer::Base.deliveries.last.to.first).to eq(request.params['email'])
 			end
+
+      it 'does not create a student profile if new user is a lecturer' do
+				expect {
+				  post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
+				}. to_not change { StudentProfile.count }
+      end
 		end
 
 	end

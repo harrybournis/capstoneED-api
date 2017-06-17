@@ -9,6 +9,7 @@ RSpec.describe Student, type: :model do
 		it { should have_many(:assignments).through(:projects) }
 		it { should have_many(:peer_assessments_submitted_by) }
 		it { should have_many(:peer_assessments_submitted_for) }
+		it { should have_one :student_profile }
     it { should have_many :iteration_marks }
 
 		it { should validate_presence_of :first_name }
@@ -147,4 +148,18 @@ RSpec.describe Student, type: :model do
 
 		expect(student.add_points_for_project_id(20, project.id)).to eq(nil)
 	end
+
+  it 'total_xp returns the total xp from the student_profile' do
+    xp = 90
+    sp = create :student_profile, total_xp: xp
+
+    expect(sp.student.total_xp).to eq sp.total_xp
+  end
+
+  it 'level returnst he level from the student_profile' do
+    level =4
+    sp = create :student_profile, level: 4
+
+    expect(sp.student.level).to eq sp.level
+  end
 end
