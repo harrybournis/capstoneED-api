@@ -18,6 +18,7 @@ module PointsAward
   #
   class PointsBoard < ActiveModelSerializers::Model
     attr_reader :student, :resource, :points, :points_persisted, :errors
+    attr_accessor :xp
 
     # Constructor. Takes a Student object which will be awarded the points,
     # and an optional resource.
@@ -38,6 +39,7 @@ module PointsAward
       @persisted = false
       @points = {}
       @errors = {}
+      @xp = nil
       @points_persisted = []
     end
 

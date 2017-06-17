@@ -88,4 +88,21 @@ class Student < User
     sp.update(points: sp.points + points)
     sp.valid? ? sp.points : nil
   end
+
+  # Returns the total number of xp saved in the StudentProfile
+  #
+  # @return [Integer] The total number of the student's xp
+  #
+  def total_xp
+    self.student_profile.total_xp
+  end
+
+  # Returns the current level of the student, saved in the
+  # StudentProfile.
+  #
+  # @return [Integer] The current level of the student
+  #
+  def level
+    self.student_profile.level
+  end
 end
