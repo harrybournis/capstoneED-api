@@ -46,6 +46,7 @@ class Iteration < ApplicationRecord
   has_many :project_evaluations
   has_many :peer_assessments, through: :pa_form
   has_one :game_setting, through: :assignment
+  has_many :iteration_marks
 
   accepts_nested_attributes_for :pa_form
 

@@ -687,3 +687,8 @@
     FactoryGirl.create :question, lecturer_id: @lecturer.id, question_type_id: @question_number.id, text: 'The team member took a leadership role organizing others, encouraging group participation supporting when necessary and solving problems'
     FactoryGirl.create :question, lecturer_id: @lecturer.id, question_type_id: @question_number.id, text: 'The team member routinely uses time well throughout the project to ensure things get done on time and meet deadlines and responsibilities'
     FactoryGirl.create :question, lecturer_id: @lecturer.id, question_type_id: @question_rank.id, text: 'Rank your team members according to their overall contribution to the project'
+
+    iterations = Iteration.where("is_scored = false and deadline <= ?", DateTime.now)
+    iterations.each do |iteration|
+      CalculatePaScoresService.new(iteration).call
+    end

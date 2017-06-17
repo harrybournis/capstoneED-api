@@ -19,6 +19,7 @@ class Student < User
             foreign_key: :submitted_for_id
   has_many  :log_points
   has_many  :peer_assessment_points
+  has_many  :iteration_marks
 
   validates_absence_of :position, :university
   validates_inclusion_of :type, in: ['Student']

@@ -9,6 +9,7 @@ RSpec.describe Student, type: :model do
 		it { should have_many(:assignments).through(:projects) }
 		it { should have_many(:peer_assessments_submitted_by) }
 		it { should have_many(:peer_assessments_submitted_for) }
+    it { should have_many :iteration_marks }
 
 		it { should validate_presence_of :first_name }
 		it { should validate_presence_of :last_name }
