@@ -1,3 +1,3 @@
 class FeelingSerializer < Base::BaseSerializer
-	attributes :name
+	attributes :name, :css_class
 end

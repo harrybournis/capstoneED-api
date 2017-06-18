@@ -59,6 +59,7 @@ Rails.application.routes.draw do
     resources :iterations, only: [:index, :show, :create, :update, :destroy]
     get 'scored-iterations', to: 'iterations/scored_iterations#index'
     get 'scored-iterations/:id', to: 'iterations/scored_iterations#show'
+    # get 'scored-iterations/:id/marks', to: 'iterations/student_marks#index'
 
     # PAForms
     resources :pa_forms, only: [:index, :show, :create]
