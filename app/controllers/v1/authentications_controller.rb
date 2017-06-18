@@ -30,8 +30,13 @@ class V1::AuthenticationsController < ApplicationController
 
     if @user.errors.empty?
       if JWTAuth::JWTAuthenticator.sign_in(@user, response, cookies, params[:remember_me] == '1')
-        render json: @user, status: :ok
-        return
+        if @user.student?
+          render json: @user, serializer: StudentWithXpSerializer, status: :ok
+          return
+        else
+          render json: @user, status: :ok
+          return
+        end
       end
     end
     render json: format_errors(@user.errors), status: :unauthorized
