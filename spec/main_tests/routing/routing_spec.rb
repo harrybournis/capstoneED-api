@@ -40,6 +40,11 @@ RSpec.describe 'Routing', type: :routing do
       controller: 'v1/iterations/scored_iterations', action: 'index')
   end
 
+  it 'GET /scored-iterations routes to scored-iterations#show' do
+    expect(get: "#{url}/v1/scored-iterations/#{1}").to route_to(
+      controller: 'v1/iterations/scored_iterations', action: 'show', id: "1")
+  end
+
   # pa form
 
   it 'GET /v1/pa_forms to PAFormController#index' do

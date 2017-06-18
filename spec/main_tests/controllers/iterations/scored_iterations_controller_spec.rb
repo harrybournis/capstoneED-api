@@ -52,4 +52,33 @@ RSpec.describe V1::Iterations::ScoredIterationsController, type: :controller do
       expect(body['iterations'].third['id']).to eq iteration1.id
     end
   end
+
+  describe 'show' do
+    it 'returns the iterations projects with the students and their pa_scores' do
+      @unit = create(:unit, lecturer_id: @user.id)
+      @assignment = create :assignment, unit: @unit, lecturer: @user
+      now = DateTime.now
+      iteration1 = create :iteration, assignment: @assignment, start_date: now, deadline: now + 2.days, is_scored: true
+      project1 = create :project, assignment: @assignment
+      project2 = create :project, assignment: @assignment
+      student1 = create :student_confirmed
+      create :students_project, student: student1, project: project1
+      student2 = create :student_confirmed
+      create :students_project, student: student2, project: project1
+      student3 = create :student_confirmed
+      create :students_project, student: student3, project: project2
+      student4 = create :student_confirmed
+      create :students_project, student: student4, project: project2
+
+      create :iteration_mark, student: student1, iteration: iteration1, pa_score: 0.80
+      create :iteration_mark, student: student2, iteration: iteration1, pa_score: 0.20
+      create :iteration_mark, student: student3, iteration: iteration1, pa_score: 1.00
+      create :iteration_mark, student: student4, iteration: iteration1, pa_score: 0.20
+
+      get :show, params: { id: iteration1.id }
+
+      expect(status).to eq 200
+      expect(body['projects'][0]['students'][0]['pa_score']).to eq "0.8"
+    end
+  end
 end

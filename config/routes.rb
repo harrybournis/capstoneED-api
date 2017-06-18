@@ -58,6 +58,7 @@ Rails.application.routes.draw do
     get 'iterations', to: 'iterations#index', constraints: -> (request) { request.params[:project_id] }
     resources :iterations, only: [:index, :show, :create, :update, :destroy]
     get 'scored-iterations', to: 'iterations/scored_iterations#index'
+    get 'scored-iterations/:id', to: 'iterations/scored_iterations#show'
 
     # PAForms
     resources :pa_forms, only: [:index, :show, :create]
