@@ -6,7 +6,11 @@ class V1::Iterations::ScoredIterationsController < ApplicationController
   def index
     iterations = current_user.scored_iterations
     if iterations.length > 0
-      render json: current_user.scored_iterations, status: :ok
+      if current_user.student?
+        render json: current_user.scored_iterations, each_serializer: ScoredIterationStudentSerializer, status: :ok
+      else
+        render json: current_user.scored_iterations,  status: :ok
+      end
     else
       render json: [], status: :no_content
     end

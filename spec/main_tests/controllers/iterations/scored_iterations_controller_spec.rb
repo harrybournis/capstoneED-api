@@ -51,6 +51,37 @@ RSpec.describe V1::Iterations::ScoredIterationsController, type: :controller do
       expect(body['iterations'].second['id']).to eq iteration2.id
       expect(body['iterations'].third['id']).to eq iteration1.id
     end
+
+    it 'contains the pa_score is current_user is a student' do
+      @unit = create(:unit, lecturer_id: @user.id)
+      @assignment = create :assignment, unit: @unit, lecturer: @user
+      now = DateTime.now
+      iteration1 = create :iteration, assignment: @assignment, start_date: now, deadline: now + 2.days, is_scored: true
+      project1 = create :project, assignment: @assignment
+      project2 = create :project, assignment: @assignment
+      student1 = create :student_confirmed
+      create :students_project, student: student1, project: project1
+      student2 = create :student_confirmed
+      create :students_project, student: student2, project: project1
+      student3 = create :student_confirmed
+      create :students_project, student: student3, project: project2
+      student4 = create :student_confirmed
+      create :students_project, student: student4, project: project2
+
+      create :iteration_mark, student: student1, iteration: iteration1, pa_score: 0.2
+      create :iteration_mark, student: student2, iteration: iteration1, pa_score: 0.7
+
+      @controller = V1::Iterations::ScoredIterationsController.new
+      mock_request = MockRequest.new(valid = true, student1)
+      request.cookies['access-token'] = mock_request.cookies['access-token']
+      request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
+
+      get :index
+
+      expect(status).to eq 200
+      expect(body['iterations'][0]['pa_score']).to be_truthy
+      expect(body['iterations'][0]['pa_score']).to eq "0.2"
+    end
   end
 
   describe 'show' do

@@ -44,4 +44,8 @@ class IterationMark < ApplicationRecord
   def marked?
     !mark.nil?
   end
+
+  def pa_score
+    self[:pa_score].truncate(2) || self[:pa_score]
+  end
 end

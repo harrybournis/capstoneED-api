@@ -116,6 +116,11 @@ class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
              .distinct
   end
 
+  def scored_iterations(options = {})
+    Iteration.joins(:students_projects).eager_load(:iteration_marks)
+      .where(['students_projects.student_id = ? and iterations.is_scored = true', @id])
+             .distinct
+  end
   # Returns only the iterations that are currently active for the current user.
   #
   # @param options = {} [Hash] Optional.

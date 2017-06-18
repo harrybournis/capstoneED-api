@@ -259,4 +259,24 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
       expect(@current_user.iterations_active.first).to eq iteration2
     end
   end
+
+  describe 'scored_iterations' do
+    it 'returns the students scored iterations' do
+      score = 0.2
+      student = create :student_confirmed
+      project = create :project
+      create :students_project, student: student, project: project
+      iteration = create :iteration, assignment: project.assignment, is_scored: true
+      iteration2 = create :iteration, assignment: project.assignment
+      iteration_mark = create :iteration_mark, iteration: iteration, student: student, pa_score: score
+
+      @request = MockRequest.new(valid = true, student)
+      decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+      @token_id = decoded_token.first['id']
+      @device = decoded_token.first['device']
+      @current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
+
+      expect(@current_user.scored_iterations.length).to eq 1
+    end
+  end
 end
