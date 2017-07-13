@@ -1,5 +1,7 @@
 Documentation: https://harrybournis.github.io/capstoned-api-documentation/
 
+Trello: https://trello.com/b/ahb8alLZ/capstoneed-api
+
 # Installation
 1. Install ruby 2.4.1
 2. Run `gem install bundler`
