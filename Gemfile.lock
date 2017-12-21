@@ -264,7 +264,7 @@ GEM
       chronic (>= 0.6.3)
     whenever-test (1.0.1)
       whenever
-    yard (0.9.9)
+    yard (~> 0.9.11)
     yard-activerecord (0.0.16)
       yard (>= 0.8.3)
 
