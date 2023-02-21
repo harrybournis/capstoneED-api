@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
-ruby '2.4.1'
+ruby '2.7.7'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '5.0.1'
+gem 'rails', '5.0.7.2'
 # Use postgresql as the database for Active Record
-gem 'pg', '~> 0.19.0'
+gem 'pg', '~> 1.4', '>= 1.4.5'
 # Use Puma as the app server
 #gem 'puma', '~> 3.6'
 
@@ -37,7 +37,7 @@ gem 'oauth2', '~> 1.2'
 # Logging
 gem 'lograge', '~> 0.4.1'
 
-gem 'factory_bot_rails', '~> 4.7'
+gem 'factory_bot_rails', '~> 6.2'
 gem 'timecop', '~> 0.8.1'
 
 # Generate Fake Data
@@ -47,7 +47,8 @@ gem 'faker', '~> 1.7', '>= 1.7.3'
 gem 'color-generator', '~> 0.0.4'
 
 # Validations
-gem 'dry-validation', '~> 0.10.5'
+# gem 'dry-validation', '~> 0.13.3'
+gem 'dry-validation', '~> 1.10'
 
 # Validate JSON schema
 gem 'json-schema', '~> 2.8'
