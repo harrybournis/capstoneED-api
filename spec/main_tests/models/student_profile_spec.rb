@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe StudentProfile, type: :model do
 
   it 'works' do
-    expect(FactoryGirl.create(:student_profile)).to be_truthy
+    expect(FactoryBot.create(:student_profile)).to be_truthy
   end
 
   it { should belong_to :student }

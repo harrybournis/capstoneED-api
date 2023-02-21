@@ -13,6 +13,6 @@ RSpec.describe LogPoint, type: :model do
   it { should validate_presence_of :reason_id }
 
 	it 'works' do
-		expect(FactoryGirl.create(:log_point)).to be_truthy
+		expect(FactoryBot.create(:log_point)).to be_truthy
 	end
 end

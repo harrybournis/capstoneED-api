@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe FormTemplate, type: :model do
-  subject(:form_template) { FactoryGirl.build(:form_template) }
+  subject(:form_template) { FactoryBot.build(:form_template) }
 
   it { should belong_to :lecturer }
   it { should validate_presence_of :name }

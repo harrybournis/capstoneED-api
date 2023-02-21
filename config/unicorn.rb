@@ -1,6 +1,6 @@
 worker_processes ENV.fetch("WEB_CONCURRENCY") { 3 }.to_i
 timeout 30
-preload_app ENV.fetch("APP_PRELOAD").downcase == "true"
+preload_app ENV.fetch("APP_PRELOAD", "true").downcase == "true"
 
 before_fork do |server, worker|
 

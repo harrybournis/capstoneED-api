@@ -15,6 +15,6 @@ RSpec.describe PeerAssessmentPoint, type: :model do
   it { should validate_presence_of :reason_id }
 
   it 'works' do
-    expect(FactoryGirl.create(:peer_assessment_point)).to be_truthy
+    expect(FactoryBot.create(:peer_assessment_point)).to be_truthy
   end
 end

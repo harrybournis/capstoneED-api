@@ -8,7 +8,7 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 
 		before(:each) do
 			@controller = V1::AuthenticationsController.new
-			@user = FactoryGirl.build(:lecturer_with_password).process_new_record
+			@user = FactoryBot.build(:lecturer_with_password).process_new_record
 			@user.save
 			@mock_request = MockRequest.new(valid = true, @user, nil, remember_me = true)
 			request.cookies['access-token'] = @mock_request.cookies['access-token']
@@ -17,7 +17,7 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 			expect { @decoded_token = JWTAuth::JWTAuthenticator.decode_token(request.cookies['refresh-token']) }.to_not raise_error
 			expect(@decoded_token).to be_truthy
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-			@token = FactoryGirl.create(:active_token, device: @decoded_token.first['device'], user: @user, exp: Time.now + 1.day)
+			@token = FactoryBot.create(:active_token, device: @decoded_token.first['device'], user: @user, exp: Time.now + 1.day)
 			expect(@token.valid?).to be_truthy
 		end
 
@@ -53,7 +53,7 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 	context 'invalid request' do
 		before(:each) do
 			@controller = V1::AuthenticationsController.new
-			@user = FactoryGirl.build(:user_with_password).process_new_record
+			@user = FactoryBot.build(:user_with_password).process_new_record
 			@user.save
 			mock_request = MockRequest.new(valid = false, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -83,7 +83,7 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 			expect { @decoded_token2 = JWTAuth::JWTAuthenticator.decode_token(request.cookies['refresh-token']) }.to_not raise_error
 			expect(@decoded_token2).to be_truthy
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-			token = FactoryGirl.create(:active_token, device: @decoded_token2.first['device'], user: @user, exp: Time.now + 1.month)
+			token = FactoryBot.create(:active_token, device: @decoded_token2.first['device'], user: @user, exp: Time.now + 1.month)
 			expect(token.valid?).to be_truthy
 
 			expect(@decoded_token2.first['exp'] >= token.exp.to_i).to_not be_truthy
@@ -120,7 +120,7 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 			expect { @decoded_token4 = JWTAuth::JWTAuthenticator.decode_token(request.cookies['refresh-token']) }.to_not raise_error
 			expect(@decoded_token4).to be_truthy
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-			token = FactoryGirl.create(:active_token, device: @decoded_token4.first['device'], user: @user, exp: Time.now + 1.month)
+			token = FactoryBot.create(:active_token, device: @decoded_token4.first['device'], user: @user, exp: Time.now + 1.month)
 			expect(token.valid?).to be_truthy
 
 			old_exp = token.exp

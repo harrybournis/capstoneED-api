@@ -16,21 +16,21 @@ RSpec.describe PeerAssessment, type: :model do
 	it { should validate_presence_of :answers }
 
 	before(:all) do
-		@student_by = FactoryGirl.create(:student_confirmed)
-		@student_for = FactoryGirl.create(:student_confirmed)
-		@pa_form  = FactoryGirl.create(:pa_form)
-		@project = FactoryGirl.create(:project, assignment: @pa_form.assignment)
+		@student_by = FactoryBot.create(:student_confirmed)
+		@student_for = FactoryBot.create(:student_confirmed)
+		@pa_form  = FactoryBot.create(:pa_form)
+		@project = FactoryBot.create(:project, assignment: @pa_form.assignment)
 		create :students_project, student: @student_by, project: @project
 		create :students_project, student: @student_for, project: @project
 	end
 
 	it 'works' do
-		pa = FactoryGirl.build(:peer_assessment_with_callback)
+		pa = FactoryBot.build(:peer_assessment_with_callback)
 		expect(pa.save).to be_truthy
 	end
 
 	it 'automatically saves the project_id from the pa_form before save' do
-		pa = FactoryGirl.build(:peer_assessment_with_callback)
+		pa = FactoryBot.build(:peer_assessment_with_callback)
 
 		expect(pa.project_id).to be_falsy
 		expect(pa.save).to be_truthy
@@ -52,28 +52,28 @@ RSpec.describe PeerAssessment, type: :model do
 	describe 'answers must' do
 
 		it 'be an array' do
-			peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+			peer_assessment = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
 				answers: { question_id: 1, answer: 'answ' })
 			expect(peer_assessment.save).to be_falsy
 			expect(peer_assessment.errors[:answers][0]).to include('an array')
 		end
 
 		it 'contain question_id and answer only' do
-			peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+			peer_assessment = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
 				answers: [{ question_id: 1, answer: 'answ', other: 'field' }])
 			expect(peer_assessment.save).to be_falsy
 			expect(peer_assessment.errors[:answers][0]).to include('invalid parameters')
 		end
 
 		it 'contains both question_id and answer' do
-			peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+			peer_assessment = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
 				answers: [{ question_id: 1, answer: 'ans' }, { question_id: 2 }])
 			expect(peer_assessment.save).to be_falsy
 			expect(peer_assessment.errors[:answers][0]).to include('invalid parameters')
 		end
 
 		it 'not be empty' do
-			peer_assessment = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+			peer_assessment = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
 				answers: [])
 			expect(peer_assessment.save).to be_falsy
 			expect(peer_assessment.errors[:answers][0]).to include("can't be blank")
@@ -116,7 +116,7 @@ RSpec.describe PeerAssessment, type: :model do
 		end
 
 		it 'PAForm id is not from a Project that the submitted_by Student belongs to' do
-			wrong_pa = FactoryGirl.create(:pa_form)
+			wrong_pa = FactoryBot.create(:pa_form)
 			peer_assessment = PeerAssessment.new(pa_form: wrong_pa, submitted_by: @student_by, submitted_for: @student_for,
 				answers: [{ question_id: 1, answer: 'answ' }])
 			peer_assessment.save
@@ -127,8 +127,8 @@ RSpec.describe PeerAssessment, type: :model do
 		end
 
 		it 'submitted_for is not in the same Project as user' do
-			irrelevant_project = FactoryGirl.create(:project)
-			irrelevant_student = FactoryGirl.create(:student_confirmed)
+			irrelevant_project = FactoryBot.create(:project)
+			irrelevant_student = FactoryBot.create(:student_confirmed)
 			create :students_project, student: irrelevant_student, project: irrelevant_project
 
 			peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: irrelevant_student,
@@ -163,22 +163,22 @@ RSpec.describe PeerAssessment, type: :model do
 	describe '.api_query' do
 
 		before :all do
-			@pa_form2  = FactoryGirl.create(:pa_form)
-			@project2 = FactoryGirl.create(:project, assignment: @pa_form2.assignment)
+			@pa_form2  = FactoryBot.create(:pa_form)
+			@project2 = FactoryBot.create(:project, assignment: @pa_form2.assignment)
 			create :students_project, student: @student_by, project: @project2
 			create :students_project, student: @student_for, project: @project2
-			@student_by2 = FactoryGirl.create(:student_confirmed)
-			@student_for2 = FactoryGirl.create(:student_confirmed)
+			@student_by2 = FactoryBot.create(:student_confirmed)
+			@student_for2 = FactoryBot.create(:student_confirmed)
 			create :students_project, student: @student_by2, project: @project
 			create :students_project, student: @student_for2, project: @project
 
-			pa = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+			pa = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
 				answers: [{ question_id: 1, answer: 'answ' }])
-			pa2 = FactoryGirl.create(:peer_assessment_with_callback, pa_form: @pa_form2, submitted_by: @student_by, submitted_for: @student_for,
+			pa2 = FactoryBot.create(:peer_assessment_with_callback, pa_form: @pa_form2, submitted_by: @student_by, submitted_for: @student_for,
 				answers: [{ question_id: 1, answer: 'answ' }]) # same students, different form
-			pa3 = FactoryGirl.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by2, submitted_for: @student_for2,
+			pa3 = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by2, submitted_for: @student_for2,
 				answers: [{ question_id: 1, answer: 'answ' }]) # same form, different students
-			peer_assessments_rest = FactoryGirl.create_list(:peer_assessment_with_callback, 5)
+			peer_assessments_rest = FactoryBot.create_list(:peer_assessment_with_callback, 5)
 			expect(pa.save).to be_truthy
 			expect(pa2.save).to be_truthy
 			expect(pa3.save).to be_truthy
@@ -209,9 +209,9 @@ RSpec.describe PeerAssessment, type: :model do
 		end
 
 		it 'queries using both project_id and iteration_id' do
-			new_iteration = FactoryGirl.create(:iteration, assignment: @pa_form.assignment)
-			new_pa_form = FactoryGirl.create(:pa_form, iteration: new_iteration)
-			new_pa = FactoryGirl.create(:peer_assessment_with_callback, pa_form: new_pa_form, submitted_by: @student_by, submitted_for: @student_for,
+			new_iteration = FactoryBot.create(:iteration, assignment: @pa_form.assignment)
+			new_pa_form = FactoryBot.create(:pa_form, iteration: new_iteration)
+			new_pa = FactoryBot.create(:peer_assessment_with_callback, pa_form: new_pa_form, submitted_by: @student_by, submitted_for: @student_for,
 				answers: [{ question_id: 1, answer: 'answ' }])
 
 			expect(PeerAssessment.where(project_id: @project.id).count).to eq(3)

@@ -29,9 +29,9 @@ RSpec.describe Marking::PaAnswersTable, type: :model do
   end
 
   before :all do
-    @q_type_text = FactoryGirl.create :question_type, category: 'text', friendly_name: 'Text'
-    @q_type_number = FactoryGirl.create :question_type, category: 'number', friendly_name: 'Number'
-    @q_type_rank = FactoryGirl.create :question_type, category: 'rank', friendly_name: 'Rank'
+    @q_type_text = FactoryBot.create :question_type, category: 'text', friendly_name: 'Text'
+    @q_type_number = FactoryBot.create :question_type, category: 'number', friendly_name: 'Number'
+    @q_type_rank = FactoryBot.create :question_type, category: 'rank', friendly_name: 'Rank'
     @assignment = create :assignment
     @project = create :project, assignment: @assignment
     @game_setting = create :game_setting, assignment: @assignment

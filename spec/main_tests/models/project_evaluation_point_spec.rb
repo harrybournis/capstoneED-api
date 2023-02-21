@@ -15,6 +15,6 @@ RSpec.describe ProjectEvaluationPoint, type: :model do
   it { should validate_presence_of :reason_id }
 
   it 'works' do
-    expect(FactoryGirl.create(:project_evaluation_point)).to be_truthy
+    expect(FactoryBot.create(:project_evaluation_point)).to be_truthy
   end
 end

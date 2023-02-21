@@ -6,11 +6,11 @@ RSpec.describe 'Includes', type: :controller do
 	context 'Lecturer' do
 
 		before(:all) do
-			@lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
+			@lecturer = FactoryBot.build(:lecturer_with_password).process_new_record
 			@lecturer.save
 			@lecturer.confirm
-			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @lecturer)
+			@unit = FactoryBot.create(:unit, lecturer: @lecturer)
+			@assignment = FactoryBot.create(:assignment_with_projects, unit: @unit, lecturer: @lecturer)
 			3.times { create :students_project, student: create(:student), project: @assignment.projects[0] }
 			expect(@assignment.projects.length).to eq(2)
 			expect(@assignment.projects.first.students.length).to eq(3)
@@ -101,7 +101,7 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'includes iterations' do
-				3.times { FactoryGirl.create(:iteration, assignment: @assignment) }
+				3.times { FactoryBot.create(:iteration, assignment: @assignment) }
 
 				get :show, params: { id: @assignment.id, includes: 'iterations,students' }
 
@@ -112,7 +112,7 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'includes iterations in chronological order' do
-				3.times { FactoryGirl.create(:iteration, assignment: @assignment) }
+				3.times { FactoryBot.create(:iteration, assignment: @assignment) }
 
 				get :show, params: { id: @assignment.id, includes: 'iterations,students' }
 
@@ -129,10 +129,10 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'includes pa_forms' do
-				iteration1 = FactoryGirl.create(:iteration, assignment: @assignment)
-				iteration2 = FactoryGirl.create(:iteration, assignment: @assignment)
-				pa_form = FactoryGirl.create(:pa_form, iteration: iteration1)
-				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
+				iteration1 = FactoryBot.create(:iteration, assignment: @assignment)
+				iteration2 = FactoryBot.create(:iteration, assignment: @assignment)
+				pa_form = FactoryBot.create(:pa_form, iteration: iteration1)
+				pa_form2 = FactoryBot.create(:pa_form, iteration: iteration2)
 
 				get :show, params: { id: @assignment.id, includes: 'iterations' }
 
@@ -233,10 +233,10 @@ RSpec.describe 'Includes', type: :controller do
 			end
 
 			it 'GET index includes pa_form' do
-				iteration = FactoryGirl.create(:iteration, assignment: @assignment)
-				iteration2 = FactoryGirl.create(:iteration, assignment: @assignment)
-				pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
-				pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
+				iteration = FactoryBot.create(:iteration, assignment: @assignment)
+				iteration2 = FactoryBot.create(:iteration, assignment: @assignment)
+				pa_form = FactoryBot.create(:pa_form, iteration: iteration)
+				pa_form2 = FactoryBot.create(:pa_form, iteration: iteration2)
 
 				get :index, params: { assignment_id: @assignment.id, includes: 'pa_form' }
 				expect(status).to eq(200)
@@ -247,9 +247,9 @@ RSpec.describe 'Includes', type: :controller do
 
 		describe 'Peer Assessment' do
 			before do
-				@iteration = FactoryGirl.create(:iteration, assignment: @assignment)
-				@pa_form  = FactoryGirl.create(:pa_form, iteration: @iteration)
-				@peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: @pa_form)
+				@iteration = FactoryBot.create(:iteration, assignment: @assignment)
+				@pa_form  = FactoryBot.create(:pa_form, iteration: @iteration)
+				@peer_assessment = FactoryBot.create(:peer_assessment_with_callback, pa_form: @pa_form)
 				@controller = V1::PeerAssessmentsController.new
 			end
 

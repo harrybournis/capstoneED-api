@@ -5,7 +5,7 @@ RSpec.describe "Remember me", type: :request do
 	before(:each) { host! 'api.example.com' }
 
 	it 'remember me is not null' do
-		lecturer = FactoryGirl.create(:lecturer_with_password).process_new_record
+		lecturer = FactoryBot.create(:lecturer_with_password).process_new_record
 		lecturer.save
 		lecturer.confirm
 

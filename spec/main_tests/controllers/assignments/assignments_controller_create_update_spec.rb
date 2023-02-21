@@ -8,26 +8,26 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 
 			before(:each) do
 				@controller = V1::AssignmentsController.new
-				@user = FactoryGirl.build(:lecturer_with_units).process_new_record
+				@user = FactoryBot.build(:lecturer_with_units).process_new_record
 				@user.save
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				assignment1 = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units[0])
-				assignment2 = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units[0])
-				assignment3 = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units.last)
-				assignment_irrelevant = FactoryGirl.create(:assignment)
+				assignment1 = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units[0])
+				assignment2 = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units[0])
+				assignment3 = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units.last)
+				assignment_irrelevant = FactoryBot.create(:assignment)
 			end
 
 			it 'responds with 201 created and creates a new Assignment', { docs?: true } do
-				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id)
+				parameters = FactoryBot.attributes_for(:assignment, unit_id: @user.units[0].id)
 				post :create, params: parameters
 				expect(status).to eq(201)
 				expect(Assignment.find(parse_body['assignment']['id']).unit_id).to eq(parameters[:unit_id])
 			end
 
 			it 'accepts nested attributes for projects', { docs?: true } do
-				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', team_name: 'persons', description: 'dddd', enrollment_key: 'key' }, { project_name: 'New Project2', team_name: 'persons2', description: 'descr', enrollment_key: 'key2' }] )
+				parameters = FactoryBot.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', team_name: 'persons', description: 'dddd', enrollment_key: 'key' }, { project_name: 'New Project2', team_name: 'persons2', description: 'descr', enrollment_key: 'key2' }] )
 				expect {
 					post :create, params: parameters
 				}.to change { Project.count }.by(2)
@@ -38,7 +38,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 
 			it 'accepts nested attributes for game_settings', { docs?: true } do
 				points = 86
-				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(game_setting_attributes: attributes_for(:game_setting).except(:assignment_id).merge(points_log: points) )
+				parameters = FactoryBot.attributes_for(:assignment, unit_id: @user.units[0].id).merge(game_setting_attributes: attributes_for(:game_setting).except(:assignment_id).merge(points_log: points) )
 
 				expect {
 					post :create, params: parameters
@@ -62,7 +62,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 			end
 
 			it 'accepts nested attributes for projects without team_names, and names them accordingly' do
-				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', description: 'dddd', enrollment_key: 'key' }, { project_name: 'New Project2', description: 'descr', enrollment_key: 'key2' }] )
+				parameters = FactoryBot.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', description: 'dddd', enrollment_key: 'key' }, { project_name: 'New Project2', description: 'descr', enrollment_key: 'key2' }] )
 				expect {
 					post :create, params: parameters
 				}.to change { Project.count }.by(2)
@@ -78,7 +78,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 			end
 
 			it 'shows errors for projects', { docs?: true } do
-				parameters = FactoryGirl.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', description: 'dddd', enrollment_key: 'key' }, { team_name: 'persons2', description: 'descr', enrollment_key: 'key2' }] )
+				parameters = FactoryBot.attributes_for(:assignment, unit_id: @user.units[0].id).merge(projects_attributes: [{ project_name: 'New Project1', description: 'dddd', enrollment_key: 'key' }, { team_name: 'persons2', description: 'descr', enrollment_key: 'key2' }] )
 				expect {
 					post :create, params: parameters
 				}.to change { Project.count }.by(0)
@@ -93,17 +93,17 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 
 			before(:each) do
 				@controller = V1::AssignmentsController.new
-				@user = FactoryGirl.build(:lecturer_with_units).process_new_record
+				@user = FactoryBot.build(:lecturer_with_units).process_new_record
 				@user.save
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 				expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
 				expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-				@assignment1 = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units[0])
-				@assignment2 = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units[0])
-				@assignment3 = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units.last)
-				@assignment_irrelevant = FactoryGirl.create(:assignment)
+				@assignment1 = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units[0])
+				@assignment2 = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units[0])
+				@assignment3 = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units.last)
+				@assignment_irrelevant = FactoryBot.create(:assignment)
 			end
 
 			it 'updates params if current user is the owner', { docs?: true } do

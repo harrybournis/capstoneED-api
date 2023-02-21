@@ -6,22 +6,22 @@ RSpec.describe 'Includes', type: :controller do
 	context 'Student' do
 
 		before(:all) do
-			@lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
+			@lecturer = FactoryBot.build(:lecturer_with_password).process_new_record
 			@lecturer.save
 			@lecturer.confirm
-			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @lecturer)
+			@unit = FactoryBot.create(:unit, lecturer: @lecturer)
+			@assignment = FactoryBot.create(:assignment_with_projects, unit: @unit, lecturer: @lecturer)
 			3.times { create :students_project, student: create(:student), project: @assignment.projects[0] }
 			expect(@assignment.projects.length).to eq(2)
 			expect(@assignment.projects.first.students.length).to eq(3)
 
-			@unit2 = FactoryGirl.create(:unit, lecturer: @lecturer)
-			@assignment2 = FactoryGirl.create(:assignment_with_projects, unit: @unit2, lecturer: @lecturer)
+			@unit2 = FactoryBot.create(:unit, lecturer: @lecturer)
+			@assignment2 = FactoryBot.create(:assignment_with_projects, unit: @unit2, lecturer: @lecturer)
 			3.times { create :students_project, student: create(:student), project: @assignment2.projects[0] }
 			expect(@assignment2.projects.length).to eq(2)
 			expect(@assignment2.projects.first.students.length).to eq(3)
 
-			@student = FactoryGirl.build(:student_with_password).process_new_record
+			@student = FactoryBot.build(:student_with_password).process_new_record
 			@student.save
 			@student.confirm
 

@@ -10,7 +10,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 
 			before(:each) do
 				@controller = V1::UnitsController.new
-				@user = FactoryGirl.build(:lecturer_with_units).process_new_record
+				@user = FactoryBot.build(:lecturer_with_units).process_new_record
 				@user.save
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -19,8 +19,8 @@ RSpec.describe V1::UnitsController, type: :controller do
 
 			it "returns only the current user's units", { docs?: true } do
 				expect(@user.units.length).to eq(2)
-				unit1 = FactoryGirl.create(:unit)
-				unit2 = FactoryGirl.create(:unit)
+				unit1 = FactoryBot.create(:unit)
+				unit2 = FactoryBot.create(:unit)
 
 				get :index
 				expect(status).to eq(200)
@@ -47,7 +47,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 
 			before(:each) do
 				@controller = V1::UnitsController.new
-				@user = FactoryGirl.build(:lecturer_with_units).process_new_record
+				@user = FactoryBot.build(:lecturer_with_units).process_new_record
 				@user.save
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -55,7 +55,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 			end
 
 			it "returns only the archived units units", { docs?: true } do
-				@user.units << FactoryGirl.create(:unit)
+				@user.units << FactoryBot.create(:unit)
 				expect(@user.units.length).to eq(3)
 				unit = @user.units.first
 				unit2 = @user.units.second
@@ -84,7 +84,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 
 		before(:each) do
 			@controller = V1::UnitsController.new
-			@user = FactoryGirl.build(:lecturer_with_units).process_new_record
+			@user = FactoryBot.build(:lecturer_with_units).process_new_record
 			@user.save
 			mock_request = MockRequest.new(valid = true, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -98,7 +98,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 		end
 
 		it 'responds with 403 if unit does not belong to lecturer' do
-			new_unit = FactoryGirl.create(:unit)
+			new_unit = FactoryBot.create(:unit)
 			get :show, params: { id: new_unit.id }
 			expect(status).to eq(403)
 			expect(errors['base'].first).to eq("This Unit is not associated with the current user")
@@ -115,7 +115,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 
 		before(:each) do
 			@controller = V1::UnitsController.new
-			@user = FactoryGirl.build(:lecturer_with_units).process_new_record
+			@user = FactoryBot.build(:lecturer_with_units).process_new_record
 			@user.save
 			mock_request = MockRequest.new(valid = true, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -129,7 +129,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 		end
 
 		it 'assigns different department if department_id in params' do
-			department = FactoryGirl.create(:department)
+			department = FactoryBot.create(:department)
 			patch :update, params: { id: @user.units.first.id, department_id: department.id }
 			expect(status).to eq(200)
 			@user.reload
@@ -146,7 +146,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 		end
 
 		it 'assigns the department_id if both department_id and department_attributes' do
-			department = FactoryGirl.create(:department)
+			department = FactoryBot.create(:department)
 			expect {
 				patch :update, params: { id: @user.units.first.id, department_id: department.id, department_attributes: { name: 'departmentname', university: 'university' } }
 			}.to_not change { Department.all.count }
@@ -160,7 +160,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 
 		it 'delete the unit if user is lecturer and owner' do
 			@controller = V1::UnitsController.new
-			@user = FactoryGirl.build(:lecturer_with_units).process_new_record
+			@user = FactoryBot.build(:lecturer_with_units).process_new_record
 			@user.save
 			mock_request = MockRequest.new(valid = true, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -175,7 +175,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 
 		before(:each) do
 			@controller = V1::UnitsController.new
-			@user = FactoryGirl.build(:lecturer_with_units).process_new_record
+			@user = FactoryBot.build(:lecturer_with_units).process_new_record
 			@user.save
 			mock_request = MockRequest.new(valid = true, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -202,7 +202,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 		end
 
 		it 'responds with 403 forbidden if unit not associated' do
-			unit = FactoryGirl.create(:unit)
+			unit = FactoryBot.create(:unit)
 
 			patch :archive, params: { id: unit.id }
 

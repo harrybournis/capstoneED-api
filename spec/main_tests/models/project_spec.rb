@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Project, type: :model do
 
   describe 'validations' do
-    subject(:project) { FactoryGirl.build(:project) }
+    subject(:project) { FactoryBot.build(:project) }
 
     it { should have_many(:students).through(:students_projects).dependent(:delete_all) }
     it { should have_many(:students_projects) }
@@ -53,9 +53,9 @@ RSpec.describe Project, type: :model do
     end
 
     it 'destroys StudentTeams on destroy' do
-      assignment = FactoryGirl.create(:assignment_with_projects)
+      assignment = FactoryBot.create(:assignment_with_projects)
       @project = assignment.projects.first
-      2.times { create :students_project, student: create(:student), project: @project }#@project.students << FactoryGirl.create(:student) }
+      2.times { create :students_project, student: create(:student), project: @project }#@project.students << FactoryBot.create(:student) }
       students_count = Student.all.size
       expect( StudentsProject.all.count).to eq(2)
       expect { Project.destroy(@project.id) }.to change {  StudentsProject.all.count }.by(-2)
@@ -73,8 +73,8 @@ RSpec.describe Project, type: :model do
     end
 
     it 'autogenerates enrollment key if not provided by user' do
-      assignment = FactoryGirl.create(:assignment)
-      attributes = FactoryGirl.attributes_for(:project)
+      assignment = FactoryBot.create(:assignment)
+      attributes = FactoryBot.attributes_for(:project)
                               .except(:enrollment_key)
                               .merge(assignment_id: assignment.id)
       project = Project.new(attributes)
@@ -84,8 +84,8 @@ RSpec.describe Project, type: :model do
     end
 
     it 'does not autogenerate key if provided' do
-      assignment = FactoryGirl.create(:assignment)
-      attributes = FactoryGirl.attributes_for(:project).merge(assignment_id: assignment.id, enrollment_key: 'key')
+      assignment = FactoryBot.create(:assignment)
+      attributes = FactoryBot.attributes_for(:project).merge(assignment_id: assignment.id, enrollment_key: 'key')
       project = Project.new(attributes)
       project.valid?
       expect(project.errors[:enrollment_key]).to be_empty
@@ -93,9 +93,9 @@ RSpec.describe Project, type: :model do
     end
 
     it 'project_health returns the mean of the iterations_health' do
-      assignment = FactoryGirl.create(:assignment)
-      2.times { assignment.iterations << FactoryGirl.create(:iteration) }
-      project = FactoryGirl.create(:project)
+      assignment = FactoryBot.create(:assignment)
+      2.times { assignment.iterations << FactoryBot.create(:iteration) }
+      project = FactoryBot.create(:project)
       assignment.projects << project
 
       iteration1_health = assignment.iterations[0].iteration_health
@@ -106,10 +106,10 @@ RSpec.describe Project, type: :model do
     end
 
     it '#student_members returns TeamMember objects with nickname' do
-      assignment = FactoryGirl.create(:assignment)
-      project = FactoryGirl.create(:project, assignment: assignment)
-      student1 = FactoryGirl.create(:student)
-      student2 = FactoryGirl.create(:student)
+      assignment = FactoryBot.create(:assignment)
+      project = FactoryBot.create(:project, assignment: assignment)
+      student1 = FactoryBot.create(:student)
+      student2 = FactoryBot.create(:student)
 
       create :students_project, student: student1, project: project
       create :students_project, student: student2, project: project

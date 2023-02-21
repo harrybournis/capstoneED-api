@@ -17,7 +17,7 @@ private
 		if set_user
 			user = set_user
 		else
-			user = FactoryGirl.create(:user)
+			user = FactoryBot.create(:user)
 		end
 
 		if set_device

@@ -19,7 +19,7 @@ RSpec.describe User, type: :model do
 	describe 'instance methods' do
 
 		it 'full_name is concatenation of first_name and last_name' do
-			user = FactoryGirl.create(:student, first_name: 'first', last_name: 'last')
+			user = FactoryBot.create(:student, first_name: 'first', last_name: 'last')
 			expect(user.full_name).to eq("first last")
 		end
 
@@ -29,7 +29,7 @@ RSpec.describe User, type: :model do
 
 		context 'when no revoked token exist in the database' do
 			it 'no new tokes should be created' do
-				user = FactoryGirl.create(:user)
+				user = FactoryBot.create(:user)
 				expect(user.active_tokens.count).to eq(0)
 
 				user.revoke_all_tokens
@@ -40,11 +40,11 @@ RSpec.describe User, type: :model do
 
 		context 'when revoked token exist' do
 			it 'should update all of them to the new expiry date' do
-				user = FactoryGirl.create(:user)
+				user = FactoryBot.create(:user)
 				time_old1 = Time.now - 1.hour
 				time_old2 = Time.now - 10.minutes
-				token1 = FactoryGirl.create(:active_token, exp: time_old1, user: user, device: SecureRandom.base64(32))
-				token2 = FactoryGirl.create(:active_token, exp: time_old2, user: user, device: SecureRandom.base64(32))
+				token1 = FactoryBot.create(:active_token, exp: time_old1, user: user, device: SecureRandom.base64(32))
+				token2 = FactoryBot.create(:active_token, exp: time_old2, user: user, device: SecureRandom.base64(32))
 
 				expect(token1).to be_truthy
 				expect(token2).to be_truthy
