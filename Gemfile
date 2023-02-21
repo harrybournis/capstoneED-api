@@ -37,7 +37,7 @@ gem 'oauth2', '~> 1.2'
 # Logging
 gem 'lograge', '~> 0.4.1'
 
-gem 'factory_girl_rails', '~> 4.7'
+gem 'factory_bot_rails', '~> 4.7'
 gem 'timecop', '~> 0.8.1'
 
 # Generate Fake Data

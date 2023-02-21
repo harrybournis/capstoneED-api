@@ -18,8 +18,8 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 	describe 'POST /extensions' do
 		it 'creates new extension', { docs?: true } do
 			assignment = @lecturer.assignments[0]
-			iteration = FactoryGirl.create(:iteration, assignment: assignment)
-			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
+			iteration = FactoryBot.create(:iteration, assignment: assignment)
+			pa_form = FactoryBot.create(:pa_form, iteration_id: iteration.id)
 			project = assignment.projects[0]
 			time = 2.days.to_i
 			expect {
@@ -31,9 +31,9 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 		end
 
 		it 'responds with 403 forbidden if project or iteration are not associated with current lecturer' do
-			iteration = FactoryGirl.create(:iteration, assignment: @lecturer.assignments[0])
-			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
-			project = FactoryGirl.create(:project)
+			iteration = FactoryBot.create(:iteration, assignment: @lecturer.assignments[0])
+			pa_form = FactoryBot.create(:pa_form, iteration_id: iteration.id)
+			project = FactoryBot.create(:project)
 			expect {
 				post :create, params: { pa_form_id: pa_form.id, project_id: project.id, extra_time: DateTime.now + 2.days }
 			}.to_not change { Extension.count }
@@ -44,11 +44,11 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 	describe 'PATCH /extensions' do
 		it 'updates the extra time', { docs?: true } do
 			assignment = @lecturer.assignments[0]
-			iteration = FactoryGirl.create(:iteration, assignment: assignment)
-			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
+			iteration = FactoryBot.create(:iteration, assignment: assignment)
+			pa_form = FactoryBot.create(:pa_form, iteration_id: iteration.id)
 			project = assignment.projects[0]
 			time = 3.days.to_i
-			extension = FactoryGirl.create(:extension, project_id: project.id, pa_form_id: pa_form.id)
+			extension = FactoryBot.create(:extension, project_id: project.id, pa_form_id: pa_form.id)
 			patch :update, params: { id: extension.id, project_id: project.id, extra_time: time }
 			expect(status).to eq(200)
 
@@ -58,10 +58,10 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 
 		it 'returns 403 if team extension not associated with current lecturer', { docs?: true } do
 			assignment = @lecturer.assignments[0]
-			iteration = FactoryGirl.create(:iteration, assignment: assignment)
-			project = FactoryGirl.create(:project)
+			iteration = FactoryBot.create(:iteration, assignment: assignment)
+			project = FactoryBot.create(:project)
 			time = 3.days.to_i
-			extension = FactoryGirl.create(:extension)
+			extension = FactoryBot.create(:extension)
 			patch :update, params: { id: extension.id, project_id: project.id, extra_time: time }
 			expect(status).to eq(403)
 		end
@@ -70,11 +70,11 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 	describe 'DELETE /extensions' do
 		it 'deletes extension', { docs?: true } do
 			assignment = @lecturer.assignments[0]
-			iteration = FactoryGirl.create(:iteration, assignment: assignment)
-			pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
+			iteration = FactoryBot.create(:iteration, assignment: assignment)
+			pa_form = FactoryBot.create(:pa_form, iteration_id: iteration.id)
 			project = assignment.projects[0]
 			time = 3.days.to_i
-			extension = FactoryGirl.create(:extension, project_id: project.id, pa_form_id: pa_form.id)
+			extension = FactoryBot.create(:extension, project_id: project.id, pa_form_id: pa_form.id)
 			expect {
 				delete :destroy, params: { id: extension.id, project_id: project.id }
 			}.to change { Extension.count }.by(-1)
@@ -82,10 +82,10 @@ RSpec.describe V1::ExtensionsController, type: :controller do
 
 		it 'returns 403 if team extension not associated with current lecturer' do
 			assignment = @lecturer.assignments[0]
-			iteration = FactoryGirl.create(:iteration, assignment: assignment)
-			project = FactoryGirl.create(:project)
+			iteration = FactoryBot.create(:iteration, assignment: assignment)
+			project = FactoryBot.create(:project)
 			time = 3.days.to_i
-			extension = FactoryGirl.create(:extension)
+			extension = FactoryBot.create(:extension)
 			delete :destroy, params: { id: extension.id, project_id: project.id, extra_time: time }
 			expect(status).to eq(403)
 		end

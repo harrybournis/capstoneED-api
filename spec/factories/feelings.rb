@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :feeling do
   	sequence(:name) { |n| "Confused#{n}" }
     value { [-1,1].sample }

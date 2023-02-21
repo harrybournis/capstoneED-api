@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :project do
     sequence(:project_name) { |n| "Project #{n}" }
     sequence(:team_name) { |n| "The xmen#{n}" }

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Unit, type: :model do
 
-  subject(:unit) { FactoryGirl.build(:unit) }
+  subject(:unit) { FactoryBot.build(:unit) }
 
   it { should belong_to :lecturer }
   it { should belong_to :department }
@@ -19,7 +19,7 @@ RSpec.describe Unit, type: :model do
   it { should validate_numericality_of(:year) }
 
   it ".active returns only the non archived units" do
-    units = FactoryGirl.create_list(:unit, 4)
+    units = FactoryBot.create_list(:unit, 4)
     unit = units.first
 
     unit.archived_at = Date.today
@@ -29,7 +29,7 @@ RSpec.describe Unit, type: :model do
   end
 
   it ".archived returnsl only the archived units" do
-    units = FactoryGirl.create_list(:unit, 4)
+    units = FactoryBot.create_list(:unit, 4)
     unit = units.first
 
     unit.archived_at = Date.today
@@ -39,7 +39,7 @@ RSpec.describe Unit, type: :model do
   end
 
   it "#archive sets archived at date" do
-    unit = FactoryGirl.create(:unit)
+    unit = FactoryBot.create(:unit)
 
     expect(unit.archived_at).to be_falsy
     expect(unit.archive).to be_truthy
@@ -47,7 +47,7 @@ RSpec.describe Unit, type: :model do
   end
 
   it "#archive leads to error if unit has already been archived" do
-    unit = FactoryGirl.create(:unit)
+    unit = FactoryBot.create(:unit)
     unit.archived_at = Date.today
     expect(unit.save).to be_truthy
     expect(unit.archived?).to be_truthy
@@ -58,7 +58,7 @@ RSpec.describe Unit, type: :model do
   end
 
   it '#archived? returns whether a unit is archived' do
-    unit = FactoryGirl.create(:unit)
+    unit = FactoryBot.create(:unit)
 
     expect(unit.archived?).to be_falsy
 

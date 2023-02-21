@@ -12,14 +12,14 @@ RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
 
     @student_for = create :student_confirmed
     @student3 = create :student_confirmed
-    @assignment = FactoryGirl.create(:assignment)
+    @assignment = FactoryBot.create(:assignment)
     @game_setting  = create :game_setting, assignment: @assignment
-    @project = FactoryGirl.create(:project, assignment: @assignment)
-    @iteration = FactoryGirl.create(:iteration, assignment: @assignment)
+    @project = FactoryBot.create(:project, assignment: @assignment)
+    @iteration = FactoryBot.create(:iteration, assignment: @assignment)
     create :students_project, student: @student_for, project: @project
     create :students_project, student: @student3, project: @project
     create :students_project, student: @student, project: @project
-    @pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
+    @pa_form = FactoryBot.create(:pa_form, iteration: @iteration)
   end
 
   describe 'Success --Student' do

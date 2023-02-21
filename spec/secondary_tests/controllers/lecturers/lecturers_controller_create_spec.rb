@@ -11,13 +11,13 @@ RSpec.describe 'V1::LecturersController POST /create', type: :controller do
 	context 'valid request' do
 
 		before(:each) do
-			@lecturer = FactoryGirl.build(:lecturer)
+			@lecturer = FactoryBot.build(:lecturer)
 		end
 
 		describe 'POST create' do
 			it 'creates a new user and save them in the database', { docs?: true } do
 				expect {
-					post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
+					post :create, params: FactoryBot.attributes_for(:lecturer_with_password)
 				}. to change { Lecturer.count }
 
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
@@ -27,7 +27,7 @@ RSpec.describe 'V1::LecturersController POST /create', type: :controller do
 			end
 
 			it 'encrypts the users password before saving' do
-				post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
+				post :create, params: FactoryBot.attributes_for(:lecturer_with_password)
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(status).to eq(201)
 				expect(Lecturer.find(assigns[:user].id).encrypted_password).to_not eq(request.params['password'])
@@ -35,27 +35,27 @@ RSpec.describe 'V1::LecturersController POST /create', type: :controller do
 			end
 
 			it 'returns 201 created' do
-				post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
+				post :create, params: FactoryBot.attributes_for(:lecturer_with_password)
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(status).to eq(201)
 			end
 
 			it 'has email as a provider' do
-				post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
+				post :create, params: FactoryBot.attributes_for(:lecturer_with_password)
 				expect(controller.params.keys).to include('email', 'password', 'password_confirmation', 'first_name', 'last_name')
 				expect(status).to eq(201)
 				expect(assigns[:user].provider).to eq('email')
 			end
 
 			it 'sends confirmation email' do
-				post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
+				post :create, params: FactoryBot.attributes_for(:lecturer_with_password)
 				expect(status).to eq(201)
 				expect(ActionMailer::Base.deliveries.last.to.first).to eq(request.params['email'])
 			end
 
       it 'does not create a student profile if new user is a lecturer' do
 				expect {
-				  post :create, params: FactoryGirl.attributes_for(:lecturer_with_password)
+				  post :create, params: FactoryBot.attributes_for(:lecturer_with_password)
 				}. to_not change { StudentProfile.count }
       end
 		end

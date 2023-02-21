@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :user do
     first_name  { "Alive#{rand(1000).to_s}" }

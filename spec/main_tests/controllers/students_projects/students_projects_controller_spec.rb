@@ -6,7 +6,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 
 	before(:all) do
 		@lecturer = get_lecturer_with_units_assignments_projects
-		@student = FactoryGirl.create(:student_with_password).process_new_record
+		@student = FactoryBot.create(:student_with_password).process_new_record
 		@student.save
 		@student.confirm
 		create :students_project, student: @student, project: @lecturer.projects.first
@@ -25,7 +25,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 		describe 'POST enrol' do
 
 			it 'creates a new StudentsProject instance with nickname', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
-				project = FactoryGirl.create(:project)
+				project = FactoryBot.create(:project)
 				nickname = "giorgakis"
 				expect {
 					post :enrol, params: { enrollment_key: project.enrollment_key, id: project.id, nickname: nickname }
@@ -38,7 +38,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 			end
 
 			it 'responds with 403 unprocessable_entity if no nickname', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
-				project = FactoryGirl.create(:project)
+				project = FactoryBot.create(:project)
 				nickname = "giorgakis"
 				expect {
 					post :enrol, params: { enrollment_key: project.enrollment_key, id: project.id }
@@ -48,7 +48,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 			end
 
 			it 'responds with 422 unprocessable_entity if id does not exist' do
-				project = FactoryGirl.create(:project)
+				project = FactoryBot.create(:project)
 				expect {
 					post :enrol, params: { enrollment_key: project.enrollment_key, id: 474774373, nickname: 'batman' }
 				}.to_not change {  StudentsProject.all.count }
@@ -57,7 +57,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 			end
 
 			it 'responds with 403 unprocessable_entity if wrong enrollment key', { docs?: true, lecturer?: false, controller_class: "V1::ProjectsController" } do
-				project = FactoryGirl.create(:project)
+				project = FactoryBot.create(:project)
 				expect {
 					post :enrol, params: { enrollment_key: 'invalidkey', id: project.id, nickname: 'batman' }
 				}.to_not change {  StudentsProject.all.count }
@@ -74,7 +74,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 			end
 
 			it 'responds with 403 forbidden if they try to enrol on two projects for the same assignment' do
-				project = FactoryGirl.create(:project)
+				project = FactoryBot.create(:project)
 				@student.assignments[0].projects << project
 				expect(@student.projects.include? project).to be_falsy
 				expect {
@@ -96,8 +96,8 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 			end
 
 			it 'responds with 403 forbidden if student not enrolled in project' do
-				project = FactoryGirl.create(:project)
-				#project.students << FactoryGirl.create(:student)
+				project = FactoryBot.create(:project)
+				#project.students << FactoryBot.create(:student)
 				create :students_project, student: create(:student), project: project
 
 				patch :update_nickname, params: { id: project.id, nickname: 'nicname' }
@@ -148,7 +148,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 
 			it 'removes student from project if Lecturer is owner', { docs?: true, controller_class: "V1::ProjectsController" } do
 				@lecturer.reload
-				student = FactoryGirl.create(:student)
+				student = FactoryBot.create(:student)
 				#@lecturer.projects[0].students << student
 				create :students_project, student: student, project: @lecturer.projects[0]
 
@@ -166,8 +166,8 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 			end
 
 			it 'responds with 422 if student_id does not belong in project' do
-				project = FactoryGirl.create(:project)
-				other_student = FactoryGirl.create(:student)
+				project = FactoryBot.create(:project)
+				other_student = FactoryBot.create(:student)
 				#project.students << other_student
 				create :students_project, student: other_student, project: project
 				delete :remove_student, params: { id: @lecturer.projects[0].id, student_id: other_student.id }

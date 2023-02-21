@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :lecturer do
     first_name 	    { "Alfredo#{rand(1000).to_s}" }
   	last_name 	    { "Jumpveryhigh#{rand(1000).to_s}" }
@@ -44,15 +44,15 @@ FactoryGirl.define do
       provider 'email'
       password '12345678'
       password_confirmation '12345678'
-      units { [FactoryGirl.create(:unit), FactoryGirl.create(:unit)] }
+      units { [FactoryBot.create(:unit), FactoryBot.create(:unit)] }
     end
 
     factory :lecturer_with_units_assignments_projects do
       provider 'email'
       password '12345678'
       password_confirmation '12345678'
-      units     { [FactoryGirl.create(:unit), FactoryGirl.create(:unit)] }
-      assignments  { [FactoryGirl.create(:assignment_with_projects), FactoryGirl.create(:assignment_with_projects)] }
+      units     { [FactoryBot.create(:unit), FactoryBot.create(:unit)] }
+      assignments  { [FactoryBot.create(:assignment_with_projects), FactoryBot.create(:assignment_with_projects)] }
     end
   end
 end

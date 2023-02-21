@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :game_setting do
     points_log { 10 }
     points_log_first_of_day { 10 }

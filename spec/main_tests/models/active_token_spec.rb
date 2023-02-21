@@ -28,8 +28,8 @@ RSpec.describe ActiveToken, type: :model do
 		end
 
 		it 'validate uniqueness of device' do
-			user = FactoryGirl.create(:user)
-			token = FactoryGirl.create(:active_token, device: 'same_value', user: user, exp: Time.now + 1.week)
+			user = FactoryBot.create(:user)
+			token = FactoryBot.create(:active_token, device: 'same_value', user: user, exp: Time.now + 1.week)
 			expect(token.valid?).to be_truthy
 
 			new_token = ActiveToken.new(device: 'same_value', user: user, exp: 1.week.from_now)

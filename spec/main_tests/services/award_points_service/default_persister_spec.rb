@@ -6,17 +6,17 @@ RSpec.describe PointsAward::Persisters::DefaultPersister, type: :model do
     before :each do
       @student = create :student_confirmed
       @lecturer = create :lecturer_confirmed
-      @unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-      @assignment = FactoryGirl.create(:assignment, lecturer: @lecturer, unit: @unit)
-      @iteration = FactoryGirl.create(:iteration, assignment: @assignment)
-      @pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
-      @student2 = FactoryGirl.create(:student_confirmed)
-      @project = FactoryGirl.create(:project, assignment: @assignment)
+      @unit = FactoryBot.create(:unit, lecturer: @lecturer)
+      @assignment = FactoryBot.create(:assignment, lecturer: @lecturer, unit: @unit)
+      @iteration = FactoryBot.create(:iteration, assignment: @assignment)
+      @pa_form = FactoryBot.create(:pa_form, iteration: @iteration)
+      @student2 = FactoryBot.create(:student_confirmed)
+      @project = FactoryBot.create(:project, assignment: @assignment)
       create :students_project, student: @student, project: @project
       create :students_project, student: @student2, project: @project
 
       Timecop.travel(@iteration.start_date + 1.minute) do
-        @peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)
+        @peer_assessment = FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)
       end
 
       @points_board  = PointsAward::PointsBoard.new(@student, @peer_assessment, @project.id)
@@ -66,7 +66,7 @@ RSpec.describe PointsAward::Persisters::DefaultPersister, type: :model do
 
     before :all do
       @lecturer = get_lecturer_with_units_assignments_projects
-      @student = FactoryGirl.create(:student)
+      @student = FactoryBot.create(:student)
       @project = @lecturer.projects.first
       create :students_project, student: @student, project: @project
       now = DateTime.now
@@ -74,8 +74,8 @@ RSpec.describe PointsAward::Persisters::DefaultPersister, type: :model do
       @project.assignment.end_date = now + 1.month
       @project.assignment.save
       create(:iteration, assignment: @project.assignment)
-      @feeling = FactoryGirl.create(:feeling)
-      @project_evaluation = FactoryGirl.create(:project_evaluation, user: @student, project: @project, percent_complete: 89, date_submitted: DateTime.now, iteration: @project.assignment.iterations.first)
+      @feeling = FactoryBot.create(:feeling)
+      @project_evaluation = FactoryBot.create(:project_evaluation, user: @student, project: @project, percent_complete: 89, date_submitted: DateTime.now, iteration: @project.assignment.iterations.first)
       expect(@project_evaluation.valid?).to be_truthy
     end
 

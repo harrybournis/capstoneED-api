@@ -1,26 +1,26 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :project_evaluation do
-    user { FactoryGirl.create(:student) }
+    user { FactoryBot.create(:student) }
     project do |obj|
       @now = DateTime.now
-      lec = FactoryGirl.create(:lecturer)
-      unit = FactoryGirl.create(:unit, lecturer: lec)
-      assignment = FactoryGirl.create(:assignment, lecturer: lec, start_date: @now, end_date: @now + 1.month )
-      project = FactoryGirl.create(:project, assignment: assignment)
+      lec = FactoryBot.create(:lecturer)
+      unit = FactoryBot.create(:unit, lecturer: lec)
+      assignment = FactoryBot.create(:assignment, lecturer: lec, start_date: @now, end_date: @now + 1.month )
+      project = FactoryBot.create(:project, assignment: assignment)
       create :students_project, student: user, project: project
       project
     end
-    iteration { FactoryGirl.create(:iteration, assignment: project.assignment, start_date: @now, deadline: @now + 28.days) }
+    iteration { FactoryBot.create(:iteration, assignment: project.assignment, start_date: @now, deadline: @now + 28.days) }
     percent_complete { rand 10..93 }
     date_submitted nil
     feelings_average { rand -60..90 }
     factory :project_evaluation_lecturer do
-      user { FactoryGirl.create(:lecturer) }
+      user { FactoryBot.create(:lecturer) }
       project do |obj|
         @now = DateTime.now
-        unit = FactoryGirl.create(:unit, lecturer: user)
-        assignment = FactoryGirl.create(:assignment, lecturer: user, start_date: @now, end_date: @now + 1.month )
-        FactoryGirl.create(:project, assignment: assignment)
+        unit = FactoryBot.create(:unit, lecturer: user)
+        assignment = FactoryBot.create(:assignment, lecturer: user, start_date: @now, end_date: @now + 1.month )
+        FactoryBot.create(:project, assignment: assignment)
       end
     end
 

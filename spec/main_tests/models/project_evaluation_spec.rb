@@ -19,7 +19,7 @@ RSpec.describe ProjectEvaluation, type: :model do
     expect(create(:project_evaluation)).to be_truthy
   end
 
-  it 'factorygirl creates iteration that has the same assignment as the project' do
+  it 'FactoryBot creates iteration that has the same assignment as the project' do
     pe = create(:project_evaluation)
     expect(pe.iteration.assignment).to eq(pe.project.assignment)
   end

@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Lecturer, type: :model do
 
 	describe 'validations' do
-		subject(:lecturer) { FactoryGirl.build(:lecturer) }
+		subject(:lecturer) { FactoryBot.build(:lecturer) }
 
 		it { should have_many(:units) }
 		it { should have_many(:assignments) }
@@ -25,7 +25,7 @@ RSpec.describe Lecturer, type: :model do
 		it { should validate_inclusion_of(:type).in_array(['Lecturer']) }
 
 		it 'does not allow provider to be updated' do
-			lecturer = FactoryGirl.create(:lecturer)
+			lecturer = FactoryBot.create(:lecturer)
 			expect(lecturer.update(provider: 'email')).to be_truthy
 			expect(lecturer.errors).to be_empty
 			expect(lecturer.provider).to eq('test')

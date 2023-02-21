@@ -4,7 +4,7 @@ include JWTAuth
 
 RSpec.describe JWTAuth::ValidatedRequest, type: :model do
 
-	let(:user) { FactoryGirl.create(:user) }
+	let(:user) { FactoryBot.create(:user) }
 	let(:device) { SecureRandom.base64(32) }
 	let(:request) { MockRequest.new(true, user, device) }
 
@@ -12,7 +12,7 @@ RSpec.describe JWTAuth::ValidatedRequest, type: :model do
 
 		describe 'access request' do
 			it 'should return the same values as the request passed to it' do
-				user = FactoryGirl.create(:user)
+				user = FactoryBot.create(:user)
 				device = SecureRandom.base64(32)
 				request = MockRequest.new(true, user, device)
 				validated_request = JWTAuth::JWTAuthenticator.valid_access_request(request)
@@ -25,7 +25,7 @@ RSpec.describe JWTAuth::ValidatedRequest, type: :model do
 
 		describe 'refresh request' do
 			it 'should return the same values as the request passed to it' do
-				user = FactoryGirl.create(:user)
+				user = FactoryBot.create(:user)
 				device = SecureRandom.base64(32)
 				request = MockRequest.new(true, user, device)
 				validated_request = JWTAuth::JWTAuthenticator.valid_refresh_request(request)
@@ -40,7 +40,7 @@ RSpec.describe JWTAuth::ValidatedRequest, type: :model do
 	context 'invalid request' do
 
 		it 'access request should return false without token' do
-			user = FactoryGirl.create(:user)
+			user = FactoryBot.create(:user)
 			device = SecureRandom.base64(32)
 			request = MockRequest.new(true, user, device)
 			request.cookies.delete('access-token')
@@ -48,7 +48,7 @@ RSpec.describe JWTAuth::ValidatedRequest, type: :model do
 		end
 
 		it 'access request should return false without csrf token in the headers' do
-			user = FactoryGirl.create(:user)
+			user = FactoryBot.create(:user)
 			device = SecureRandom.base64(32)
 			request = MockRequest.new(true, user, device)
 			request.headers.delete('X-XSRF-TOKEN')
@@ -56,7 +56,7 @@ RSpec.describe JWTAuth::ValidatedRequest, type: :model do
 		end
 
 		it 'refresh request should return false' do
-			user = FactoryGirl.create(:user)
+			user = FactoryBot.create(:user)
 			device = SecureRandom.base64(32)
 			request = MockRequest.new(true, user, device)
 			request.cookies.delete('refresh-token')

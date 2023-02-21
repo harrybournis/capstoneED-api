@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :student do
     first_name        { "Jonathan#{rand(1000).to_s}" }
     last_name         { "Burgerhuman#{rand(1000).to_s}" }
