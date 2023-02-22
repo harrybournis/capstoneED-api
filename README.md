@@ -23,7 +23,7 @@ additional variables:
 | SECRET_KEY_BASE            | -                                 | Generate using `bundler exec rake secret`.  You *MUST* provide this.                                          |
 | CAPSTONEED_API_URL         | 'http://capstoneed-api.org:21992' | The URL used to access the API. Will be used  to generate links (i.e. forgot your password)                   |
 | CAPSTONEED_API_PORT        | 21992                             | Port the rails server will listen on. This is ON the container, does not affect the exposed port on the host. |
-| CAPSTONEED_ALLOWED_ORIGINS | '*'                               | Origins allowed to access the API. Seperte using `;`                                                          |
+| CAPSTONEED_ALLOWED_ORIGINS | '*'                               | Origins allowed to access the API. Separate using `;`                                                          |
 
 In addition you can define multiple "built-in" variables, such as the ones below:
 

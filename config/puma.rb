@@ -31,7 +31,7 @@ workers ENV.fetch("WEB_CONCURRENCY") { 0 }
 # you need to make sure to reconnect any threads in the `on_worker_boot`
 # block.
 #
-should_preload = ENV.fetch("APP_PRELOAD").downcase == "true"
+should_preload = ENV.fetch("APP_PRELOAD", true).downcase == "true"
 if should_preload
     preload_app!
 end
