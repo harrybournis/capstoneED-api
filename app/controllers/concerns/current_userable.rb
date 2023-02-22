@@ -24,13 +24,7 @@ module CurrentUserable
   def sign_out_current_user
     current_user.sign_out
 
-    domain =  if Rails.env.development?
-                JWTAuth::JWTAuthenticator.domain_development
-              elsif Rails.env.test?
-                JWTAuth::JWTAuthenticator.domain_test
-              else
-                JWTAuth::JWTAuthenticator.domain
-              end
+    domain = JWTAuth::JWTAuthenticator.domain
 
     cookies.delete('access-token', domain: domain)
     cookies['refresh-token'] = { value: nil,

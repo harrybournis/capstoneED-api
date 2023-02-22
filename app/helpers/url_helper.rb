@@ -25,11 +25,7 @@ module UrlHelper
   # Left empty for development
   def api_host_url
     theUrl = ENV.fetch('CAPSTONEED_API_URL', 'http://capstoneed-api.org:21992')
-    if Rails.env.development? || Rails.env.test?
-      ''.freeze
-    else
-      theUrl.freeze
-    end
+    theUrl.freeze
   end
 
   # Used @ controllers/v1/confirmations_controller.rb
