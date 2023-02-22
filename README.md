@@ -3,15 +3,31 @@ Documentation: https://harrybournis.github.io/capstoned-api-documentation/
 Trello: https://trello.com/b/ahb8alLZ/capstoneed-api
 
 # Installation
-1. Install ruby 2.4.1
+1. Install ruby 2.7.7
 2. Run `gem install bundler`
 3. Run `bundle update`
 4. Run `bundle install`
 
-# DotEnv File
-```
-DEVELOPMENT_SECRET_KEY_BASE=<development key>
-TEST_SECRET_KEY_BASE=<test key>
+# Environment Variables
+The application uses multiple environment variables to allow for configuration.
+These variables can be applied through a `.env` file if running locally, or
+through docker compose, when running in docker. Below is a list of all the
+additional variables:
+
+| Variable                   | Default Value                     | Description                                                                                                   |
+|----------------------------|-----------------------------------|---------------------------------------------------------------------------------------------------------------|
+| PG_HOST                    | -                                 | Host where Postgres is running                                                                                |
+| PG_USER                    | -                                 | Postgres user to log in as                                                                                    |
+| PG_PASS                    | -                                 | Password for postgres user                                                                                    |
+| PG_NAME                    | -                                 | Name of the database. Will be also used to generate `PG_NAME_development` and `PG_NAME_test` databases        |
+| SECRET_KEY_BASE            | -                                 | Generate using `bundler exec rake secret`.  You *MUST* provide this.                                          |
+| CAPSTONEED_API_URL         | 'http://capstoneed-api.org:21992' | The URL used to access the API. Will be used  to generate links (i.e. forgot your password)                   |
+| CAPSTONEED_API_PORT        | 21992                             | Port the rails server will listen on. This is ON the container, does not affect the exposed port on the host. |
+| CAPSTONEED_ALLOWED_ORIGINS | '*'                               | Origins allowed to access the API. Seperte using `;`                                                          |
+
+In addition you can define multiple "built-in" variables, such as the ones below:
+
+```env
 RAILS_MIN_THREADS=3
 RAILS_MAX_THREADS=16
 WEB_CONCURRENCY=3

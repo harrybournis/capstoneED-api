@@ -1,0 +1,31 @@
+version: '3.6'
+
+services:
+  api:
+    image: capstoneed-api
+    build:
+      context: .
+    command: bundle exec rails server
+    environment:
+      - PG_HOST=${PG_HOST}
+      - PG_USER=${PG_USER}
+      - PG_PASS=${PG_PASS}
+      - PG_NAME=${PG_NAME}
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - APP_PRELOAD=${APP_PRELOAD}
+      - CAPSTONEED_API_URL=${CAPSTONEED_API_URL}
+      - CAPSTONEED_API_PORT=${CAPSTONEED_API_PORT}
+    ports:
+      - 3000:${CAPSTONEED_API_PORT}
+    depends_on:
+      - db
+  db:
+    image: postgres:alpine
+    volumes:
+      - ./postgres:/var/lib/postgresql/data/
+    # ports:
+    #   - 5432:5432
+    environment:
+      - "POSTGRES_USER=${PG_USER}"
+      - "POSTGRES_PASSWORD=${PG_PASS}"
+      - "POSTGRES_DB=${PG_NAME}"
