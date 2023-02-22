@@ -39,7 +39,8 @@ hours_worked_small = [1,2,3]
 hours_worked_medium = [3,4,5,6]
 hours_worked_large = [5,6,7,8,9,10]
 
-base_url = 'http://capstoneed-api.org:21992/placeholders'
+theUrl = ENV.fetch('CAPSTONEED_API_URL', 'http://capstoneed-api.org:21992')
+base_url = "#{theUrl}/placeholders"
 # Lecturer-units-assignments
 @lecturer = FactoryBot.create :lecturer_confirmed, first_name: 'Thanos', last_name: 'Hatziapostolou', email: 'thanos@hatziapostolou.com', password: '12345678', avatar_url: "#{base_url}/hatzi.jpg"
 @department = FactoryBot.create :department, name: 'Computer Science', university: 'University of Sheffield'

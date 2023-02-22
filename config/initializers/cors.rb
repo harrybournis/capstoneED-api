@@ -8,37 +8,11 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'student.capstoneed-dev.org:8080'
+    origins ENV.fetch('CAPSTONEED_ALLOWED_ORIGINS', '*').split(';').map { |origin| origin.strip }
 
     resource '*',
       headers: :any,
       expose: 'XSRF-TOKEN',
       methods: [:get, :post, :put, :patch, :delete, :options, :head]
   end
-
-  allow do
-    origins 'lecturer.capstoneed-dev.org:8085'
-
-    resource '*',
-      headers: :any,
-      expose: 'XSRF-TOKEN',
-      methods: [:get, :post, :put, :patch, :delete, :options, :head]
-  end
-  # allow do
-  #   origins 'student.capstoneed-dev.org'
-
-  #   resource '*',
-  #     headers: :any,
-  #     expose: 'XSRF-TOKEN',
-  #     methods: [:get, :post, :put, :patch, :delete, :options, :head]
-  # end
-
-  # allow do
-  #   origins 'lecturer.capstoneed-dev.org'
-
-  #   resource '*',
-  #     headers: :any,
-  #     expose: 'XSRF-TOKEN',
-  #     methods: [:get, :post, :put, :patch, :delete, :options, :head]
-  # end
 end

@@ -6,7 +6,7 @@ require 'rails/commands/server'
 module Rails
   class Server
     def default_options
-      super.merge(Host:  '0.0.0.0', Port: 21992)
+      super.merge(Host: ENV.fetch('CAPSTONEED_INTERFACE', '0.0.0.0'), Port: ENV.fetch('CAPSTONEED_API_PORT', 3000))
     end
   end
 end

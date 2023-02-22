@@ -8,37 +8,27 @@ module UrlHelper
   # Should be the url of the client application that allows the user
   # to reset their password
   def client_reset_password_url(token)
-    if Rails.env.development? || Rails.env.test?
-      # add the correct path in the frontend app
-      "http://capstoneed-api.org:21992/v1/reset_password?reset_password_token=#{token}"
-      #"set the url of the client app"
-    else
-      # add the correct path in the frontend app
-      #"http://capstoneed-api.herokuapp.com?reset_password_token=#{token}"
-    end
+    theUrl = ENV.fetch('CAPSTONEED_API_URL', 'http://capstoneed-api.org:21992')
+    "#{theUrl}/v1/reset_password?reset_password_token=#{token}"
   end
 
   # Used @ views/devise/mailer/reset_password_instructions.html.erb
   # Should be the url of the client application that allows the user
   # to reset their password
   def client_confirm_url(token)
-    if Rails.env.development? || Rails.env.test?
-      # add the correct path in the frontend app
-      "http://capstoneed-api.org:21992/v1/confirm_account?confirmation_token=#{token}"
-    else
-      # add the correct path in the frontend app
-      "http://capstoneed-api.org:21992/v1/confirm_account?confirmation_token=#{token}"
-    end
+    theUrl = ENV.fetch('CAPSTONEED_API_URL', 'http://capstoneed-api.org:21992')
+    "#{theUrl}/v1/confirm_account?confirmation_token=#{token}"
   end
 
   # Used @ models/jwt_auth/jwt_authenticator.rb in the cookies' domain
   # Should be the API's host url
   # Left empty for development
   def api_host_url
+    theUrl = ENV.fetch('CAPSTONEED_API_URL', 'http://capstoneed-api.org:21992')
     if Rails.env.development? || Rails.env.test?
       ''.freeze
     else
-      'http://capstoned-api.herokuapp.com'.freeze
+      theUrl.freeze
     end
   end
 
