@@ -7,7 +7,7 @@ RSpec.describe JWTAuth::CurrentUser, type: :model do
 	context 'testing with User class' do
 
 		before(:each) do
-			@user = FactoryGirl.create(:student)
+			@user = FactoryBot.create(:student)
 			@request = MockRequest.new(valid = true, @user)
 			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
 			@token_id = decoded_token.first['id']
@@ -56,7 +56,7 @@ RSpec.describe JWTAuth::CurrentUser, type: :model do
 	context 'testing with Student class' do
 
 		before(:each) do
-			@user = FactoryGirl.create(:student)
+			@user = FactoryBot.create(:student)
 			@request = MockRequest.new(valid = true, @user)
 			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token']).first
 			@token_id = decoded_token['id']

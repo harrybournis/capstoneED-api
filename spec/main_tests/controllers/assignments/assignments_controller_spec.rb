@@ -6,12 +6,12 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 
     before(:all) do
       @controller = V1::AssignmentsController.new
-      @user = FactoryGirl.build(:lecturer_with_units).process_new_record
+      @user = FactoryBot.build(:lecturer_with_units).process_new_record
       @user.save
-      assignment1 = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units.first)
-      assignment2 = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units.first)
-      assignment3 = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units.last)
-      assignment_irrelevant = FactoryGirl.create(:assignment)
+      assignment1 = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units.first)
+      assignment2 = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units.first)
+      assignment3 = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units.last)
+      assignment_irrelevant = FactoryBot.create(:assignment)
     end
 
     before(:each) do
@@ -21,7 +21,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
     end
 
     it 'returns all the assignments for the current user if no unit_id is provided', { docs?: true } do
-      @assignment = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units.first)
+      @assignment = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units.first)
       iteration = create :iteration, assignment: @assignment
       pa_form = create :pa_form, iteration: iteration
       get :index
@@ -36,9 +36,9 @@ RSpec.describe V1::AssignmentsController, type: :controller do
     end
 
     it 'responds with 403 forbidden if the user is a student and unit_id is present in the params' do
-      @user = FactoryGirl.build(:student_with_password).process_new_record
+      @user = FactoryBot.build(:student_with_password).process_new_record
       @user.save
-      unit = FactoryGirl.create(:unit)
+      unit = FactoryBot.create(:unit)
       mock_request = MockRequest.new(valid = true, @user)
       request.cookies['access-token'] = mock_request.cookies['access-token']
       request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
@@ -87,13 +87,13 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 
       before(:all) do
         @controller = V1::AssignmentsController.new
-        @user_w = FactoryGirl.build(:lecturer_with_units).process_new_record
+        @user_w = FactoryBot.build(:lecturer_with_units).process_new_record
         @user_w.save
         @user_w.confirm
-        @assignment1 = FactoryGirl.create(:assignment, lecturer: @user_w, unit: @user_w.units.first)
-        @assignment2 = FactoryGirl.create(:assignment, lecturer: @user_w, unit: @user_w.units.first)
-        @assignment3 = FactoryGirl.create(:assignment, lecturer: @user_w, unit: @user_w.units.last)
-        @assignment_irrelevant = FactoryGirl.create(:assignment)
+        @assignment1 = FactoryBot.create(:assignment, lecturer: @user_w, unit: @user_w.units.first)
+        @assignment2 = FactoryBot.create(:assignment, lecturer: @user_w, unit: @user_w.units.first)
+        @assignment3 = FactoryBot.create(:assignment, lecturer: @user_w, unit: @user_w.units.last)
+        @assignment_irrelevant = FactoryBot.create(:assignment)
       end
 
       before(:each) do
@@ -122,12 +122,12 @@ RSpec.describe V1::AssignmentsController, type: :controller do
 
       before(:all) do
         @controller = V1::AssignmentsController.new
-        @user = FactoryGirl.build(:lecturer_with_units).process_new_record
+        @user = FactoryBot.build(:lecturer_with_units).process_new_record
         @user.save
-        @assignment1 = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units.first)
-        @assignment2 = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units.first)
-        @assignment3 = FactoryGirl.create(:assignment, lecturer: @user, unit: @user.units.last)
-        @assignment_irrelevant = FactoryGirl.create(:assignment)
+        @assignment1 = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units.first)
+        @assignment2 = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units.first)
+        @assignment3 = FactoryBot.create(:assignment, lecturer: @user, unit: @user.units.last)
+        @assignment_irrelevant = FactoryBot.create(:assignment)
       end
 
       before(:each) do
@@ -155,14 +155,14 @@ RSpec.describe V1::AssignmentsController, type: :controller do
     context 'student' do
       it 'only the lecturer who created the assignment can destroy it' do
         @controller = V1::AssignmentsController.new
-        @user = FactoryGirl.build(:student_with_password).process_new_record
+        @user = FactoryBot.build(:student_with_password).process_new_record
         @user.save
         mock_request = MockRequest.new(valid = true, @user)
         request.cookies['access-token'] = mock_request.cookies['access-token']
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
         expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
         expect(request.headers['X-XSRF-TOKEN']).to be_truthy
-        assignment = FactoryGirl.create(:assignment)
+        assignment = FactoryBot.create(:assignment)
 
         expect{
           delete :destroy, params: { id: assignment.id }

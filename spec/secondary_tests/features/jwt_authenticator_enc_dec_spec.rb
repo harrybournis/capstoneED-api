@@ -20,7 +20,7 @@ RSpec.describe "JWTAuth::JWTAuthenticator request_validating/encoding/decoding" 
 
 		it 'encoding with csrf should return a valid access-token' do
 			csrf = "NIBzka/3Plj8yg30+uYnyEBGunKPMhvG8ThF7EJxrBs="
-			user = FactoryGirl.create(:user)
+			user = FactoryBot.create(:user)
 			token = JWTAuth::JWTAuthenticator.encode_token(user, Time.now, csrf)
 
 			exception = false
@@ -35,7 +35,7 @@ RSpec.describe "JWTAuth::JWTAuthenticator request_validating/encoding/decoding" 
 		end
 
 		it 'encoding without csrf should return a valid refresh-token' do
-			user = FactoryGirl.create(:user)
+			user = FactoryBot.create(:user)
 			device = SecureRandom.base64(32)
 			token = JWTAuth::JWTAuthenticator.encode_token(user, Time.now, nil, device)
 

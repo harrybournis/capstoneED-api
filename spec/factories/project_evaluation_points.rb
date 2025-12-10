@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :project_evaluation_point do
     points { [10, 5, 20, 50].sample }
     date { DateTime.now }

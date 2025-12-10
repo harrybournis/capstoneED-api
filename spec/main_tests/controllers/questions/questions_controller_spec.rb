@@ -6,14 +6,14 @@ RSpec.describe V1::QuestionsController, type: :controller do
 
 		before(:each) do
 			@controller = V1::QuestionsController.new
-			@user = FactoryGirl.create(:lecturer)
+			@user = FactoryBot.create(:lecturer)
 			mock_request = MockRequest.new(valid = true, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-			5.times { @user.questions << FactoryGirl.build(:question) }
+			5.times { @user.questions << FactoryBot.build(:question) }
 			expect(@user.questions.count).to eq(5)
-			4.times { FactoryGirl.create(:question) }
+			4.times { FactoryBot.create(:question) }
 		end
 
 		it 'GET index returns the questions scoped to the current user', { docs?: true } do
@@ -52,18 +52,18 @@ RSpec.describe V1::QuestionsController, type: :controller do
 
 	# 	before(:each) do
 	# 		@controller = V1::QuestionsController.new
-	# 		@user = FactoryGirl.create(:lecturer)
+	# 		@user = FactoryBot.create(:lecturer)
 	# 		mock_request = MockRequest.new(valid = true, @user)
 	# 		request.cookies['access-token'] = mock_request.cookies['access-token']
 	# 		request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-	# 		5.times { @user.questions << FactoryGirl.build(:question) }
+	# 		5.times { @user.questions << FactoryBot.build(:question) }
 	# 		expect(@user.questions.count).to eq(5)
-	# 		4.times { FactoryGirl.create(:question) }
+	# 		4.times { FactoryBot.create(:question) }
 	# 	end
 
 	# 	it 'only Lecturers are allowed' do
-	# 		@user = FactoryGirl.create(:student)
+	# 		@user = FactoryBot.create(:student)
 	# 		mock_request = MockRequest.new(valid = true, @user)
 	# 		request.cookies['access-token'] = mock_request.cookies['access-token']
 	# 		request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']

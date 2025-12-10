@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :pa_form do
     questions do
       qs = ['What do you typically have for breakfast?',

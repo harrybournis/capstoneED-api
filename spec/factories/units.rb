@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :unit do
     name          { "Unit #{rand(1000).to_s}" }
     code          { SecureRandom.base64(10) }

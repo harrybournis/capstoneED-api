@@ -4,16 +4,16 @@
 
 #   before :all do
 #     @lecturer = create :lecturer_confirmed
-#     @unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-#     @assignment = FactoryGirl.create(:assignment, lecturer: @lecturer, unit: @unit)
+#     @unit = FactoryBot.create(:unit, lecturer: @lecturer)
+#     @assignment = FactoryBot.create(:assignment, lecturer: @lecturer, unit: @unit)
 #     @game_setting = create :game_setting, assignment: @assignment
-#     @iteration = FactoryGirl.create(:iteration, assignment: @assignment)
-#     @pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
-#     @student2 = FactoryGirl.create(:student_confirmed)
-#     @student3 = FactoryGirl.create(:student_confirmed)
-#     @student4 = FactoryGirl.create(:student_confirmed)
-#     @student5 = FactoryGirl.create(:student_confirmed)
-#     @project = FactoryGirl.create(:project, assignment: @assignment)
+#     @iteration = FactoryBot.create(:iteration, assignment: @assignment)
+#     @pa_form = FactoryBot.create(:pa_form, iteration: @iteration)
+#     @student2 = FactoryBot.create(:student_confirmed)
+#     @student3 = FactoryBot.create(:student_confirmed)
+#     @student4 = FactoryBot.create(:student_confirmed)
+#     @student5 = FactoryBot.create(:student_confirmed)
+#     @project = FactoryBot.create(:project, assignment: @assignment)
 #     create :students_project, student: @student, project: @project
 #     create :students_project, student: @student2, project: @project
 #     create :students_project, student: @student3, project: @project
@@ -21,15 +21,15 @@
 #     create :students_project, student: @student5, project: @project
 
 #     Timecop.travel(@iteration.start_date + 1.minute) do
-#       @peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)
-#       FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student3)
-#       FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student4)
-#       FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student5)
+#       @peer_assessment = FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)
+#       FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student3)
+#       FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student4)
+#       FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student5)
 
-#       FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student)
-#       FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student3)
-#       FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student4)
-#       FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student5)
+#       FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student)
+#       FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student3)
+#       FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student4)
+#       FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student5)
 #     end
 #     CalculatePaScoresService.new(@iteration).call
 #   end

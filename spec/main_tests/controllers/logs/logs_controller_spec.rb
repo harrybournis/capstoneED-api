@@ -22,7 +22,7 @@ RSpec.describe V1::LogsController, type: :controller do
 
     describe 'POST /logs' do
       it 'responds with 200 if valid', { docs?: true, lecturer?: false } do
-        parameters = FactoryGirl.build(:students_project).logs[0].except(:date_submitted).merge(id: @student.projects[0].id)
+        parameters = FactoryBot.build(:students_project).logs[0].except(:date_submitted).merge(id: @student.projects[0].id)
         post :update, params: parameters
 
         expect(status).to eq(201)
@@ -32,14 +32,14 @@ RSpec.describe V1::LogsController, type: :controller do
       end
 
       it 'responds with 422 if invalid log parameters', { docs?: true, lecturer?: false } do
-        post :update, params: FactoryGirl.build(:students_project).logs[0].except("date_submitted", "time_worked").merge(id: @student.projects[0].id)
+        post :update, params: FactoryBot.build(:students_project).logs[0].except("date_submitted", "time_worked").merge(id: @student.projects[0].id)
         expect(status).to eq(422)
         expect(errors['log_entry'][0]).to include('is missing')
       end
 
       it 'responds with 403 if not enrolled in project' do
-        project = FactoryGirl.create(:project)
-        post :update, params: FactoryGirl.attributes_for(:students_project).merge(id: project.id)
+        project = FactoryBot.create(:project)
+        post :update, params: FactoryBot.attributes_for(:students_project).merge(id: project.id)
         expect(status).to eq(403)
       end
     end
@@ -50,9 +50,9 @@ RSpec.describe V1::LogsController, type: :controller do
         sp =  StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
         sp.logs = []
         expect(sp.save).to be_truthy
-        sp.add_log(FactoryGirl.build(:students_project).logs[0])
+        sp.add_log(FactoryBot.build(:students_project).logs[0])
         expect(sp.save).to be_truthy
-        sp.add_log(FactoryGirl.build(:students_project).logs[0])
+        sp.add_log(FactoryBot.build(:students_project).logs[0])
         expect(sp.save).to be_truthy
 
         get :index_student, params: { id: project.id }
@@ -62,7 +62,7 @@ RSpec.describe V1::LogsController, type: :controller do
       end
 
       it 'responds with 403 if the student does not belong to project' do
-        project = FactoryGirl.create(:project)
+        project = FactoryBot.create(:project)
         get :index_student, params: {  id: project.id }
         expect(status).to eq(403)
       end
@@ -84,9 +84,9 @@ RSpec.describe V1::LogsController, type: :controller do
         sp =  StudentsProject.where(project_id: project.id, student_id: @student.id)[0]
         sp.logs = []
         expect(sp.save).to be_truthy
-        sp.add_log(FactoryGirl.build(:students_project).logs[0])
+        sp.add_log(FactoryBot.build(:students_project).logs[0])
         expect(sp.save).to be_truthy
-        sp.add_log(FactoryGirl.build(:students_project).logs[0])
+        sp.add_log(FactoryBot.build(:students_project).logs[0])
         expect(sp.save).to be_truthy
 
         get :index_lecturer, params: { id: project.id, student_id: @student.id }
@@ -121,7 +121,7 @@ RSpec.describe V1::LogsController, type: :controller do
       end
 
       it 'responds with 403 if the project does not belong to the lecturer' do
-        project = FactoryGirl.create(:project)
+        project = FactoryBot.create(:project)
         get :index_lecturer, params: {  id: project.id, student_id: @student.id }
         expect(status).to eq(403)
       end

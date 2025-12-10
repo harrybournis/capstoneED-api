@@ -11,7 +11,7 @@ RSpec.describe 'V1::StudentsController POST /create', type: :controller do
   context 'valid request' do
 
     before(:each) do
-      @student = FactoryGirl.build(:student)
+      @student = FactoryBot.build(:student)
     end
 
     describe 'POST create' do
@@ -72,7 +72,7 @@ RSpec.describe 'V1::StudentsController POST /create', type: :controller do
   context 'invalid request' do
 
     before(:each) do
-      @student = FactoryGirl.build(:student)
+      @student = FactoryBot.build(:student)
     end
 
     describe 'POST create', { docs?: true, lecturer?: false } do

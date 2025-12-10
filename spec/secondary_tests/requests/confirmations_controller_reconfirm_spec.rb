@@ -5,7 +5,7 @@ RSpec.describe "Confirmation Controller - Reconfirmation", type: :request do
 	before(:each) { host! 'api.example.com' }
 
 	# it 'user can sign in while with the old password while waiting for reconfirmation' do
-	# 	user = FactoryGirl.build(:student_with_password).process_new_record
+	# 	user = FactoryBot.build(:student_with_password).process_new_record
 	# 	user.save
 	# 	user.confirm
 
@@ -33,7 +33,7 @@ RSpec.describe "Confirmation Controller - Reconfirmation", type: :request do
 	# end
 
 	# it 'user cannot sign in until they have confirmed their register email' do
-	# 	user = FactoryGirl.build(:user_with_password).process_new_record
+	# 	user = FactoryBot.build(:user_with_password).process_new_record
 	# 	user.save
 
 	# 	post '/v1/sign_in', params: { email: user.email, password: '12345678' }
@@ -43,7 +43,7 @@ RSpec.describe "Confirmation Controller - Reconfirmation", type: :request do
 	# end
 
 	it 'user can confirm their account' do
-		user = FactoryGirl.build(:user_with_password).process_new_record
+		user = FactoryBot.build(:user_with_password).process_new_record
 		user.save
 
 		post '/v1/sign_in', params: { email: user.email, password: '12345678' }

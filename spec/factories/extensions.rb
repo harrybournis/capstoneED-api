@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :extension do
   	extra_time { 2.days.to_i }
   	association :project, factory: :project

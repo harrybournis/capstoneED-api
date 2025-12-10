@@ -13,9 +13,10 @@ module Project::Colorable
   # Generates a new random color and stores it in the color
   # attribute of the project. It does not save the change
   def generate_random_color
-    gen = ColorGenerator.new saturation: COLOR_SATURATION,
-                             lightness: COLOR_LIGHTNESS
-    self.color = "##{gen.create_hex}"
+    # gen = ColorGenerator.new saturation: COLOR_SATURATION,
+    #                          lightness: COLOR_LIGHTNESS
+    # self.color = "##{gen.create_hex}"
+    self.color = '#45CDFF'
     self
   end
 end

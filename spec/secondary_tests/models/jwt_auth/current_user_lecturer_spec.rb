@@ -7,16 +7,16 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
   describe 'Assignments' do
 
     before(:each) do
-      @user = FactoryGirl.create(:lecturer)
+      @user = FactoryBot.create(:lecturer)
       @request = MockRequest.new(valid = true, @user)
       decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
       @current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
 
-      @unit = FactoryGirl.create(:unit, lecturer: @user)
-      @assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @user)
-      3.times { create :students_project, student: create(:student), project: @assignment.projects[0] }#@assignment.projects.first.students << FactoryGirl.build(:student) }
+      @unit = FactoryBot.create(:unit, lecturer: @user)
+      @assignment = FactoryBot.create(:assignment_with_projects, unit: @unit, lecturer: @user)
+      3.times { create :students_project, student: create(:student), project: @assignment.projects[0] }#@assignment.projects.first.students << FactoryBot.build(:student) }
     end
 
     it 'loads the correct assignments' do
@@ -65,17 +65,17 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 
   describe 'Units' do
     before(:each) do
-      @user = FactoryGirl.create(:lecturer)
+      @user = FactoryBot.create(:lecturer)
       @request = MockRequest.new(valid = true, @user)
       decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
       @current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
 
-      @other_unit = FactoryGirl.create(:unit)
-      @unit = FactoryGirl.create(:unit, lecturer: @user)
-      @assignment = FactoryGirl.create(:assignment_with_projects, unit: @user.units[0], lecturer: @user)
-      3.times { create :students_project, student: create(:student), project: @assignment.projects[0] }#@assignment.projects.first.students << FactoryGirl.build(:student) }
+      @other_unit = FactoryBot.create(:unit)
+      @unit = FactoryBot.create(:unit, lecturer: @user)
+      @assignment = FactoryBot.create(:assignment_with_projects, unit: @user.units[0], lecturer: @user)
+      3.times { create :students_project, student: create(:student), project: @assignment.projects[0] }#@assignment.projects.first.students << FactoryBot.build(:student) }
     end
 
     it 'loads the correct units' do
@@ -107,14 +107,14 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 
   describe 'Questions' do
     before(:each) do
-      @user = FactoryGirl.create(:lecturer)
+      @user = FactoryBot.create(:lecturer)
       @request = MockRequest.new(valid = true, @user)
       decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
       @current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
 
-      5.times { @user.questions << FactoryGirl.build(:question) }
+      5.times { @user.questions << FactoryBot.build(:question) }
       expect(@user.questions.count).to eq(5)
     end
 
@@ -128,14 +128,14 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 
   describe 'Departments' do
     it 'returns correct number of departments' do
-      @user = FactoryGirl.create(:lecturer)
+      @user = FactoryBot.create(:lecturer)
       @request = MockRequest.new(valid = true, @user)
       decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
       @current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
 
-      2.times { FactoryGirl.create(:unit, lecturer_id: @user.id) }
+      2.times { FactoryBot.create(:unit, lecturer_id: @user.id) }
 
       expect(@current_user.departments.length).to eq(2)
     end
@@ -143,52 +143,52 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 
   describe 'PaForms' do
     it 'returns correct pa_forms' do
-      @user = FactoryGirl.create(:lecturer)
+      @user = FactoryBot.create(:lecturer)
       @request = MockRequest.new(valid = true, @user)
       decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
       @current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
 
-      @unit = FactoryGirl.create(:unit, lecturer: @user)
-      @assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @user)
+      @unit = FactoryBot.create(:unit, lecturer: @user)
+      @assignment = FactoryBot.create(:assignment_with_projects, unit: @unit, lecturer: @user)
 
-      iteration = FactoryGirl.create(:iteration, assignment: @assignment)
-      iteration2 = FactoryGirl.create(:iteration, assignment: @assignment)
-      pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
-      pa_form2 = FactoryGirl.create(:pa_form, iteration: iteration2)
+      iteration = FactoryBot.create(:iteration, assignment: @assignment)
+      iteration2 = FactoryBot.create(:iteration, assignment: @assignment)
+      pa_form = FactoryBot.create(:pa_form, iteration: iteration)
+      pa_form2 = FactoryBot.create(:pa_form, iteration: iteration2)
       expect(@current_user.pa_forms.length).to eq(2)
     end
   end
 
   describe "Peer Assessment" do
     it 'returns the associated peer assessments' do
-      @user = FactoryGirl.create(:lecturer_confirmed)
+      @user = FactoryBot.create(:lecturer_confirmed)
       @request = MockRequest.new(valid = true, @user)
       decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
       @current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
 
-      unit = FactoryGirl.create(:unit, lecturer_id: @user.id)
-      assignment = FactoryGirl.create(:assignment, lecturer_id: @user.id, unit: unit)
-      iteration  = FactoryGirl.create(:iteration, assignment: assignment)
-      pa_form = FactoryGirl.create(:pa_form, iteration: iteration)
-      project = FactoryGirl.create(:project, assignment: assignment)
-      student = FactoryGirl.create(:student_confirmed)
-      student2 = FactoryGirl.create(:student_confirmed)
-      student3 = FactoryGirl.create(:student_confirmed)
+      unit = FactoryBot.create(:unit, lecturer_id: @user.id)
+      assignment = FactoryBot.create(:assignment, lecturer_id: @user.id, unit: unit)
+      iteration  = FactoryBot.create(:iteration, assignment: assignment)
+      pa_form = FactoryBot.create(:pa_form, iteration: iteration)
+      project = FactoryBot.create(:project, assignment: assignment)
+      student = FactoryBot.create(:student_confirmed)
+      student2 = FactoryBot.create(:student_confirmed)
+      student3 = FactoryBot.create(:student_confirmed)
       #project.students << student
       #project.students << student2
       #project.students << student3
       create :students_project, student: student, project: project
       create :students_project, student: student2, project: project
       create :students_project, student: student3, project: project
-      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student, submitted_for: student2)
-      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student, submitted_for: student3)
-      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student2, submitted_for: student)
-      peer_assessment = FactoryGirl.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student2, submitted_for: student3)
-      peer_assessment_irrellevant = FactoryGirl.create(:peer_assessment_with_callback)
+      peer_assessment = FactoryBot.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student, submitted_for: student2)
+      peer_assessment = FactoryBot.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student, submitted_for: student3)
+      peer_assessment = FactoryBot.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student2, submitted_for: student)
+      peer_assessment = FactoryBot.create(:peer_assessment_with_callback, pa_form: pa_form, submitted_by: student2, submitted_for: student3)
+      peer_assessment_irrellevant = FactoryBot.create(:peer_assessment_with_callback)
 
       expect(@current_user.peer_assessments.length).to eq(4)
     end
@@ -204,11 +204,11 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
       @current_user = JWTAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
 
       assignment = @user.assignments[0]
-      iteration = FactoryGirl.create(:iteration, assignment: assignment)
-      pa_form = FactoryGirl.create(:pa_form, iteration_id: iteration.id)
+      iteration = FactoryBot.create(:iteration, assignment: assignment)
+      pa_form = FactoryBot.create(:pa_form, iteration_id: iteration.id)
       project = @user.assignments[0].projects[0]
-      extension = FactoryGirl.create(:extension, project_id: project.id, deliverable_id: pa_form.id)
-      extension_other = FactoryGirl.create(:extension)
+      extension = FactoryBot.create(:extension, project_id: project.id, deliverable_id: pa_form.id)
+      extension_other = FactoryBot.create(:extension)
       expect(@current_user.extensions.length).to eq(1)
       expect(@current_user.extensions[0]).to eq(extension)
     end
@@ -229,7 +229,7 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
       @project.assignment.end_date = now + 1.month
       @project.assignment.save
       create :iteration, assignment: @project.assignment
-      feeling = FactoryGirl.create(:feeling)
+      feeling = FactoryBot.create(:feeling)
 
       now = DateTime.now
       assignment = @user.assignments.first
@@ -238,15 +238,15 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
       assignment.save
       project = assignment.projects.first
       project2 = assignment.projects.last
-      iteration = FactoryGirl.create(:iteration, assignment: assignment, start_date: now, deadline: now + 28.days)
+      iteration = FactoryBot.create(:iteration, assignment: assignment, start_date: now, deadline: now + 28.days)
 
-      attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @user.id, iteration_id: iteration.id, project_id: project.id, feelings_average:  38)
+      attr = FactoryBot.attributes_for(:project_evaluation).merge(user_id: @user.id, iteration_id: iteration.id, project_id: project.id, feelings_average:  38)
       pe = ProjectEvaluation.create(attr)
-      attr = FactoryGirl.attributes_for(:project_evaluation).merge(user_id: @user.id, iteration_id: iteration.id, project_id: project2.id, feelings_average:  38)
+      attr = FactoryBot.attributes_for(:project_evaluation).merge(user_id: @user.id, iteration_id: iteration.id, project_id: project2.id, feelings_average:  38)
 
       pe = ProjectEvaluation.create(attr)
 
-      FactoryGirl.create(:project_evaluation)
+      FactoryBot.create(:project_evaluation)
 
       expect(ProjectEvaluation.all.size).to eq(3)
       expect(@current_user.project_evaluations.length).to eq(2)
@@ -287,7 +287,7 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
   describe 'Iteration' do
     it 'returns the current iterations for the current user ' do
       now = DateTime.now
-      @lecturer = FactoryGirl.create(:lecturer_confirmed)
+      @lecturer = FactoryBot.create(:lecturer_confirmed)
       @request = MockRequest.new(valid = true, @lecturer)
       decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
@@ -308,7 +308,7 @@ RSpec.describe JWTAuth::CurrentUserLecturer, type: :model do
 
   describe 'scored iterations' do
     it 'returns the scored iterations' do
-      @lecturer = FactoryGirl.create(:lecturer_confirmed)
+      @lecturer = FactoryBot.create(:lecturer_confirmed)
       @request = MockRequest.new(valid = true, @lecturer)
       decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']

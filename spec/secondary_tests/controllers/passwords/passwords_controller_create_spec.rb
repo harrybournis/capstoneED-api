@@ -7,7 +7,7 @@ RSpec.describe 'PasswordsController /create', type: :controller do
   before(:each) do
     @controller = V1::PasswordsController.new
     request.env['devise.mapping'] = Devise.mappings[:v1_user]
-    @user = FactoryGirl.create(:lecturer_confirmed)
+    @user = FactoryBot.create(:lecturer_confirmed)
   end
 
   context 'valid request' do
@@ -26,7 +26,7 @@ RSpec.describe 'PasswordsController /create', type: :controller do
   context 'invalid request' do
 
     it 'responds with 403 forbidden if user did not sign up by email' do
-      @user  = FactoryGirl.create(:user)
+      @user  = FactoryBot.create(:user)
       expect(@user.provider).to_not eq('email')
       expect(@user.reset_password_token).to be_falsy
       post :create, params: { email: @user.email }

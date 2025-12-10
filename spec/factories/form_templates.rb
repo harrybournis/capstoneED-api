@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :form_template do
     name { Faker::Beer.name + " Template" }
     association :lecturer, factory: :lecturer_confirmed

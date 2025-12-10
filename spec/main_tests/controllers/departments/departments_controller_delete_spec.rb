@@ -7,13 +7,13 @@ RSpec.describe V1::DepartmentsController, type: :controller do
 		context 'valid' do
 			before(:each) do
 				@controller = V1::DepartmentsController.new
-				@user = FactoryGirl.build(:lecturer_with_password).process_new_record
+				@user = FactoryBot.build(:lecturer_with_password).process_new_record
 				@user.save
 				@user.confirm
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				unit = FactoryGirl.create(:unit, lecturer_id: @user.id)
+				unit = FactoryBot.create(:unit, lecturer_id: @user.id)
 				@department = unit.department
 			end
 
@@ -33,13 +33,13 @@ RSpec.describe V1::DepartmentsController, type: :controller do
 
 			it 'responds with 403 forbidden if user is not lecturer' do
 				@controller = V1::DepartmentsController.new
-				@user = FactoryGirl.build(:student_with_password).process_new_record
+				@user = FactoryBot.build(:student_with_password).process_new_record
 				@user.save
 				@user.confirm
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				@department = FactoryGirl.create(:department)
+				@department = FactoryBot.create(:department)
 
 				delete :destroy, params: { id: @department.id }
 				expect(status).to eq(403)
@@ -48,13 +48,13 @@ RSpec.describe V1::DepartmentsController, type: :controller do
 
 			it 'responds with 403 forbidden if current user is not associated with department' do
 				@controller = V1::DepartmentsController.new
-				@user = FactoryGirl.build(:lecturer_with_password).process_new_record
+				@user = FactoryBot.build(:lecturer_with_password).process_new_record
 				@user.save
 				@user.confirm
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-				@irrelevant_department = FactoryGirl.create(:department)
+				@irrelevant_department = FactoryBot.create(:department)
 
 				delete :destroy, params: { id: @irrelevant_department.id }
 				expect(status).to eq(403)

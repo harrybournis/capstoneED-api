@@ -1,53 +1,24 @@
-Documentation: https://harrybournis.github.io/capstoned-api-documentation/
+# README
 
-Trello: https://trello.com/b/ahb8alLZ/capstoneed-api
+This README would normally document whatever steps are necessary to get the
+application up and running.
 
-# Installation
-1. Install ruby 2.4.1
-2. Run `gem install bundler`
-3. Run `bundle update`
-4. Run `bundle install`
+Things you may want to cover:
 
-# DotEnv File
-```
-DEVELOPMENT_SECRET_KEY_BASE=<development key>
-TEST_SECRET_KEY_BASE=<test key>
-RAILS_MIN_THREADS=3
-RAILS_MAX_THREADS=16
-WEB_CONCURRENCY=3
-APP_PRELOAD=true
-```
+* Ruby version
 
-# Set up Cron Jobs
-Execute this in the project root to write to
-the crontab file the contents of the /config/schedule.rb file.
-See [whenever gem](https://github.com/javan/whenever).
+* System dependencies
 
-```
-whenever --update-crontab
-```
+* Configuration
 
-# Generate Documentation
-Install the YARD gem.
+* Database creation
 
-```
-gem install yard
-```
+* Database initialization
 
-Run `yard` in the parent directory.
+* How to run the test suite
 
-# Generate coverage report
-To generate coverage report with SimpleCov, run
+* Services (job queues, cache servers, search engines, etc.)
 
-`COVERAGE=true rspec`
+* Deployment instructions
 
-in the parent directory.
-
-# Generate examples for API documentation.
-Run in the parent directory:
-
-```
-rspec  --require ./spec/formatters/test_result_formatter.rb --format TestResultFormatter
-```
-
-Take the generated `doc_examples` folder and copy it in the `/data` folder of in the documentation project.
+* ...

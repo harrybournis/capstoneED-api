@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :iteration_mark do
     association :student, factory: :student
     association :iteration, factory: :iteration

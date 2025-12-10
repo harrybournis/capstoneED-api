@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :user do
     first_name  { "Alive#{rand(1000).to_s}" }
@@ -7,9 +7,9 @@ FactoryGirl.define do
     provider { 'test' }
 
     factory :user_with_password do
-      provider 'email'
-      password '12345678'
-      password_confirmation '12345678'
+      provider { 'email'}
+      password { '12345678'}
+      password_confirmation { '12345678'}
     end
   end
 end

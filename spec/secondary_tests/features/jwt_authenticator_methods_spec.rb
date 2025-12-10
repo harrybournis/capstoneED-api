@@ -8,7 +8,7 @@ RSpec.describe "JWTAuth::JWTAuthenticator method" do
 
 		before(:each) do
 			@response = MockResponse.new
-			@user = FactoryGirl.create(:user)
+			@user = FactoryBot.create(:user)
 			@cookies = {}
 		end
 
@@ -39,7 +39,7 @@ RSpec.describe "JWTAuth::JWTAuthenticator method" do
 
 		it 'returns a response with an access token, a refresh token, and a csrf token in the headers' do
 			response = MockResponse.new
-			user = FactoryGirl.create(:user)
+			user = FactoryBot.create(:user)
 			cookies = {}
 			new_device = SecureRandom.base64(32)
 			time_now   = Time.now
@@ -51,7 +51,7 @@ RSpec.describe "JWTAuth::JWTAuthenticator method" do
 
 		it 'sets a cookie without an expiration date if remember me is true' do
 			response = MockResponse.new
-			user = FactoryGirl.create(:user)
+			user = FactoryBot.create(:user)
 			cookies = {}
 			new_device = SecureRandom.base64(32)
 			time_now   = Time.now
@@ -67,7 +67,7 @@ RSpec.describe "JWTAuth::JWTAuthenticator method" do
 
 		describe 'authenticate' do
 			it "should return a CurrentUser object" do
-				user = FactoryGirl.create(:user)
+				user = FactoryBot.create(:user)
 				request = MockRequest.new(valid = true, user)
 				expect(JWTAuth::JWTAuthenticator.authenticate(request).id).to eq(user.id)
 			end
@@ -78,10 +78,10 @@ RSpec.describe "JWTAuth::JWTAuthenticator method" do
 			context 'refresh token is not revoked' do
 
 				before(:each) do
-					user = FactoryGirl.create(:user)
+					user = FactoryBot.create(:user)
 					device = SecureRandom.base64(32)
 					time_before = DateTime.now - 1.hour
-					valid_token = FactoryGirl.create(:active_token, exp: time_before, device: device, user: user)
+					valid_token = FactoryBot.create(:active_token, exp: time_before, device: device, user: user)
 					expect(valid_token.device).to eq(device)
 					expect(ActiveToken.last).to eq(valid_token)
 
@@ -133,10 +133,10 @@ RSpec.describe "JWTAuth::JWTAuthenticator method" do
 				end
 
 				it 'the new refresh token cookie should have no expiration date if remember me is false in the payload' do
-					user = FactoryGirl.create(:user)
+					user = FactoryBot.create(:user)
 					device = SecureRandom.base64(32)
 					time_before = DateTime.now - 1.hour
-					valid_token = FactoryGirl.create(:active_token, exp: time_before, device: device, user: user)
+					valid_token = FactoryBot.create(:active_token, exp: time_before, device: device, user: user)
 					expect(valid_token.device).to eq(device)
 					expect(ActiveToken.last).to eq(valid_token)
 
@@ -152,10 +152,10 @@ RSpec.describe "JWTAuth::JWTAuthenticator method" do
 			context 'refresh token is revoked' do
 
 				before(:each) do
-					user = FactoryGirl.create(:user)
+					user = FactoryBot.create(:user)
 					device = SecureRandom.base64(32)
 					time_before = DateTime.now + JWTAuth::JWTAuthenticator.refresh_exp
-					@valid_token = FactoryGirl.create(:active_token, exp: time_before, device: device, user: user)
+					@valid_token = FactoryBot.create(:active_token, exp: time_before, device: device, user: user)
 					expect(@valid_token.device).to eq(device)
 					expect(ActiveToken.last).to eq(@valid_token)
 

@@ -6,7 +6,7 @@ RSpec.describe MockRequest, type: :model do
 
 	context 'valid request' do
 		it 'should encode two valid tokens' do
-			user = FactoryGirl.create(:user)
+			user = FactoryBot.create(:user)
 			device = SecureRandom.base64(32)
 			request = MockRequest.new(true, user, device)
 

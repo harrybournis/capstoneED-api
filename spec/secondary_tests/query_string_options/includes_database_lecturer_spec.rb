@@ -6,12 +6,12 @@ RSpec.describe 'Includes', type: :controller do
 	context 'Lecturer' do
 
 		before(:all) do
-			@lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
+			@lecturer = FactoryBot.build(:lecturer_with_password).process_new_record
 			@lecturer.save
 			@lecturer.confirm
-			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-			@assignment = FactoryGirl.create(:assignment_with_projects, unit: @unit, lecturer: @lecturer)
-			3.times { create :students_project, student: create(:student), project: @assignment.projects[0] }#@assignment.projects.first.students << FactoryGirl.build(:student) }
+			@unit = FactoryBot.create(:unit, lecturer: @lecturer)
+			@assignment = FactoryBot.create(:assignment_with_projects, unit: @unit, lecturer: @lecturer)
+			3.times { create :students_project, student: create(:student), project: @assignment.projects[0] }#@assignment.projects.first.students << FactoryBot.build(:student) }
 			expect(@assignment.projects.length).to eq(2)
 			expect(@assignment.projects.first.students.length).to eq(3)
 		end

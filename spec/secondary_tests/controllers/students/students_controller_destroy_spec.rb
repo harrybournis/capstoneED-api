@@ -6,7 +6,7 @@
 
 # 	before(:each) do
 # 		@controller = V1::UsersController.new
-# 		@student = FactoryGirl.build(:student_with_password).process_new_record
+# 		@student = FactoryBot.build(:student_with_password).process_new_record
 # 		@student.save
 # 		mock_request = MockRequest.new(valid = true, @student)
 # 		request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -42,9 +42,9 @@
 # 			it 'deletes all associated active tokens' do
 # 				device = SecureRandom.base64(32)
 # 				time_before = DateTime.now - 1.hour
-# 				valid_token = FactoryGirl.create(:active_token, exp: time_before, device: SecureRandom.base64(32), user: @student)
-# 				valid_token2 = FactoryGirl.create(:active_token, exp: time_before, device: SecureRandom.base64(32), user: @student)
-# 				valid_token3 = FactoryGirl.create(:active_token, exp: time_before, device: SecureRandom.base64(32), user: @student)
+# 				valid_token = FactoryBot.create(:active_token, exp: time_before, device: SecureRandom.base64(32), user: @student)
+# 				valid_token2 = FactoryBot.create(:active_token, exp: time_before, device: SecureRandom.base64(32), user: @student)
+# 				valid_token3 = FactoryBot.create(:active_token, exp: time_before, device: SecureRandom.base64(32), user: @student)
 
 # 				expect {
 # 					delete :destroy, params: { id: @student.id, current_password: '12345678' }
@@ -60,7 +60,7 @@
 # 		describe 'DELETE destroy' do
 # 			it 'valid tokens are not deleted' do
 # 				@controller = V1::UsersController.new
-# 				@student = FactoryGirl.build(:student_with_password).process_new_record
+# 				@student = FactoryBot.build(:student_with_password).process_new_record
 # 				@student.save
 # 				mock_request = MockRequest.new(valid = false, @student)
 # 				request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -74,7 +74,7 @@
 
 # 			it 'returns 401 if authentication problem' do
 # 				@controller = V1::UsersController.new
-# 				@student = FactoryGirl.build(:student_with_password).process_new_record
+# 				@student = FactoryBot.build(:student_with_password).process_new_record
 # 				@student.save
 # 				mock_request = MockRequest.new(valid = false, @student)
 # 				request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -86,7 +86,7 @@
 # 			end
 
 # 			it 'returns 403 forbidden if the user to be deleted is not the current user' do
-# 				different_user = FactoryGirl.create(:student)
+# 				different_user = FactoryBot.create(:student)
 # 				old_name = different_user.first_name
 # 				delete :destroy, params: { id: different_user.id, current_password: 'something' }
 

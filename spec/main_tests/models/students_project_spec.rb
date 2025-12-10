@@ -2,19 +2,19 @@ require 'rails_helper'
 
 RSpec.describe  StudentsProject, type: :model do
 
-	subject { FactoryGirl.build :students_project }
+	subject { FactoryBot.build :students_project }
 
 	it { should belong_to :project }
 	it { should belong_to :student }
 	it { should have_one(:game_setting).through :project }
 
 	it 'works' do
-		expect(FactoryGirl.create(:students_project)).to be_truthy
+		expect(FactoryBot.create(:students_project)).to be_truthy
 	end
 
 	it 'should validate that the student is not already part of the Project in a different team' do
-		student = FactoryGirl.create(:student)
-		assignment = FactoryGirl.create(:assignment_with_projects)
+		student = FactoryBot.create(:student)
+		assignment = FactoryBot.create(:assignment_with_projects)
 		create :students_project, student: student, project: assignment.projects[0]
 
 		students_project =  StudentsProject.new(student_id: student.id, project_id: assignment.projects.last.id)
@@ -23,10 +23,10 @@ RSpec.describe  StudentsProject, type: :model do
 	end
 
 	it 'validates uniqueness of nickname for project' do
-		student = FactoryGirl.create(:student)
-		student_other = FactoryGirl.create(:student)
-		student_third = FactoryGirl.create(:student)
-		assignment = FactoryGirl.create(:assignment_with_projects)
+		student = FactoryBot.create(:student)
+		student_other = FactoryBot.create(:student)
+		student_third = FactoryBot.create(:student)
+		assignment = FactoryBot.create(:assignment_with_projects)
 		project = assignment.projects.first
 		project_other = assignment.projects.last
 
@@ -44,8 +44,8 @@ RSpec.describe  StudentsProject, type: :model do
 	end
 
 	it 'creating new record without logs sets logs to an empty array' do
-		student = FactoryGirl.create(:student)
-		project = FactoryGirl.create(:project)
+		student = FactoryBot.create(:student)
+		project = FactoryBot.create(:project)
 		sp =  StudentsProject.new(nickname: "yo", student_id: student.id, project_id: project.id)
 
 		expect(sp.save).to be_truthy
@@ -54,8 +54,8 @@ RSpec.describe  StudentsProject, type: :model do
 	end
 
 	it 'sets points to 0 when first created' do
-		student = FactoryGirl.create(:student)
-		project = FactoryGirl.create(:project)
+		student = FactoryBot.create(:student)
+		project = FactoryBot.create(:project)
 		sp =  StudentsProject.new(nickname: "yo", student_id: student.id, project_id: project.id)
 
 		expect(sp.save).to be_truthy
@@ -64,8 +64,8 @@ RSpec.describe  StudentsProject, type: :model do
 
 	context 'validates format of logs' do
 		before :each do
-			student = FactoryGirl.create(:student)
-			project = FactoryGirl.create(:project)
+			student = FactoryBot.create(:student)
+			project = FactoryBot.create(:project)
 			@sp = create :students_project, nickname: 'yo', student_id: student.id, project_id: project.id
 			expect(@sp.valid?).to be_truthy
 		end

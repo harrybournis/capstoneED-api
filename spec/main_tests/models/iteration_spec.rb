@@ -44,7 +44,7 @@ RSpec.describe Iteration, type: :model do
   end
 
   # it 'validates that start_date is not in the past' do
-  # 	iteration  = FactoryGirl.build(:iteration, start_date: DateTime.yesterday)
+  # 	iteration  = FactoryBot.build(:iteration, start_date: DateTime.yesterday)
   # 	expect(iteration.valid?).to be_falsy
   # 	expect(iteration.errors[:start_date][0]).to eq("can't be in the past")
   # end

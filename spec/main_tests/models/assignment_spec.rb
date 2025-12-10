@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Assignment, type: :model do
 
 		describe 'validations' do
-			subject(:assignment) { FactoryGirl.build(:assignment) }
+			subject(:assignment) { FactoryBot.build(:assignment) }
 
 			it { should belong_to(:lecturer) }
 			it { should belong_to(:unit) }
@@ -31,7 +31,7 @@ RSpec.describe Assignment, type: :model do
 			end
 
 			it 'should validate that unit_id belongs to lecturer_id' do
-				assignment.unit = FactoryGirl.create(:unit)
+				assignment.unit = FactoryBot.create(:unit)
 				expect(assignment.lecturer.units).to_not include(assignment.unit)
 				expect(assignment.valid?).to be_falsy
 				expect(assignment.errors[:unit].first).to eq("does not belong in the Lecturer's list of Units")
@@ -42,7 +42,7 @@ RSpec.describe Assignment, type: :model do
 			end
 
 			it 'desroying a assignment should destroy its all projects' do
-				assignment = FactoryGirl.create(:assignment_with_projects)
+				assignment = FactoryBot.create(:assignment_with_projects)
 				expect(assignment.projects.length).to eq(2)
 				expect {
 					assignment.destroy

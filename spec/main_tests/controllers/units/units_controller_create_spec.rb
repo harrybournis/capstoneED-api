@@ -9,7 +9,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 		context 'valid request' do
 
 			before(:all) do
-				@user = FactoryGirl.build(:lecturer_with_password).process_new_record
+				@user = FactoryBot.build(:lecturer_with_password).process_new_record
 				@user.save
 			end
 
@@ -21,7 +21,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 			end
 
 			it 'creates a department with nested attributes', { docs?: true } do
-				parameters = FactoryGirl.attributes_for(:unit).merge(department_attributes: { name: 'departmentname', university: 'university' })
+				parameters = FactoryBot.attributes_for(:unit).merge(department_attributes: { name: 'departmentname', university: 'university' })
 				expect {
 					post :create, params: parameters
 				}.to change { Department.all.count }.by(1)
@@ -31,8 +31,8 @@ RSpec.describe V1::UnitsController, type: :controller do
 			end
 
 			it 'assigns an already created department', { docs?: true } do
-				department = FactoryGirl.create(:department)
-				parameters = FactoryGirl.attributes_for(:unit, department_id: department.id)
+				department = FactoryBot.create(:department)
+				parameters = FactoryBot.attributes_for(:unit, department_id: department.id)
 				expect {
 					post :create, params: parameters
 				}.to_not change { Department.all.count }
@@ -42,8 +42,8 @@ RSpec.describe V1::UnitsController, type: :controller do
 			end
 
 			it 'if both then department_id takes precedence' do
-				department = FactoryGirl.create(:department)
-				parameters = FactoryGirl.attributes_for(:unit, department_id: department.id).merge(department_attributes: { name: 'departmentname', university: 'university' })
+				department = FactoryBot.create(:department)
+				parameters = FactoryBot.attributes_for(:unit, department_id: department.id).merge(department_attributes: { name: 'departmentname', university: 'university' })
 				expect {
 					post :create, params: parameters
 				}.to_not change { Department.all.count }
@@ -53,7 +53,7 @@ RSpec.describe V1::UnitsController, type: :controller do
 			end
 
 			it 'if only department present' do
-				parameters = FactoryGirl.attributes_for(:unit)
+				parameters = FactoryBot.attributes_for(:unit)
 				expect {
 					post :create, params: parameters
 				}.to_not change { Department.all.count }
@@ -66,28 +66,28 @@ RSpec.describe V1::UnitsController, type: :controller do
 
 			it 'must be a lecturer to create a Unit' do
 				@controller = V1::UnitsController.new
-				@user = FactoryGirl.build(:student_with_password).process_new_record
+				@user = FactoryBot.build(:student_with_password).process_new_record
 				@user.save
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-				department = FactoryGirl.create(:department)
-				random_lecturer = FactoryGirl.create(:lecturer)
-				post :create, params: FactoryGirl.attributes_for(:unit, department_id: department.id)
+				department = FactoryBot.create(:department)
+				random_lecturer = FactoryBot.create(:lecturer)
+				post :create, params: FactoryBot.attributes_for(:unit, department_id: department.id)
 				expect(response.status).to eq(403)
 				expect(parse_body['errors']['base'].first).to include('You must be Lecturer to access this resource')
 			end
 
 			it 'errors in nested attributes', { docs?: true } do
 				@controller = V1::UnitsController.new
-				@user = FactoryGirl.build(:lecturer_with_password).process_new_record
+				@user = FactoryBot.build(:lecturer_with_password).process_new_record
 				@user.save
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-				parameters = FactoryGirl.attributes_for(:unit).merge(department_attributes: { name: 1 })
+				parameters = FactoryBot.attributes_for(:unit).merge(department_attributes: { name: 1 })
 				expect {
 					post :create, params: parameters
 				}.to_not change { Unit.all.count }

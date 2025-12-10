@@ -7,7 +7,7 @@ RSpec.describe 'PasswordsController /show', type: :controller do
   before(:each) do
     @controller = V1::PasswordsController.new
     request.env['devise.mapping'] = Devise.mappings[:v1_user]
-    @user = FactoryGirl.build(:user_with_password).process_new_record
+    @user = FactoryBot.build(:user_with_password).process_new_record
     @user.save
     expect(@user.reset_password_token).to be_falsy
     @user = User.send_reset_password_instructions({email: @user.email})

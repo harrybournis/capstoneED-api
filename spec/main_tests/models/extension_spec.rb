@@ -8,12 +8,12 @@ RSpec.describe Extension, type: :model do
 			it { should validate_presence_of :deliverable_id }
 
 			it 'works' do
-				expect(FactoryGirl.create(:extension)).to be_truthy
+				expect(FactoryBot.create(:extension)).to be_truthy
 			end
 
 			it 'validates uniqueness of iteration_id with scope project_id' do
-				ext1 = FactoryGirl.create(:extension)
-				ext2 = FactoryGirl.build(:extension, project_id: ext1.project_id, deliverable_id: ext1.deliverable_id)
+				ext1 = FactoryBot.create(:extension)
+				ext2 = FactoryBot.build(:extension, project_id: ext1.project_id, deliverable_id: ext1.deliverable_id)
 				expect(ext2.valid?).to be_falsy
 				expect(ext2.errors[:deliverable_id][0]).to eq('already exists for this project_id')
 			end

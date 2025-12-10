@@ -6,7 +6,7 @@ RSpec.describe 'V1::StudentsController PUT /update', type: :controller do
 
 	before(:each) do
 		@controller = V1::UsersController.new
-		@student = FactoryGirl.build(:student_with_password).process_new_record
+		@student = FactoryBot.build(:student_with_password).process_new_record
 		@student.save
 		mock_request = MockRequest.new(valid = true, @student)
 		request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -79,7 +79,7 @@ RSpec.describe 'V1::StudentsController PUT /update', type: :controller do
 
 			it 'returns 401 if authentication problem' do
 				@controller = V1::UsersController.new
-				@student = FactoryGirl.build(:student_with_password).process_new_record
+				@student = FactoryBot.build(:student_with_password).process_new_record
 				@student.save
 				mock_request = MockRequest.new(valid = false, @student)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -92,7 +92,7 @@ RSpec.describe 'V1::StudentsController PUT /update', type: :controller do
 			end
 
 			it 'returns 403 forbidden if the user to be updated is not the current user', { docs?: true, lecturer?: false } do
-				different_user = FactoryGirl.create(:student)
+				different_user = FactoryBot.create(:student)
 				old_name = different_user.first_name
 				put :update, params: { id: different_user.id, first_name: 'change_their_name' }
 
