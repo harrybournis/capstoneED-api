@@ -89,7 +89,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
         @controller = V1::AssignmentsController.new
         @user_w = FactoryBot.build(:lecturer_with_units).process_new_record
         @user_w.save
-        @user_w.confirm
+        # @user_w.confirm
         @assignment1 = FactoryBot.create(:assignment, lecturer: @user_w, unit: @user_w.units.first)
         @assignment2 = FactoryBot.create(:assignment, lecturer: @user_w, unit: @user_w.units.first)
         @assignment3 = FactoryBot.create(:assignment, lecturer: @user_w, unit: @user_w.units.last)

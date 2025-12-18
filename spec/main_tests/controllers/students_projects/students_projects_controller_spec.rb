@@ -8,7 +8,7 @@ RSpec.describe V1::StudentsProjectsController, type: :controller do
 		@lecturer = get_lecturer_with_units_assignments_projects
 		@student = FactoryBot.create(:student_with_password).process_new_record
 		@student.save
-		@student.confirm
+		# @student.confirm
 		create :students_project, student: @student, project: @lecturer.projects.first
 		create :students_project, student: @student, project: @lecturer.projects.last
 	end

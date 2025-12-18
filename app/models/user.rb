@@ -1,8 +1,7 @@
 ## The superclass for Lecturer and Student
 class User < ApplicationRecord
   include User::EmailAuthenticatable
-  devise :database_authenticatable, :confirmable, :recoverable,
-         :trackable, :validatable
+  devise :database_authenticatable, :recoverable, :trackable, :validatable
 
   # Associations
   has_many :active_tokens, dependent: :destroy

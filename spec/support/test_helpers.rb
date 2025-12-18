@@ -30,7 +30,7 @@ module TestHelpers
   def get_lecturer_with_units_assignments_projects
     @lecturer = FactoryBot.build(:lecturer_with_password).process_new_record
     @lecturer.save
-    @lecturer.confirm
+    # @lecturer.confirm
     2.times { @lecturer.units << FactoryBot.build(:unit, lecturer: @lecturer) }
     @lecturer.units.each { |unit| unit.assignments << Array.new(2){ FactoryBot.build(:assignment, lecturer: @lecturer) } }
     @lecturer.assignments.each { |assignment| assignment.projects << Array.new(3){ FactoryBot.build(:project) } }
