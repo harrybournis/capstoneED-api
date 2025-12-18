@@ -8,7 +8,7 @@ module JwtAuth
     @exp          = 3.hours       # expiration time for access-token
     @refresh_exp  = 1.week          # expiration time for refresh-token
     @leeway       = 0               # grace period after a token has expired.
-    @domain       = api_host_url    # to be added to the cookies. left blank for developement in order to work with browsers. Change variable in helpers/url_helper.rb
+    @domain       = ENV.fetch('API_DOMAIN') { '' }   # to be added to the cookies. left blank for developement in order to work with browsers.
     @issuer       = @domain         # typically the website url. added to JWT tokens.
 
     @cookies_secure     = false     # transmit cookies only on https. Set true for deployment.

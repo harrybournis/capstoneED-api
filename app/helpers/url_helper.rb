@@ -31,17 +31,6 @@ module UrlHelper
     end
   end
 
-  # Used @ models/jwt_auth/jwt_authenticator.rb in the cookies' domain
-  # Should be the API's host url
-  # Left empty for development
-  def api_host_url
-    if Rails.env.development? || Rails.env.test?
-      ''.freeze
-    else
-      'http://capstoned-api.herokuapp.com'.freeze
-    end
-  end
-
   # Used @ controllers/v1/confirmations_controller.rb
   # The page to show after a users successfully confirms their account
   def api_confirmation_success_url
