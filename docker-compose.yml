@@ -3,9 +3,9 @@ services:
     image: postgres:17
     restart: always
     environment:
-      - POSTGRES_USER=capstoned-api
-      - POSTGRES_PASSWORD=capstoned-api
-      - POSTGRS_DB=capstoned-api_development
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=dev
+      - POSTGRS_DB=capstoned_api_development
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
