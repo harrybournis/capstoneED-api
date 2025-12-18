@@ -1,11 +1,11 @@
 FactoryBot.define do
   factory :lecturer do
     first_name 	    { "Alfredo#{rand(1000).to_s}" }
-  	last_name 	    { "Jumpveryhigh#{rand(1000).to_s}" }
-  	email           { "alfredo#{rand(100000).to_s}_jump#{rand(100000).to_s}@gmail.com" }
-    provider 		    { 'test' }
+    last_name 	    { "Jumpveryhigh#{rand(1000).to_s}" }
+    email           { "alfredo#{rand(100000).to_s}_jump#{rand(100000).to_s}@gmail.com" }
+    provider        { 'test' }
     university 	    { "University of Important Potato" }
-    position	      { "Master of Parking" }
+    position        { "Master of Parking" }
     type            { 'Lecturer' }
 
     factory :lecturer_with_password do
@@ -15,9 +15,9 @@ FactoryBot.define do
 
       factory :lecturer_confirmed do
         after :build do |obj|
-          obj.skip_confirmation_notification!
+          # obj.skip_confirmation_notification!
           obj.save
-          obj.confirm
+          # obj.confirm
         end
       end
     end
@@ -34,9 +34,9 @@ FactoryBot.define do
       password_confirmation { '12345678'}
 
       after :build do |obj|
-        obj.skip_confirmation_notification!
+        # obj.skip_confirmation_notification!
         obj.save
-        obj.confirm
+        # obj.confirm
       end
     end
 
@@ -44,15 +44,23 @@ FactoryBot.define do
       provider { 'email' }
       password {'12345678' }
       password_confirmation { '12345678'}
-      units { [FactoryBot.create(:unit), FactoryBot.create(:unit)] }
+
+      after(:create) do |lecturer| 
+        2.times { create(:unit, lecturer: lecturer) }
+      end
     end
 
     factory :lecturer_with_units_assignments_projects do
       provider { 'email'}
       password { '12345678'}
       password_confirmation {'12345678' }
-      units     { [FactoryBot.create(:unit), FactoryBot.create(:unit)] }
-      assignments  { [FactoryBot.create(:assignment_with_projects), FactoryBot.create(:assignment_with_projects)] }
+
+      after(:create) do |lecturer| 
+        2.times do  
+          create(:unit, lecturer: lecturer)
+          create(:assignment_with_projects, lecturer: lecturer) 
+        end
+      end
     end
   end
 end

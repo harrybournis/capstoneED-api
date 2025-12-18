@@ -60,7 +60,6 @@ class Project < ApplicationRecord
   has_many    :peer_assessments
 
   validates_presence_of :project_name,
-                        :assignment,
                         :team_name,
                         :unit,
                         :assignment

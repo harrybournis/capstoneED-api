@@ -9,7 +9,7 @@ class V1::ProjectsController < ApplicationController
   #               only: :index
   before_action :validate_includes,
                 only: [:index, :index_with_assignment, :index_with_unit, :show],
-                if: 'params[:includes]'
+                if: :includes_param_provided?
   before_action :delete_includes_from_params, only: [:update, :destroy]
   before_action :set_project_if_associated, only: [:show, :update, :destroy]
 

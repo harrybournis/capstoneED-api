@@ -3,9 +3,9 @@ FactoryBot.define do
     start_date  { Date.today }
     end_date 	{ Date.today + 3.months+(100*rand()) }
     lecturer    { FactoryBot.create(:lecturer_with_units) }
-    unit 		{ lecturer.units.first }
+    unit        { lecturer.units.first }
     lecturer_id { lecturer.id }
-    unit_id			{ unit.id }
+    unit_id     { unit.id }
     name        { "Assignment #{100*rand().to_i}" }
 
     factory :assignment_with_projects do

@@ -6,6 +6,10 @@
 # responses.
 #
 module AssociationIncludable
+  def includes_param_provided?
+    params[:includes].present?
+  end
+
   # Transforms the string from params[:includes] into an array,
   # by splitting elements on the , char
   # Returns nil if inludes does not exist in the params

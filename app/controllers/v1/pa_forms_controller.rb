@@ -4,7 +4,7 @@ class V1::PaFormsController < ApplicationController
   before_action :allow_if_student, only:  [:index]
   before_action :validate_includes,
                 only: [:index, :show],
-                if: 'params[:includes]'
+                if: :includes_param_provided?
   before_action :set_pa_form_if_associated, only: [:show, :update, :destroy]
 
   def index

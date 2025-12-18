@@ -10,8 +10,8 @@ class PeerAssessment < ApplicationRecord
 
   # Associations
   belongs_to :pa_form
-  belongs_to :submitted_by, class_name: Student, foreign_key: :submitted_by_id
-  belongs_to :submitted_for, class_name: Student, foreign_key: :submitted_for_id
+  belongs_to :submitted_by, class_name: 'Student', foreign_key: :submitted_by_id
+  belongs_to :submitted_for, class_name: 'Student', foreign_key: :submitted_for_id
   belongs_to :project
   has_one :iteration, through: :pa_form
   has_one :assignment, through: :iteration

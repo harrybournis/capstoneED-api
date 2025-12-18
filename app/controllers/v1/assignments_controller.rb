@@ -4,7 +4,7 @@ class V1::AssignmentsController < ApplicationController
                 only: [:index_with_unit, :create, :update, :destroy]
   before_action :validate_includes,
                 only: [:index, :index_with_unit, :show],
-                if: 'params[:includes]'
+                if: :includes_param_provided?
   before_action :delete_includes_from_params, only: [:update, :destroy]
   before_action :set_assignment_if_associated, only: [:show, :update, :destroy]
 

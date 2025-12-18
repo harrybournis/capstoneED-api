@@ -12,7 +12,7 @@ FactoryBot.define do
     end
     iteration { FactoryBot.create(:iteration, assignment: project.assignment, start_date: @now, deadline: @now + 28.days) }
     percent_complete { rand 10..93 }
-    date_submitted nil
+    date_submitted { nil }
     feelings_average { rand -60..90 }
     factory :project_evaluation_lecturer do
       user { FactoryBot.create(:lecturer) }

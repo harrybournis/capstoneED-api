@@ -4,7 +4,7 @@ FactoryBot.define do
     code          { SecureRandom.base64(10) }
     semester      { ['Spring', 'Autumn'].sample }
     year          { ( Date.today - (1000*rand())).year }
-    archived_at   nil
+    archived_at   { nil }
     association   :department, factory: :department
     association   :lecturer, factory: :lecturer
   end

@@ -21,7 +21,7 @@ class Assignment < ApplicationRecord
 
   # Validations
   validates_presence_of :start_date, :end_date, :name, :unit_id, :lecturer_id
-  validate :unit_is_owned_by_lecturer, unless: 'lecturer_id.nil?'
+  validate :unit_is_owned_by_lecturer, if: :lecturer_id
   validates_uniqueness_of :id
 
   after_initialize :set_default_values

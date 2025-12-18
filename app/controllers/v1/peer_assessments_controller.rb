@@ -3,7 +3,7 @@ class V1::PeerAssessmentsController < ApplicationController
   before_action :allow_if_student,  only: [:create]
   before_action :validate_includes,
                 only: [:index, :show],
-                if: 'params[:includes]'
+                if: :includes_param_provided?
   before_action :set_peer_assessment_if_associated, only: [:show]
 
   def index

@@ -15,7 +15,7 @@ FactoryBot.define do
     end
 
     factory :peer_assessment_unsubmitted do
-      date_submitted nil
+      date_submitted { nil }
     end
   end
 end
