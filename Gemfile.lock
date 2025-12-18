@@ -382,7 +382,7 @@ DEPENDENCIES
   debug
   devise (~> 4.9, >= 4.9.4)
   dotenv-rails
-  dry-validation (~> 1.10)
+  dry-validation (~> 1.11, >= 1.11.1)
   factory_bot_rails
   faker (~> 3.5, >= 3.5.3)
   json-schema (~> 6.0)
@@ -398,7 +398,7 @@ DEPENDENCIES
   rails (~> 7.0.10)
   rails-controller-testing
   rspec-rails
-  shoulda-matchers
+  shoulda-matchers (~> 6.5)
   simplecov
   timecop (~> 0.9.10)
   tzinfo-data

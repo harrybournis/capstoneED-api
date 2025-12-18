@@ -28,8 +28,7 @@ gem "bootsnap", require: false
 gem 'color-generator', '~> 0.0.4'
 
 # gem 'dry-validation', '~> 0.10.5'
-# gem 'dry-validation'
-gem 'dry-validation', '~> 1.10'
+gem 'dry-validation', '~> 1.11', '>= 1.11.1'
 
 gem 'json-schema', '~> 6.0'
 
@@ -66,7 +65,7 @@ group :development do
 end
 
 group :test do
-  gem 'shoulda-matchers'
+  gem 'shoulda-matchers', '~> 6.5'
   gem 'vcr'
   gem 'db-query-matchers'
   gem 'pry-byebug'
