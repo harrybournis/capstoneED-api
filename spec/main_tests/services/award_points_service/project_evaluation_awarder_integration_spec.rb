@@ -22,7 +22,7 @@ RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
 
     post '/v1/sign_in', params: { email: @student.email, password: '12345678' }
     expect(response.status).to eq(200)
-    @csrf = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+    @csrf = JwtAuth::JwtAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
     @attr = FactoryBot.attributes_for(:project_evaluation).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feelings: valid_feelings_params)
   end
 

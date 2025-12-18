@@ -1,6 +1,6 @@
 # require 'rails_helper'
 # require 'helpers/mock_request.rb'
-# include JWTAuth::JWTAuthenticator
+# include JwtAuth::JwtAuthenticator
 
 # RSpec.describe 'V1::StudentsController DELETE /destroy', type: :controller do
 

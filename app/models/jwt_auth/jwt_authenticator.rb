@@ -1,8 +1,8 @@
-module JWTAuth
+module JwtAuth
   ## Is included in the ApplicationController and adds the ability to
   #  authenticate using JWTs. Public methods are 'authenticate',
   #  'sign_in' and 'refresh'.
-  module JWTAuthenticator
+  module JwtAuthenticator
     @secret       = 'secret'.freeze ## Replace with secret
     @algorithm    = 'HS256'.freeze  # available algorithms: https://github.com/jwt/ruby-jwt
     @exp          = 3.hours       # expiration time for access-token
@@ -36,11 +36,11 @@ module JWTAuth
       if validated_request.csrf_token == token_params['csrf_token']
 
         if token_params['type'] == 'Student'.freeze
-          JWTAuth::CurrentUserStudent.new(token_params['id'],
+          JwtAuth::CurrentUserStudent.new(token_params['id'],
                                           'Student'.freeze,
                                           token_params['device'])
         else
-          JWTAuth::CurrentUserLecturer.new(token_params['id'],
+          JwtAuth::CurrentUserLecturer.new(token_params['id'],
                                            'Lecturer'.freeze,
                                            token_params['device'])
         end
@@ -199,7 +199,7 @@ module JWTAuth
       elsif request.cookies['access-token'].nil?
         false
       else
-        JWTAuth::ValidatedRequest.new(request)
+        JwtAuth::ValidatedRequest.new(request)
       end
     end
 
@@ -207,7 +207,7 @@ module JWTAuth
       if request.cookies['refresh-token'].nil?
         false
       else
-        JWTAuth::ValidatedRequest.new(request)
+        JwtAuth::ValidatedRequest.new(request)
       end
     end
 
@@ -215,15 +215,15 @@ module JWTAuth
       @refresh_exp
     end
 
-    def self.domain
+      def self.domain
       @domain
     end
 
-    def self.domain_test
+      def self.domain_test
       @domain_test
     end
 
-    def self.domain_development
+      def self.domain_development
       @domain_development
     end
   end

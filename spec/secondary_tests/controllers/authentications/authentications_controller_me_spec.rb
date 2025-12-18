@@ -1,6 +1,6 @@
 require 'rails_helper'
 require 'helpers/mock_request.rb'
-include JWTAuth::JWTAuthenticator
+include JwtAuth::JwtAuthenticator
 
 RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
 
@@ -17,7 +17,7 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
         mock_request = MockRequest.new(valid = true, new_en)
         request.cookies['access-token'] = mock_request.cookies['access-token']
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-        expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
+        expect(JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
         expect(request.headers['X-XSRF-TOKEN']).to be_truthy
       end
 
@@ -28,7 +28,7 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
         response_body = JSON.parse(response.body)
         user_in_response = User.find(response_body['user']['id'])
 
-        user_in_token = User.find(JWTAuth::JWTAuthenticator.decode_token(cookies['access-token']).first['id'])
+        user_in_token = User.find(JwtAuth::JwtAuthenticator.decode_token(cookies['access-token']).first['id'])
         expect(user_in_token).to be_truthy
         expect(user_in_token.id).to eq(user_in_response.id)
       end
@@ -38,7 +38,7 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
         mock_request = MockRequest.new(valid = true, new_en)
         request.cookies['access-token'] = mock_request.cookies['access-token']
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-        expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
+        expect(JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
         expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 
         get :me
@@ -121,7 +121,7 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
       it 'should return 401 without X-XSRF-TOKEN' do
         mock_request = MockRequest.new(valid = true)
         request.cookies['access-token'] = mock_request.cookies['access-token']
-        expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
+        expect(JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
 
         expect(request.cookies['access-token']).to be_truthy
         get :me, params: nil, headers: { }
@@ -132,7 +132,7 @@ RSpec.describe 'V1::AuthenticationsController GET /me', type: :controller do
         mock_request = MockRequest.new(valid = false)
         request.cookies['access-token'] = mock_request.cookies['access-token']
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-        expect { JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token']) }.to raise_exception(JWT::VerificationError, 'Signature verification raised')
+        expect { JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token']) }.to raise_exception(JWT::VerificationError, 'Signature verification raised')
 
         get :me
         expect(response.status).to eq(401)

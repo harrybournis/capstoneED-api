@@ -1,6 +1,6 @@
 class MockRequest
 
-	#include JWTAuth::JWTAuthenticator
+	#include JwtAuth::JwtAuthenticator
 
 	attr_reader :headers, :cookies, :body
 
@@ -26,8 +26,8 @@ private
 			device = SecureRandom.base64(32)
 		end
 
-		access_token  = JWTAuth::JWTAuthenticator.encode_token(user, time, csrf, device)
-		refresh_token = JWTAuth::JWTAuthenticator.encode_token(user, time, nil, device, remember_me)
+		access_token  = JwtAuth::JwtAuthenticator.encode_token(user, time, csrf, device)
+		refresh_token = JwtAuth::JwtAuthenticator.encode_token(user, time, nil, device, remember_me)
 
 		@headers = { "X-XSRF-TOKEN"  => csrf }
 		@cookies = { "access-token"  => access_token, #"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjMwNDg2MjA1MzYsImp0aSI6Imk3c3FlRVNFREpIVVNCWmQ0SEpONDJvMSIsImlzcyI6ImxvY2FsaG9zdDozMDAwIiwiY3NyZl90b2tlbiI6Ik5JQnprYS8zUGxqOHlnMzArdVlueUVCR3VuS1BNaHZHOFRoRjdFSnhyQnM9In0.HHs3KKfsxkxdcSzeafU1FiXXMfeiomJehdfK9vlKTHQ",

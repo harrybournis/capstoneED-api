@@ -1,6 +1,6 @@
 require 'rails_helper'
 require 'timecop'
-include JWTAuth::JWTAuthenticator
+include JwtAuth::JwtAuthenticator
 
 RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 

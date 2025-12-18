@@ -1,6 +1,6 @@
 # require 'rails_helper'
 # require 'helpers/mock_request.rb'
-# include JWTAuth::JWTAuthenticator
+# include JwtAuth::JwtAuthenticator
 
 # RSpec.describe 'V1::LecturersController DELETE /destroy', type: :controller do
 
@@ -11,7 +11,7 @@
 # 		mock_request = MockRequest.new(valid = true, @lecturer)
 # 		request.cookies['access-token'] = mock_request.cookies['access-token']
 # 		request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-# 		expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
+# 		expect(JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
 # 		expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 # 	end
 

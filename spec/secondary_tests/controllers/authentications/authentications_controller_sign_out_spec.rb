@@ -1,6 +1,6 @@
 require 'rails_helper'
 require 'helpers/mock_request.rb'
-include JWTAuth::JWTAuthenticator
+include JwtAuth::JwtAuthenticator
 module V1
 RSpec.describe 'V1::AuthenticationsController POST /sign_out', type: :controller do
 
@@ -13,7 +13,7 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_out', type: :controller
 			mock_request = MockRequest.new(valid = true, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			decoded_token = JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])
+			decoded_token = JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token'])
 			expect(decoded_token).to be_truthy
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 			@token = FactoryBot.create(:active_token, device: decoded_token.first['device'], user: @user, exp: Time.now + 1.week)
@@ -50,7 +50,7 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_out', type: :controller
 			mock_request = MockRequest.new(valid = false, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			expect { JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token']) }.to raise_error(JWT::VerificationError, 'Signature verification raised')
+			expect { JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token']) }.to raise_error(JWT::VerificationError, 'Signature verification raised')
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 		end
 

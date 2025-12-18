@@ -1,5 +1,5 @@
 require 'rails_helper'
-include JWTAuth::JWTAuthenticator
+include JwtAuth::JwtAuthenticator
 
 RSpec.describe V1::QuestionTypesController, type: :controller do
 

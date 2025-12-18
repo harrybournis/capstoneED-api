@@ -48,7 +48,7 @@ RSpec.describe V1::Logs::StatsController, type: :request do
     host! 'api.example.com'
     post '/v1/sign_in', params: { email: @lecturer.email, password: '12345678' }
     expect(response.status).to eq(200)
-    @csrf = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+    @csrf = JwtAuth::JwtAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
   end
 
   it 'returns the correct data' do

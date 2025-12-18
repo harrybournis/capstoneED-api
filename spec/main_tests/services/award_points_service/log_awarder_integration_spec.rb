@@ -21,7 +21,7 @@ RSpec.describe "LogPointAwarder - Integration", type: :request do
 
     post '/v1/sign_in', params: { email: @student.email, password: '12345678' }
     expect(response.status).to eq(200)
-    @csrf = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+    @csrf = JwtAuth::JwtAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
   end
 
   describe 'Success' do

@@ -25,11 +25,11 @@ module CurrentUserable
     current_user.sign_out
 
     domain =  if Rails.env.development?
-                JWTAuth::JWTAuthenticator.domain_development
+                JwtAuth::JwtAuthenticator.domain_development
               elsif Rails.env.test?
-                JWTAuth::JWTAuthenticator.domain_test
+                JwtAuth::JwtAuthenticator.domain_test
               else
-                JWTAuth::JWTAuthenticator.domain
+                JwtAuth::JwtAuthenticator.domain
               end
 
     cookies.delete('access-token', domain: domain)

@@ -1,18 +1,18 @@
 require 'rails_helper'
 require 'helpers/mock_request.rb'
-#include JWTAuth::JWTAuth::JWTAuthenticator
+#include JwtAuth::JwtAuth::JwtAuthenticator
 
-RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
+RSpec.describe JwtAuth::CurrentUserStudent, type: :model do
 
   describe 'Assignments' do
 
     before(:each) do
       @user = FactoryBot.create(:student)
       @request = MockRequest.new(valid = true, @user)
-      decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+      decoded_token = JwtAuth::JwtAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
-      @current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
+      @current_user = JwtAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
       lecturer = FactoryBot.create(:lecturer)
       @unit = FactoryBot.create(:unit, lecturer: lecturer)
@@ -78,10 +78,10 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
     before(:each) do
       @user = FactoryBot.create(:student)
       @request = MockRequest.new(valid = true, @user)
-      decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+      decoded_token = JwtAuth::JwtAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
-      @current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
+      @current_user = JwtAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
       #@assignment.projects.first.students << @user
       create :students_project, student: @user, project: @assignment.projects[0]
@@ -120,10 +120,10 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
       @user = FactoryBot.create(:lecturer)
       @student = FactoryBot.create(:student)
       @request = MockRequest.new(valid = true, @student)
-      decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+      decoded_token = JwtAuth::JwtAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
-      @current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
+      @current_user = JwtAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
       @unit = FactoryBot.create(:unit, lecturer: @user)
       @assignment = FactoryBot.create(:assignment_with_projects, unit: @unit, lecturer: @user)
@@ -172,10 +172,10 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
     it 'returns the associated peer assessments' do
       @user = FactoryBot.create(:student_confirmed)
       @request = MockRequest.new(valid = true, @user)
-      decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+      decoded_token = JwtAuth::JwtAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
-      @current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
+      @current_user = JwtAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
       lecturer = FactoryBot.create(:lecturer_confirmed)
       unit = FactoryBot.create(:unit, lecturer_id: lecturer.id)
@@ -214,10 +214,10 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
       @user = FactoryBot.create(:lecturer)
       @student = FactoryBot.create(:student)
       @request = MockRequest.new(valid = true, @student)
-      decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+      decoded_token = JwtAuth::JwtAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
-      @current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
+      @current_user = JwtAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
       @unit = FactoryBot.create(:unit, lecturer: @user)
       @assignment = FactoryBot.create(:assignment_with_projects, unit: @unit, lecturer: @user)
@@ -250,10 +250,10 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
       students_project = create :students_project, student: student, project: project
 
       @request = MockRequest.new(valid = true, student)
-      decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+      decoded_token = JwtAuth::JwtAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
-      @current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
+      @current_user = JwtAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
       expect(@current_user.iterations_active.length).to eq 1
       expect(@current_user.iterations_active.first).to eq iteration2
@@ -271,10 +271,10 @@ RSpec.describe JWTAuth::CurrentUserStudent, type: :model do
       iteration_mark = create :iteration_mark, iteration: iteration, student: student, pa_score: score
 
       @request = MockRequest.new(valid = true, student)
-      decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+      decoded_token = JwtAuth::JwtAuthenticator.decode_token(@request.cookies['access-token'])
       @token_id = decoded_token.first['id']
       @device = decoded_token.first['device']
-      @current_user = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
+      @current_user = JwtAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 
       expect(@current_user.scored_iterations.length).to eq 1
     end

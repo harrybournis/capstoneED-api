@@ -1,6 +1,6 @@
 require 'rails_helper'
 require 'helpers/mock_request.rb'
-include JWTAuth::JWTAuthenticator
+include JwtAuth::JwtAuthenticator
 
 RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller do
 
@@ -14,7 +14,7 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 			request.cookies['access-token'] = @mock_request.cookies['access-token']
 			request.cookies['refresh-token']= @mock_request.cookies['refresh-token']
 			request.headers['X-XSRF-TOKEN'] = @mock_request.headers['X-XSRF-TOKEN']
-			expect { @decoded_token = JWTAuth::JWTAuthenticator.decode_token(request.cookies['refresh-token']) }.to_not raise_error
+			expect { @decoded_token = JwtAuth::JwtAuthenticator.decode_token(request.cookies['refresh-token']) }.to_not raise_error
 			expect(@decoded_token).to be_truthy
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 			@token = FactoryBot.create(:active_token, device: @decoded_token.first['device'], user: @user, exp: Time.now + 1.day)
@@ -59,7 +59,7 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.cookies['refresh-token']= mock_request.cookies['refresh-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			expect { @decoded_token = JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token']) }.to raise_error(JWT::VerificationError, 'Signature verification raised')
+			expect { @decoded_token = JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token']) }.to raise_error(JWT::VerificationError, 'Signature verification raised')
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 		end
 
@@ -80,7 +80,7 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.cookies['refresh-token']= mock_request.cookies['refresh-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			expect { @decoded_token2 = JWTAuth::JWTAuthenticator.decode_token(request.cookies['refresh-token']) }.to_not raise_error
+			expect { @decoded_token2 = JwtAuth::JwtAuthenticator.decode_token(request.cookies['refresh-token']) }.to_not raise_error
 			expect(@decoded_token2).to be_truthy
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 			token = FactoryBot.create(:active_token, device: @decoded_token2.first['device'], user: @user, exp: Time.now + 1.month)
@@ -96,11 +96,11 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.cookies['refresh-token']= mock_request.cookies['refresh-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			expect { @decoded_token3 = JWTAuth::JWTAuthenticator.decode_token(request.cookies['refresh-token']) }.to_not raise_error
+			expect { @decoded_token3 = JwtAuth::JwtAuthenticator.decode_token(request.cookies['refresh-token']) }.to_not raise_error
 			expect(@decoded_token3).to be_truthy
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 
-			expect(ActiveToken.find_by_device(JWTAuth::JWTAuthenticator.decode_token(request.cookies['refresh-token']).first['device'])).to be_falsy
+			expect(ActiveToken.find_by_device(JwtAuth::JwtAuthenticator.decode_token(request.cookies['refresh-token']).first['device'])).to be_falsy
 			post :refresh
 			expect(response.status).to eq(401)
 		end
@@ -117,7 +117,7 @@ RSpec.describe 'V1::AuthenticationsController POST /refresh', type: :controller 
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.cookies['refresh-token']= mock_request.cookies['refresh-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			expect { @decoded_token4 = JWTAuth::JWTAuthenticator.decode_token(request.cookies['refresh-token']) }.to_not raise_error
+			expect { @decoded_token4 = JwtAuth::JwtAuthenticator.decode_token(request.cookies['refresh-token']) }.to_not raise_error
 			expect(@decoded_token4).to be_truthy
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 			token = FactoryBot.create(:active_token, device: @decoded_token4.first['device'], user: @user, exp: Time.now + 1.month)

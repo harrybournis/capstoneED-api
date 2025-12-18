@@ -1,7 +1,7 @@
 ## Main Rails Controller Superclass
 class ApplicationController < ActionController::API
   include ActionController::Cookies,  # Add cookie functionality
-          JWTAuth::JWTAuthenticator,  # Authenticate via JWT tokens
+          JwtAuth::JwtAuthenticator,  # Authenticate via JWT tokens
           UrlHelper,                  # Change URL's for emails or redirects
           ApiHelper,                  # Common API methods (e.g. render errors)
           CurrentUserable,            # Current User helper methods/validations
@@ -19,7 +19,7 @@ class ApplicationController < ActionController::API
   def authenticate_user_jwt
     log = log_for_development if Rails.env.development? # only for development
 
-    unless @current = JWTAuth::JWTAuthenticator.authenticate(request)
+    unless @current = JwtAuth::JwtAuthenticator.authenticate(request)
       message = 'Authentication Failed '
       message << log unless log.empty? if Rails.env.development? # only for developement
       render json: format_errors(base: message), status: :unauthorized
@@ -33,7 +33,7 @@ class ApplicationController < ActionController::API
     log << ' no X-XSRF-TOKEN ' if request.headers['X-XSRF-TOKEN'].nil?
     if request.headers['X-XSRF-TOKEN'].present? && request.cookies['access-token'].present?
       begin
-        log << ' different csrf ' if request.headers['X-XSRF-TOKEN'] != JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token']).first['csrf_token']
+        log << ' different csrf ' if request.headers['X-XSRF-TOKEN'] != JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token']).first['csrf_token']
       rescue
         log << ' invalid JWT token '
       end

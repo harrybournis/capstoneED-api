@@ -1,5 +1,5 @@
 # Module for authenticating using JWTs
-module JWTAuth
+module JwtAuth
   # The superclass for the CurrentUserStudent and CurrentUserLecturer
   # classes. Used in order to avoid loading the object from the
   # database unless needed.

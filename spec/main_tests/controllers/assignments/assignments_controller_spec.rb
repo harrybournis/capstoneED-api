@@ -160,7 +160,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
         mock_request = MockRequest.new(valid = true, @user)
         request.cookies['access-token'] = mock_request.cookies['access-token']
         request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-        expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
+        expect(JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
         expect(request.headers['X-XSRF-TOKEN']).to be_truthy
         assignment = FactoryBot.create(:assignment)
 

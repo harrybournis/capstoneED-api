@@ -16,7 +16,7 @@ class V1::AuthenticationsController < ApplicationController
   # creates a new JWT access-token using the refresh-token
   def refresh
     render json: '',
-           status:  if JWTAuth::JWTAuthenticator.refresh(request, response, cookies)
+           status:  if JwtAuth::JwtAuthenticator.refresh(request, response, cookies)
                       :no_content
                     else
                       :unauthorized
@@ -29,7 +29,7 @@ class V1::AuthenticationsController < ApplicationController
     @user = User.validate_for_sign_in(auth_params)
 
     if @user.errors.empty?
-      if JWTAuth::JWTAuthenticator.sign_in(@user, response, cookies, params[:remember_me] == '1')
+      if JwtAuth::JwtAuthenticator.sign_in(@user, response, cookies, params[:remember_me] == '1')
         if @user.student?
           render json: @user, serializer: StudentWithXpSerializer, status: :ok
           return
@@ -50,16 +50,16 @@ class V1::AuthenticationsController < ApplicationController
     # if active_token = ActiveToken.find_by_device(current_user.current_device)
     #   active_token.destroy
     # end
-    # cookies.delete('access-token', domain: JWTAuth::JWTAuthenticator.domain)
+    # cookies.delete('access-token', domain: JwtAuth::JwtAuthenticator.domain)
     # cookies['refresh-token'] = { value: nil,
     #                              expires: Time.at(0),
-    #                              domain: JWTAuth::JWTAuthenticator.domain,
+    #                              domain: JwtAuth::JwtAuthenticator.domain,
     #                              path: '/v1/refresh',
     #                              secure: true,
     #                              httponly: true,
     #                              same_site: true }
     # cookies.delete('refresh-token',
-    #                domain: JWTAuth::JWTAuthenticator.domain,
+    #                domain: JwtAuth::JwtAuthenticator.domain,
     #                path: '/v1/refresh')
     render json: '', status: :no_content
   end
@@ -82,7 +82,7 @@ class V1::AuthenticationsController < ApplicationController
   #   @user = User.new(user_info)
   #   @user.provider = 'facebook'
   #   if @user.save
-  #     render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
+  #     render json: @user, status: JwtAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
   #   else
   #     render json: @user.errors, status: :unprocessable_entity
   #   end
@@ -91,7 +91,7 @@ class V1::AuthenticationsController < ApplicationController
   # # POST
   # def google
   #   # validate user's credentials with oauth2
-  #   #render json: @user, status: JWTAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
+  #   #render json: @user, status: JwtAuthenticator.sign_in(response, @user) ? :created : :unprocessable_entity
   # end
 
   private

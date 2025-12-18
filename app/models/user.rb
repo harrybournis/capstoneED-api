@@ -50,7 +50,7 @@ class User < ApplicationRecord
   # ActiveTokens for the user with a new expiration date starting now,
   # effectively invalidating all previous refresh tokens.
   def revoke_all_tokens
-    token_expiration = DateTime.now + JWTAuth::JWTAuthenticator.refresh_exp
+    token_expiration = DateTime.now + JwtAuth::JwtAuthenticator.refresh_exp
     active_tokens = self.active_tokens
 
     return if active_tokens.blank?

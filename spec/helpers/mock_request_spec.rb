@@ -1,6 +1,6 @@
 require 'rails_helper'
 require 'helpers/mock_request.rb'
-include JWTAuth
+include JwtAuth
 
 RSpec.describe MockRequest, type: :model do
 
@@ -10,11 +10,11 @@ RSpec.describe MockRequest, type: :model do
 			device = SecureRandom.base64(32)
 			request = MockRequest.new(true, user, device)
 
-			expect(JWTAuth::JWTAuthenticator.valid_access_request(request)).to be_truthy
-			expect(JWTAuth::JWTAuthenticator.valid_refresh_request(request)).to be_truthy
+			expect(JwtAuth::JwtAuthenticator.valid_access_request(request)).to be_truthy
+			expect(JwtAuth::JwtAuthenticator.valid_refresh_request(request)).to be_truthy
 
-			access_token = JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])
-			refresh_token = JWTAuth::JWTAuthenticator.decode_token(request.cookies['refresh-token'])
+			access_token = JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token'])
+			refresh_token = JwtAuth::JwtAuthenticator.decode_token(request.cookies['refresh-token'])
 			expect(access_token).to be_truthy
 			expect(refresh_token).to be_truthy
 		end

@@ -11,13 +11,13 @@ RSpec.describe "Remember me", type: :request do
 
 		post '/v1/sign_in', params: { email: lecturer.email, password: '12345678' }
 		expect(status).to eq(200)
-		refresh_token = JWTAuth::JWTAuthenticator.decode_token(response.cookies['refresh-token'])
+		refresh_token = JwtAuth::JwtAuthenticator.decode_token(response.cookies['refresh-token'])
 
 		expect(refresh_token.first['remember_me']).to eq(false)
 
 		post '/v1/refresh'
 		expect(status).to eq(204)
-		refresh_token = JWTAuth::JWTAuthenticator.decode_token(response.cookies['refresh-token'])
+		refresh_token = JwtAuth::JwtAuthenticator.decode_token(response.cookies['refresh-token'])
 
 		expect(refresh_token.first['remember_me']).to eq(false)
 	end

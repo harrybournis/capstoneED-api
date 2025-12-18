@@ -14,7 +14,7 @@ RSpec.describe "Confirmation Controller - Reconfirmation", type: :request do
 	# 	expect(response.status).to eq(200)
 
 	# 	old_email = user.email
-	# 	csrf = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+	# 	csrf = JwtAuth::JwtAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
 
 	# 	patch "/v1/users/#{user.id}", params: { id: user.id, email: 'different@email.com' }, headers: { 'X-XSRF-TOKEN' => csrf }
 

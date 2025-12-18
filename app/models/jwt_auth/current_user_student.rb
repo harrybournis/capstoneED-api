@@ -1,7 +1,7 @@
 # Wrapper for the Lecturer class when the current user is
 # a Lecturer. Overrides methods of its associations to
 # execute custom SQL queries where needed.
-class JWTAuth::CurrentUserStudent < JWTAuth::CurrentUser
+class JwtAuth::CurrentUserStudent < JwtAuth::CurrentUser
   # Check for whether the current user is a lecturer.
   # Returns false by default
   #
