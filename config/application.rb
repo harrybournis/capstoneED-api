@@ -2,10 +2,10 @@ require_relative "boot"
 
 require "rails"
 
-# action_view/railtie
 %w(
   active_record/railtie
   action_controller/railtie
+  action_view/railtie
   action_mailer/railtie
   active_job/railtie
 ).each do |railtie|
