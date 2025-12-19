@@ -32,7 +32,6 @@ module User::EmailAuthenticatable
 			unless user && user.valid_password?(params[:password])
 				user.errors[:base] << 'Invalid Login Credentials'
 			end
-			user.errors.add(:email, 'is unconfirmed') if user.persisted? && !user.confirmed?
 			user
 		end
 	end
