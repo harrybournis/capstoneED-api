@@ -2,230 +2,213 @@ require 'rails_helper'
 require 'timecop'
 
 RSpec.describe PeerAssessment, type: :model do
+  it { should belong_to :pa_form }
+  it { should belong_to :submitted_by }
+  it { should belong_to :submitted_for }
+  it { should belong_to :project }
 
-	it { should belong_to :pa_form }
-	it { should belong_to :submitted_by }
-	it { should belong_to :submitted_for }
-	it { should belong_to :project }
+  it { should validate_presence_of :pa_form_id }
+  it { should validate_presence_of :submitted_for_id }
+  it { should validate_presence_of :submitted_by_id }
+  it { should validate_presence_of :project_id }
 
-	it { should validate_presence_of :pa_form_id }
-	it { should validate_presence_of :submitted_for_id }
-	it { should validate_presence_of :submitted_by_id }
-	it { should validate_presence_of :project_id }
+  it { should validate_presence_of :answers }
 
-	it { should validate_presence_of :answers }
+  before(:all) do
+    @student_by = FactoryBot.create(:student_confirmed)
+    @student_for = FactoryBot.create(:student_confirmed)
+    @pa_form  = FactoryBot.create(:pa_form)
+    @project = FactoryBot.create(:project, assignment: @pa_form.assignment)
+    create :students_project, student: @student_by, project: @project
+    create :students_project, student: @student_for, project: @project
+  end
 
-	before(:all) do
-		@student_by = FactoryBot.create(:student_confirmed)
-		@student_for = FactoryBot.create(:student_confirmed)
-		@pa_form  = FactoryBot.create(:pa_form)
-		@project = FactoryBot.create(:project, assignment: @pa_form.assignment)
-		create :students_project, student: @student_by, project: @project
-		create :students_project, student: @student_for, project: @project
-	end
+  it '#submit assigns the current time as date_submitted' do
+    time_now = @pa_form.start_date + 1.minute
+    Timecop.freeze(time_now) do
+      peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+        answers: [{ question_id: 1, answer: 'answ' }])
+      expect(peer_assessment.save).to be_truthy
+      expect(peer_assessment.submit).to be_truthy
+      peer_assessment.reload
+      expect(peer_assessment.date_submitted.to_i).to eq(time_now.to_i)
+    end
+  end
 
-	it 'works' do
-		pa = FactoryBot.build(:peer_assessment_with_callback)
-		expect(pa.save).to be_truthy
-	end
+  describe 'answers must' do
 
-	it 'automatically saves the project_id from the pa_form before save' do
-		pa = FactoryBot.build(:peer_assessment_with_callback)
+    it 'be an array' do
+      peer_assessment = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+        answers: { question_id: 1, answer: 'answ' })
+      expect(peer_assessment.save).to be_falsy
+      expect(peer_assessment.errors[:answers][0]).to include('an array')
+    end
 
-		expect(pa.project_id).to be_falsy
-		expect(pa.save).to be_truthy
-		expect(pa.project).to be_truthy
-	end
+    it 'contain question_id and answer only' do
+      peer_assessment = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+        answers: [{ question_id: 1, answer: 'answ', other: 'field' }])
+      expect(peer_assessment.save).to be_falsy
+      expect(peer_assessment.errors[:answers][0]).to include('invalid parameters')
+    end
 
-	it '#submit assigns the current time as date_submitted' do
-		time_now = @pa_form.start_date + 1.minute
-		Timecop.freeze(time_now) do
-			peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-				answers: [{ question_id: 1, answer: 'answ' }])
-			expect(peer_assessment.save).to be_truthy
-			expect(peer_assessment.submit).to be_truthy
-			peer_assessment.reload
-			expect(peer_assessment.date_submitted.to_i).to eq(time_now.to_i)
-		end
-	end
+    it 'contains both question_id and answer' do
+      peer_assessment = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+        answers: [{ question_id: 1, answer: 'ans' }, { question_id: 2 }])
+      expect(peer_assessment.save).to be_falsy
+      expect(peer_assessment.errors[:answers][0]).to include('invalid parameters')
+    end
 
-	describe 'answers must' do
+    it 'not be empty' do
+      peer_assessment = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+        answers: [])
+      expect(peer_assessment.save).to be_falsy
+      expect(peer_assessment.errors[:answers][0]).to include("can't be blank")
+    end
+  end
 
-		it 'be an array' do
-			peer_assessment = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-				answers: { question_id: 1, answer: 'answ' })
-			expect(peer_assessment.save).to be_falsy
-			expect(peer_assessment.errors[:answers][0]).to include('an array')
-		end
+  describe '#submit fails if' do
+    it 'user has already peer assessed this student for this form' do
+      Timecop.travel(@pa_form.start_date + 1.day) do
+        peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+          answers: [{ question_id: 1, answer: 'answ' }])
+        peer_assessment.save
+        expect(peer_assessment.submit).to be_truthy
 
-		it 'contain question_id and answer only' do
-			peer_assessment = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-				answers: [{ question_id: 1, answer: 'answ', other: 'field' }])
-			expect(peer_assessment.save).to be_falsy
-			expect(peer_assessment.errors[:answers][0]).to include('invalid parameters')
-		end
+        peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+          answers: [{ question_id: 1, answer: 'answ' }])
+        expect(peer_assessment.save).to be_falsy
+        expect(peer_assessment.errors[:pa_form][0]).to include('has already been completed for this student')
+      end
+    end
 
-		it 'contains both question_id and answer' do
-			peer_assessment = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-				answers: [{ question_id: 1, answer: 'ans' }, { question_id: 2 }])
-			expect(peer_assessment.save).to be_falsy
-			expect(peer_assessment.errors[:answers][0]).to include('invalid parameters')
-		end
+    it 'PAForm deadline has passed' do
+      peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+        answers: [{ question_id: 1, answer: 'answ' }])
+      peer_assessment.save
+      Timecop.travel(@pa_form.deadline + 1.day) do
+        expect(peer_assessment.submit).to be_falsy
+        expect(peer_assessment.errors[:date_submitted][0]).to include("deadline for the PAForm has passed")
+      end
+    end
 
-		it 'not be empty' do
-			peer_assessment = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-				answers: [])
-			expect(peer_assessment.save).to be_falsy
-			expect(peer_assessment.errors[:answers][0]).to include("can't be blank")
-		end
-	end
+    it 'PAForm start_date has not arrived yet' do
+      peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+        answers: [{ question_id: 1, answer: 'answ' }])
+      peer_assessment.save
+      Timecop.travel(@pa_form.start_date - 1.day) do
+        expect(peer_assessment.submit).to be_falsy
+        expect(peer_assessment.errors[:date_submitted][0]).to include("not yet available")
+      end
+    end
 
-	describe '#submit fails if' do
-		it 'user has already peer assessed this student for this form' do
-			Timecop.travel(@pa_form.start_date + 1.day) do
-				peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-					answers: [{ question_id: 1, answer: 'answ' }])
-				peer_assessment.save
-				expect(peer_assessment.submit).to be_truthy
+    it 'PAForm id is not from a Project that the submitted_by Student belongs to' do
+      wrong_pa = FactoryBot.create(:pa_form)
+      peer_assessment = PeerAssessment.new(pa_form: wrong_pa, submitted_by: @student_by, submitted_for: @student_for,
+        answers: [{ question_id: 1, answer: 'answ' }])
+      peer_assessment.save
+      Timecop.travel(wrong_pa.start_date + 1.day) do
+        expect(peer_assessment.submit).to be_falsy
+        expect(peer_assessment.errors[:pa_form][0]).to include('is for an Assignment that the current user does not belong to')
+      end
+    end
 
-				peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-					answers: [{ question_id: 1, answer: 'answ' }])
-				expect(peer_assessment.save).to be_falsy
-				expect(peer_assessment.errors[:pa_form][0]).to include('has already been completed for this student')
-			end
-		end
+    it 'submitted_for is not in the same Project as user' do
+      irrelevant_project = FactoryBot.create(:project)
+      irrelevant_student = FactoryBot.create(:student_confirmed)
+      create :students_project, student: irrelevant_student, project: irrelevant_project
 
-		it 'PAForm deadline has passed' do
-			peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-				answers: [{ question_id: 1, answer: 'answ' }])
-			peer_assessment.save
-			Timecop.travel(@pa_form.deadline + 1.day) do
-				expect(peer_assessment.submit).to be_falsy
-				expect(peer_assessment.errors[:date_submitted][0]).to include("deadline for the PAForm has passed")
-			end
-		end
+      peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: irrelevant_student,
+        answers: [{ question_id: 1, answer: 'answ' }])
+      peer_assessment.save
 
-		it 'PAForm start_date has not arrived yet' do
-			peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-				answers: [{ question_id: 1, answer: 'answ' }])
-			peer_assessment.save
-			Timecop.travel(@pa_form.start_date - 1.day) do
-				expect(peer_assessment.submit).to be_falsy
-				expect(peer_assessment.errors[:date_submitted][0]).to include("not yet available")
-			end
-		end
+      Timecop.travel(@pa_form.start_date + 1.day) do
+        expect(peer_assessment.submit).to be_falsy
+        expect(peer_assessment.errors[:submitted_for][0]).to include('not in the same Project')
 
-		it 'PAForm id is not from a Project that the submitted_by Student belongs to' do
-			wrong_pa = FactoryBot.create(:pa_form)
-			peer_assessment = PeerAssessment.new(pa_form: wrong_pa, submitted_by: @student_by, submitted_for: @student_for,
-				answers: [{ question_id: 1, answer: 'answ' }])
-			peer_assessment.save
-			Timecop.travel(wrong_pa.start_date + 1.day) do
-				expect(peer_assessment.submit).to be_falsy
-				expect(peer_assessment.errors[:pa_form][0]).to include('is for an Assignment that the current user does not belong to')
-			end
-		end
+        peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+          answers: [{ question_id: 1, answer: 'answ' }])
+        peer_assessment.save
 
-		it 'submitted_for is not in the same Project as user' do
-			irrelevant_project = FactoryBot.create(:project)
-			irrelevant_student = FactoryBot.create(:student_confirmed)
-			create :students_project, student: irrelevant_student, project: irrelevant_project
+        expect(peer_assessment.submit).to be_truthy
+      end
+    end
+  end
 
-			peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: irrelevant_student,
-				answers: [{ question_id: 1, answer: 'answ' }])
-			peer_assessment.save
+  it '#submitted? should return false if date_submitted is nil' do
+    peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+      answers: [{ question_id: 1, answer: 'answ' }])
+    peer_assessment.save
+    expect(peer_assessment.submitted?).to be_falsy
+    Timecop.travel(@pa_form.start_date + 1.day) do
+      peer_assessment.submit
+      expect(peer_assessment.submit).to be_truthy
+    end
+    expect(peer_assessment.submitted?).to be_truthy
+  end
 
-			Timecop.travel(@pa_form.start_date + 1.day) do
-				expect(peer_assessment.submit).to be_falsy
-				expect(peer_assessment.errors[:submitted_for][0]).to include('not in the same Project')
+  describe '.api_query' do
 
-				peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-					answers: [{ question_id: 1, answer: 'answ' }])
-				peer_assessment.save
+    before :all do
+      @pa_form2  = FactoryBot.create(:pa_form)
+      @project2 = FactoryBot.create(:project, assignment: @pa_form2.assignment)
+      create :students_project, student: @student_by, project: @project2
+      create :students_project, student: @student_for, project: @project2
+      @student_by2 = FactoryBot.create(:student_confirmed)
+      @student_for2 = FactoryBot.create(:student_confirmed)
+      create :students_project, student: @student_by2, project: @project
+      create :students_project, student: @student_for2, project: @project
 
-				expect(peer_assessment.submit).to be_truthy
-			end
-		end
-	end
+      pa = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
+        answers: [{ question_id: 1, answer: 'answ' }])
+      pa2 = FactoryBot.create(:peer_assessment_with_callback, pa_form: @pa_form2, submitted_by: @student_by, submitted_for: @student_for,
+        answers: [{ question_id: 1, answer: 'answ' }]) # same students, different form
+      pa3 = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by2, submitted_for: @student_for2,
+        answers: [{ question_id: 1, answer: 'answ' }]) # same form, different students
+      peer_assessments_rest = FactoryBot.create_list(:peer_assessment_with_callback, 5)
+      expect(pa.save).to be_truthy
+      expect(pa2.save).to be_truthy
+      expect(pa3.save).to be_truthy
+      @iteration = @pa_form.iteration
+    end
 
-	it '#submitted? should return false if date_submitted is nil' do
-		peer_assessment = PeerAssessment.new(pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-			answers: [{ question_id: 1, answer: 'answ' }])
-		peer_assessment.save
-		expect(peer_assessment.submitted?).to be_falsy
-		Timecop.travel(@pa_form.start_date + 1.day) do
-			peer_assessment.submit
-			expect(peer_assessment.submit).to be_truthy
-		end
-		expect(peer_assessment.submitted?).to be_truthy
-	end
+    it 'queries using pa_form_id and submitted_by/submitted_for' do
+      expect(PeerAssessment.where(submitted_by_id: @student_by.id).count).to eq(2)
+      expect(PeerAssessment.api_query({ "pa_form_id" => @pa_form.id }).count).to eq(2)
+      expect(PeerAssessment.api_query({ "submitted_by_id" => @student_by.id, "pa_form_id" => @pa_form.id }).count).to eq(1)
+      expect(PeerAssessment.api_query({ "submitted_for_id" => @student_for.id, "pa_form_id" => @pa_form.id }).count).to eq(1)
+    end
 
-	describe '.api_query' do
+    it 'queries using iteration_id' do
+      expect(@iteration.peer_assessments.count).to eq(2)
+      expect(PeerAssessment.api_query({ "iteration_id" => @iteration.id }).count).to eq(2)
+    end
 
-		before :all do
-			@pa_form2  = FactoryBot.create(:pa_form)
-			@project2 = FactoryBot.create(:project, assignment: @pa_form2.assignment)
-			create :students_project, student: @student_by, project: @project2
-			create :students_project, student: @student_for, project: @project2
-			@student_by2 = FactoryBot.create(:student_confirmed)
-			@student_for2 = FactoryBot.create(:student_confirmed)
-			create :students_project, student: @student_by2, project: @project
-			create :students_project, student: @student_for2, project: @project
+    it 'combines iteration_id and submitted_for' do
+      expect(@iteration.peer_assessments.count).to eq(2)
+      expect(PeerAssessment.api_query({ "iteration_id" => @iteration.id, "submitted_by_id" => @student_by.id }).count).to eq(1)
+    end
 
-			pa = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by, submitted_for: @student_for,
-				answers: [{ question_id: 1, answer: 'answ' }])
-			pa2 = FactoryBot.create(:peer_assessment_with_callback, pa_form: @pa_form2, submitted_by: @student_by, submitted_for: @student_for,
-				answers: [{ question_id: 1, answer: 'answ' }]) # same students, different form
-			pa3 = FactoryBot.build(:peer_assessment, pa_form: @pa_form, submitted_by: @student_by2, submitted_for: @student_for2,
-				answers: [{ question_id: 1, answer: 'answ' }]) # same form, different students
-			peer_assessments_rest = FactoryBot.create_list(:peer_assessment_with_callback, 5)
-			expect(pa.save).to be_truthy
-			expect(pa2.save).to be_truthy
-			expect(pa3.save).to be_truthy
-			@iteration = @pa_form.iteration
-		end
+    it 'queries using project_id' do
+      expect(PeerAssessment.where(project_id: @project.id).count).to eq(2)
 
-		it 'queries using pa_form_id and submitted_by/submitted_for' do
-			expect(PeerAssessment.where(submitted_by_id: @student_by.id).count).to eq(2)
-			expect(PeerAssessment.api_query({ "pa_form_id" => @pa_form.id }).count).to eq(2)
-			expect(PeerAssessment.api_query({ "submitted_by_id" => @student_by.id, "pa_form_id" => @pa_form.id }).count).to eq(1)
-			expect(PeerAssessment.api_query({ "submitted_for_id" => @student_for.id, "pa_form_id" => @pa_form.id }).count).to eq(1)
-		end
+      expect(PeerAssessment.api_query({ "project_id" => @project.id }).count).to eq(2)
+    end
 
-		it 'queries using iteration_id' do
-			expect(@iteration.peer_assessments.count).to eq(2)
-			expect(PeerAssessment.api_query({ "iteration_id" => @iteration.id }).count).to eq(2)
-		end
+    it 'queries using both project_id and iteration_id' do
+      new_iteration = FactoryBot.create(:iteration, assignment: @pa_form.assignment)
+      new_pa_form = FactoryBot.create(:pa_form, iteration: new_iteration)
+      new_pa = FactoryBot.create(:peer_assessment_with_callback, pa_form: new_pa_form, submitted_by: @student_by, submitted_for: @student_for,
+        answers: [{ question_id: 1, answer: 'answ' }])
 
-		it 'combines iteration_id and submitted_for' do
-			expect(@iteration.peer_assessments.count).to eq(2)
-			expect(PeerAssessment.api_query({ "iteration_id" => @iteration.id, "submitted_by_id" => @student_by.id }).count).to eq(1)
-		end
+      expect(PeerAssessment.where(project_id: @project.id).count).to eq(3)
+      expect(PeerAssessment.api_query({ "project_id" => @project.id, "iteration_id" => new_iteration.id }).count).to eq(1)
+      expect(PeerAssessment.api_query({ "project_id" => @project.id, "iteration_id" => @iteration.id }).count).to eq(2)
+    end
 
-		it 'queries using project_id' do
-			expect(PeerAssessment.where(project_id: @project.id).count).to eq(2)
-
-			expect(PeerAssessment.api_query({ "project_id" => @project.id }).count).to eq(2)
-		end
-
-		it 'queries using both project_id and iteration_id' do
-			new_iteration = FactoryBot.create(:iteration, assignment: @pa_form.assignment)
-			new_pa_form = FactoryBot.create(:pa_form, iteration: new_iteration)
-			new_pa = FactoryBot.create(:peer_assessment_with_callback, pa_form: new_pa_form, submitted_by: @student_by, submitted_for: @student_for,
-				answers: [{ question_id: 1, answer: 'answ' }])
-
-			expect(PeerAssessment.where(project_id: @project.id).count).to eq(3)
-			expect(PeerAssessment.api_query({ "project_id" => @project.id, "iteration_id" => new_iteration.id }).count).to eq(1)
-			expect(PeerAssessment.api_query({ "project_id" => @project.id, "iteration_id" => @iteration.id }).count).to eq(2)
-		end
-
-		it 'queries with everything' do
-			expect(PeerAssessment.api_query({ "project_id" => @project.id, "iteration_id" => @iteration.id,
-			"submitted_for_id" => @student_for.id, "submitted_by_id" => @student_by.id, "pa_form_id" => @pa_form.id }).count)
-			.to eq(1)
-		end
-	end
-
-
-
+    it 'queries with everything' do
+      expect(PeerAssessment.api_query({ "project_id" => @project.id, "iteration_id" => @iteration.id,
+                                        "submitted_for_id" => @student_for.id, "submitted_by_id" => @student_by.id, "pa_form_id" => @pa_form.id }).count)
+        .to eq(1)
+    end
+  end
 end

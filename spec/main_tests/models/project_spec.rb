@@ -13,7 +13,7 @@ RSpec.describe Project, type: :model do
     it { should have_one :extension }
     it { should have_many :project_evaluations }
     it { should have_many :peer_assessments }
-    it { should belong_to :unit }
+    it { should belong_to(:unit).optional }
     it { should have_many :log_points }
     it { should have_many :peer_assessment_points }
     it { should have_many :project_evaluation_points }
@@ -93,10 +93,9 @@ RSpec.describe Project, type: :model do
     end
 
     it 'project_health returns the mean of the iterations_health' do
-      assignment = FactoryBot.create(:assignment)
-      2.times { assignment.iterations << FactoryBot.create(:iteration) }
-      project = FactoryBot.create(:project)
-      assignment.projects << project
+      assignment = create(:assignment)
+      2.times { create(:iteration, assignment: assignment) }
+      create(:project, assignment: assignment)
 
       iteration1_health = assignment.iterations[0].iteration_health
       iteration2_health = assignment.iterations[1].iteration_health

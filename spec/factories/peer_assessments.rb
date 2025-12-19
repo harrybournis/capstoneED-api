@@ -8,9 +8,18 @@ FactoryBot.define do
 
     factory :peer_assessment_with_callback do
       after :build do |obj|
-        project = FactoryBot.create(:project, assignment: obj.pa_form.assignment)
-        create(:students_project, student: obj.submitted_by, project: project) unless obj.submitted_by.teammates(true).include? obj.submitted_for
-        create(:students_project, student: obj.submitted_for, project: project) unless obj.submitted_for.teammates(true).include? obj.submitted_by
+        next unless obj.submitted_by && obj.submitted_for
+
+        next if obj.pa_form
+                .assignment
+                .students_projects
+                .where(student_id: [obj.submitted_by, obj.submitted_for])
+                .select(:project_id)
+                .exists?
+
+        project = create(:project, assignment: obj.pa_form.assignment)
+        create(:students_project, student: obj.submitted_by, project: project)
+        create(:students_project, student: obj.submitted_for, project: project)
       end
     end
 
