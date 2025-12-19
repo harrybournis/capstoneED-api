@@ -45,7 +45,6 @@
 #   describe 'index' do
 #     it 'returns the students names in columns and rows' do
 #       get :index, params: { id: @iteration.id }
-#       binding.pry
 #     end
 
 # end

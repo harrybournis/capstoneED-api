@@ -44,15 +44,13 @@ RSpec.describe V1::Logs::StatsController, type: :request do
     expect(@iteration2.project_evaluations.length).to eq 6
   end
 
-  before :each do
-    host! 'api.example.com'
-    post '/v1/sign_in', params: { email: @lecturer.email, password: '12345678' }
-    expect(response.status).to eq(200)
-    @csrf = JwtAuth::JwtAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+  let(:csrf) { sign_in(@lecturer) }
+  let(:headers) do
+    { 'X-XSRF-TOKEN' => csrf }
   end
 
   it 'returns the correct data' do
-      get "/v1/stats?graph=percent_completion&project_id=#{@project.id}", headers: { 'X-XSRF-TOKEN' => @csrf }
+      get "/v1/stats?graph=percent_completion&project_id=#{@project.id}", headers: headers
 
       #@student1, @csrf = login_integration @student1
       expect(status).to eq 200

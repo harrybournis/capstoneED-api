@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :question do
-    lecturer_id { FactoryBot.create(:lecturer).id }
+    association :lecturer, factory: :lecturer_confirmed
     association :question_type, factory: :question_type
     text        {  ['What do you typically have for breakfast?',
                   'Can you solve sudoko puzzles?',

@@ -46,7 +46,10 @@ FactoryBot.define do
       password_confirmation { '12345678'}
 
       after(:create) do |lecturer| 
-        2.times { create(:unit, lecturer: lecturer) }
+        2.times do
+          unit = build(:unit, lecturer: lecturer)
+          lecturer.units << unit
+        end
       end
     end
 

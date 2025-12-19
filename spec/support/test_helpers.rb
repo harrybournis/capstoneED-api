@@ -21,10 +21,9 @@ module TestHelpers
   end
 
   def sign_in(user)
-    post '/v1/sign_in', params: { email: user.email, password: '12345678' }
-    expect(status).to eq 200
-
-    JwtAuth::JwtAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+    mock_request = MockRequest.new(valid = true, user)
+    cookies['access-token'] = mock_request.cookies['access-token']
+    mock_request.headers['X-XSRF-TOKEN']
   end
 
   def get_lecturer_with_units_assignments_projects

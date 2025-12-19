@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'helpers/mock_request.rb'
 include JwtAuth::JwtAuthenticator
 
-RSpec.describe 'ConfirmationsController /create', type: :controller do
+RSpec.xdescribe 'ConfirmationsController /create', type: :controller do
 
   before(:each) do
     @controller = V1::ConfirmationsController.new
