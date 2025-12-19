@@ -7,11 +7,10 @@ FactoryBot.define do
     description { "Lorem ipsum dolor sit amet, pri in erant detracto antiopam."}
     association :assignment, factory: :assignment
     unit_id { assignment.unit.id if assignment }
-    color do
-      # gen = ColorGenerator.new saturation: Project::Colorable::COLOR_SATURATION,
-      #                          lightness: Project::Colorable::COLOR_LIGHTNESS
-      # "##{gen.create_hex}"
-      '#FF4D29'
+    color { nil }
+
+    after :build do |project|
+      project.generate_random_color
     end
 
     factory :project_with_logo do

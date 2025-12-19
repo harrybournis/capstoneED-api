@@ -25,8 +25,6 @@ gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 
 gem "bootsnap", require: false
 
-gem 'color-generator', '~> 0.0.4'
-
 # gem 'dry-validation', '~> 0.10.5'
 gem 'dry-validation', '~> 1.11', '>= 1.11.1'
 
