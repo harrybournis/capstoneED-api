@@ -32,7 +32,7 @@ RSpec.describe V1::AssignmentsController, type: :controller do
     it 'returns all the assignments for the current unit if unit_id is provided and belongs to current user', { docs?: true } do
       get :index_with_unit, params: { unit_id: @user.units.first.id }
       expect(response.status).to eq(200)
-      expect(parse_body['assignments'].length).to eq(2)
+      expect(parse_body['assignments'].length).to eq(3)
     end
 
     it 'responds with 403 forbidden if the user is a student and unit_id is present in the params' do

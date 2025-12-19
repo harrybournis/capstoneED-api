@@ -7,7 +7,7 @@ RSpec.describe "Remember me", type: :request do
 	it 'remember me is not null' do
 		lecturer = FactoryBot.create(:lecturer_with_password).process_new_record
 		lecturer.save
-		lecturer.confirm
+		# lecturer.confirm
 
 		post '/v1/sign_in', params: { email: lecturer.email, password: '12345678' }
 		expect(status).to eq(200)

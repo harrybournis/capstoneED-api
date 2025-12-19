@@ -9,7 +9,7 @@ RSpec.describe V1::DepartmentsController, type: :controller do
 				@controller = V1::DepartmentsController.new
 				@user = FactoryBot.build(:lecturer_with_password).process_new_record
 				@user.save
-				@user.confirm
+				# @user.confirm
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
@@ -36,7 +36,7 @@ RSpec.describe V1::DepartmentsController, type: :controller do
 				@controller = V1::DepartmentsController.new
 				@user = FactoryBot.build(:student_with_password).process_new_record
 				@user.save
-				@user.confirm
+				# @user.confirm
 				mock_request = MockRequest.new(valid = true, @user)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
 				request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
