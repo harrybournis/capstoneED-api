@@ -50,7 +50,7 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_out', type: :controller
 			mock_request = MockRequest.new(valid = false, @user)
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-			expect { JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token']) }.to raise_error(JWT::VerificationError, 'Signature verification raised')
+			expect { JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token']) }.to raise_error(JWT::VerificationError, 'Signature verification failed')
 			expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 		end
 

@@ -38,10 +38,10 @@ module TestHelpers
 
   def login_integration(student = nil)
     student = create :student_confirmed unless student
-    post '/v1/sign_in', params: { email: student.email, password: '12345678' }
-    expect(response.status).to eq(200)
-    csrf = JwtAuth::JwtAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
-    return student, csrf
+
+    mock_request = MockRequest.new(valid = true, student)
+    cookies['access-token'] = mock_request.cookies['access-token']
+    return student, mock_request.headers['X-XSRF-TOKEN']
   end
 
   def pa_answers

@@ -15,9 +15,9 @@ FactoryBot.define do
 
       factory :lecturer_confirmed do
         after :build do |obj|
-          # obj.skip_confirmation_notification!
+          obj.skip_confirmation_notification!
           obj.save
-          # obj.confirm
+          obj.confirm
         end
       end
     end
@@ -34,9 +34,9 @@ FactoryBot.define do
       password_confirmation { '12345678'}
 
       after :build do |obj|
-        # obj.skip_confirmation_notification!
+        obj.skip_confirmation_notification!
         obj.save
-        # obj.confirm
+        obj.confirm
       end
     end
 

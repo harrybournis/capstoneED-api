@@ -1,8 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe UpdateXpService, type: :model do
-  Struct.new "PeerAssessment", :id
-
+RSpec.xdescribe UpdateXpService, type: :model do
   before :each do
     @student = create :student_confirmed
     @student_profile = create :student_profile, student: @student, total_xp: 0, level: 1

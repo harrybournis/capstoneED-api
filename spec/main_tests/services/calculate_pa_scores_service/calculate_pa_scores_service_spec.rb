@@ -12,8 +12,7 @@ RSpec.describe CalculatePaScoresService, type: :model do
 
   context "before iteration's deadline" do
     before :each do
-      @iteration = build :iteration, start_date: DateTime.now, deadline: DateTime.now + 1.year
-      @iteration.save validate: false
+      @iteration = create :iteration
       create :game_setting, assignment: @iteration.assignment
       @service = CalculatePaScoresService.new(@iteration)
     end

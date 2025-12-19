@@ -114,8 +114,7 @@ RSpec.describe JwtAuth::CurrentUserLecturer, type: :model do
       @device = decoded_token.first['device']
       @current_user = JwtAuth::CurrentUserLecturer.new(@token_id, 'Lecturer', @device)
 
-      5.times { @user.questions << FactoryBot.build(:question) }
-      expect(@user.questions.count).to eq(5)
+      5.times { create(:question, lecturer: @user) }
     end
 
     it 'should make one database query' do

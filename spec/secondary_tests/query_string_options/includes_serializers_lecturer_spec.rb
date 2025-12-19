@@ -117,7 +117,7 @@ RSpec.describe 'Includes', type: :controller do
 				get :show, params: { id: @assignment.id, includes: 'iterations,students' }
 
 				expect(status).to eq(200)
-				expect(body['assignment']['iterations'].length).to eq(@assignment.iterations.length)
+				expect(body['assignment']['iterations'].length).to eq(@assignment.iterations.count)
 
 				for i in 0..body['assignment']['iterations'].length
 					if iteration = body['assignment']['iterations'][i + 1]

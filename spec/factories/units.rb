@@ -6,6 +6,6 @@ FactoryBot.define do
     year          { ( Date.today - (1000*rand())).year }
     archived_at   { nil }
     association   :department, factory: :department
-    association   :lecturer, factory: :lecturer
+    association   :lecturer, factory: :lecturer_confirmed
   end
 end

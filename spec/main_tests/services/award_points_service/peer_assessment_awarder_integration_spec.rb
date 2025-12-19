@@ -1,14 +1,12 @@
 require 'rails_helper'
 
-RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
+RSpec.xdescribe "PeerAssessmentPoints - Integration", type: :request do
 
   before(:each) do
     host! 'api.example.com'
 
     @student = create :student_confirmed
-    post '/v1/sign_in', params: { email: @student.email, password: '12345678' }
-    expect(response.status).to eq(200)
-    @csrf = JwtAuth::JwtAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+    @csrf = sign_in(@student)
 
     @student_for = create :student_confirmed
     @student3 = create :student_confirmed

@@ -25,12 +25,9 @@ RSpec.describe Project, type: :model do
     it { should validate_uniqueness_of(:project_name).scoped_to(:assignment_id).case_insensitive }
 
     it 'vaidates uniqueness of team_name for assignment' do
-      project = build :project
-      expect(project.save).to be_truthy
-
+      project = create :project
       # different assignment, same team_name. should be correct
-      project2 = build :project, team_name: project.team_name
-      expect(project2.save).to be_truthy
+      create :project, team_name: project.team_name
 
       # same assignment, same team_name, should be false
       project3 = build :project, assignment: project.assignment, team_name: project.team_name
