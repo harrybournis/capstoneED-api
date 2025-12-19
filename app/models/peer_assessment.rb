@@ -53,25 +53,25 @@ class PeerAssessment < ApplicationRecord
     query.empty? ? [] : where(query)
   end
 
-  def validate_schema(params)
-    schema = Dry::Validation.Schema do
-      configure { config.input_processor = :form }
+  # def validate_schema(params)
+  #   schema = Dry::Validation.Schema do
+  #     configure { config.input_processor = :form }
 
-      each do
-        required(:submitted_by_id).value(:int?)
-        required(:submitted_for_id).value(:int?)
-        required(:pa_form_id).value(:int?)
-        required(:answers).each do
-          schema do
-            required(:question_id).value(:int?)
-            required(:answer) { str? | (int? & gt?(0) & lteq?(5)) }
-          end
-        end
-      end
-    end
+  #     each do
+  #       required(:submitted_by_id).value(:int?)
+  #       required(:submitted_for_id).value(:int?)
+  #       required(:pa_form_id).value(:int?)
+  #       required(:answers).each do
+  #         schema do
+  #           required(:question_id).value(:int?)
+  #           required(:answer) { str? | (int? & gt?(0) & lteq?(5)) }
+  #         end
+  #       end
+  #     end
+  #   end
 
-    schema.call(params)
-  end
+  #   schema.call(params)
+  # end
 
   # Assigns the current time as date_submitted
   def submit
