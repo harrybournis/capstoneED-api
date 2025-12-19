@@ -170,26 +170,26 @@ module JwtAuth
                                  iss: @issuer,
                                  device: device_id,
                                  csrf_token: csrf_token }
-        JWT.encode(access_token_payload, @secret, @algorithm)
+        ::JWT.encode(access_token_payload, @secret, @algorithm)
       else
         refresh_exp_time      = time_now + @refresh_exp
         refresh_token_payload = { exp: refresh_exp_time.to_i,
                                   iss: @issuer,
                                   device: device_id,
                                   remember_me: remember_me }
-        JWT.encode(refresh_token_payload, @secret, @algorithm)
+        ::JWT.encode(refresh_token_payload, @secret, @algorithm)
       end
     end
 
     def self.decode_token(token)
       if Rails.env.production?
-        JWT.decode(token, @secret, true, algorithm: @algorithm,
-                                         leeway: @leeway.to_i,
+        ::JWT.decode(token, @secret, true, algorithm: @algorithm,
+                     leeway: @leeway.to_i,
                                          iss: @issuer,
                                          verify_iss: true)
       else
-        JWT.decode(token, @secret, true, algorithm: @algorithm,
-                                         leeway: @leeway.to_i)
+        ::JWT.decode(token, @secret, true, algorithm: @algorithm,
+                     leeway: @leeway.to_i)
       end
     end
 
