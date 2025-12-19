@@ -23,7 +23,7 @@
                             case_sensitive: false,
                             message: 'has already been taken for this project',
                             allow_nil: true
-    validate :student_id_unique_for_projects_assignment, on: :create
+    validate :student_id_unique_for_projects_assignment, on: :create, if: :project
     validate :format_of_last_log
 
     before_validation :set_points_to_zero
