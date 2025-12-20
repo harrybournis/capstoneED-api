@@ -25,18 +25,18 @@ class CalculateProjectRankService
   #   is their rank number.
   #
   def call
-    return nil unless @assignment.projects && !@assignment.projects.empty?
+    return nil unless @assignment.projects&.any?
+
     projects = @assignment.projects.sort_by(&:team_points).reverse
     @projects_sorted = projects
     result = {}
 
     rank = 1
-    i = 0
-    projects.map do |project|
-      i += 1
-      if project.team_points != projects[i-2].team_points
-        rank = i
+    projects.each_with_index do |project, idx|
+      if idx.zero? || project.team_points != projects[idx - 1].team_points
+        rank = idx + 1
       end
+
       result[project.id] = rank
     end
 
