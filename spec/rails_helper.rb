@@ -91,3 +91,6 @@ DBQueryMatchers.configure do |config|
   #config.log_backtrace = true
 end
 
+ActiveSupport.on_load(:action_mailer) do
+  Rails.application.reload_routes_unless_loaded
+end
