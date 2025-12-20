@@ -1,7 +1,7 @@
 require 'rails_helper'
 include JwtAuth::JwtAuthenticator
 
-RSpec.xdescribe V1::LogsController, type: :controller do
+RSpec.describe V1::LogsController, type: :controller do
 
   before(:all) do
     @lecturer = get_lecturer_with_units_assignments_projects
@@ -21,7 +21,7 @@ RSpec.xdescribe V1::LogsController, type: :controller do
     end
 
     describe 'POST /logs' do
-      xit 'pointsboard dry::validation responds with 200 if valid', { docs?: true, lecturer?: false } do
+      xit 'TIME DIFFERENCE GEM responds with 200 if valid', { docs?: true, lecturer?: false } do
         parameters = FactoryBot.build(:students_project).logs[0].except(:date_submitted).merge(id: @student.projects[0].id)
         post :update, params: parameters
 

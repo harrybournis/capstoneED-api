@@ -165,9 +165,9 @@ module PointsAward
     def add(key, hash)
       raise ArgumentError, 'Key must be a symbol' unless key.is_a?(Symbol)
       raise ArgumentError, "Points hash can't be nil" if hash.nil?
-      # unless (res = validate_points_hash(hash)).success?
-      #   raise ArgumentError, 'Invalid hash fields.'
-      # end
+      unless (res = validate_points_hash(hash)).success?
+        raise ArgumentError, 'Invalid hash fields.'
+      end
 
       @points[key] ? @points[key] << res.output : @points[key] = [res.output]
     end
@@ -211,16 +211,14 @@ module PointsAward
     # @return [Dry::Validation::Result] The result of the validation. See
     #   dry-validations gem documentation.
     #
-    # def validate_points_hash(hash)
-    #   schema = Dry::Validation.Schema do
-    #     configure { config.input_processor = :form }
+    def validate_points_hash(hash)
+      schema = Dry::Schema.Params do
+        required(:points).filled(:integer)
+        required(:reason_id).filled(:integer)
+        optional(:resource_id).maybe(:integer)
+      end
 
-    #     required(:points).value(:int?)
-    #     required(:reason_id).value(:int?)
-    #     optional(:resource_id).value(:int?)
-    #   end
-
-    #   schema.call(hash)
-    # end
+      schema.call(hash)
+    end
   end
 end

@@ -1,20 +1,17 @@
 require 'rails_helper'
 
-RSpec.xdescribe PointsAward::PointsBoard, type: :model do
-  PointsBoard = PointsAward::PointsBoard
-
+RSpec.describe PointsAward::PointsBoard, type: :model do
   describe '#points' do
     before :each do
-
-	  	@points_board = PointsBoard.new(create(:student), Struct::PeerAssessment.new(6))
+      @points_board = described_class.new(create(:student), OpenStruct.new(id: 6))
     end
 
     it 'responds to #points' do
-    	expect(@points_board).to respond_to :points
+      expect(@points_board).to respond_to :points
     end
 
     it '#points returns an hash' do
-    	expect(@points_board.points).to be_kind_of Hash
+      expect(@points_board.points).to be_kind_of Hash
     end
 
     it '[] gets sent to the points hash' do
@@ -32,7 +29,7 @@ RSpec.xdescribe PointsAward::PointsBoard, type: :model do
 
   describe '#add' do
     before :each do
-      @points_board = PointsBoard.new(create(:student), Struct::PeerAssessment.new(6))
+      @points_board = described_class.new(create(:student), OpenStruct.new(id: 6))
     end
 
     it 'adds provided hash in the points hash under the provided key and creates an array if it does not already exist' do
@@ -79,16 +76,16 @@ RSpec.xdescribe PointsAward::PointsBoard, type: :model do
 
   describe '#persisted!' do
     before :each do
-      @points_board = PointsBoard.new(create(:student), Struct::PeerAssessment.new(6))
+      @points_board = described_class.new(create(:student), OpenStruct.new(id: 6))
     end
 
     it 'responds to #persisted? and persisted!' do
       expect(@points_board).to respond_to :persisted?
-    	expect(@points_board).to respond_to :persisted!
+      expect(@points_board).to respond_to :persisted!
     end
 
     it 'turns persisted true' do
-    	expect(@points_board.persisted?).to be_falsy
+      expect(@points_board.persisted?).to be_falsy
       @points_board.persisted!
       expect(@points_board.persisted?).to be_truthy
     end
@@ -103,7 +100,7 @@ RSpec.xdescribe PointsAward::PointsBoard, type: :model do
 
   describe '#errors' do
     before :each do
-      @points_board = PointsBoard.new(create(:student), Struct::PeerAssessment.new(6))
+      @points_board = described_class.new(create(:student), OpenStruct.new(id: 6))
     end
 
     it 'are empty if persisted is true' do
@@ -123,10 +120,10 @@ RSpec.xdescribe PointsAward::PointsBoard, type: :model do
 
   describe '#total_points' do
     before :each do
-    	@points1 = 10
-    	@points2 = 20
-    	@points3 = 50
-    	@points_board = PointsBoard.new(create(:student))
+      @points1 = 10
+      @points2 = 20
+      @points3 = 50
+      @points_board = described_class.new(create(:student))
       @points_board.add :peer_assessment, { points: @points1, reason_id: 2, resource_id: 1 }
       @points_board.add :peer_assessment, { points: @points2, reason_id: 6, resource_id: 1 }
       @points_board.add :peer_assessment, { points: @points3, reason_id: 9, resource_id: 1 }
@@ -136,11 +133,11 @@ RSpec.xdescribe PointsAward::PointsBoard, type: :model do
     end
 
     it 'responds to #total_points' do
-    	expect(@points_board).to respond_to :total_points
+      expect(@points_board).to respond_to :total_points
     end
 
     it 'returns the sum of all points in the array' do
-    	expect(@points_board.total_points).to eq (@points1 + @points2 + @points3) * 2
+      expect(@points_board.total_points).to eq (@points1 + @points2 + @points3) * 2
     end
 
     it 'returns the sum of only the points in the :peer_assessment key if provided' do
@@ -154,7 +151,7 @@ RSpec.xdescribe PointsAward::PointsBoard, type: :model do
 
   describe '#points_persisted' do
     it 'only accepts the input if the POintsBoard has persisted' do
-      @points_board = PointsBoard.new(create(:student))
+      @points_board = described_class.new(create(:student))
       array = []
       2.times { array << create(:log_point) }
       expect(@points_board.persisted?).to be_falsy
@@ -166,7 +163,7 @@ RSpec.xdescribe PointsAward::PointsBoard, type: :model do
     end
 
     it 'raises an erorr if the input is not an array' do
-      @points_board = PointsBoard.new(create(:student))
+      @points_board = described_class.new(create(:student))
       object = create(:log_point)
       @points_board.persisted!
       expect {

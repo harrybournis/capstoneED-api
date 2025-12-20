@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.xdescribe "LogPointAwarder - Integration", type: :request do
+RSpec.xdescribe "TIME DIFFERENCE GEM LogPointAwarder - Integration", type: :request do
 
   before(:each) do
     host! 'api.example.com'

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.xdescribe "PeerAssessmentPoints - Integration", type: :request do
+RSpec.describe "PeerAssessmentPoints - Integration", type: :request do
 
   before(:each) do
     host! 'api.example.com'

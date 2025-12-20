@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.xdescribe PointsAwardService, type: :model do
+RSpec.describe PointsAwardService, type: :model do
 
   describe 'methods' do
     it '.keys returns all the keys' do

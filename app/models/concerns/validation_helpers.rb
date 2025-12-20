@@ -4,6 +4,26 @@
 module ValidationHelpers
   extend ActiveSupport::Concern
 
+  def question_format_validation
+    return unless questions.present?
+
+    q_types = QuestionType.all.select(:id).map { |q| q.id }
+
+    schema = Dry::Schema.Params do
+      config.messages.backend = :i18n
+
+      required(:questions).array(:hash) do
+        required(:question_id).filled(:integer)
+        required(:text).filled(:string)
+        required(:type_id).filled(:integer, included_in?: q_types)
+      end
+    end
+
+    result = schema.call(questions: questions)
+
+    result_errors_to_active_model :questions, result
+  end
+
   # Take the errors from dry-validations Result object,
   # and add them to active model errors.
   #
@@ -14,16 +34,8 @@ module ValidationHelpers
   #
   def result_errors_to_active_model(key, result)
     unless result.success?
-      if result.errors.is_a? Array
-        result.errors.each do |error|
-          errors.add key, error
-        end
-      else
-        result.errors.each do |hash_key, error_hash|
-          error_hash.each do |attr, message|
-            errors.add key, message[0]
-          end
-        end
+      result.errors(full: true).messages.each do |message|
+        errors.add(key, message.text)
       end
     end
   end

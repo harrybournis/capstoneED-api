@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'timecop'
 include JwtAuth::JwtAuthenticator
 
-RSpec.xdescribe V1::ProjectEvaluationsController, type: :controller do
+RSpec.describe V1::ProjectEvaluationsController, type: :controller do
 
   before(:all) do
     @lecturer = get_lecturer_with_units_assignments_projects
@@ -27,7 +27,7 @@ RSpec.xdescribe V1::ProjectEvaluationsController, type: :controller do
       request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
     end
 
-    xit 'pointsboard dry::validation POST create creates new project_evaluation if student is in project', { docs?: true, lecturer?: false } do
+    it 'POST create creates new project_evaluation if student is in project', { docs?: true, lecturer?: false } do
       attr = FactoryBot.attributes_for(:project_evaluation).except(:date_submitted, :feelings_average, :iteration, :project, :user).merge(user_id: @student.id, project_id: @project.id, iteration_id: @project.iterations[0].id, feelings: valid_feelings_params)
 
       post :create, params: attr

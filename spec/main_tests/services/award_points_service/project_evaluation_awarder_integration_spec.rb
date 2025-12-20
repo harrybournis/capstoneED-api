@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.xdescribe "ProjectEvaluationPoints - Integration", type: :request do
+RSpec.describe "ProjectEvaluationPoints - Integration", type: :request do
 
   before(:all) do
     @lecturer = get_lecturer_with_units_assignments_projects

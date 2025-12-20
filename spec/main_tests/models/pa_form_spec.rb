@@ -87,7 +87,7 @@ RSpec.describe PaForm, type: :model do
     expect(pa_form.errors['questions'][0]).to include("can't be blank")
   end
 
-  xit 'Dry::Validation returns error if type_id is does not exist in database' do
+  it 'Dry::Validation returns error if type_id is does not exist in database' do
     questions = [{ 'text' => 'What?', 'type_id' => @type2.id},
                  { 'text' => 'Who?', 'type_id' => 5666},
                   { 'text' => 'When?', 'type_id' => @type.id},
