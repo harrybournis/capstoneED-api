@@ -31,8 +31,6 @@ gem 'json-schema', '~> 6.0'
 
 gem 'waterfall', '~> 1.3'
 
-# gem 'time_difference', '~> 0.7.0'
-
 gem 'yard-activerecord', '~> 0.0.17'
 
 gem 'whenever', '~> 1.1', '>= 1.1.1'

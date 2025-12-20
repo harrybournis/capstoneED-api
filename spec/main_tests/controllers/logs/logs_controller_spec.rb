@@ -21,7 +21,7 @@ RSpec.describe V1::LogsController, type: :controller do
     end
 
     describe 'POST /logs' do
-      xit 'TIME DIFFERENCE GEM responds with 200 if valid', { docs?: true, lecturer?: false } do
+      it 'responds with 200 if valid', { docs?: true, lecturer?: false } do
         parameters = FactoryBot.build(:students_project).logs[0].except(:date_submitted).merge(id: @student.projects[0].id)
         post :update, params: parameters
 
