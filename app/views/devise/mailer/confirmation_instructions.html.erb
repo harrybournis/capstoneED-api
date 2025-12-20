@@ -2,4 +2,9 @@
 
 <p>You can confirm your account email through the link below:</p>
 
-<p><%= link_to 'Confirm my account', client_confirm_url(@token) %></p>
+<p><%=
+     link_to(
+       'Confirm my account',
+       "http://capstoneed-api.org:21992/v1/confirm_account?confirmation_token=#{@token}"
+     )
+   %></p>

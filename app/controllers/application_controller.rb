@@ -2,7 +2,6 @@
 class ApplicationController < ActionController::API
   include ActionController::Cookies,  # Add cookie functionality
           JwtAuth::JwtAuthenticator,  # Authenticate via JWT tokens
-          UrlHelper,                  # Change URL's for emails or redirects
           ApiHelper,                  # Common API methods (e.g. render errors)
           CurrentUserable,            # Current User helper methods/validations
           AssociationIncludable,      # Use ?inlcudes= in the params, and

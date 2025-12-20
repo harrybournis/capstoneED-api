@@ -26,9 +26,9 @@ class V1::ConfirmationsController < Devise::ConfirmationsController
     @user = User.confirm_by_token(params[:confirmation_token])
 
     if @user.errors.empty?
-      api_confirmation_success_url # change @ url_helper.rb
+      redirect_to '/user_confirmation_success.html'
     else
-      api_confirmation_failure_url # change @ url_helper.rb
+      redirect_to '/user_confirmation_failure.html'
     end
   end
 
