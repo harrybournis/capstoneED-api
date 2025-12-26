@@ -11,9 +11,9 @@ module JwtAuth
     @domain       = ENV.fetch('API_DOMAIN') { '' }   # to be added to the cookies. left blank for developement in order to work with browsers.
     @issuer       = @domain         # typically the website url. added to JWT tokens.
 
-    @cookies_secure     = false     # transmit cookies only on https. Set true for deployment.
+    @cookies_secure     = true      # transmit cookies only on https. localhost is also allowed in most browsers for development.
     @cookies_httponly   = true      # javascript can't read cookies
-    @cookies_samesite   = false     # send cookies only if url in address bar matches the current site
+    @cookies_samesite   = :none     # do not require same site. Requires httponly = true and secure = true when same site is :none
 
     @domain_test  = 'api.example.com'.freeze # Used for tests only
     @domain_development = ''.freeze          # Left blank because cookies don't work with a domain in localhost
@@ -150,14 +150,13 @@ module JwtAuth
 
       else
         if remember_me
-          cookies['access-token'] = { value: access_token, expires: exp_time }
-          cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, path: '/v1/refresh' }
+          cookies['access-token'] = { value: access_token, secure: @cookies_secure, expires: exp_time, httponly: @cookies_httponly, same_site: @cookies_samesite}
+          cookies['refresh-token'] = { value: refresh_token, secure: @cookies_secure, expires: refresh_exp_time, path: '/v1/refresh', httponly: @cookies_httponly, same_site: @cookies_samesite }
         else
-          cookies['access-token'] = { value: access_token }
-          cookies['refresh-token'] = { value: refresh_token, path: '/v1/refresh' }
+          cookies['access-token'] = { value: access_token, secure: @cookies_secure, httponly: @cookies_httponly, same_site: @cookies_samesite }
+          cookies['refresh-token'] = { value: refresh_token, secure: @cookies_secure, path: '/v1/refresh', httponly: @cookies_httponly, same_site: @cookies_samesite }
         end
       end
-
       true
     end
 
