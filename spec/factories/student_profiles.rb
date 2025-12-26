@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :student_profile do
     association :student,factory: :student_confirmed
     total_xp { rand(468) }

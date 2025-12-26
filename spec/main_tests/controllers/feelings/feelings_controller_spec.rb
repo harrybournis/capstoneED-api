@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe V1::FeelingsController, type: :controller do
 
-	before(:all) { @user = FactoryGirl.create :student }
+	before(:all) { @user = FactoryBot.create :student }
 
 	before(:each) do
 		@controller = V1::FeelingsController.new

@@ -28,4 +28,8 @@ class LogPoint < ApplicationRecord
                         :project_id,
                         :student_id,
                         :reason_id
+
+  def reason
+    Reason.key_from_id(reason_id)
+  end
 end

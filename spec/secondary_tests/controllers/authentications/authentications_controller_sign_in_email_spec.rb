@@ -1,12 +1,12 @@
 require 'rails_helper'
 require 'helpers/mock_request.rb'
-include JWTAuth::JWTAuthenticator
+include JwtAuth::JwtAuthenticator
 
 RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :controller do
 
   before(:each) do
     @controller = V1::AuthenticationsController.new
-    @user = FactoryGirl.build(:lecturer_with_password).process_new_record
+    @user = FactoryBot.build(:lecturer_with_password).process_new_record
     @user.save
   end
 
@@ -48,7 +48,7 @@ RSpec.describe 'V1::AuthenticationsController POST /sign_in_email', type: :contr
       post :sign_in_email, params: { email: @user.email, password: '12345678', remember_me: 1 }
       expect(cookies['access-token']).to be_truthy
       expect(cookies['refresh-token']).to be_truthy
-      decoded = JWTAuth::JWTAuthenticator.decode_token(cookies['refresh-token'])
+      decoded = JwtAuth::JwtAuthenticator.decode_token(cookies['refresh-token'])
       expect(decoded.first["remember_me"]).to be_truthy
     end
 

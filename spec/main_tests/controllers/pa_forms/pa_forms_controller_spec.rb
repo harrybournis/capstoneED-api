@@ -5,7 +5,7 @@ RSpec.describe V1::PaFormsController, type: :controller do
 	before(:all) do
 		@lecturer = build(:lecturer_with_password).process_new_record
 		@lecturer.save
-		@lecturer.confirm
+		# @lecturer.confirm
 		@unit = create(:unit, lecturer: @lecturer)
 		@assignment = create(:assignment, lecturer: @lecturer, unit: @unit)
 		@iteration = create(:iteration, assignment: @assignment)

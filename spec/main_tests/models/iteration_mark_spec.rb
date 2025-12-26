@@ -8,7 +8,7 @@ RSpec.describe IterationMark, type: :model do
     expect(create(:iteration_mark_marked)).to be_truthy
   end
 
-  subject(:iteration_mark) { FactoryGirl.build(:iteration_mark) }
+  subject(:iteration_mark) { FactoryBot.build(:iteration_mark) }
 
   it { should validate_presence_of :student_id }
   it { should validate_presence_of :iteration_id }

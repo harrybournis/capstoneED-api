@@ -212,12 +212,10 @@ module PointsAward
     #   dry-validations gem documentation.
     #
     def validate_points_hash(hash)
-      schema = Dry::Validation.Schema do
-        configure { config.input_processor = :form }
-
-        required(:points).value(:int?)
-        required(:reason_id).value(:int?)
-        optional(:resource_id).value(:int?)
+      schema = Dry::Schema.Params do
+        required(:points).filled(:integer)
+        required(:reason_id).filled(:integer)
+        optional(:resource_id).maybe(:integer)
       end
 
       schema.call(hash)

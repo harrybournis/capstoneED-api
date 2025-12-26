@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :peer_assessment_point do
     points { [10, 5, 20, 50].sample }
     date { DateTime.now }

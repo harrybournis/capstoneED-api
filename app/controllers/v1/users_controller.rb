@@ -1,7 +1,7 @@
 ## Users Controller
 class V1::UsersController < ApplicationController
   skip_before_action :authenticate_user_jwt, only: [:create]
-  before_action :allow_if_self, only: [:update, :destroy]
+  before_action :allow_if_self, only: [:update]
 
   # POST '/register'
   # Register a new user using email and password as authentication
@@ -38,16 +38,6 @@ class V1::UsersController < ApplicationController
       render json: format_errors(@user.errors), status: :unprocessable_entity
     end
   end
-
-  # DELETE destroy
-  # Requires current_password
-  # def destroy
-  #   if @user.destroy_with_password(user_params[:current_password])
-  #     render json: '', status: :no_content
-  #   else
-  #     render json: format_errors(@user.errors), status: :unprocessable_entity
-  #   end
-  # end
 
   private
 

@@ -195,7 +195,7 @@ RSpec.describe ProjectEvaluation, type: :model do
       expect(pe.date_submitted.to_i).to eq(now.to_i)
 
       pe.reload
-      new_date_submitted = DateTime.now + 1.day
+      new_date_submitted = now + 1.day
 
       pe.date_submitted = new_date_submitted
       pe.save

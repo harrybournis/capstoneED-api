@@ -12,7 +12,7 @@ class V1::Iterations::ScoredIterationsController < ApplicationController
         render json: current_user.scored_iterations,  status: :ok
       end
     else
-      render json: [], status: :no_content
+      head :no_content
     end
   end
 

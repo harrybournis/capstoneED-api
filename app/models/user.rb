@@ -1,8 +1,7 @@
 ## The superclass for Lecturer and Student
 class User < ApplicationRecord
   include User::EmailAuthenticatable
-  devise :database_authenticatable, :confirmable, :recoverable,
-         :trackable, :validatable
+  devise :database_authenticatable, :recoverable, :trackable, :confirmable, :validatable
 
   # Associations
   has_many :active_tokens, dependent: :destroy
@@ -50,7 +49,7 @@ class User < ApplicationRecord
   # ActiveTokens for the user with a new expiration date starting now,
   # effectively invalidating all previous refresh tokens.
   def revoke_all_tokens
-    token_expiration = DateTime.now + JWTAuth::JWTAuthenticator.refresh_exp
+    token_expiration = DateTime.now + JwtAuth::JwtAuthenticator.refresh_exp
     active_tokens = self.active_tokens
 
     return if active_tokens.blank?

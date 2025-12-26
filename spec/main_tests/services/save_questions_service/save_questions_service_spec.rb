@@ -4,9 +4,9 @@ RSpec.describe SaveQuestionsService, type: :model do
 
   before :each do
     @lecturer = create :lecturer_confirmed
-    q1 = FactoryGirl.create :question_type, category: 'text', friendly_name: 'Text'
-    q2 = FactoryGirl.create :question_type, category: 'number', friendly_name: 'Number'
-    q3 = FactoryGirl.create :question_type, category: 'rank', friendly_name: 'Rank'
+    q1 = FactoryBot.create :question_type, category: 'text', friendly_name: 'Text'
+    q2 = FactoryBot.create :question_type, category: 'number', friendly_name: 'Number'
+    q3 = FactoryBot.create :question_type, category: 'rank', friendly_name: 'Rank'
 
     @valid_questions = [{ "question_id" => 1, "text" => 'Who is it?', 'type_id' => q2.id },
                         { "question_id" => 2, "text" => 'Human?', 'type_id' => q2.id },

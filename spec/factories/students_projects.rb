@@ -1,7 +1,7 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :students_project do
     association :project, factory: :project
-    association :student, factory: :student
+    association :student, factory: :student_confirmed
     nickname { "wolverine#{rand(100000).to_s}" }
 
     factory :students_project_with_points do

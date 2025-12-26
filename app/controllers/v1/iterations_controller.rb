@@ -3,7 +3,7 @@ class V1::IterationsController < ApplicationController
   before_action :allow_if_lecturer, only: :create
   before_action :validate_includes,
                 only: [:show],
-                if: 'params[:includes]'
+                if: :includes_param_provided?
   before_action :set_iteration_if_associated,
                 only: [:show, :update, :destroy]
 

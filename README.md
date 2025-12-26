@@ -3,19 +3,19 @@ Documentation: https://harrybournis.github.io/capstoned-api-documentation/
 Trello: https://trello.com/b/ahb8alLZ/capstoneed-api
 
 # Installation
-1. Install ruby 2.4.1
+1. Install ruby 3.4.7
 2. Run `gem install bundler`
-3. Run `bundle update`
-4. Run `bundle install`
+3. Run `bundle install`
 
-# DotEnv File
+# ENV vars
 ```
-DEVELOPMENT_SECRET_KEY_BASE=<development key>
-TEST_SECRET_KEY_BASE=<test key>
-RAILS_MIN_THREADS=3
+DB_URL=postgresql://dev:dev@127.0.0.1:5432
+SECRET_KEY_BASE=<development key>
 RAILS_MAX_THREADS=16
 WEB_CONCURRENCY=3
+PORT=3000
 APP_PRELOAD=true
+API_DOMAIN=
 ```
 
 # Set up Cron Jobs

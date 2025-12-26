@@ -1,5 +1,5 @@
 require 'rails_helper'
-include JWTAuth::JWTAuthenticator
+include JwtAuth::JwtAuthenticator
 
 RSpec.describe V1::Logs::StatsController, type: :request do
 
@@ -35,17 +35,15 @@ RSpec.describe V1::Logs::StatsController, type: :request do
     expect(@sp2.logs.length).to eq 21
   end
 
-  before :each do
-    host! 'api.example.com'
-    post '/v1/sign_in', params: { email: @lecturer.email, password: '12345678' }
-    expect(response.status).to eq(200)
-    @csrf = JWTAuth::JWTAuthenticator.decode_token(response.cookies['access-token']).first['csrf_token']
+  let(:csrf) { sign_in(@lecturer) }
+  let(:headers) do
+    { 'X-XSRF-TOKEN' => csrf }
   end
 
   describe 'GET hours_worked' do
 
     it 'GET hours_worked works' do
-      get "/v1/stats?graph=hours_worked&project_id=#{@project.id}", headers: { 'X-XSRF-TOKEN' => @csrf }
+      get "/v1/stats?graph=hours_worked&project_id=#{@project.id}", headers: headers
 
       expect(status).to eq 200
 
@@ -55,7 +53,7 @@ RSpec.describe V1::Logs::StatsController, type: :request do
     end
 
     it 'GET hours_worked works' do
-      get "/v1/stats?graph=hours_worked&project_id=#{@project.id}", headers: { 'X-XSRF-TOKEN' => @csrf }
+      get "/v1/stats?graph=hours_worked&project_id=#{@project.id}", headers: headers
 
       expect(status).to eq 200
 
@@ -63,7 +61,7 @@ RSpec.describe V1::Logs::StatsController, type: :request do
     end
 
     it 'GET hours_worked returns 400 bad request if no project_id in params' do
-      get "/v1/stats?graph=hours_worked", headers: { 'X-XSRF-TOKEN' => @csrf }
+      get "/v1/stats?graph=hours_worked", headers: headers
 
       expect(status).to eq 400
       expect(errors_base[0]).to include 'needs a project_id'
@@ -71,11 +69,10 @@ RSpec.describe V1::Logs::StatsController, type: :request do
 
     it 'GET hours_worked returns 403 forbidden if the project_id is not associated with lecturer' do
       project = create :project
-      get "/v1/stats?graph=hours_worked&project_id=#{project.id}", headers: { 'X-XSRF-TOKEN' => @csrf }
+      get "/v1/stats?graph=hours_worked&project_id=#{project.id}", headers: headers
 
       expect(status).to eq 403
       expect(errors['base'][0]).to include 'associated'
     end
   end
-
 end

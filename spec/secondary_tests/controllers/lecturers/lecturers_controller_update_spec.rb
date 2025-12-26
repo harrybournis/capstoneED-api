@@ -1,17 +1,17 @@
 require 'rails_helper'
 require 'helpers/mock_request.rb'
-include JWTAuth::JWTAuthenticator
+include JwtAuth::JwtAuthenticator
 
 RSpec.describe 'V1::LecturersController PUT /update', type: :controller do
 
 	before(:each) do
 		@controller = V1::UsersController.new
-		@lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
+		@lecturer = FactoryBot.build(:lecturer_with_password).process_new_record
 		@lecturer.save
 		mock_request = MockRequest.new(valid = true, @lecturer)
 		request.cookies['access-token'] = mock_request.cookies['access-token']
 		request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
-		expect(JWTAuth::JWTAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
+		expect(JwtAuth::JwtAuthenticator.decode_token(request.cookies['access-token'])).to be_truthy
 		expect(request.headers['X-XSRF-TOKEN']).to be_truthy
 	end
 
@@ -81,7 +81,7 @@ RSpec.describe 'V1::LecturersController PUT /update', type: :controller do
 
 			it 'returns 401 if authentication problem' do
 				@controller = V1::UsersController.new
-				@lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
+				@lecturer = FactoryBot.build(:lecturer_with_password).process_new_record
 				@lecturer.save
 				mock_request = MockRequest.new(valid = false, @lecturer)
 				request.cookies['access-token'] = mock_request.cookies['access-token']
@@ -94,7 +94,7 @@ RSpec.describe 'V1::LecturersController PUT /update', type: :controller do
 			end
 
 			it 'returns 403 forbidden if the user to be updated is not the current user', { docs?: true } do
-				different_user = FactoryGirl.create(:lecturer)
+				different_user = FactoryBot.create(:lecturer)
 				old_name = different_user.first_name
 				put :update, params: { id: different_user.id, first_name: 'change_their_name' }
 

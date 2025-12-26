@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe V1::PeerAssessmentsController, type: :controller do
 
 	before :all do
-		@student = FactoryGirl.create(:student_confirmed)
-		@lecturer = FactoryGirl.create(:lecturer_confirmed)
+		@student = FactoryBot.create(:student_confirmed)
+		@lecturer = FactoryBot.create(:lecturer_confirmed)
 	end
 
 	context 'when current_user is Student' do
@@ -14,20 +14,20 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			request.cookies['access-token'] = mock_request.cookies['access-token']
 			request.headers['X-XSRF-TOKEN'] = mock_request.headers['X-XSRF-TOKEN']
 
-			@student_for = FactoryGirl.create(:student_confirmed)
+			@student_for = FactoryBot.create(:student_confirmed)
 			@student3 = create :student_confirmed
-			@assignment = FactoryGirl.create(:assignment)
+			@assignment = FactoryBot.create(:assignment)
 			@game_setting = create :game_setting, assignment: @assignment
-			@project = FactoryGirl.create(:project, assignment: @assignment)
-			@iteration = FactoryGirl.create(:iteration, assignment: @assignment)
+			@project = FactoryBot.create(:project, assignment: @assignment)
+			@iteration = FactoryBot.create(:iteration, assignment: @assignment)
 			create :students_project, student: @student_for, project: @project
 			create :students_project, student: @student, project: @project
 			create :students_project, student: @student3, project: @project
-			@pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
+			@pa_form = FactoryBot.create(:pa_form, iteration: @iteration)
 
-			@irrelevant_team = FactoryGirl.create(:project)
-			@irrelevant_student = FactoryGirl.create(:student_confirmed)
-			4.times {  create :students_project, student: create(:student_confirmed), project: @irrelevant_team } #@irrelevant_team.students << FactoryGirl.create(:student_confirmed) }
+			@irrelevant_team = FactoryBot.create(:project)
+			@irrelevant_student = FactoryBot.create(:student_confirmed)
+			4.times {  create :students_project, student: create(:student_confirmed), project: @irrelevant_team } #@irrelevant_team.students << FactoryBot.create(:student_confirmed) }
 			create :students_project, student: @irrelevant_student, project: @irrelevant_team
 		end
 
@@ -102,16 +102,16 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 	context 'when current_user is Lecturer' do
 
 		before :all do
-			@unit = FactoryGirl.create(:unit, lecturer: @lecturer)
-			@assignment = FactoryGirl.create(:assignment, lecturer: @lecturer, unit: @unit)
+			@unit = FactoryBot.create(:unit, lecturer: @lecturer)
+			@assignment = FactoryBot.create(:assignment, lecturer: @lecturer, unit: @unit)
 			@game_setting = create :game_setting, assignment: @assignment
-			@iteration = FactoryGirl.create(:iteration, assignment: @assignment)
-			@pa_form = FactoryGirl.create(:pa_form, iteration: @iteration)
-			@student2 = FactoryGirl.create(:student_confirmed)
-			@student3 = FactoryGirl.create(:student_confirmed)
-			@student4 = FactoryGirl.create(:student_confirmed)
-			@student5 = FactoryGirl.create(:student_confirmed)
-			@project = FactoryGirl.create(:project, assignment: @assignment)
+			@iteration = FactoryBot.create(:iteration, assignment: @assignment)
+			@pa_form = FactoryBot.create(:pa_form, iteration: @iteration)
+			@student2 = FactoryBot.create(:student_confirmed)
+			@student3 = FactoryBot.create(:student_confirmed)
+			@student4 = FactoryBot.create(:student_confirmed)
+			@student5 = FactoryBot.create(:student_confirmed)
+			@project = FactoryBot.create(:project, assignment: @assignment)
 			create :students_project, student: @student, project: @project
 			create :students_project, student: @student2, project: @project
 			create :students_project, student: @student3, project: @project
@@ -119,15 +119,15 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			create :students_project, student: @student5, project: @project
 
 			Timecop.travel(@iteration.start_date + 1.minute) do
-				@peer_assessment = FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)
-				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student3)
-				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student4)
-				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student5)
+				@peer_assessment = FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student2)
+				FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student3)
+				FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student4)
+				FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student, submitted_for: @student5)
 
-				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student)
-				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student3)
-				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student4)
-				FactoryGirl.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student5)
+				FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student)
+				FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student3)
+				FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student4)
+				FactoryBot.create(:peer_assessment, pa_form: @pa_form, submitted_by: @student2, submitted_for: @student5)
 			end
 		end
 
@@ -246,7 +246,7 @@ RSpec.describe V1::PeerAssessmentsController, type: :controller do
 			end
 
 			it 'returns 403 forbiden if peer_assement not associated' do
-				other = FactoryGirl.create(:peer_assessment_with_callback)
+				other = FactoryBot.create(:peer_assessment_with_callback)
 				get :show, params: { id: other.id }
 				expect(status).to eq(403)
 				expect(errors['base'][0]).to include('not associated')

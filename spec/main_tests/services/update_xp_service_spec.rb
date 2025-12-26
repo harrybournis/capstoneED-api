@@ -1,12 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe UpdateXpService, type: :model do
-  Struct.new "PeerAssessment", :id
-
   before :each do
     @student = create :student_confirmed
     @student_profile = create :student_profile, student: @student, total_xp: 0, level: 1
-    @points_board = PointsAward::PointsBoard.new(@student, Struct::PeerAssessment.new(6))
+    @points_board = PointsAward::PointsBoard.new(@student, OpenStruct.new(id: 6))
     @points_board.add(:key, { points: 20, reason_id: 6, resource_id: 1 })
     @points_board.add(:key, { points: 40, reason_id: 6, resource_id: 1 })
   end

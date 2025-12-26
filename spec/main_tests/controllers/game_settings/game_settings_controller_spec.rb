@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe V1::GameSettingsController, type: :controller do
 
   before(:all) do
-    @user = FactoryGirl.create(:lecturer)
+    @user = FactoryBot.create(:lecturer)
     @unit = create :unit, lecturer: @user
     @assignment = create :assignment, lecturer: @user
     @game_settings = create :game_setting, assignment_id: @assignment.id

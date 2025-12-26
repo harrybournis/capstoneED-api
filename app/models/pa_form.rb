@@ -17,7 +17,7 @@ class PaForm < Deliverable
 
   # Validations
   validates_presence_of   :iteration, :questions, :start_offset, :end_offset
-  validate                :format_of_questions
+  validate                :question_format_validation
   # validate                :start_date_is_in_the_future
   validate                :deadline_is_after_start_date
 
@@ -112,34 +112,6 @@ class PaForm < Deliverable
     if @start_date_validate
       self.start_offset = @start_date_validate - iteration.deadline.to_i
     end
-  end
-
-  # Validation of the questions format
-  #
-  def format_of_questions
-    return unless questions.present?
-
-    q_types = QuestionType.all.select(:id).map { |q| q.id }
-
-    schema = Dry::Validation.JSON do
-      configure do
-        config.input_processor = :form
-        config.type_specs = true
-        config.messages = :i18n
-      end
-
-      each do
-        schema do
-          required(:question_id, :int).value(:int?)
-          required(:text, :int).value(:str?)
-          required(:type_id, :int).value(:int?, included_in?: q_types)
-        end
-      end
-    end
-
-    result = schema.call(questions)
-
-    result_errors_to_active_model :questions, result
   end
 
   # start_date validation

@@ -3,7 +3,7 @@ class V1::UnitsController < ApplicationController
   before_action :allow_if_lecturer, only: [:create, :update, :archive, :destroy]
   before_action :validate_includes,
                 only: [:index, :index_archived, :show],
-                if: 'params[:includes]'
+                if: :includes_param_provided?
   before_action :delete_includes_from_params,
                 only: [:update, :archive, :destroy]
   before_action :set_unit_if_associated,

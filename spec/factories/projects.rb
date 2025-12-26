@@ -1,20 +1,20 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :project do
     sequence(:project_name) { |n| "Project #{n}" }
     sequence(:team_name) { |n| "The xmen#{n}" }
-    logo nil
+    logo { nil }
     enrollment_key { SecureRandom.hex }
-    description "Lorem ipsum dolor sit amet, pri in erant detracto antiopam."
+    description { "Lorem ipsum dolor sit amet, pri in erant detracto antiopam."}
     association :assignment, factory: :assignment
     unit_id { assignment.unit.id if assignment }
-    color do
-      gen = ColorGenerator.new saturation: Project::Colorable::COLOR_SATURATION,
-                               lightness: Project::Colorable::COLOR_LIGHTNESS
-      "##{gen.create_hex}"
+    color { nil }
+
+    after :build do |project|
+      project.generate_random_color
     end
 
     factory :project_with_logo do
-      logo "https://robohash.org/sitsequiquia.png?size=300x300"
+      logo { "https://robohash.org/sitsequiquia.png?size=300x300" }
     end
 
     factory :project_seeder do
@@ -23,7 +23,7 @@ FactoryGirl.define do
               "#{Faker::Hacker.adjective.capitalize} #{Faker::Food.ingredient}"].sample
       end
       team_name { Faker::Team.creature.capitalize + " #{1000*rand().to_i}" }
-      logo "https://robohash.org/sitsequiquia.png?size=300x300"
+      logo {"https://robohash.org/sitsequiquia.png?size=300x300" }
       description { Faker::TwinPeaks.quote }
     end
   end

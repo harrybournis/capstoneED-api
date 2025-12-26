@@ -1,19 +1,19 @@
-module JWTAuth
+module JwtAuth
   ## Is included in the ApplicationController and adds the ability to
   #  authenticate using JWTs. Public methods are 'authenticate',
   #  'sign_in' and 'refresh'.
-  module JWTAuthenticator
+  module JwtAuthenticator
     @secret       = 'secret'.freeze ## Replace with secret
     @algorithm    = 'HS256'.freeze  # available algorithms: https://github.com/jwt/ruby-jwt
     @exp          = 3.hours       # expiration time for access-token
     @refresh_exp  = 1.week          # expiration time for refresh-token
     @leeway       = 0               # grace period after a token has expired.
-    @domain       = api_host_url    # to be added to the cookies. left blank for developement in order to work with browsers. Change variable in helpers/url_helper.rb
+    @domain       = ENV.fetch('API_DOMAIN') { '' }   # to be added to the cookies. left blank for developement in order to work with browsers.
     @issuer       = @domain         # typically the website url. added to JWT tokens.
 
-    @cookies_secure     = false     # transmit cookies only on https. Set true for deployment.
+    @cookies_secure     = true      # transmit cookies only on https. localhost is also allowed in most browsers for development.
     @cookies_httponly   = true      # javascript can't read cookies
-    @cookies_samesite   = false     # send cookies only if url in address bar matches the current site
+    @cookies_samesite   = :none     # do not require same site. Requires httponly = true and secure = true when same site is :none
 
     @domain_test  = 'api.example.com'.freeze # Used for tests only
     @domain_development = ''.freeze          # Left blank because cookies don't work with a domain in localhost
@@ -36,11 +36,11 @@ module JWTAuth
       if validated_request.csrf_token == token_params['csrf_token']
 
         if token_params['type'] == 'Student'.freeze
-          JWTAuth::CurrentUserStudent.new(token_params['id'],
+          JwtAuth::CurrentUserStudent.new(token_params['id'],
                                           'Student'.freeze,
                                           token_params['device'])
         else
-          JWTAuth::CurrentUserLecturer.new(token_params['id'],
+          JwtAuth::CurrentUserLecturer.new(token_params['id'],
                                            'Lecturer'.freeze,
                                            token_params['device'])
         end
@@ -150,14 +150,13 @@ module JWTAuth
 
       else
         if remember_me
-          cookies['access-token'] = { value: access_token, expires: exp_time }
-          cookies['refresh-token'] = { value: refresh_token, expires: refresh_exp_time, path: '/v1/refresh' }
+          cookies['access-token'] = { value: access_token, secure: @cookies_secure, expires: exp_time, httponly: @cookies_httponly, same_site: @cookies_samesite}
+          cookies['refresh-token'] = { value: refresh_token, secure: @cookies_secure, expires: refresh_exp_time, path: '/v1/refresh', httponly: @cookies_httponly, same_site: @cookies_samesite }
         else
-          cookies['access-token'] = { value: access_token }
-          cookies['refresh-token'] = { value: refresh_token, path: '/v1/refresh' }
+          cookies['access-token'] = { value: access_token, secure: @cookies_secure, httponly: @cookies_httponly, same_site: @cookies_samesite }
+          cookies['refresh-token'] = { value: refresh_token, secure: @cookies_secure, path: '/v1/refresh', httponly: @cookies_httponly, same_site: @cookies_samesite }
         end
       end
-
       true
     end
 
@@ -170,26 +169,26 @@ module JWTAuth
                                  iss: @issuer,
                                  device: device_id,
                                  csrf_token: csrf_token }
-        JWT.encode(access_token_payload, @secret, @algorithm)
+        ::JWT.encode(access_token_payload, @secret, @algorithm)
       else
         refresh_exp_time      = time_now + @refresh_exp
         refresh_token_payload = { exp: refresh_exp_time.to_i,
                                   iss: @issuer,
                                   device: device_id,
                                   remember_me: remember_me }
-        JWT.encode(refresh_token_payload, @secret, @algorithm)
+        ::JWT.encode(refresh_token_payload, @secret, @algorithm)
       end
     end
 
     def self.decode_token(token)
       if Rails.env.production?
-        JWT.decode(token, @secret, true, algorithm: @algorithm,
-                                         leeway: @leeway.to_i,
+        ::JWT.decode(token, @secret, true, algorithm: @algorithm,
+                     leeway: @leeway.to_i,
                                          iss: @issuer,
                                          verify_iss: true)
       else
-        JWT.decode(token, @secret, true, algorithm: @algorithm,
-                                         leeway: @leeway.to_i)
+        ::JWT.decode(token, @secret, true, algorithm: @algorithm,
+                     leeway: @leeway.to_i)
       end
     end
 
@@ -199,7 +198,7 @@ module JWTAuth
       elsif request.cookies['access-token'].nil?
         false
       else
-        JWTAuth::ValidatedRequest.new(request)
+        JwtAuth::ValidatedRequest.new(request)
       end
     end
 
@@ -207,7 +206,7 @@ module JWTAuth
       if request.cookies['refresh-token'].nil?
         false
       else
-        JWTAuth::ValidatedRequest.new(request)
+        JwtAuth::ValidatedRequest.new(request)
       end
     end
 
@@ -215,15 +214,15 @@ module JWTAuth
       @refresh_exp
     end
 
-    def self.domain
+      def self.domain
       @domain
     end
 
-    def self.domain_test
+      def self.domain_test
       @domain_test
     end
 
-    def self.domain_development
+      def self.domain_development
       @domain_development
     end
   end

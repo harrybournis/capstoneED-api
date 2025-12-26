@@ -1,5 +1,5 @@
-module JWTAuth
-  ## Used in JWTAuthenticator
+module JwtAuth
+  ## Used in JwtAuthenticator
   class ValidatedRequest
     def initialize(request)
       @csrf_token    = request.headers['X-XSRF-TOKEN']

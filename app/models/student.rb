@@ -8,14 +8,14 @@ class Student < User
   # type        :string Student
 
   # Associations
-  has_many  :students_projects, class_name:  StudentsProject
+  has_many  :students_projects, class_name: 'StudentsProject'
   has_many  :projects, through: :students_projects, dependent: :destroy
   has_many  :assignments, through: :projects
   has_many  :peer_assessments_submitted_by,
-            class_name: PeerAssessment,
+            class_name: 'PeerAssessment',
             foreign_key: :submitted_by_id
   has_many  :peer_assessments_submitted_for,
-            class_name: PeerAssessment,
+            class_name: 'PeerAssessment',
             foreign_key: :submitted_for_id
   has_many  :log_points
   has_many  :peer_assessment_points

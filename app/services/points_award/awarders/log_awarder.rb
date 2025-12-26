@@ -60,10 +60,11 @@ module PointsAward::Awarders
     def first_of_day
       if @logs_length > 1
         logs = @students_project.logs.last(2)
-        last_log = Time.at(logs[0]['date_submitted'].to_i).to_datetime
-        current_log = Time.at(logs[1]['date_submitted'].to_i).to_datetime
-        diff = TimeDifference.between(last_log, current_log).in_days
-        return if diff <= 1
+        last_log_time = logs[0]['date_submitted'].to_i
+        current_log_time = logs[1]['date_submitted'].to_i
+        diff_in_days = ((current_log_time - last_log_time) / 86_400.0).round(2)
+
+        return if diff_in_days <= 1
       end
 
       {

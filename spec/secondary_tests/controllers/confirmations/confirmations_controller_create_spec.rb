@@ -1,13 +1,13 @@
 require 'rails_helper'
 require 'helpers/mock_request.rb'
-include JWTAuth::JWTAuthenticator
+include JwtAuth::JwtAuthenticator
 
 RSpec.describe 'ConfirmationsController /create', type: :controller do
 
   before(:each) do
     @controller = V1::ConfirmationsController.new
     request.env['devise.mapping'] = Devise.mappings[:v1_user]
-    @user = FactoryGirl.create(:lecturer)
+    @user = FactoryBot.create(:lecturer)
     expect(@user.confirmed?).to be_falsy
   end
 

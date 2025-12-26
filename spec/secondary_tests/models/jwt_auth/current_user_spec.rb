@@ -1,22 +1,22 @@
 require 'rails_helper'
 require 'helpers/mock_request.rb'
-include JWTAuth::JWTAuthenticator
+include JwtAuth::JwtAuthenticator
 
-RSpec.describe JWTAuth::CurrentUser, type: :model do
+RSpec.describe JwtAuth::CurrentUser, type: :model do
 
 	context 'testing with User class' do
 
 		before(:each) do
-			@user = FactoryGirl.create(:student)
+			@user = FactoryBot.create(:student)
 			@request = MockRequest.new(valid = true, @user)
-			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			decoded_token = JwtAuth::JwtAuthenticator.decode_token(@request.cookies['access-token'])
 			@token_id = decoded_token.first['id']
 			@device = decoded_token.first['device']
-			@current_user_obj = JWTAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
+			@current_user_obj = JwtAuth::CurrentUserStudent.new(@token_id, 'Student', @device)
 		end
 
 		it '.new a new object should be created without database queries' do
-			expect { JWTAuth::CurrentUserStudent.new(@token_id, nil, @device) }.to_not make_database_queries
+			expect { JwtAuth::CurrentUserStudent.new(@token_id, nil, @device) }.to_not make_database_queries
 		end
 
 		it '.load should return a user found from the token id' do
@@ -48,7 +48,7 @@ RSpec.describe JWTAuth::CurrentUser, type: :model do
 
 		it '.current_device should equal the device in token' do
 			expect { @current_user_obj.current_device }.to_not make_database_queries
-			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token'])
+			decoded_token = JwtAuth::JwtAuthenticator.decode_token(@request.cookies['access-token'])
 			expect(@current_user_obj.current_device).to eq(decoded_token.first['device'])
 		end
 	end
@@ -56,13 +56,13 @@ RSpec.describe JWTAuth::CurrentUser, type: :model do
 	context 'testing with Student class' do
 
 		before(:each) do
-			@user = FactoryGirl.create(:student)
+			@user = FactoryBot.create(:student)
 			@request = MockRequest.new(valid = true, @user)
-			decoded_token = JWTAuth::JWTAuthenticator.decode_token(@request.cookies['access-token']).first
+			decoded_token = JwtAuth::JwtAuthenticator.decode_token(@request.cookies['access-token']).first
 			@token_id = decoded_token['id']
 			@device = decoded_token['device']
 			@type = decoded_token['type']
-			@current_user_obj = JWTAuth::CurrentUserStudent.new(@token_id, @type, @device)
+			@current_user_obj = JwtAuth::CurrentUserStudent.new(@token_id, @type, @device)
 		end
 
 		it 'should return the type without hitting the database' do

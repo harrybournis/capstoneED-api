@@ -4,7 +4,7 @@ RSpec.describe V1::UsersController, type: :controller do
 
 	# before(:each) do
 	# 	@controller = V1::UsersController.new
-	# 	@lecturer = FactoryGirl.build(:lecturer_with_password).process_new_record
+	# 	@lecturer = FactoryBot.build(:lecturer_with_password).process_new_record
 	# 	@lecturer.save
 	# 	@lecturer.confirm
 	# end

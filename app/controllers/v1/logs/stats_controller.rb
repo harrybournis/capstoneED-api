@@ -53,7 +53,6 @@ class V1::Logs::StatsController < ApplicationController
 
     average_hash.each do |project_name,date_time|
       team_result = { name: project_name, data: [] }
-      #binding.pry
       date_time.keys.sort.each do |date|
         time = date_time[date]
         team_result[:data] << [date, (time.inject(:+).to_f / time.length).round(1)]

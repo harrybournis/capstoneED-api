@@ -15,8 +15,8 @@
 #     0 (for negative feelings), or 1 (for positive feelings).
 #
 class Feeling < ApplicationRecord
-  has_many :project_evaluations, through: :feelings_project_evaluations
   has_many :feelings_project_evaluations
+  has_many :project_evaluations, through: :feelings_project_evaluations
 
   validates_presence_of :name, :value
   validates_uniqueness_of :name
