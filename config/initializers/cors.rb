@@ -7,20 +7,33 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'student.capstoneed-dev.org:8080'
+    origins 'http://127.0.0.1:8085', 'http://localhost:8085' 
 
     resource '*',
       headers: :any,
       expose: 'XSRF-TOKEN',
-      methods: [:get, :post, :put, :patch, :delete, :options, :head]
+      methods: [:get, :post, :put, :patch, :delete, :options, :head],
+      credentials: true
   end
 
   allow do
-    origins 'lecturer.capstoneed-dev.org:8085'
+    origins 'http://localhost:8090', 'http://127.0.0.1:8090'
 
     resource '*',
       headers: :any,
       expose: 'XSRF-TOKEN',
-      methods: [:get, :post, :put, :patch, :delete, :options, :head]
+      methods: [:get, :post, :put, :patch, :delete, :options, :head],
+      credentials: true
   end
+
+  allow do
+    origins 'http://localhost:4500', 'http://127.0.0.1:4500'
+
+    resource '*',
+      headers: :any,
+      expose: 'XSRF-TOKEN',
+      methods: [:get, :post, :put, :patch, :delete, :options, :head],
+      credentials: true
+  end
+
 end

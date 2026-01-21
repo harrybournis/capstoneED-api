@@ -18,7 +18,10 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  url: <%= ENV.fetch("DB_URL") { 'postgresql://dev:dev@127.0.0.1:5432' } %>
+  host: <%= ENV.fetch("DATABASE_HOST") { '127.0.0.1' } %>
+  port: <%= ENV.fetch("DATABASE_PORT") { 5432 } %>
+  username: <%= ENV.fetch("DATABASE_USER") { 'rails_dev' } %>
+  password: <%= ENV.fetch("DATABASE_PASS") { 'rails_dev_password' } %>
 
 development:
   <<: *default

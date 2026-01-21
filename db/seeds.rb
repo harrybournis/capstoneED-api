@@ -39,7 +39,9 @@ hours_worked_small = [1,2,3]
 hours_worked_medium = [3,4,5,6]
 hours_worked_large = [5,6,7,8,9,10]
 
-base_url = 'http://capstoneed-api.org:21992/placeholders'
+# base_url = 'http://capstoneed-api.org:21992/placeholders'
+api_url = ENV.fetch("API_DOMAIN") { 'http://127.0.0.1:3000' } 
+base_url = "#{api_url}/placeholders"
 # Lecturer-units-assignments
 @lecturer = FactoryBot.create :lecturer_confirmed, first_name: 'Thanos', last_name: 'Hatziapostolou', email: 'thanos@hatziapostolou.com', password: '12345678', avatar_url: "#{base_url}/hatzi.jpg"
 @department = FactoryBot.create :department, name: 'Computer Science', university: 'University of Sheffield'
@@ -173,7 +175,7 @@ pe.save validate: false
 # Students
 
 # ³³³³³³³³³³³³³³³³³³³³³³³³³³³³³ our team ³³³³³³³³³³³³³³³³³³³
-@student1 = FactoryBot.create :student_confirmed, first_name: 'Ioannis', last_name: 'Boutsikas', email: 'ioannis@boutsikas.com', avatar_url: "#{base_url}/1.jpg"
+@student1 = FactoryBot.create :student_confirmed, first_name: 'Ioannis', last_name: 'Boutsikas', email: 'ioannis@boutsikas.com', avatar_url: "#{base_url}/1.jpg", password: "12345678"
 sp = @student1.student_profile
 sp.total_xp = 0
 sp.calculate_level
