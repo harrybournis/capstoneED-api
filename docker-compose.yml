@@ -3,13 +3,29 @@ services:
     image: postgres:17
     restart: always
     environment:
-      - POSTGRES_USER=dev
-      - POSTGRES_PASSWORD=dev
-      - POSTGRS_DB=capstoned_api_development
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRS_DB
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
+
+  api:
+    context: .
+    dockerfile: Dockerfile
+    target: development
+    environment: 
+      - DATABASE_HOST=postgres-dev
+      - DATABASE_USER=${POSTGRES_USER}
+      - DATABASE_PASS=${POSTGRES_PASSWORD}
+      - DATABASE_NAME=${POSTGRES_DB}
+      - API_DOMAIN
+      # - RAILS_MASTER_KEY # For production only
+      # - SECRET_KEY_BASE  # For production only
+    # Use only in development
+    volumes:
+     - ".:/opt/app"
 
 volumes:
   postgres_data:
