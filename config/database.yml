@@ -25,11 +25,12 @@ default: &default
 
 development:
   <<: *default
-  database: capstoned_api_development
+  database: <%= ENV.fetch("DATABASE_NAME") { 'capstoned_api_development' } %>
 
 test:
   <<: *default
-  database: capstoned_api_test
+  database: <%= ENV.fetch("DATABASE_NAME") { 'capstoned_api_test' } %>
 
 production:
   <<: *default
+  database: <%= ENV.fetch("DATABASE_NAME") { 'capstoned_api_prod' } %>

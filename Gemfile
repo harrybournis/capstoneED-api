@@ -41,6 +41,9 @@ gem 'benchmark', '~> 0.5.0'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem "rack-cors"
+# This should be in development. I am putting it here for now
+# so we can have dummy data in the demo
+gem 'factory_bot_rails'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -48,7 +51,6 @@ group :development, :test do
   gem 'byebug', platform: :mri
   gem 'rspec-rails'
   gem 'rails-controller-testing'
-  gem 'factory_bot_rails'
   gem 'timecop', '~> 0.9.10'
   gem 'benchmark-ips'
   gem 'dotenv-rails' # read environment variables from a .env file in root
