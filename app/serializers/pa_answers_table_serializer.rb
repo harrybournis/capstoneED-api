@@ -1,5 +1,5 @@
 class PaAnswerTableSerializer < ActiveModel::Serializer
-  atributes :id, :project_name, :columns, :rows
+  attributes :id, :project_name, :columns, :rows
 
   def id
     object.project.id
